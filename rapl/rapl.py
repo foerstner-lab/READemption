@@ -61,6 +61,7 @@ class Rapl(object):
             self.read_mapping_after_clipping_folder, self.gr_folder,
             self.read_mapping_index_folder, self.genome_folder,
             self.umapped_reads_of_first_mapping_folder,
+            self.umapped_reads_of_second_mapping_folder,
             self.combined_mapping_folder, self.combined_mapping_split_folder,
             self.annotation_hit_folder, self.annotation_hit_overview_folder,
             self.mapping_stat_folder, self.read_tracing_folder]:
@@ -152,7 +153,7 @@ class Rapl(object):
         self._clip_unmapped_reads()
         self._filter_clipped_reads_by_size()
         self._run_mapping_with_clipped_reads()
-
+        self._extract_unmapped_reads_of_second_mapping()
 
     def _in_project_folder(self):
         """Check if the current directory is a RAPL project folder"""
@@ -294,6 +295,15 @@ class Rapl(object):
                 self._clipped_reads_mapping_output_path(read_file),
                 self._unmapped_reads_of_clipped_reads_file_path(read_file))
 
+    def _extract_unmapped_reads_of_second_mapping(self):
+        """
+        """
+        for read_file in self.read_files:
+            self._extract_unmapped_reads(
+                self._unmapped_clipped_size_filtered_read_path(read_file),
+                self._clipped_reads_mapping_output_path(read_file),
+                self._unmapped_reads_second_mapping_path(read_file))
+
 
     ####################        
     # Pathes
@@ -384,7 +394,10 @@ class Rapl(object):
         - `self`:
         - `read_file`: 
         """
-
-
         return("%s/%s.unmapped.fa"  % (self.umapped_reads_of_first_mapping_folder, 
                            read_file))
+
+    def _unmapped_reads_second_mapping_path(self, read_file):
+        """ """
+        return("%s/%s.unmapped.fa" % (
+                self.umapped_reads_of_second_mapping_folder, read_file))
