@@ -5,6 +5,7 @@ import sys
 from subprocess import call
 from rapl.segemehl import SegemehlParser
 from rapl.segemehl import SegemehlBuilder
+from rapl.fasta import FastaParser
 
 class Rapl(object):
 
@@ -159,7 +160,8 @@ class Rapl(object):
         # self.extract_unmapped_reads_of_second_mapping()
         # self.combine_mappings()
         # self.filter_combined_mappings_by_a_content()
-        self.split_mappings_by_genome_files()
+        # self.split_mappings_by_genome_files()
+        self.trace_reads_after_mapping()
 
     def _in_project_folder(self):
         """Check if the current directory is a RAPL project folder"""
@@ -374,6 +376,182 @@ class Rapl(object):
             headers[genome_fh.readline()[:-1]] = genome_file
         return(headers)
 
+    def trace_reads_after_mapping(self):
+        """Trace the way of each read during the stepds"""
+        for read_file in self.read_files:
+            self.read_ids = []
+            self.read_ids_and_traces = {}
+            self._get_read_ids_and_lengths(read_file)
+            self._read_first_mapping_output(read_file)
+            self._read_first_mapping_unmapped_reads(read_file)
+            self._read_clipped_unmapped_reads(read_file)
+            self._read_size_filtered_reads_passed(read_file)
+            self._read_size_filtered_reads_failed(read_file)
+            self._read_second_mapping_output(read_file)
+            self._read_second_mapping_unmapped_reads(read_file)
+            self._read_combined_mapping_a_filtered_passed(read_file)
+            self._read_combined_mapping_a_filtered_failed(read_file)
+            self._write_trace_file(read_file)
+
+    def _write_trace_file(self, read_file):
+        """Write the trace of each read to a file."""
+        trace_fh = open(self._trace_file_path(read_file), "w")
+        trace_fh.write("#Read id\tRead length\tNumber of mappings first run\t"
+                       "length after clipping\tPassed size filter\t"
+                       "Number of mappings second run\t"
+                       "Passed a-content filter\tFinal status\n")
+        for read_id in self.read_ids:
+            trace = self.read_ids_and_traces[read_id]
+            trace.setdefault("no_of_mappings_first_run", "-")
+            trace.setdefault("length_after_clipping", "-")
+            trace.setdefault("passed_size_filtering", "-")
+            trace.setdefault("no_of_mappings_second_run", "-")
+            trace.setdefault("passed_a-content_filtering", "-")
+            result_line = "%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n" % (
+                read_id, trace["length"], trace["no_of_mappings_first_run"],
+                trace["length_after_clipping"], trace["passed_size_filtering"],
+                trace["no_of_mappings_second_run"], 
+                trace["passed_a-content_filtering"], 
+                self._final_mapping_status(trace))
+            trace_fh.write(result_line)
+
+    def _get_read_ids_and_lengths(self, read_file):
+        """
+
+        Arguments:
+        - `self`:
+        - `read_file`:
+        """
+        fasta_parser = FastaParser()
+        for header, seq in fasta_parser.parse_fasta_file(
+            self._read_file_path(read_file)):
+            self.read_ids.append(header)
+            self.read_ids_and_traces[header] = {'length' : len(seq)}
+
+    def _read_first_mapping_output(self, read_file):
+        """
+
+        Arguments:
+        - `self`:
+        - `read_file`:
+        """
+        segemehl_parser = SegemehlParser()
+        for entry in segemehl_parser.entries(
+            self._raw_read_mapping_output_path(read_file)):
+            entry_id = entry["id"][1:] # remove ">"
+            self.read_ids_and_traces[entry_id].setdefault(
+                "no_of_mappings_first_run", 0)
+            self.read_ids_and_traces[entry_id]["no_of_mappings_first_run"] += 1
+
+    def _read_first_mapping_unmapped_reads(self, read_file):
+        """
+
+        Arguments:
+        - `self`:
+        - `read_file`:
+        """
+        fasta_parser = FastaParser()
+        for header, seq in fasta_parser.parse_fasta_file(
+            self._unmapped_raw_read_file_path(read_file)):
+                self.read_ids_and_traces[header]["no_of_mappings_first_run"] = 0
+
+    def _read_clipped_unmapped_reads(self, read_file):
+        """
+
+        Arguments:
+        - `self`:
+        - `read_file`:
+        """
+        fasta_parser = FastaParser()
+        for header, seq in fasta_parser.parse_fasta_file(
+            self._unmapped_read_clipped_path(read_file)):
+            self.read_ids_and_traces[header][
+                "length_after_clipping"] = len(seq)
+
+    def _read_size_filtered_reads_passed(self, read_file):
+        """
+
+        Arguments:
+        - `self`:
+        - `read_file`:
+        """
+        fasta_parser = FastaParser()
+        for header, seq in fasta_parser.parse_fasta_file(
+            self._unmapped_clipped_size_filtered_read_path(read_file)):
+            if header == "": continue
+            self.read_ids_and_traces[header][
+                "passed_size_filtering"] = True
+
+    def _read_size_filtered_reads_failed(self, read_file):
+        """
+
+        Arguments:
+        - `self`:
+        - `read_file`:
+        """
+        fasta_parser = FastaParser()
+        for header, seq in fasta_parser.parse_fasta_file(
+            self._unmapped_clipped_size_failed_read_path(read_file)):
+            if header == "": continue
+            self.read_ids_and_traces[header][
+                "passed_size_filtering"] = False
+
+    def _read_second_mapping_output(self, read_file):
+        """
+
+        Arguments:
+        - `self`:
+        - `read_file`:
+        """
+        segemehl_parser = SegemehlParser()
+        for entry in segemehl_parser.entries(
+            self._clipped_reads_mapping_output_path(read_file)):
+            entry_id = entry["id"][1:] # remove ">"
+            self.read_ids_and_traces[entry_id].setdefault(
+                "no_of_mappings_second_run", 0)
+            self.read_ids_and_traces[entry_id]["no_of_mappings_second_run"] += 1
+
+    def _read_second_mapping_unmapped_reads(self, read_file):
+        """
+
+        Arguments:
+        - `self`:
+        - `read_file`:
+        """
+        fasta_parser = FastaParser()
+        for header, seq in fasta_parser.parse_fasta_file(
+            self._unmapped_reads_second_mapping_path(read_file)):
+            if header == "": continue
+            self.read_ids_and_traces[header]["no_of_mappings_second_run"] = 0
+
+    def _read_combined_mapping_a_filtered_passed(self, read_file):
+        """
+
+        Arguments:
+        - `self`:
+        - `read_file`:
+        """
+        segemehl_parser = SegemehlParser()
+        for entry in segemehl_parser.entries(
+            self._combined_mapping_file_a_filtered_path(read_file)):
+            entry_id = entry["id"][1:] # remove ">"
+            self.read_ids_and_traces[entry_id][
+                "passed_a-content_filtering"] = True
+    
+    def _read_combined_mapping_a_filtered_failed(self, read_file):
+        """
+
+        Arguments:
+        - `self`:
+        - `read_file`:
+        """
+        segemehl_parser = SegemehlParser()
+        for entry in segemehl_parser.entries(
+            self._combined_mapping_file_a_filter_failed_path(read_file)):
+            entry_id = entry["id"][1:] # remove ">"
+            self.read_ids_and_traces[entry_id][
+                "passed_a-content_filtering"] = False
+
     ####################        
     # Pathes
     ####################      
@@ -467,24 +645,102 @@ class Rapl(object):
                            read_file))
 
     def _unmapped_reads_second_mapping_path(self, read_file):
-        """ """
+        """
+
+        Arguments:
+        - `self`:
+        - `read_file`: 
+        """
         return("%s/%s.unmapped.fa" % (
                 self.umapped_reads_of_second_mapping_folder, read_file))
 
     def _combined_mapping_file_path(self, read_file):
-        """ """
+        """
+
+        Arguments:
+        - `self`:
+        - `read_file`: 
+        """
         return("%s/%s_mapped_to_%s.combined" % (
                 self.combined_mapping_folder, read_file,
                 self._segemehl_index_name()))
 
     def _combined_mapping_file_a_filtered_split_path(self, read_file, genome_file):
-        """ """
+        """
+
+        Arguments:
+        - `self`:
+        - `read_file`: 
+        """
         return("%s/%s_mapped_to_%s.combined.filtered_ltoe_%s%%_A.txt.from_%s_only" % (
                 self.combined_mapping_split_folder, read_file, 
                 self._segemehl_index_name(), self.max_a_content, genome_file))
 
     def _combined_mapping_file_a_filtered_path(self, read_file):
-        """ """
+        """
+
+        Arguments:
+        - `self`:
+        - `read_file`: 
+        """
         return("%s.filtered_ltoe_%s%%_A.txt" % (
                 self._combined_mapping_file_path(read_file),
                 self.max_a_content))
+
+    def _unmapped_clipped_size_failed_read_path(self, read_file):
+        """
+
+        Arguments:
+        - `self`:
+        - `read_file`: 
+        """
+        return("%s/%s.unmapped.fa.clipped.fa.size_filtered_lt_%sbp.fa" % (
+                self.umapped_reads_of_first_mapping_folder,
+                read_file, self.min_seq_length))
+
+    def _combined_mapping_file_a_filter_failed_path(self, read_file):
+        """
+
+        Arguments:
+        - `self`:
+        - `read_file`: 
+        """
+        return("%s.filtered_gt_%s%%_A.txt" % (
+                self._combined_mapping_file_path(read_file),
+                self.max_a_content))
+
+    def _trace_file_path(self, read_file):
+        """
+
+        Arguments:
+        - `self`:
+        - `read_file`: 
+        """
+        return("%s/%s.mapping_tracing.csv" % (
+                self.read_tracing_folder, read_file))
+
+    def _final_mapping_status(self, trace):
+        """
+
+        Arguments:
+        - `self`:
+        - `trace`: 
+        """
+        if (trace["passed_a-content_filtering"] and 
+            not trace["passed_a-content_filtering"] == "-"):
+            if trace["no_of_mappings_first_run"] > 0:
+                return("mapped_in_first_round")
+            elif trace["no_of_mappings_second_run"] > 0:
+                return("mapped_in_second_round")
+        elif not trace["passed_a-content_filtering"]:
+            if trace["no_of_mappings_first_run"] > 0:
+                return("mapped_in_first_round-failed_a-content_filter")
+            elif trace["no_of_mappings_second_run"] > 0:
+                return("mapped_in_second_round-faild_a_content_filter")
+        elif trace["passed_a-content_filtering"] == "-":
+            if not trace["passed_size_filtering"]:
+                return("failed_size_filter_after_clipping")
+            if trace["no_of_mappings_second_run"] == 0:
+                return("not_mappable_in_second_run")
+        else:
+            return("lost_somewhere")
