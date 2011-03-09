@@ -141,6 +141,7 @@ class Rapl(object):
         self._get_read_file_names()
         self._build_segmehl_index()
         self._run_mapping_with_raw_reads()
+        sefl._extract_unmapped_reads_of_second_mapping()
 
     def _in_project_folder(self):
         """Check if the current directory is a RAPL project folder"""
@@ -168,22 +169,32 @@ class Rapl(object):
              shell=True)
 
     def _segemehl_index_path(self):
+        """Full path the the in segemehl index file"""
         return("%s/%s"  % (
                 self.read_mapping_index_folder, self._segemehl_index_name()))
 
     def _genome_file_path(self, genome_file):
+        """Full path of a given genome file
+
+        Arguments:
+        - `self`:
+        - `genome_file`: genome file name
+        """
         return("%s/%s" % (self.genome_folder, genome_file))
 
     def _segemehl_index_name(self):
+        """Name of the segemehl index file"""
         index_file_name = "_".join(self.genome_files) + ".idx"
         index_file_name.replace(".fa", "")
         return(index_file_name)
 
     def _genome_file_pathes(self):
+        """Full pathes of all genome files"""
         return([self._genome_file_path(genome_file) 
                 for genome_file in self.genome_files])
     
     def _run_mapping_with_raw_reads(self):
+        """Run the mapping of the raw reads."""
         for read_file in self.read_files:
             self._run_segemehl_search(
                 self._read_file_path(read_file),
@@ -191,11 +202,25 @@ class Rapl(object):
                 self._unmapped_raw_read_file_path(read_file))
 
     def _raw_read_mapping_output_path(self, read_file):
+        """Full path of the output file of a segemehl run
+
+        Arguments:
+        - `self`:
+        - `read_file`: read file name that is mapped
+        """
         return("%s/%s_mapped_to_%s" % (
                 self.read_mapping_folder, read_file, self._segemehl_index_name()))
 
     def _run_segemehl_search(self, read_file_path, output_file_path, 
                              unmapped_read_file_path):
+        """Call segemehl to do a mapping
+
+        Arguments:
+        - `self`:
+        - `read_file_path`:
+        - `output_file_path`:
+        - `unmapped_read_file_path`:
+        """
         call("%s -E %s -H %s -A %s -t %s -i %s -d %s -q %s -o %s" % (
                 self.segemehl_bin,
                 self.segemehl_max_e_value,
@@ -222,6 +247,12 @@ class Rapl(object):
         #      shell=True)
 
     def _read_file_path(self, read_file):
+        """The full path of a given read file
+
+        Arguments:
+        - `self`:
+        - `read_file`:
+        """
         return("%s/%s" % (self.rna_seq_folder, read_file))
 
     def _unmapped_raw_read_file_path(self, read_file):
