@@ -22,7 +22,10 @@ class Rapl(object):
         self._create_root_folder(args.project_name)
         self._create_subfolders(args.project_name)
         sys.stdout.write("Created folder \"%s\" and required subfolders.\n" % (
-                args.project_name)) 
+                args.project_name))
+        sys.stdout.write("Please copy read files into folder \"%s\" and "
+                         "genome files into folder \"%s\".\n" % (
+                self.rna_seq_folder, self.genome_folder))
 
     def _create_root_folder(self, project_name):
         """Create the root folder of a new project
@@ -49,7 +52,7 @@ class Rapl(object):
             self.input_folder, self.output_folder, self.rna_seq_folder,
             self.annotation_folder, self.read_mapping_folder,
             self.read_mapping_after_clipping_folder, self.gr_folder,
-            self.read_mapping_index_folder, 
+            self.read_mapping_index_folder, self.genome_folder,
             self.umapped_reads_of_first_mapping_folder,
             self.combined_mapping_folder, self.combined_mapping_split_folder,
             self.annotation_hit_folder, self.annotation_hit_overview_folder,
