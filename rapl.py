@@ -40,8 +40,9 @@ def start_project(args, rapl):
     print("Start it!")
     rapl.start_project(args)
 
-def map_reads(args):
+def map_reads(args, rapl):
     print("Map it!")
+    rapl.map_reads(args)
 
 def search_annoation_overlaps(args):
     print("Search it!")

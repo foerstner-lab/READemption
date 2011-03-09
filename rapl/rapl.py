@@ -2,6 +2,7 @@ import configparser
 import os
 import shutil
 import sys
+from subprocess import call
 
 class Rapl(object):
 
@@ -13,6 +14,7 @@ class Rapl(object):
         """
         self._set_folder_names()
         self._set_file_names()
+        self._set_bin_pathes()
 
     def start_project(self, args):
         """Creates a new project
@@ -101,6 +103,9 @@ class Rapl(object):
         """Set name of common files"""
         self.config_file = "rapl.config"
 
+    def _set_bin_pathes(self):
+        self.segemehl_bin = "segemehl"
+
     def _create_config_file(self, project_name):
         """Creates a config file
         
@@ -113,3 +118,59 @@ class Rapl(object):
         with open("%s/%s" % (project_name, self.config_file), 
                   "w") as configfile:
             config.write(configfile)
+
+    def map_reads(self, args):
+        """Perform the mapping of the reads
+
+        The mapping is done using the program segemehl and takes place
+        in two steps.
+
+        Arguments:
+        - `self`:
+        - `args`: 
+        """
+        self._in_project_folder()
+        self._get_genome_file_names()
+        self._get_read_file_names()
+        self._build_segmehl_index()
+
+    def _in_project_folder(self):
+        """Check if the current directory is a RAPL project folder"""
+        if not (os.path.exists(self.config_file) and 
+            os.path.exists(self.input_folder) and 
+            os.path.exists(self.output_folder)):
+            sys.stderr.write("Seems like the current folder is not a RAPL "
+                             "project folder.\n")
+            sys.stderr.write("Your are currently in \"%s\".\n" % (os.getcwd()))
+            sys.exit(2)        
+
+    def _get_read_file_names(self):
+        """Read the name of the read files"""
+        self.read_files = os.listdir(self.rna_seq_folder)
+
+    def _get_genome_file_names(self):
+        """Read the names of genome files"""
+        self.genome_files = os.listdir(self.genome_folder)
+        
+    def _build_segmehl_index(self):
+        """Create the segemehl index based on the genome files"""
+        call("echo %s -x %s -d %s" % (
+                self.segemehl_bin, self._segemehl_index_path(),
+                " ".join(self._genome_file_pathes())), 
+             shell=True)
+
+    def _segemehl_index_path(self):
+        return("%s/%s"  % (
+                self.read_mapping_index_folder, self._segemehl_index_name()))
+
+    def _genome_file_path(self, genome_file):
+        return("%s/%s" % (self.genome_folder, genome_file))
+
+    def _segemehl_index_name(self):
+        index_file_name = "_".join(self.genome_files) + ".idx"
+        index_file_name.replace(".fa", "")
+        return(index_file_name)
+
+    def _genome_file_pathes(self):
+        return([self._genome_file_path(genome_file) 
+                for genome_file in self.genome_files])
