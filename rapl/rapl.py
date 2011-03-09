@@ -3,6 +3,8 @@ import os
 import shutil
 import sys
 from subprocess import call
+from rapl.segemehl import SegemehlParser
+from rapl.segemehl import SegemehlBuilder
 
 class Rapl(object):
 
@@ -148,15 +150,16 @@ class Rapl(object):
         self._in_project_folder()
         self._get_genome_file_names()
         self._get_read_file_names()
-        self.build_segmehl_index()
-        self.run_mapping_with_raw_reads()
-        self.extract_unmapped_reads_raw_read_mapping()
-        self.clip_unmapped_reads()
-        self.filter_clipped_reads_by_size()
-        self.run_mapping_with_clipped_reads()
-        self.extract_unmapped_reads_of_second_mapping()
-        self.combine_mappings()
-        self.filter_combined_mappings_by_a_content()
+        # self.build_segmehl_index()
+        # self.run_mapping_with_raw_reads()
+        # self.extract_unmapped_reads_raw_read_mapping()
+        # self.clip_unmapped_reads()
+        # self.filter_clipped_reads_by_size()
+        # self.run_mapping_with_clipped_reads()
+        # self.extract_unmapped_reads_of_second_mapping()
+        # self.combine_mappings()
+        # self.filter_combined_mappings_by_a_content()
+        self.split_mappings_by_genome_files()
 
     def _in_project_folder(self):
         """Check if the current directory is a RAPL project folder"""
@@ -178,7 +181,7 @@ class Rapl(object):
         
     def build_segmehl_index(self):
         """Create the segemehl index based on the genome files"""
-        call("echo %s -x %s -d %s" % (
+        call("%s -x %s -d %s" % (
                 self.segemehl_bin, self._segemehl_index_path(),
                 " ".join(self._genome_file_pathes())), 
              shell=True)
@@ -325,15 +328,51 @@ class Rapl(object):
         comined_mappings_fh.close()
 
     def filter_combined_mappings_by_a_content(self):
+        """  """
         for read_file in self.read_files:
             self._filter_combined_mappings_by_a_content(read_file)
     
     def _filter_combined_mappings_by_a_content(self, read_file):
+        """ """
         call("%s %s/filter_segemehl_by_nucleotide_percentage.py %s A %s " % (
             self.python_bin, self.bin_folder, self._combined_mapping_file_path(read_file),
             self.max_a_content), shell=True)
 
+    def split_mappings_by_genome_files(self):
+        """Split the segemehl result entries by genome file"""
+        headers_of_genome_files = self._headers_of_genome_files()
+        for read_file in self.read_files:
+            self._split_mapping_by_genome_files(
+                read_file, headers_of_genome_files)
 
+    def _split_mapping_by_genome_files(self, read_file, headers_of_genome_files):
+        """ """
+        segemehl_parser = SegemehlParser()
+        segemehl_builder = SegemehlBuilder()
+        file_handles = {}
+        # Open an output file for each genome file. Needed as some
+        # genome files don't have any mapping and so their mapping
+        # file would not be created otherwise and be missing later.
+        for genome_file in self.genome_files:
+            output_file = self._combined_mapping_file_a_filtered_split_path(
+                read_file, genome_file)
+            file_handles["%s-%s" % (read_file, genome_file)] = open(
+                output_file, "w")
+        for entry in segemehl_parser.entries(
+            self._combined_mapping_file_a_filtered_path(read_file)):
+            genome_file = headers_of_genome_files[entry['target_description']]
+            file_handles["%s-%s" % (read_file, genome_file)].write(
+                segemehl_builder.entry_to_line(entry))
+        for output_file in file_handles.values():
+            output_file.close()
+
+    def _headers_of_genome_files(self):
+        """Extract the FASTA headers of all genome files."""
+        headers = {}
+        for genome_file in self.genome_files:
+            genome_fh = open(self._genome_file_path(genome_file))
+            headers[genome_fh.readline()[:-1]] = genome_file
+        return(headers)
 
     ####################        
     # Pathes
@@ -437,3 +476,15 @@ class Rapl(object):
         return("%s/%s_mapped_to_%s.combined" % (
                 self.combined_mapping_folder, read_file,
                 self._segemehl_index_name()))
+
+    def _combined_mapping_file_a_filtered_split_path(self, read_file, genome_file):
+        """ """
+        return("%s/%s_mapped_to_%s.combined.filtered_ltoe_%s%%_A.txt.from_%s_only" % (
+                self.combined_mapping_split_folder, read_file, 
+                self._segemehl_index_name(), self.max_a_content, genome_file))
+
+    def _combined_mapping_file_a_filtered_path(self, read_file):
+        """ """
+        return("%s.filtered_ltoe_%s%%_A.txt" % (
+                self._combined_mapping_file_path(read_file),
+                self.max_a_content))
