@@ -151,17 +151,24 @@ class Rapl(object):
         self._in_project_folder()
         self._get_genome_file_names()
         self._get_read_file_names()
-        # self.build_segmehl_index()
-        # self.run_mapping_with_raw_reads()
-        # self.extract_unmapped_reads_raw_read_mapping()
-        # self.clip_unmapped_reads()
-        # self.filter_clipped_reads_by_size()
-        # self.run_mapping_with_clipped_reads()
-        # self.extract_unmapped_reads_of_second_mapping()
-        # self.combine_mappings()
-        # self.filter_combined_mappings_by_a_content()
-        # self.split_mappings_by_genome_files()
+        self.build_segmehl_index()
+        self.run_mapping_with_raw_reads()
+        self.extract_unmapped_reads_raw_read_mapping()
+        self.clip_unmapped_reads()
+        self.filter_clipped_reads_by_size()
+        self.run_mapping_with_clipped_reads()
+        self.extract_unmapped_reads_of_second_mapping()
+        self.combine_mappings()
+        self.filter_combined_mappings_by_a_content()
+        self.split_mappings_by_genome_files()
         self.trace_reads_after_mapping()
+    
+    def create_gr_files(self, args):
+        self._in_project_folder()
+        self._get_genome_file_names()
+        self._get_read_file_names()
+        self.build_gr_files()
+        self.build_normalized_files()
 
     def _in_project_folder(self):
         """Check if the current directory is a RAPL project folder"""
@@ -552,6 +559,73 @@ class Rapl(object):
             self.read_ids_and_traces[entry_id][
                 "passed_a-content_filtering"] = False
 
+    def build_gr_files(self):
+        """
+
+        """
+        for read_file in self.read_files:
+            for genome_file in self.genome_files:
+                self._build_gr_file(read_file, genome_file)
+
+    def _build_gr_file(self, read_file, genome_file):
+        """
+
+        Arguments:
+        - `self`:
+        - `read_file`:
+        - `genome_file`:
+        """
+        call("%s %s/segemehl2gr.py -o %s %s" % (
+                self.python_bin, self.bin_folder,
+                self._gr_file_path(read_file, genome_file),
+                self._combined_mapping_file_a_filtered_split_path(read_file, 
+                                                                  genome_file)),
+             shell=True)
+
+    def build_normalized_files(self):
+        """
+        """
+        for genome_file in self.genome_files:
+            lowest_number_of_mappings = self._lowest_number_of_mappings(
+                genome_file)
+            for read_file in self.read_files:
+                self._build_normalized_gr_file(
+                    read_file, genome_file, lowest_number_of_mappings)
+            
+    def _build_normalized_gr_file(self, read_file, genome_file, 
+                                  lowest_number_of_mappings):
+        """
+
+        Arguments:
+        - `self`:
+        - `read_file`:
+        - `genome_file,`:
+        - `lowest_number_of_mappings`:
+        """
+        call("%s %s/segemehl2gr.py -n -m %s -o %s %s" % (
+                self.python_bin, self.bin_folder, lowest_number_of_mappings,
+                self._gr_file_path(read_file, genome_file),
+                self._combined_mapping_file_a_filtered_split_path(
+                    read_file, genome_file)), shell=True)
+
+    def _lowest_number_of_mappings(self, genome_file):
+        lowest_number_of_mappings = min(
+            [self._count_mapped_reads(read_file, genome_file) 
+             for read_file in self.read_files])
+        # Do avoid multiplication by zero
+        if lowest_number_of_mappings == 0:
+            lowest_number_of_mappings = 1
+        return(lowest_number_of_mappings)
+
+    def _count_mapped_reads(self, read_file, genome_file):
+        segemehl_parser = SegemehlParser()
+        seen_ids = {}
+        for entry in segemehl_parser.entries(
+            self._combined_mapping_file_a_filtered_split_path(
+                read_file, genome_file)):
+            seen_ids[entry['id']] = 1
+        return(len(seen_ids))
+        
     ####################        
     # Pathes
     ####################      
@@ -744,3 +818,13 @@ class Rapl(object):
                 return("not_mappable_in_second_run")
         else:
             return("lost_somewhere")
+
+    def _gr_file_path(self, read_file, genome_file):
+        """
+
+        Arguments:
+        - `self`:
+        - `read_file,`:
+        - `genome_file`: 
+        """
+        return("%s/%s_in_%s.gr" % (self.gr_folder, read_file, genome_file))
