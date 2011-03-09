@@ -151,6 +151,7 @@ class Rapl(object):
         self._extract_unmapped_reads_raw_read_mapping()
         self._clip_unmapped_reads()
         self._filter_clipped_reads_by_size()
+        self._run_mapping_with_clipped_reads()
 
 
     def _in_project_folder(self):
@@ -284,6 +285,16 @@ class Rapl(object):
                 self.python_bin, self.bin_folder, read_file_path, 
                 self.min_seq_length), shell=True)
 
+    def _run_mapping_with_clipped_reads(self):
+        """
+        """
+        for read_file in self.read_files:
+            self._run_segemehl_search(
+                self._unmapped_clipped_size_filtered_read_path(read_file), 
+                self._clipped_reads_mapping_output_path(read_file),
+                self._unmapped_reads_of_clipped_reads_file_path(read_file))
+
+
     ####################        
     # Pathes
     ####################      
@@ -333,5 +344,47 @@ class Rapl(object):
                 self.read_mapping_folder, read_file, self._segemehl_index_name()))
 
     def _unmapped_read_clipped_path(self, read_file):
+        """Full path of a file with clipped reads
+
+        Arguments:
+        - `self`:
+        - `read_file`: 
+        """
         return("%s/%s.unmapped.fa.clipped.fa" % (
                 self.umapped_reads_of_first_mapping_folder, read_file))
+
+
+    def _unmapped_clipped_size_filtered_read_path(self, read_file):
+        """Full path of a file with clipped reads after size filtering
+
+        Arguments:
+        - `self`:
+        - `read_file`: 
+
+        """
+        return("%s/%s.unmapped.fa.clipped.fa.size_filtered_gtoe_%sbp.fa" % (
+                self.umapped_reads_of_first_mapping_folder,
+                read_file, self.min_seq_length))
+
+    def _clipped_reads_mapping_output_path(self, read_file):
+        """Segmehl output file path of mapping clipped size filtered reads
+
+        Arguments:
+        - `self`:
+        - `read_file`: 
+        """
+        return("%s/%s.clipped_mapped_to_%s" % (
+                self.read_mapping_after_clipping_folder,
+                read_file, self._segemehl_index_name()))
+
+    def _unmapped_reads_of_clipped_reads_file_path(self, read_file):
+        """Full file path of the unmapped reads of the second run
+
+        Arguments:
+        - `self`:
+        - `read_file`: 
+        """
+
+
+        return("%s/%s.unmapped.fa"  % (self.umapped_reads_of_first_mapping_folder, 
+                           read_file))
