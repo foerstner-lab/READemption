@@ -120,6 +120,7 @@ class Rapl(object):
 
     def _set_filtering_parameters(self):
         self.min_seq_length = 12
+        self.max_a_content = 70.0
         
     def _create_config_file(self, project_name):
         """Creates a config file
@@ -147,13 +148,15 @@ class Rapl(object):
         self._in_project_folder()
         self._get_genome_file_names()
         self._get_read_file_names()
-        self._build_segmehl_index()
-        self._run_mapping_with_raw_reads()
-        self._extract_unmapped_reads_raw_read_mapping()
-        self._clip_unmapped_reads()
-        self._filter_clipped_reads_by_size()
-        self._run_mapping_with_clipped_reads()
-        self._extract_unmapped_reads_of_second_mapping()
+        self.build_segmehl_index()
+        self.run_mapping_with_raw_reads()
+        self.extract_unmapped_reads_raw_read_mapping()
+        self.clip_unmapped_reads()
+        self.filter_clipped_reads_by_size()
+        self.run_mapping_with_clipped_reads()
+        self.extract_unmapped_reads_of_second_mapping()
+        self.combine_mappings()
+        self.filter_combined_mappings_by_a_content()
 
     def _in_project_folder(self):
         """Check if the current directory is a RAPL project folder"""
@@ -173,7 +176,7 @@ class Rapl(object):
         """Read the names of genome files"""
         self.genome_files = os.listdir(self.genome_folder)
         
-    def _build_segmehl_index(self):
+    def build_segmehl_index(self):
         """Create the segemehl index based on the genome files"""
         call("echo %s -x %s -d %s" % (
                 self.segemehl_bin, self._segemehl_index_path(),
@@ -186,7 +189,7 @@ class Rapl(object):
         index_file_name.replace(".fa", "")
         return(index_file_name)
 
-    def _run_mapping_with_raw_reads(self):
+    def run_mapping_with_raw_reads(self):
         """Run the mapping of the raw reads."""
         for read_file in self.read_files:
             self._run_segemehl_search(
@@ -229,7 +232,7 @@ class Rapl(object):
         #         unmapped_read_file_path),
         #      shell=True)
 
-    def _extract_unmapped_reads_raw_read_mapping(self):
+    def extract_unmapped_reads_raw_read_mapping(self):
         """Extract unmapped reads of first mapping round"""
         for read_file in self.read_files:
             self._extract_unmapped_reads(
@@ -252,7 +255,7 @@ class Rapl(object):
                 self.python_bin, self.bin_folder, "extract_unmapped_fastas.py", 
                 output_read_file, read_file, mapping_file), shell=True)
 
-    def _clip_unmapped_reads(self):
+    def clip_unmapped_reads(self):
         """Clip reads unmapped in the first segemehl run"""
         for read_file in self.read_files:
             self._clip_reads(self._unmapped_raw_read_file_path(read_file))
@@ -267,7 +270,7 @@ class Rapl(object):
         call("%s %s/poly_a_clipper.py %s" % (self.python_bin,
                 self.bin_folder, unmapped_raw_read_file_path), shell=True)
 
-    def _filter_clipped_reads_by_size(self):
+    def filter_clipped_reads_by_size(self):
         """Filter clipped readsby size
 
         Too small read (usually the ones smaller than 12 bp) are
@@ -286,7 +289,7 @@ class Rapl(object):
                 self.python_bin, self.bin_folder, read_file_path, 
                 self.min_seq_length), shell=True)
 
-    def _run_mapping_with_clipped_reads(self):
+    def run_mapping_with_clipped_reads(self):
         """
         """
         for read_file in self.read_files:
@@ -295,7 +298,7 @@ class Rapl(object):
                 self._clipped_reads_mapping_output_path(read_file),
                 self._unmapped_reads_of_clipped_reads_file_path(read_file))
 
-    def _extract_unmapped_reads_of_second_mapping(self):
+    def extract_unmapped_reads_of_second_mapping(self):
         """
         """
         for read_file in self.read_files:
@@ -303,6 +306,33 @@ class Rapl(object):
                 self._unmapped_clipped_size_filtered_read_path(read_file),
                 self._clipped_reads_mapping_output_path(read_file),
                 self._unmapped_reads_second_mapping_path(read_file))
+
+    def combine_mappings(self):
+        """Combine the results of both segemehl mappings for all libraries."""
+        for read_file in self.read_files:
+            self._combine_mappings(read_file)
+
+    def _combine_mappings(self, read_file):
+        """Combine the results of both segemehl mappings
+
+        Arguments:
+        - `self`:
+        - `read_file`:
+        """
+        comined_mappings_fh = open(self._combined_mapping_file_path(read_file), "w")
+        comined_mappings_fh.write(open(self._raw_read_mapping_output_path(read_file)).read())
+        comined_mappings_fh.write(open(self._clipped_reads_mapping_output_path(read_file)).read())
+        comined_mappings_fh.close()
+
+    def filter_combined_mappings_by_a_content(self):
+        for read_file in self.read_files:
+            self._filter_combined_mappings_by_a_content(read_file)
+    
+    def _filter_combined_mappings_by_a_content(self, read_file):
+        call("%s %s/filter_segemehl_by_nucleotide_percentage.py %s A %s " % (
+            self.python_bin, self.bin_folder, self._combined_mapping_file_path(read_file),
+            self.max_a_content), shell=True)
+
 
 
     ####################        
@@ -401,3 +431,9 @@ class Rapl(object):
         """ """
         return("%s/%s.unmapped.fa" % (
                 self.umapped_reads_of_second_mapping_folder, read_file))
+
+    def _combined_mapping_file_path(self, read_file):
+        """ """
+        return("%s/%s_mapped_to_%s.combined" % (
+                self.combined_mapping_folder, read_file,
+                self._segemehl_index_name()))
