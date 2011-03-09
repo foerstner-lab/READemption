@@ -1,3 +1,4 @@
+import configparser
 import os
 import shutil
 import sys
@@ -11,6 +12,7 @@ class Rapl(object):
         - `self`:
         """
         self._set_folder_names()
+        self._set_file_names()
 
     def start_project(self, args):
         """Creates a new project
@@ -21,6 +23,7 @@ class Rapl(object):
         """
         self._create_root_folder(args.project_name)
         self._create_subfolders(args.project_name)
+        self._create_config_file(args.project_name)
         sys.stdout.write("Created folder \"%s\" and required subfolders.\n" % (
                 args.project_name))
         sys.stdout.write("Please copy read files into folder \"%s\" and "
@@ -93,3 +96,20 @@ class Rapl(object):
         self.mapping_stat_folder = "%s/read_mapping_stats" % (
             self.output_folder)
         self.read_tracing_folder = "%s/read_tracing" % (self.output_folder)
+
+    def _set_file_names(self):
+        """Set name of common files"""
+        self.config_file = "rapl.config"
+
+    def _create_config_file(self, project_name):
+        """Creates a config file
+        
+        Arguments:
+        - `self`:
+        - `project_name`: Name of the project root folder
+        """
+        config = configparser.RawConfigParser()
+        config.add_section('RAPL')
+        with open("%s/%s" % (project_name, self.config_file), 
+                  "w") as configfile:
+            config.write(configfile)
