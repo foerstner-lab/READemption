@@ -52,7 +52,7 @@ def map_reads(args, rapl):
 def create_gr_files(args, rapl):
     rapl.create_gr_files(args)
 
-def search_annoation_overlaps(args):
-    print("Search it!")
+def search_annoation_overlaps(args, rapl):
+    rapl.search_annotation_overlaps(args)
 
 main()

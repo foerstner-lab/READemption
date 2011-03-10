@@ -1,7 +1,7 @@
-import configparser
 import os
 import shutil
 import sys
+import json
 from subprocess import call
 from rapl.segemehl import SegemehlParser
 from rapl.segemehl import SegemehlBuilder
@@ -126,17 +126,15 @@ class Rapl(object):
         self.max_a_content = 70.0
         
     def _create_config_file(self, project_name):
-        """Creates a config file
+        """Creates a json config file
         
         Arguments:
         - `self`:
         - `project_name`: Name of the project root folder
         """
-        config = configparser.RawConfigParser()
-        config.add_section('RAPL')
-        with open("%s/%s" % (project_name, self.config_file), 
-                  "w") as configfile:
-            config.write(configfile)
+        config_fh = open("%s/%s" % (project_name, self.config_file), "w")
+        config_fh.write(json.dumps({"annotation_and_genomes_files" : {}}))
+        config_fh.close()
 
     def map_reads(self, args):
         """Perform the mapping of the reads
@@ -170,6 +168,13 @@ class Rapl(object):
         self.build_gr_files()
         self.build_normalized_files()
 
+    def search_annotation_overlaps(self, args):
+        self._in_project_folder()
+        self._get_genome_file_names()
+        self._get_read_file_names()
+        self._get_annotation_files_from_config()
+        #self.find_annotation_hits()
+        
     def _in_project_folder(self):
         """Check if the current directory is a RAPL project folder"""
         if not (os.path.exists(self.config_file) and 
@@ -609,6 +614,12 @@ class Rapl(object):
                     read_file, genome_file)), shell=True)
 
     def _lowest_number_of_mappings(self, genome_file):
+        """
+
+        Arguments:
+        - `self`:
+        - `genome_file`:
+        """
         lowest_number_of_mappings = min(
             [self._count_mapped_reads(read_file, genome_file) 
              for read_file in self.read_files])
@@ -618,6 +629,12 @@ class Rapl(object):
         return(lowest_number_of_mappings)
 
     def _count_mapped_reads(self, read_file, genome_file):
+        """
+
+        Arguments:
+        - `self`:
+        - `genome_file`:
+        """
         segemehl_parser = SegemehlParser()
         seen_ids = {}
         for entry in segemehl_parser.entries(
@@ -625,6 +642,28 @@ class Rapl(object):
                 read_file, genome_file)):
             seen_ids[entry['id']] = 1
         return(len(seen_ids))
+
+    def find_annotation_hits(self):
+        """ """
+        for read_file in self.read_files:
+            for annotation_file in self.annotation_files.keys():
+                self._find_annotation_hits(read_file, annotation_file)
+
+    def _find_annotation_hits(self, read_file, annotation_file):
+        """ """
+        genome_file = self.annotation_files[annotation_file]
+        call("%s %s/segemehl_hit_annotation_mapping.py -m %s -o %s %s %s" % (
+                self.python_bin, self.bin_folder,
+                self.min_overlap,
+                self._annotation_hit_file_path(read_file, annotation_file),
+                self._combined_mapping_file_a_filtered_split_path(
+                    read_file, genome_file),
+                self._annotation_file_path(annotation_file)), shell=True)
+
+    def _get_annotation_files_from_config(self):
+        """ """
+        parser = configparser.SafeConfigParser()
+        parser.read(self.config_file)
         
     ####################        
     # Pathes
