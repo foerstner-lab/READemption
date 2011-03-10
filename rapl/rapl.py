@@ -124,6 +124,7 @@ class Rapl(object):
     def _set_filtering_parameters(self):
         self.min_seq_length = 12
         self.max_a_content = 70.0
+        self.min_overlap = 1
         
     def _create_config_file(self, project_name):
         """Creates a json config file
@@ -169,11 +170,12 @@ class Rapl(object):
         self.build_normalized_files()
 
     def search_annotation_overlaps(self, args):
+        self._read_config_file()
         self._in_project_folder()
         self._get_genome_file_names()
         self._get_read_file_names()
         self._get_annotation_files_from_config()
-        #self.find_annotation_hits()
+        self.find_annotation_hits()
         
     def _in_project_folder(self):
         """Check if the current directory is a RAPL project folder"""
@@ -662,8 +664,10 @@ class Rapl(object):
 
     def _get_annotation_files_from_config(self):
         """ """
-        parser = configparser.SafeConfigParser()
-        parser.read(self.config_file)
+        self.annotation_files = self.config["annotation_and_genomes_files"]
+
+    def _read_config_file(self):
+        self.config = json.loads(open(self.config_file).read())
         
     ####################        
     # Pathes
@@ -867,3 +871,23 @@ class Rapl(object):
         - `genome_file`: 
         """
         return("%s/%s_in_%s.gr" % (self.gr_folder, read_file, genome_file))
+
+    def _annotation_hit_file_path(self, read_file, annotation_file):
+        """
+
+        Arguments:
+        - `self`:
+        - `read_file,`:
+        - `annotation_file`: 
+        """
+        return("%s/%s_in_%s_annotation_hits" % (
+                self.annotation_hit_folder, read_file, annotation_file))
+
+    def _annotation_file_path(self, annotation_file):
+        """
+
+        Arguments:
+        - `self`:
+        - `annotation_file`: 
+        """
+        return("%s/%s" % (self.annotation_folder , annotation_file))
