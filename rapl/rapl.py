@@ -175,7 +175,8 @@ class Rapl(object):
         self._get_genome_file_names()
         self._get_read_file_names()
         self._get_annotation_files_from_config()
-        self.find_annotation_hits()
+        # self.find_annotation_hits()
+        self.build_annotation_hit_overview()
         
     def _in_project_folder(self):
         """Check if the current directory is a RAPL project folder"""
@@ -667,8 +668,33 @@ class Rapl(object):
         self.annotation_files = self.config["annotation_and_genomes_files"]
 
     def _read_config_file(self):
+        """Read the config file."""
         self.config = json.loads(open(self.config_file).read())
+
+    def build_annotation_hit_overview(self):
+        """ """
+        for annotation_file in self.annotation_files.keys():
+            self._build_annotation_hit_overview(annotation_file)
+
+    def _build_annotation_hit_overview(self, annotation_file):
+        """ """
+        genome_file = self.annotation_files[annotation_file]
+        mapped_reads_counting_string = ":".join(
+            [str(self._count_mapped_reads(read_file, genome_file)) 
+             for read_file in self.read_files])
+        annotation_hit_files_string = " ".join(
+            [self._annotation_hit_file_path(read_file, annotation_file) 
+             for read_file in self.read_files])
+        call("%s %s/%s -n %s %s %s > %s" % (
+                self.python_bin, self.bin_folder,
+                "build_annotation_table_with_read_countings.py",
+                mapped_reads_counting_string,
+                self._annotation_file_path(annotation_file),
+                annotation_hit_files_string,
+                self._annotation_hit_overview_file_path(annotation_file)), 
+             shell=True)
         
+
     ####################        
     # Pathes
     ####################      
@@ -891,3 +917,13 @@ class Rapl(object):
         - `annotation_file`: 
         """
         return("%s/%s" % (self.annotation_folder , annotation_file))
+
+    def _annotation_hit_overview_file_path(self, annotation_file):
+        """ 
+
+        Arguments:
+        - `self`:
+        - `annotation_file`: 
+        """
+        return("%s/%s_all_annotation_hits.csv" % (
+                self.annotation_hit_overview_folder, annotation_file))
