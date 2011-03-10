@@ -111,6 +111,8 @@ class Rapl(object):
             self.input_file_stats_folder)
         self.annotation_file_stats = "%s/annotation_file_stats.txt" % (
             self.input_file_stats_folder)
+        self.tracing_summary_file = "%s/tracing_summary.csv" % (
+            self.read_tracing_folder)
         self.report_tex_file = "%s/report.tex" % (
             self.report_folder)
 
@@ -157,19 +159,20 @@ class Rapl(object):
         self._in_project_folder()
         self._get_genome_file_names()
         self._get_read_file_names()
-        self._create_read_file_stats()
-        self._create_genome_file_stats()
-        self.build_segmehl_index()
-        self.run_mapping_with_raw_reads()
-        self.extract_unmapped_reads_raw_read_mapping()
-        self.clip_unmapped_reads()
-        self.filter_clipped_reads_by_size()
-        self.run_mapping_with_clipped_reads()
-        self.extract_unmapped_reads_of_second_mapping()
-        self.combine_mappings()
-        self.filter_combined_mappings_by_a_content()
-        self.split_mappings_by_genome_files()
-        self.trace_reads_after_mapping()
+        # self._create_read_file_stats()
+        # self._create_genome_file_stats()
+        # self.build_segmehl_index()
+        # self.run_mapping_with_raw_reads()
+        # self.extract_unmapped_reads_raw_read_mapping()
+        # self.clip_unmapped_reads()
+        # self.filter_clipped_reads_by_size()
+        # self.run_mapping_with_clipped_reads()
+        # self.extract_unmapped_reads_of_second_mapping()
+        # self.combine_mappings()
+        # self.filter_combined_mappings_by_a_content()
+        # self.split_mappings_by_genome_files()
+        # self.trace_reads_after_mapping()
+        self.create_tracing_summay()
     
     def create_gr_files(self, args):
         """Create GR files based on the combined Segemehl mappings.
@@ -893,6 +896,53 @@ class Rapl(object):
                 return("not_mappable_in_second_run")
         else:
             return("lost_somewhere")
+
+    def create_tracing_summay(self):
+        """
+        """
+        stati = [
+            "mapped_in_first_round", 
+            "mapped_in_first_round-failed_a-content_filter",
+            "mapped_in_second_round", 
+            "mapped_in_second_round-faild_a_content_filter",
+            "failed_size_filter_after_clipping", "not_mappable_in_second_run",
+            "lost_somewhere"]
+        summary_fh = open(self.tracing_summary_file, "w")
+        summary_fh.write(
+            "#lib name\t" + 
+            "\t".join(stati) + 
+            "total number of reads\t" +
+            "sum of mappable reads\t" + 
+            "percentage mappable reads\t" + 
+            "\n")
+        for read_file in self.read_files:
+            stati_and_countings = self._summarize_tracing_file(
+                self._trace_file_path(read_file))
+            countings = []
+            for status in stati:
+                stati_and_countings.setdefault(status, 0)
+                countings.append(stati_and_countings[status])
+            summary_fh.write(
+                read_file + "\t" + 
+                "\t".join([str(counting) for counting in countings]) + 
+                "\t%s" % sum(countings) +
+                "\t%s" % (stati_and_countings["mapped_in_first_round"] + 
+                          stati_and_countings["mapped_in_second_round"]) +
+                "\t%s" % ((stati_and_countings["mapped_in_first_round"] + 
+                          stati_and_countings["mapped_in_second_round"])/
+                          sum(countings)*100.0) +
+                "\n")
+        summary_fh.close()
+
+    def _summarize_tracing_file(self, tracing_file):
+        stati_and_countings = {}
+        for line in open(tracing_file):
+            if line[0] in ["#", "\n"]:
+                continue
+            final_status = line[:-1].split("\t")[7]
+            stati_and_countings.setdefault(final_status, 0)
+            stati_and_countings[final_status] += 1
+        return(stati_and_countings)
 
     ####################        
     # Paths
