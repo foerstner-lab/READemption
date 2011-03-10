@@ -2,6 +2,7 @@ import os
 import shutil
 import sys
 import json
+import hashlib
 from subprocess import call
 from rapl.segemehl import SegemehlParser
 from rapl.segemehl import SegemehlBuilder
@@ -67,7 +68,8 @@ class Rapl(object):
             self.umapped_reads_of_second_mapping_folder,
             self.combined_mapping_folder, self.combined_mapping_split_folder,
             self.annotation_hit_folder, self.annotation_hit_overview_folder,
-            self.mapping_stat_folder, self.read_tracing_folder]:
+            self.mapping_stat_folder, self.read_tracing_folder, 
+            self.input_file_stats_folder]:
             folder_in_root_folder = "%s/%s" % (project_name, folder)
             if not os.path.exists(folder_in_root_folder):
                 os.mkdir(folder_in_root_folder)
@@ -82,6 +84,7 @@ class Rapl(object):
         self.output_folder = "output"
         self.rna_seq_folder = "%s/RNA_seqs" % self.input_folder
         self.genome_folder = "%s/genomes" % self.input_folder
+        self.input_file_stats_folder = "%s/input_file_stats" % self.output_folder
         self.annotation_folder = "%s/annotation_files" % self.input_folder
         self.read_mapping_folder = "%s/read_mappings" % self.output_folder
         self.read_mapping_after_clipping_folder = (
@@ -108,6 +111,12 @@ class Rapl(object):
     def _set_file_names(self):
         """Set name of common files"""
         self.config_file = "rapl.config"
+        self.read_file_stats = "%s/read_file_stats.txt" % (
+            self.input_file_stats_folder)
+        self.genome_file_stats = "%s/genome_file_stats.txt" % (
+            self.input_file_stats_folder)
+        self.annotation_file_stats = "%s/annotation_file_stats.txt" % (
+            self.input_file_stats_folder)
 
     def _set_bin_pathes(self):
         self.segemehl_bin = "segemehl"
@@ -150,6 +159,8 @@ class Rapl(object):
         self._in_project_folder()
         self._get_genome_file_names()
         self._get_read_file_names()
+        self._create_read_file_stats()
+        self._create_genome_file_stats()
         self.build_segmehl_index()
         self.run_mapping_with_raw_reads()
         self.extract_unmapped_reads_raw_read_mapping()
@@ -175,7 +186,7 @@ class Rapl(object):
         self._get_genome_file_names()
         self._get_read_file_names()
         self._get_annotation_files_from_config()
-        # self.find_annotation_hits()
+        self.find_annotation_hits()
         self.build_annotation_hit_overview()
         
     def _in_project_folder(self):
@@ -693,12 +704,60 @@ class Rapl(object):
                 annotation_hit_files_string,
                 self._annotation_hit_overview_file_path(annotation_file)), 
              shell=True)
-        
+
+    def _sha256_of_file(self, file_path):
+        """Calculate the SHA256 hash sum of a given file"""
+        return(hashlib.sha256(open(file_path).read().encode()).hexdigest())
+
+    def _file_size(self, file_path):
+        """Return the size of a given file"""
+        return(os.path.getsize(file_path))
+
+    def _number_of_lines_in_file(self, file_path):
+        """Return the number of lines of a given file"""
+        return(len(open(file_path).readlines()))
+
+    def _number_of_fasta_entries(self, file_path):
+        fasta_parser = FastaParser()
+        counter = 0
+        for head, seq in fasta_parser.parse_fasta_file(file_path):
+            counter += 1
+        return(counter)
+
+    def _create_read_file_stats(self):
+        stat_fh = open(self.read_file_stats, "w")
+        for read_file in self.read_files:
+            stat_fh.write("%s:\n" % (read_file))
+            stat_fh.write("* SHA256: %s\n" % (
+                    self._sha256_of_file(self._read_file_path(read_file))))
+            stat_fh.write("* Number of lines: %s\n" % (
+                    self._number_of_lines_in_file(
+                        self._read_file_path(read_file))))
+            stat_fh.write("* Size: %s\n" % (
+                    self._file_size(self._read_file_path(read_file))))
+            stat_fh.write("* Number of Fasta entries: %s\n" % (
+                    self._number_of_fasta_entries(
+                        self._read_file_path(read_file))))
+            stat_fh.write("\n")
+        stat_fh.close()
+
+    def _create_genome_file_stats(self):
+        stat_fh = open(self.genome_file_stats, "w")
+        for genome_file in self.genome_files:
+            stat_fh.write("%s:\n" % (genome_file))
+            stat_fh.write("* SHA256: %s\n" % (self._sha256_of_file(
+                        self._genome_file_path(genome_file))))
+            stat_fh.write("* Number of lines: %s\n" % (
+                    self._number_of_lines_in_file(
+                        self._genome_file_path(genome_file))))
+            stat_fh.write("* Size: %s\n" % (self._file_size(
+                                    self._genome_file_path(genome_file))))
+            stat_fh.write("\n")
+        stat_fh.close()
 
     ####################        
     # Pathes
-    ####################      
-
+    ####################
         
     def _read_file_path(self, read_file):
         """The full path of a given read file
