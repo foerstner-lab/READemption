@@ -11,23 +11,19 @@ from rapl.fasta import FastaParser
 class Rapl(object):
 
     def __init__(self):
-        """
-        
-        Arguments:
-        - `self`:
-        """
+        """Create an instance."""
         self._set_folder_names()
         self._set_file_names()
-        self._set_bin_pathes()
+        self._set_bin_paths()
         self._set_segemehl_parameters()
         self._set_filtering_parameters()
 
     def start_project(self, args):
-        """Creates a new project
+        """Create a new project.
         
         Arguments:
-        - `self`:
         - `args.project_name`: Name of the project root folder
+
         """
         self._create_root_folder(args.project_name)
         self._create_subfolders(args.project_name)
@@ -39,11 +35,11 @@ class Rapl(object):
                 self.rna_seq_folder, self.genome_folder))
 
     def _create_root_folder(self, project_name):
-        """Create the root folder of a new project
+        """Create the root folder of a new project with the given name.
         
         Arguments:
-        - `self`:
         - `project_name`: Name of the project root folder
+
         """
         if not os.path.exists(project_name):
             os.mkdir(project_name)
@@ -53,11 +49,11 @@ class Rapl(object):
             sys.exit(2)
 
     def _create_subfolders(self, project_name):
-        """Create required subfolders
+        """Create required subfolders in the given folder.
         
         Arguments:
-        - `self`:
         - `project_name`: Name of the project root folder
+
         """
         for folder in [
             self.input_folder, self.output_folder, self.rna_seq_folder,
@@ -75,11 +71,7 @@ class Rapl(object):
                 os.mkdir(folder_in_root_folder)
 
     def _set_folder_names(self):
-        """Set the name of folders used in a project
-        
-        Arguments:
-        - `self`:
-        """
+        """Set the name of folders used in a project."""
         self.input_folder = "input"
         self.output_folder = "output"
         self.rna_seq_folder = "%s/RNA_seqs" % self.input_folder
@@ -109,7 +101,7 @@ class Rapl(object):
         self.read_tracing_folder = "%s/read_tracing" % (self.output_folder)
 
     def _set_file_names(self):
-        """Set name of common files"""
+        """Set name of common files."""
         self.config_file = "rapl.config"
         self.read_file_stats = "%s/read_file_stats.txt" % (
             self.input_file_stats_folder)
@@ -118,28 +110,30 @@ class Rapl(object):
         self.annotation_file_stats = "%s/annotation_file_stats.txt" % (
             self.input_file_stats_folder)
 
-    def _set_bin_pathes(self):
+    def _set_bin_paths(self):
+        """Set file/folder paths for some needed binaries."""
         self.segemehl_bin = "segemehl"
         # DEV
         self.python_bin = "/opt/Python-3.2/python"
         self.bin_folder = "~/rapl_tools"
 
     def _set_segemehl_parameters(self):
+        """Set paremeters for Segemehl."""
         self.segemehl_accuracy = 85
         self.segemehl_hit_strategy = "1"
         self.segemehl_max_e_value = 10
         self.segemehl_number_of_threads = 1
 
     def _set_filtering_parameters(self):
+        """Set parameters for sequence and Segemehl hit filtering."""
         self.min_seq_length = 12
         self.max_a_content = 70.0
         self.min_overlap = 1
         
     def _create_config_file(self, project_name):
-        """Creates a json config file
+        """Create a JSON config file.
         
         Arguments:
-        - `self`:
         - `project_name`: Name of the project root folder
         """
         config_fh = open("%s/%s" % (project_name, self.config_file), "w")
@@ -147,14 +141,14 @@ class Rapl(object):
         config_fh.close()
 
     def map_reads(self, args):
-        """Perform the mapping of the reads
+        """Perform the mapping of the reads.
 
         The mapping is done using the program segemehl and takes place
         in two steps.
 
         Arguments:
-        - `self`:
-        - `args`: 
+        - `args`: command line arguments
+        
         """
         self._in_project_folder()
         self._get_genome_file_names()
@@ -174,6 +168,12 @@ class Rapl(object):
         self.trace_reads_after_mapping()
     
     def create_gr_files(self, args):
+        """Create GR files based on the combined Segemehl mappings.
+
+        Arguments:
+        - `args`: command line arguments
+
+        """
         self._in_project_folder()
         self._get_genome_file_names()
         self._get_read_file_names()
@@ -181,6 +181,12 @@ class Rapl(object):
         self.build_normalized_files()
 
     def search_annotation_overlaps(self, args):
+        """Search for overlaps of reads and annotations.
+
+        Arguments:
+        - `args`: command line arguments
+
+        """
         self._read_config_file()
         self._in_project_folder()
         self._get_genome_file_names()
@@ -190,7 +196,7 @@ class Rapl(object):
         self.build_annotation_hit_overview()
         
     def _in_project_folder(self):
-        """Check if the current directory is a RAPL project folder"""
+        """Check if the current directory is a RAPL project folder."""
         if not (os.path.exists(self.config_file) and 
             os.path.exists(self.input_folder) and 
             os.path.exists(self.output_folder)):
@@ -200,28 +206,28 @@ class Rapl(object):
             sys.exit(2)        
 
     def _get_read_file_names(self):
-        """Read the name of the read files"""
+        """Read the names of the read files."""
         self.read_files = os.listdir(self.rna_seq_folder)
 
     def _get_genome_file_names(self):
-        """Read the names of genome files"""
+        """Read the names of genome files."""
         self.genome_files = os.listdir(self.genome_folder)
         
     def build_segmehl_index(self):
-        """Create the segemehl index based on the genome files"""
+        """Create the segemehl index based on the genome files."""
         call("%s -x %s -d %s" % (
                 self.segemehl_bin, self._segemehl_index_path(),
-                " ".join(self._genome_file_pathes())), 
+                " ".join(self._genome_file_paths())), 
              shell=True)
 
     def _segemehl_index_name(self):
-        """Name of the segemehl index file"""
+        """Return the name of the segemehl index file."""
         index_file_name = "_".join(self.genome_files) + ".idx"
         index_file_name.replace(".fa", "")
         return(index_file_name)
 
     def run_mapping_with_raw_reads(self):
-        """Run the mapping of the raw reads."""
+        """Run the mapping of the raw reads using segemehl"""
         for read_file in self.read_files:
             self._run_segemehl_search(
                 self._read_file_path(read_file),
@@ -230,13 +236,14 @@ class Rapl(object):
 
     def _run_segemehl_search(self, read_file_path, output_file_path, 
                              unmapped_read_file_path):
-        """Call segemehl to do a mapping
+        """Call segemehl to do a mapping.
 
         Arguments:
-        - `self`:
-        - `read_file_path`:
-        - `output_file_path`:
-        - `unmapped_read_file_path`:
+        - `read_file_path`: the file path of the read fasta file
+        - `output_file_path`: the path of the Segemehl output
+        - `unmapped_read_file_path`: the path of the fasta of 
+                                     unmapped reads
+
         """
         call("%s -E %s -H %s -A %s -t %s -i %s -d %s -q %s -o %s" % (
                 self.segemehl_bin,
@@ -245,7 +252,7 @@ class Rapl(object):
                 self.segemehl_accuracy,
                 self.segemehl_number_of_threads,
                 self._segemehl_index_path(),
-                " ".join(self._genome_file_pathes()),
+                " ".join(self._genome_file_paths()),
                 read_file_path,
                 output_file_path),
              shell=True)
@@ -257,14 +264,14 @@ class Rapl(object):
         #         self.segemehl_accuracy,
         #         self.segemehl_number_of_threads,
         #         self._segemehl_index_path(),
-        #         self._genome_file_pathes(),
+        #         self._genome_file_paths(),
         #         read_file_path,
         #         output_file_path,
         #         unmapped_read_file_path),
         #      shell=True)
 
     def extract_unmapped_reads_raw_read_mapping(self):
-        """Extract unmapped reads of first mapping round"""
+        """Extract unmapped reads of first mapping round."""
         for read_file in self.read_files:
             self._extract_unmapped_reads(
                 self._read_file_path(read_file),
@@ -273,56 +280,59 @@ class Rapl(object):
 
     def _extract_unmapped_reads(self, read_file, mapping_file, 
                                 output_read_file):
-        """Extract unmapped read of a semehel mapping run
+        """Extract unmapped reads of a Segemehl mapping run.
 
         Arguments:
-        - `self`:
-        - `read_file`:
-        - `mapping_file,`:
-        - `output_read_file`:
+        - `read_file`: name of the read fasta file
+        - `mapping_file,`: name of the Segemehl mapping file
+        - `output_read_file`: name of the fasta file with the
+                              unmapped reads
+
         """
-        
         call("%s %s/%s -o %s %s %s" % (
                 self.python_bin, self.bin_folder, "extract_unmapped_fastas.py", 
                 output_read_file, read_file, mapping_file), shell=True)
 
     def clip_unmapped_reads(self):
-        """Clip reads unmapped in the first segemehl run"""
+        """Clip reads unmapped in the first segemehl run."""
         for read_file in self.read_files:
             self._clip_reads(self._unmapped_raw_read_file_path(read_file))
 
     def _clip_reads(self, unmapped_raw_read_file_path):
-        """Remove the poly-A tail of read in a file
+        """Remove the poly-A tail of reads in a file.
 
         Arguments:
-        - `self`:
-        - `unmapped_raw_read_file_path`: 
+        - `unmapped_raw_read_file_path`: path of the fasta file that
+                                         contains unmapped reads
+
         """
         call("%s %s/poly_a_clipper.py %s" % (self.python_bin,
                 self.bin_folder, unmapped_raw_read_file_path), shell=True)
 
     def filter_clipped_reads_by_size(self):
-        """Filter clipped readsby size
+        """Filter clipped reads sequence length.
 
-        Too small read (usually the ones smaller than 12 bp) are
-        removed.
+        For each read file two output files are generated. One
+        contains reads with a size equal or higher than the given
+        cut-off. One for the smaller ones.
+
         """
         for read_file in self.read_files:
             self._filter_reads_by_size(self._unmapped_read_clipped_path(read_file))
 
     def _filter_reads_by_size(self, read_file_path):
-        """
+        """Filter reads by sequence length.
+
         Arguments:
-        - `self`:
-        - `read_file_path`: 
+        - `read_file_path`: path of the fasta file that will be split.
+
         """
         call("%s %s/filter_fasta_entries_by_size.py %s %s" % (
                 self.python_bin, self.bin_folder, read_file_path, 
                 self.min_seq_length), shell=True)
 
     def run_mapping_with_clipped_reads(self):
-        """
-        """
+        """Run the mapping with clipped and size filtered reads."""
         for read_file in self.read_files:
             self._run_segemehl_search(
                 self._unmapped_clipped_size_filtered_read_path(read_file), 
@@ -330,8 +340,7 @@ class Rapl(object):
                 self._unmapped_reads_of_clipped_reads_file_path(read_file))
 
     def extract_unmapped_reads_of_second_mapping(self):
-        """
-        """
+        """Extract reads that are not mapped in the second run."""
         for read_file in self.read_files:
             self._extract_unmapped_reads(
                 self._unmapped_clipped_size_filtered_read_path(read_file),
@@ -344,11 +353,12 @@ class Rapl(object):
             self._combine_mappings(read_file)
 
     def _combine_mappings(self, read_file):
-        """Combine the results of both segemehl mappings
+        """Combine the results of both segemehl mappings.
 
         Arguments:
-        - `self`:
-        - `read_file`:
+        - `read_file`: the name of the read file that was used to generate
+                       the Segemehl mappings.
+
         """
         comined_mappings_fh = open(self._combined_mapping_file_path(read_file), "w")
         comined_mappings_fh.write(open(self._raw_read_mapping_output_path(read_file)).read())
@@ -356,25 +366,50 @@ class Rapl(object):
         comined_mappings_fh.close()
 
     def filter_combined_mappings_by_a_content(self):
-        """  """
+        """Filter Segemehl mapping file entries by amount of A content.
+
+        This removes sequences that exceed a certain amount of A that
+        might be introduced during the sample preparion process.
+
+        """
         for read_file in self.read_files:
             self._filter_combined_mappings_by_a_content(read_file)
     
-    def _filter_combined_mappings_by_a_content(self, read_file):
-        """ """
+    def _filter_combined_mappings_by_a_content(self, mapping_file):
+        """Filter Segemehl mapping file entries by A-content.
+
+        Two files are produced. One that contains reads that have an
+        A-content higher than the cut-off value, one that contains the
+        reads that have A-content equal or lower than the cut-off
+        value.
+
+        Arguments:
+        - `mapping_file`: the input mapping file 
+
+        """
         call("%s %s/filter_segemehl_by_nucleotide_percentage.py %s A %s " % (
-            self.python_bin, self.bin_folder, self._combined_mapping_file_path(read_file),
-            self.max_a_content), shell=True)
+            self.python_bin, self.bin_folder, 
+            self._combined_mapping_file_path(mapping_file), self.max_a_content), 
+             shell=True)
 
     def split_mappings_by_genome_files(self):
-        """Split the segemehl result entries by genome file"""
+        """Split the Segemehl result entries by genome file."""
         headers_of_genome_files = self._headers_of_genome_files()
         for read_file in self.read_files:
             self._split_mapping_by_genome_files(
                 read_file, headers_of_genome_files)
 
     def _split_mapping_by_genome_files(self, read_file, headers_of_genome_files):
-        """ """
+        """Split the Segemehl results by the target genome files.
+
+        Arguments:
+        - `read_file,`: the read file that was used to generate the combined
+                        Segemehl mapping file
+        - `headers_of_genome_files`: A dictionary that contains the headers
+                                     of the genome files as keys and the
+                                     name of their files as values.
+
+        """
         segemehl_parser = SegemehlParser()
         segemehl_builder = SegemehlBuilder()
         file_handles = {}
@@ -403,7 +438,11 @@ class Rapl(object):
         return(headers)
 
     def trace_reads_after_mapping(self):
-        """Trace the way of each read during the stepds"""
+        """Trace the way of each read during the different steps.
+
+        A file is generated that can be used for downstream
+        statistics.
+        """
         for read_file in self.read_files:
             self.read_ids = []
             self.read_ids_and_traces = {}
@@ -420,7 +459,13 @@ class Rapl(object):
             self._write_trace_file(read_file)
 
     def _write_trace_file(self, read_file):
-        """Write the trace of each read to a file."""
+        """Write the trace of each read to a file.
+
+        Arguments:
+        - `read_file,`: the read file that was used to generate the
+                        mapping files.
+
+        """
         trace_fh = open(self._trace_file_path(read_file), "w")
         trace_fh.write("#Read id\tRead length\tNumber of mappings first run\t"
                        "length after clipping\tPassed size filter\t"
@@ -442,11 +487,14 @@ class Rapl(object):
             trace_fh.write(result_line)
 
     def _get_read_ids_and_lengths(self, read_file):
-        """
+        """Get the ids and length of read sequences.
+
+        Here all the initial reads are indexed and the length
+        saved. The created dictionary is filled further in following
+        steps.
 
         Arguments:
-        - `self`:
-        - `read_file`:
+        - `read_file`: name of the read file
         """
         fasta_parser = FastaParser()
         for header, seq in fasta_parser.parse_fasta_file(
@@ -455,11 +503,12 @@ class Rapl(object):
             self.read_ids_and_traces[header] = {'length' : len(seq)}
 
     def _read_first_mapping_output(self, read_file):
-        """
-
+        """Read the result of the first Segemehl mapping.
+        
         Arguments:
-        - `self`:
-        - `read_file`:
+        - `read_file`: name of the read file that is used to generate
+                       the mapping file.
+
         """
         segemehl_parser = SegemehlParser()
         for entry in segemehl_parser.entries(
@@ -470,11 +519,12 @@ class Rapl(object):
             self.read_ids_and_traces[entry_id]["no_of_mappings_first_run"] += 1
 
     def _read_first_mapping_unmapped_reads(self, read_file):
-        """
+        """Read the file of unmapped reads of the first run.
 
         Arguments:
-        - `self`:
-        - `read_file`:
+        - `read_file`: name of the read file that is used to generate
+                       the mapping file.
+
         """
         fasta_parser = FastaParser()
         for header, seq in fasta_parser.parse_fasta_file(
@@ -482,11 +532,14 @@ class Rapl(object):
                 self.read_ids_and_traces[header]["no_of_mappings_first_run"] = 0
 
     def _read_clipped_unmapped_reads(self, read_file):
-        """
+        """Read the file of clipped unmapped reads.
+
+        Stores the length of the reads.
 
         Arguments:
-        - `self`:
-        - `read_file`:
+        - `read_file`: name of the read file that is used to generate
+                       the mapping file.
+
         """
         fasta_parser = FastaParser()
         for header, seq in fasta_parser.parse_fasta_file(
@@ -495,11 +548,11 @@ class Rapl(object):
                 "length_after_clipping"] = len(seq)
 
     def _read_size_filtered_reads_passed(self, read_file):
-        """
+        """Read the file of reads that passed the size filter.
 
         Arguments:
-        - `self`:
-        - `read_file`:
+        - `read_file`: the name of the orignal read file
+
         """
         fasta_parser = FastaParser()
         for header, seq in fasta_parser.parse_fasta_file(
@@ -509,11 +562,11 @@ class Rapl(object):
                 "passed_size_filtering"] = True
 
     def _read_size_filtered_reads_failed(self, read_file):
-        """
+        """Read the file of reads that did not pass the size filter.
 
         Arguments:
-        - `self`:
-        - `read_file`:
+        - `read_file`: the name of the orignal read file
+
         """
         fasta_parser = FastaParser()
         for header, seq in fasta_parser.parse_fasta_file(
@@ -523,11 +576,11 @@ class Rapl(object):
                 "passed_size_filtering"] = False
 
     def _read_second_mapping_output(self, read_file):
-        """
+        """Read the file of the second Segemehl mapping.
 
         Arguments:
-        - `self`:
-        - `read_file`:
+        - `read_file`: name of the read file that is used to generate
+                       the mapping file.
         """
         segemehl_parser = SegemehlParser()
         for entry in segemehl_parser.entries(
@@ -538,11 +591,11 @@ class Rapl(object):
             self.read_ids_and_traces[entry_id]["no_of_mappings_second_run"] += 1
 
     def _read_second_mapping_unmapped_reads(self, read_file):
-        """
+        """Read the fasta file unmappable read of the second run.
 
         Arguments:
-        - `self`:
-        - `read_file`:
+        - `read_file`: name of the read file that is used to generate
+                       the first mapping file.
         """
         fasta_parser = FastaParser()
         for header, seq in fasta_parser.parse_fasta_file(
@@ -551,11 +604,11 @@ class Rapl(object):
             self.read_ids_and_traces[header]["no_of_mappings_second_run"] = 0
 
     def _read_combined_mapping_a_filtered_passed(self, read_file):
-        """
+        """Read file of mappings passing the A-contend filtering.
 
         Arguments:
-        - `self`:
-        - `read_file`:
+        - `read_file`: name of the read file that is used to generate
+                       the first mapping file.
         """
         segemehl_parser = SegemehlParser()
         for entry in segemehl_parser.entries(
@@ -565,11 +618,11 @@ class Rapl(object):
                 "passed_a-content_filtering"] = True
     
     def _read_combined_mapping_a_filtered_failed(self, read_file):
-        """
+        """Read file of mapping not passing the A-contend filtering.
 
         Arguments:
-        - `self`:
-        - `read_file`:
+        - `read_file`: name of the read file that is used to generate
+                       the first mapping file.
         """
         segemehl_parser = SegemehlParser()
         for entry in segemehl_parser.entries(
@@ -579,20 +632,18 @@ class Rapl(object):
                 "passed_a-content_filtering"] = False
 
     def build_gr_files(self):
-        """
-
-        """
+        """Generate GR files for all read/genome file combinations."""
         for read_file in self.read_files:
             for genome_file in self.genome_files:
                 self._build_gr_file(read_file, genome_file)
 
     def _build_gr_file(self, read_file, genome_file):
-        """
+        """Generate GR files
 
         Arguments:
-        - `self`:
-        - `read_file`:
-        - `genome_file`:
+        - `read_file`: name of the read file that is used to generate
+                       the first mapping file.
+        - `genome_file`: name of the target genome file.
         """
         call("%s %s/segemehl2gr.py -o %s %s" % (
                 self.python_bin, self.bin_folder,
@@ -602,8 +653,7 @@ class Rapl(object):
              shell=True)
 
     def build_normalized_files(self):
-        """
-        """
+        """Generate normalized GR files for all read/genome files"""
         for genome_file in self.genome_files:
             lowest_number_of_mappings = self._lowest_number_of_mappings(
                 genome_file)
@@ -613,13 +663,15 @@ class Rapl(object):
             
     def _build_normalized_gr_file(self, read_file, genome_file, 
                                   lowest_number_of_mappings):
-        """
+        """Generate normalized GR files
 
         Arguments:
-        - `self`:
-        - `read_file`:
-        - `genome_file,`:
-        - `lowest_number_of_mappings`:
+        - `read_file`: orignal read file used to generate the mappings.
+        - `genome_file,`: target genome file
+        - `lowest_number_of_mappings`: the lowester number of mappings
+                                       found for all read libs for a
+                                       the genome file.
+
         """
         call("%s %s/segemehl2gr.py -n -m %s -o %s %s" % (
                 self.python_bin, self.bin_folder, lowest_number_of_mappings,
@@ -628,11 +680,11 @@ class Rapl(object):
                     read_file, genome_file)), shell=True)
 
     def _lowest_number_of_mappings(self, genome_file):
-        """
+        """Return the lowest number of mappings found.
 
         Arguments:
-        - `self`:
-        - `genome_file`:
+        - `genome_file`: target genome file
+
         """
         lowest_number_of_mappings = min(
             [self._count_mapped_reads(read_file, genome_file) 
@@ -643,11 +695,12 @@ class Rapl(object):
         return(lowest_number_of_mappings)
 
     def _count_mapped_reads(self, read_file, genome_file):
-        """
+        """Count number of successfully mapped reads.
 
         Arguments:
-        - `self`:
-        - `genome_file`:
+        - `read_file`: orignal read file used to generate the mappings.
+        - `genome_file`: targe genome file
+
         """
         segemehl_parser = SegemehlParser()
         seen_ids = {}
@@ -658,13 +711,19 @@ class Rapl(object):
         return(len(seen_ids))
 
     def find_annotation_hits(self):
-        """ """
+        """Search for overlaps of reads and annotations."""
         for read_file in self.read_files:
             for annotation_file in self.annotation_files.keys():
                 self._find_annotation_hits(read_file, annotation_file)
 
     def _find_annotation_hits(self, read_file, annotation_file):
-        """ """
+        """Search for overlaps of reads and annotations.
+
+        Arguments:
+        - `read_file`: orignal read file used to generate the mappings.
+        - `annotation_file`: an (NCBI) annotation file
+
+        """
         genome_file = self.annotation_files[annotation_file]
         call("%s %s/segemehl_hit_annotation_mapping.py -m %s -o %s %s %s" % (
                 self.python_bin, self.bin_folder,
@@ -675,7 +734,13 @@ class Rapl(object):
                 self._annotation_file_path(annotation_file)), shell=True)
 
     def _get_annotation_files_from_config(self):
-        """ """
+        """Get the annations files from the config files.
+
+        It extracts a dictionary that contains the names of the
+        annotation files as keys and the names of the corresponding
+        genome files as values.
+
+        """
         self.annotation_files = self.config["annotation_and_genomes_files"]
 
     def _read_config_file(self):
@@ -683,12 +748,17 @@ class Rapl(object):
         self.config = json.loads(open(self.config_file).read())
 
     def build_annotation_hit_overview(self):
-        """ """
+        """Create annotation hit overview tables."""
         for annotation_file in self.annotation_files.keys():
             self._build_annotation_hit_overview(annotation_file)
 
     def _build_annotation_hit_overview(self, annotation_file):
-        """ """
+        """Create annotation hit overview table. 
+
+        Arguments:
+        - `annotation_file`: an (NCBI) annotation file
+
+        """
         genome_file = self.annotation_files[annotation_file]
         mapped_reads_counting_string = ":".join(
             [str(self._count_mapped_reads(read_file, genome_file)) 
@@ -706,18 +776,39 @@ class Rapl(object):
              shell=True)
 
     def _sha256_of_file(self, file_path):
-        """Calculate the SHA256 hash sum of a given file"""
+        """Calculate the SHA256 hash sum of a given file
+
+        Arguments:
+        - `file_path`: path of the file to process
+
+        """
         return(hashlib.sha256(open(file_path).read().encode()).hexdigest())
 
     def _file_size(self, file_path):
-        """Return the size of a given file"""
+        """Return the size of a given file.
+
+        Arguments:
+        - `file_path`: path of the file to process
+
+        """
         return(os.path.getsize(file_path))
 
     def _number_of_lines_in_file(self, file_path):
-        """Return the number of lines of a given file"""
+        """Return the number of lines of a given file.
+
+        Arguments:
+        - `file_path`: path of the file to process
+
+        """
         return(len(open(file_path).readlines()))
 
     def _number_of_fasta_entries(self, file_path):
+        """Return the number of fasta entries.
+
+        Arguments:
+        - `file_path`: path of the file to process
+        
+        """
         fasta_parser = FastaParser()
         counter = 0
         for head, seq in fasta_parser.parse_fasta_file(file_path):
@@ -725,6 +816,7 @@ class Rapl(object):
         return(counter)
 
     def _create_read_file_stats(self):
+        """Create a stat file for the input read files."""
         stat_fh = open(self.read_file_stats, "w")
         for read_file in self.read_files:
             stat_fh.write("%s:\n" % (read_file))
@@ -742,6 +834,7 @@ class Rapl(object):
         stat_fh.close()
 
     def _create_genome_file_stats(self):
+        """Create a stat file for the input genome files."""
         stat_fh = open(self.genome_file_stats, "w")
         for genome_file in self.genome_files:
             stat_fh.write("%s:\n" % (genome_file))
@@ -755,178 +848,11 @@ class Rapl(object):
             stat_fh.write("\n")
         stat_fh.close()
 
-    ####################        
-    # Pathes
-    ####################
-        
-    def _read_file_path(self, read_file):
-        """The full path of a given read file
-
-        Arguments:
-        - `self`:
-        - `read_file`:
-        """
-        return("%s/%s" % (self.rna_seq_folder, read_file))
-
-    def _unmapped_raw_read_file_path(self, read_file):
-        """ """
-        return("%s/%s.unmapped.fa" % (
-                self.umapped_reads_of_first_mapping_folder, read_file))
-
-    def _segemehl_index_path(self):
-        """Full path the the in segemehl index file"""
-        return("%s/%s"  % (
-                self.read_mapping_index_folder, self._segemehl_index_name()))
-
-    def _genome_file_path(self, genome_file):
-        """Full path of a given genome file
-
-        Arguments:
-        - `self`:
-        - `genome_file`: genome file name
-        """
-        return("%s/%s" % (self.genome_folder, genome_file))
-
-    def _genome_file_pathes(self):
-        """Full pathes of all genome files"""
-        return([self._genome_file_path(genome_file) 
-                for genome_file in self.genome_files])
-
-    def _raw_read_mapping_output_path(self, read_file):
-        """Full path of the output file of a segemehl run
-
-        Arguments:
-        - `self`:
-        - `read_file`: read file name that is mapped
-        """
-        return("%s/%s_mapped_to_%s" % (
-                self.read_mapping_folder, read_file, self._segemehl_index_name()))
-
-    def _unmapped_read_clipped_path(self, read_file):
-        """Full path of a file with clipped reads
-
-        Arguments:
-        - `self`:
-        - `read_file`: 
-        """
-        return("%s/%s.unmapped.fa.clipped.fa" % (
-                self.umapped_reads_of_first_mapping_folder, read_file))
-
-
-    def _unmapped_clipped_size_filtered_read_path(self, read_file):
-        """Full path of a file with clipped reads after size filtering
-
-        Arguments:
-        - `self`:
-        - `read_file`: 
-
-        """
-        return("%s/%s.unmapped.fa.clipped.fa.size_filtered_gtoe_%sbp.fa" % (
-                self.umapped_reads_of_first_mapping_folder,
-                read_file, self.min_seq_length))
-
-    def _clipped_reads_mapping_output_path(self, read_file):
-        """Segmehl output file path of mapping clipped size filtered reads
-
-        Arguments:
-        - `self`:
-        - `read_file`: 
-        """
-        return("%s/%s.clipped_mapped_to_%s" % (
-                self.read_mapping_after_clipping_folder,
-                read_file, self._segemehl_index_name()))
-
-    def _unmapped_reads_of_clipped_reads_file_path(self, read_file):
-        """Full file path of the unmapped reads of the second run
-
-        Arguments:
-        - `self`:
-        - `read_file`: 
-        """
-        return("%s/%s.unmapped.fa"  % (self.umapped_reads_of_first_mapping_folder, 
-                           read_file))
-
-    def _unmapped_reads_second_mapping_path(self, read_file):
-        """
-
-        Arguments:
-        - `self`:
-        - `read_file`: 
-        """
-        return("%s/%s.unmapped.fa" % (
-                self.umapped_reads_of_second_mapping_folder, read_file))
-
-    def _combined_mapping_file_path(self, read_file):
-        """
-
-        Arguments:
-        - `self`:
-        - `read_file`: 
-        """
-        return("%s/%s_mapped_to_%s.combined" % (
-                self.combined_mapping_folder, read_file,
-                self._segemehl_index_name()))
-
-    def _combined_mapping_file_a_filtered_split_path(self, read_file, genome_file):
-        """
-
-        Arguments:
-        - `self`:
-        - `read_file`: 
-        """
-        return("%s/%s_mapped_to_%s.combined.filtered_ltoe_%s%%_A.txt.from_%s_only" % (
-                self.combined_mapping_split_folder, read_file, 
-                self._segemehl_index_name(), self.max_a_content, genome_file))
-
-    def _combined_mapping_file_a_filtered_path(self, read_file):
-        """
-
-        Arguments:
-        - `self`:
-        - `read_file`: 
-        """
-        return("%s.filtered_ltoe_%s%%_A.txt" % (
-                self._combined_mapping_file_path(read_file),
-                self.max_a_content))
-
-    def _unmapped_clipped_size_failed_read_path(self, read_file):
-        """
-
-        Arguments:
-        - `self`:
-        - `read_file`: 
-        """
-        return("%s/%s.unmapped.fa.clipped.fa.size_filtered_lt_%sbp.fa" % (
-                self.umapped_reads_of_first_mapping_folder,
-                read_file, self.min_seq_length))
-
-    def _combined_mapping_file_a_filter_failed_path(self, read_file):
-        """
-
-        Arguments:
-        - `self`:
-        - `read_file`: 
-        """
-        return("%s.filtered_gt_%s%%_A.txt" % (
-                self._combined_mapping_file_path(read_file),
-                self.max_a_content))
-
-    def _trace_file_path(self, read_file):
-        """
-
-        Arguments:
-        - `self`:
-        - `read_file`: 
-        """
-        return("%s/%s.mapping_tracing.csv" % (
-                self.read_tracing_folder, read_file))
-
     def _final_mapping_status(self, trace):
-        """
+        """Return the final mapping status of a read.
 
         Arguments:
-        - `self`:
-        - `trace`: 
+        - `trace`: the trace of the a read.
         """
         if (trace["passed_a-content_filtering"] and 
             not trace["passed_a-content_filtering"] == "-"):
@@ -947,42 +873,194 @@ class Rapl(object):
         else:
             return("lost_somewhere")
 
-    def _gr_file_path(self, read_file, genome_file):
-        """
+    ####################        
+    # Paths
+    ####################
+        
+    def _read_file_path(self, read_file):
+        """Return the full path of a given read file.
 
         Arguments:
-        - `self`:
-        - `read_file,`:
-        - `genome_file`: 
+        - `read_file`: name of the read file
+        """
+        return("%s/%s" % (self.rna_seq_folder, read_file))
+
+    def _unmapped_raw_read_file_path(self, read_file):
+        """Return the full path of unmapped reads of the first run.
+
+        Arguments:
+        - `read_file`: name of the read file
+        """
+        return("%s/%s.unmapped.fa" % (
+                self.umapped_reads_of_first_mapping_folder, read_file))
+
+    def _segemehl_index_path(self):
+        """Return the full path the the in segemehl index file."""
+        return("%s/%s"  % (
+                self.read_mapping_index_folder, self._segemehl_index_name()))
+
+    def _genome_file_path(self, genome_file):
+        """Return the ull path of a given genome file
+
+        Arguments:
+        - `genome_file`: genome file name
+        """
+        return("%s/%s" % (self.genome_folder, genome_file))
+
+    def _genome_file_paths(self):
+        """Return the full paths of all genome files"""
+        return([self._genome_file_path(genome_file) 
+                for genome_file in self.genome_files])
+
+    def _raw_read_mapping_output_path(self, read_file):
+        """Return the full path of the output file of a segemehl run
+
+        Arguments:
+        - `read_file`: read file name that is mapped
+        """
+        return("%s/%s_mapped_to_%s" % (
+                self.read_mapping_folder, read_file, self._segemehl_index_name()))
+
+    def _unmapped_read_clipped_path(self, read_file):
+        """Return the full path of a file with clipped reads
+
+        Arguments:
+        - `read_file`: name of the read file
+        """
+        return("%s/%s.unmapped.fa.clipped.fa" % (
+                self.umapped_reads_of_first_mapping_folder, read_file))
+
+
+    def _unmapped_clipped_size_filtered_read_path(self, read_file):
+        """Return the full path of clipped and size filtered reads.
+
+        Arguments:
+        - `read_file`: name of the read file
+
+        """
+        return("%s/%s.unmapped.fa.clipped.fa.size_filtered_gtoe_%sbp.fa" % (
+                self.umapped_reads_of_first_mapping_folder,
+                read_file, self.min_seq_length))
+
+    def _clipped_reads_mapping_output_path(self, read_file):
+        """Return the path of the mapping file of the second run.
+
+        Arguments:
+        - `read_file`: name of the read file
+        """
+        return("%s/%s.clipped_mapped_to_%s" % (
+                self.read_mapping_after_clipping_folder,
+                read_file, self._segemehl_index_name()))
+
+    def _unmapped_reads_of_clipped_reads_file_path(self, read_file):
+        """Return the full path of the unmapped reads of the 2nd run.
+
+        Arguments:
+        - `read_file`: name of the read file
+        """
+        return("%s/%s.unmapped.fa"  % (self.umapped_reads_of_first_mapping_folder, 
+                           read_file))
+
+    def _unmapped_reads_second_mapping_path(self, read_file):
+        """Return the path of unmapped reads of the second run.
+
+        Arguments:
+        - `read_file`: name of the read file
+        """
+        return("%s/%s.unmapped.fa" % (
+                self.umapped_reads_of_second_mapping_folder, read_file))
+
+    def _combined_mapping_file_path(self, read_file):
+        """Return the path of the combined mappings.
+
+        Arguments:
+        - `read_file`: name of the read file
+        """
+        return("%s/%s_mapped_to_%s.combined" % (
+                self.combined_mapping_folder, read_file,
+                self._segemehl_index_name()))
+
+    def _combined_mapping_file_a_filtered_split_path(self, read_file, genome_file):
+        """Return the path of the split filtered combined mappings.
+        
+        Arguments:
+        - `read_file`: name of the read file
+        """
+        return("%s/%s_mapped_to_%s.combined.filtered_ltoe_%s%%_A.txt.from_%s_only" % (
+                self.combined_mapping_split_folder, read_file, 
+                self._segemehl_index_name(), self.max_a_content, genome_file))
+
+    def _combined_mapping_file_a_filtered_path(self, read_file):
+        """Return the path of the filtered combined mappings.
+
+        Arguments:
+        - `read_file`: name of the read file
+        """
+        return("%s.filtered_ltoe_%s%%_A.txt" % (
+                self._combined_mapping_file_path(read_file),
+                self.max_a_content))
+
+    def _unmapped_clipped_size_failed_read_path(self, read_file):
+        """Return the path of size filter failed clipped reads.
+
+        Arguments:
+        - `read_file`: name of the read file
+        """
+        return("%s/%s.unmapped.fa.clipped.fa.size_filtered_lt_%sbp.fa" % (
+                self.umapped_reads_of_first_mapping_folder,
+                read_file, self.min_seq_length))
+
+    def _combined_mapping_file_a_filter_failed_path(self, read_file):
+        """Return the path of the A-content filter failed reads.
+
+        Arguments:
+        - `read_file`: name of the read file
+        """
+        return("%s.filtered_gt_%s%%_A.txt" % (
+                self._combined_mapping_file_path(read_file),
+                self.max_a_content))
+
+    def _trace_file_path(self, read_file):
+        """Return the path of the trace file of a read file.
+
+        Arguments:
+        - `read_file`: name of the read file
+        """
+        return("%s/%s.mapping_tracing.csv" % (
+                self.read_tracing_folder, read_file))
+
+    def _gr_file_path(self, read_file, genome_file):
+        """Return the GR file path of a given read and genome files
+
+        Arguments:
+        - `read_file,`: name of the read file
+        - `genome_file`: name of the genome file
         """
         return("%s/%s_in_%s.gr" % (self.gr_folder, read_file, genome_file))
 
     def _annotation_hit_file_path(self, read_file, annotation_file):
-        """
+        """Return the path of the annoation hit file.
 
         Arguments:
-        - `self`:
-        - `read_file,`:
-        - `annotation_file`: 
+        - `read_file,`: name of the read file
+        - `annotation_file`: name of the (NCBI) annotation file
         """
         return("%s/%s_in_%s_annotation_hits" % (
                 self.annotation_hit_folder, read_file, annotation_file))
 
     def _annotation_file_path(self, annotation_file):
-        """
+        """Return the path of a given annotation files.
 
         Arguments:
-        - `self`:
-        - `annotation_file`: 
+        - `annotation_file`: name of the (NCBI) annotation file
         """
         return("%s/%s" % (self.annotation_folder , annotation_file))
 
     def _annotation_hit_overview_file_path(self, annotation_file):
-        """ 
+        """Return the path of the annotation overview file.
 
         Arguments:
-        - `self`:
-        - `annotation_file`: 
+        - `annotation_file`: name of the (NCBI) annotation file
         """
         return("%s/%s_all_annotation_hits.csv" % (
                 self.annotation_hit_overview_folder, annotation_file))
