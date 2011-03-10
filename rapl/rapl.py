@@ -7,6 +7,7 @@ from subprocess import call
 from rapl.segemehl import SegemehlParser
 from rapl.segemehl import SegemehlBuilder
 from rapl.fasta import FastaParser
+from rapl.raplreporter import RaplReporter
 
 class Rapl(object):
 
@@ -65,7 +66,7 @@ class Rapl(object):
             self.combined_mapping_folder, self.combined_mapping_split_folder,
             self.annotation_hit_folder, self.annotation_hit_overview_folder,
             self.mapping_stat_folder, self.read_tracing_folder, 
-            self.input_file_stats_folder]:
+            self.input_file_stats_folder, self.report_folder]:
             folder_in_root_folder = "%s/%s" % (project_name, folder)
             if not os.path.exists(folder_in_root_folder):
                 os.mkdir(folder_in_root_folder)
@@ -99,6 +100,7 @@ class Rapl(object):
         self.mapping_stat_folder = "%s/read_mapping_stats" % (
             self.output_folder)
         self.read_tracing_folder = "%s/read_tracing" % (self.output_folder)
+        self.report_folder = "%s/report" % (self.output_folder)
 
     def _set_file_names(self):
         """Set name of common files."""
@@ -109,6 +111,8 @@ class Rapl(object):
             self.input_file_stats_folder)
         self.annotation_file_stats = "%s/annotation_file_stats.txt" % (
             self.input_file_stats_folder)
+        self.report_tex_file = "%s/report.tex" % (
+            self.report_folder)
 
     def _set_bin_paths(self):
         """Set file/folder paths for some needed binaries."""
@@ -194,6 +198,23 @@ class Rapl(object):
         self._get_annotation_files_from_config()
         self.find_annotation_hits()
         self.build_annotation_hit_overview()
+
+    def generate_report(self, args):
+        """Create final report of the analysis.
+
+        Arguments:
+        - `args`: command line arguments
+
+        """
+        self._read_config_file()
+        self._in_project_folder()
+        self._get_genome_file_names()
+        self._get_read_file_names()
+        self._get_annotation_files_from_config()
+        rapl_reporter = RaplReporter(self)
+        report_fh = open(self.report_tex_file, "w")
+        report_fh.write(rapl_reporter.report())
+        report_fh.close()
         
     def _in_project_folder(self):
         """Check if the current directory is a RAPL project folder."""

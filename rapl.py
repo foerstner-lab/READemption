@@ -38,6 +38,13 @@ def main():
         '--force', '-f', default=False, action='store_true', 
         help='Overwrite existing files.')
     annotation_overlap_parser.set_defaults(func=search_annoation_overlaps)
+
+    generate_report_parser = subparsers.add_parser(
+        'report', help='Generate a report')
+    generate_report_parser.add_argument(
+        '--force', '-f', default=False, action='store_true', 
+        help='Overwrite existing files.')
+    generate_report_parser.set_defaults(func=generate_report)
     
     args = parser.parse_args()
     rapl = Rapl()
@@ -54,5 +61,8 @@ def create_gr_files(args, rapl):
 
 def search_annoation_overlaps(args, rapl):
     rapl.search_annotation_overlaps(args)
+
+def generate_report(args, rapl):
+    rapl.generate_report(args)
 
 main()
