@@ -58,15 +58,15 @@ class Rapl(object):
         """
         for folder in [
             self.input_folder, self.output_folder, self.rna_seq_folder,
-            self.annotation_folder, self.read_mapping_folder,
-            self.read_mapping_after_clipping_folder, self.gr_folder,
+            self.annotation_folder, self.read_mappings_first_run_folder,
+            self.read_mappings_second_run_folder, self.gr_folder,
             self.read_mapping_index_folder, self.genome_folder,
             self.umapped_reads_of_first_mapping_folder,
             self.umapped_reads_of_second_mapping_folder,
-            self.combined_mapping_folder, self.combined_mapping_split_folder,
+            self.combined_mappings_folder, self.combined_mapping_split_folder,
             self.annotation_hit_folder, self.annotation_hit_overview_folder,
-            self.mapping_stat_folder, self.read_tracing_folder, 
-            self.input_file_stats_folder, self.report_folder]:
+            self.read_tracing_folder, self.input_file_stats_folder, 
+            self.report_folder]:
             folder_in_root_folder = "%s/%s" % (project_name, folder)
             if not os.path.exists(folder_in_root_folder):
                 os.mkdir(folder_in_root_folder)
@@ -79,9 +79,10 @@ class Rapl(object):
         self.genome_folder = "%s/genomes" % self.input_folder
         self.input_file_stats_folder = "%s/input_file_stats" % self.output_folder
         self.annotation_folder = "%s/annotation_files" % self.input_folder
-        self.read_mapping_folder = "%s/read_mappings" % self.output_folder
-        self.read_mapping_after_clipping_folder = (
-            "%s/mappings_of_unmapped_clipped_reads" % self.output_folder)
+        self.read_mappings_first_run_folder = "%s/read_mappings_first_run" % (
+            self.output_folder)
+        self.read_mappings_second_run_folder = (
+            "%s/read_mappings_first_run" % self.output_folder)
         self.gr_folder = "%s/gr_files" % self.output_folder
         self.read_mapping_index_folder = "%s/read_mapping_index" % (
             self.output_folder)
@@ -89,18 +90,20 @@ class Rapl(object):
             "%s/unmapped_reads_of_first_mapping" % self.output_folder)
         self.umapped_reads_of_second_mapping_folder = (
             "%s/unmapped_reads_of_second_mapping" % self.output_folder)
-        self.combined_mapping_folder = "%s/combined_read_mappings" % (
+        self.combined_mappings_folder = "%s/read_mappings_combined" % (
             self.output_folder)
         self.combined_mapping_split_folder = (
-            "%s/combined_read_mappings_split_by_genome_files" % 
+            "%s/read_mappings_combined_split_by_genome_files" % 
             self.output_folder)
         self.annotation_hit_folder = "%s/annotation_hits" % self.output_folder
         self.annotation_hit_overview_folder = (
             "%s/annotation_hit_overviews" % self.output_folder)
-        self.mapping_stat_folder = "%s/read_mapping_stats" % (
-            self.output_folder)
         self.read_tracing_folder = "%s/read_tracing" % (self.output_folder)
-        self.report_folder = "%s/report" % (self.output_folder)
+        self.report_folder = "%s/reports_and_stats" % (self.output_folder)
+        # Currently not needed
+        #self.mapping_stat_folder = "%s/read_mapping_stats" % (
+        #    self.output_folder)
+
 
     def _set_file_names(self):
         """Set name of common files."""
@@ -111,8 +114,8 @@ class Rapl(object):
             self.input_file_stats_folder)
         self.annotation_file_stats = "%s/annotation_file_stats.txt" % (
             self.input_file_stats_folder)
-        self.tracing_summary_file = "%s/tracing_summary.csv" % (
-            self.read_tracing_folder)
+        self.tracing_summary_file = "%s/read_tracing_summary.csv" % (
+            self.report_folder)
         self.report_tex_file = "%s/report.tex" % (
             self.report_folder)
 
@@ -991,7 +994,7 @@ class Rapl(object):
         - `read_file`: read file name that is mapped
         """
         return("%s/%s_mapped_to_%s" % (
-                self.read_mapping_folder, read_file, self._segemehl_index_name()))
+                self.read_mappings_first_run_folder, read_file, self._segemehl_index_name()))
 
     def _unmapped_read_clipped_path(self, read_file):
         """Return the full path of a file with clipped reads
@@ -1021,7 +1024,7 @@ class Rapl(object):
         - `read_file`: name of the read file
         """
         return("%s/%s.clipped_mapped_to_%s" % (
-                self.read_mapping_after_clipping_folder,
+                self.read_mappings_second_run_folder,
                 read_file, self._segemehl_index_name()))
 
     def _unmapped_reads_of_clipped_reads_file_path(self, read_file):
@@ -1049,7 +1052,7 @@ class Rapl(object):
         - `read_file`: name of the read file
         """
         return("%s/%s_mapped_to_%s.combined" % (
-                self.combined_mapping_folder, read_file,
+                self.combined_mappings_folder, read_file,
                 self._segemehl_index_name()))
 
     def _combined_mapping_file_a_filtered_split_path(self, read_file, genome_file):
