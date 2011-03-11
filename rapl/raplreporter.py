@@ -57,7 +57,7 @@ class RaplReporter(object):
             else:
                 table_data.append(row.split("\t"))
             row_counter += 1
-        table_string = "\\begin{tabular}{%s}\n" % ("c" * len(table_header))
+        table_string = "\\begin{tabular}{l%s}\n" % ("r" * (len(table_header)-1))
         table_string += "%s\\\\\n" % (" & ".join(
                 ["\\rotatebox{90}{%s}" % head_item.replace("_", " ")
                  for head_item in table_header]))
