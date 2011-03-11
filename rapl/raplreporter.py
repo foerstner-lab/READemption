@@ -1,3 +1,4 @@
+import csv
 from string import Template
 from datetime import datetime
 class RaplReporter(object):
@@ -16,15 +17,56 @@ class RaplReporter(object):
         """
         template = Template(self._template_text())
         return(template.substitute(
-              date = datetime.today().strftime("%d.%m.%Y"),
-              read_lib_listing = self._read_lib_listing(),
-              genome_file_listing = self._genome_file_listing(),
-              min_seq_length = self.rapl_instance.min_seq_length,
-              max_a_content = self.rapl_instance.max_a_content,
-              read_mapping_folder = self._latex_safe(
-                    self.rapl_instance.read_mapping_folder),
-              unmapped_read_first_run_folder = self._latex_safe(
-                self.rapl_instance.umapped_reads_of_first_mapping_folder)))
+                date = datetime.today().strftime("%d.%m.%Y"),
+                input_folder = self._latex_safe(
+                    self.rapl_instance.input_folder),
+                RNA_lib_folder = self._latex_safe(
+                    self.rapl_instance.rna_seq_folder),
+                genome_file_folder = self._latex_safe(
+                    self.rapl_instance.genome_folder),
+                annotation_file_folder = self._latex_safe(
+                    self.rapl_instance.annotation_folder),
+                output_folder = self._latex_safe(
+                    self.rapl_instance.output_folder),
+                read_lib_listing = self._read_lib_listing(),
+                tracing_summary = self._latex_safe(
+                    self.rapl_instance.tracing_summary_file),
+                rna_seq_file_stats = self._latex_safe(
+                    self.rapl_instance.read_file_stats),
+                trace_summary_table = self._trace_summary_table(),
+                genome_file_listing = self._genome_file_listing(),
+                index_file_name = self._latex_safe(
+                    self.rapl_instance._segemehl_index_name()),
+                index_folder = self._latex_safe(
+                    self.rapl_instance.read_mapping_index_folder),
+                min_seq_length = self.rapl_instance.min_seq_length,
+                max_a_content = self.rapl_instance.max_a_content,
+                read_mapping_folder = self._latex_safe(
+                    self.rapl_instance.read_mappings_first_run_folder),
+                unmapped_read_first_run_folder = self._latex_safe(
+                    self.rapl_instance.umapped_reads_of_first_mapping_folder)))
+    
+    def _trace_summary_table(self):
+        raw_table = open(self.rapl_instance.tracing_summary_file).read()
+        row_counter = 0 
+        table_header = []
+        table_data = []
+        for row in raw_table.split("\n"):
+            if row_counter == 0:
+                table_header = row[1:].split("\t")
+            else:
+                table_data.append(row.split("\t"))
+            row_counter += 1
+        table_string = "\\begin{tabular}{%s}\n" % ("c" * len(table_header))
+        table_string += "%s\\\\\n" % (" & ".join(
+                ["\\rotatebox{90}{%s}" % head_item.replace("_", " ")
+                 for head_item in table_header]))
+        for row in table_data:
+            table_string += "%s\\\\\n" % (" & ".join(row
+                    
+                    ))
+        table_string += "\\end{tabular}\n"
+        return(table_string)
 
     def _read_lib_listing(self):
         """ """
@@ -51,6 +93,7 @@ class RaplReporter(object):
     def _template_text(self):
         return("""\\documentclass[12pt,a4paper,oneside]{article}
 \\usepackage[latin1]{inputenc}
+\\usepackage{graphicx}
 \\usepackage[pdfborder={0 0 0}]{hyperref}
 \\setlength{\\parindent}{0ex}
 
@@ -65,43 +108,90 @@ class RaplReporter(object):
 
 \\section{Introduction}
 
-This report intends to help you to understand the results of a Solexa
-or 454 sequncing and analyzing process.
+This report intends to help the reader to understand the results of a
+Solexa or 454 cDNA sequencing (also known as RNA-seq) and analyzing
+process.\\\\
+
+At first: Relax - advanced skills in bioinformatics/computation
+biology are not required. Most of the files are plain text files which
+can be opened with simple text viewer/ editor programs like
+\\texttt{less}, \\texttt{gedit}, \\texttt{emacs}, \\texttt{vi} in
+GNU/Linux, Mac OS and other Unix-like operating systems. In Windows
+\\texttt{notepad} is a sufficient tool but the files can also be
+loaded in more sophisticated office applications like
+\\texttt{OpenOffice Doc} or \\texttt{Microsoft Word}. Some files are
+so called CSV files (character separeted files) in which columns are
+separated by tabs. These files can also be loaded in spreadsheet
+application like \\texttt{OpenOffice Calc} or \\texttt{Microsoft
+Excel} and then saved in the native format of the application. The
+graphics are stored as PDF files and are generated using the
+programming language \\texttt{R}. The names of the R scripts end with
+\\texttt{.R} and can be modified with the above mentioned text
+editors.
+
+\\subsection{Organization of files and folders}
+
+To make the navigation to required files and the generated output easy
+and intuitive there are two folder in the root of the project
+folder. The folder \\texttt{$input_folder} contains the files required
+for the run. In the subfolder \\texttt{$RNA_lib_folder} the read files
+are located, the subfolder \\texttt{$genome_file_folder} contains the
+genome files (i.e. the FASTA files of all chromosom and plasmids)
+while the subfolder \\texttt{$annotation_file_folder} harbours
+annotation files.\\\\
+
+The created files are stored in subfolder of the folder
+\\texttt{$output_folder}. Detailed description of theses subfolder and
+their content can be found in the following sections.
+
+\\section{Mapping the reads to the reference genome}
+
+\\subsection{Results}
+
+For the impatient among us who do not want to be bothered with details
+- here is the mapping result overview:
+
+$trace_summary_table
+
+The data of this table can also be found in the file\\\\
+\\texttt{$tracing_summary}.
+
+\\subsection{Description of the mapping process}
+
+The mapping against the reference genome was done using the program
+\\texttt{segemehl} (Hoffmann \\textit{et. al}, \\textit{PLoS
+Computational Biology}, 2009) and took place in two steps. In the
+first step it was tried to align all raw reads to the reference
+genome. Usually this is not successful for all of them e.g due to
+sequencing errors. Some read cannot be mapped as they contain a poly-A
+tail. To tackle this problem all reads for which the mapping failed in
+the first run were undergoing a procedure in which a potential poly-A
+tail was searched and clipped. After the clipping the resulting
+sequences were filtered by sequence size: All sequences that were
+shorter than $min_seq_length nucleotides were removed. The other
+remaining reads were aligned to the genome in a second round. After
+this the mapping results of the two runs were combined. These combined
+entries were then filtered by the A-content. All entries with more
+than $max_a_content\\% of A's were removed. These cleaned results are
+then split by the genome files (of chromosome and/or plasmids) they
+are mapped to.\\\\
+
+If you look at the mapping results you might noticed that some reads
+are listed more than once. We allowed only one best \\texttt{segemehl}
+hit per read but for certain reads there were some hits sharing the
+same best value. In such case two or more placements are accepted.
 
 \\section{Used libraries}
 
 The first step of the process is the actual sequencing of the cDNA
 libraries. The result of this sequencing is a set of FASTA files
 which contain the raw reads. For your project we used the following read
-files:
+files stored in the folder \\texttt{$RNA_lib_folder}:
 
 $read_lib_listing
 
-\\section{Read mapping}
-
-\\subsection{Description of the mapping process}
-
-The mapping against the reference genome was done using the program
-\\texttt{segemehl} (Hoffmann \\textit{et. al}, \\textit{PLoS
-Computational Biology}, 2009) and in two steps. In the first step it
-was tried to align all raw reads to the reference genome. Usually this
-is not successful for all of them e.g due to sequencing errors. Some
-read cannot be mapped as they contain a poly-A tail. To tackle this
-problem all reads for which the mapping failed in the first run were
-undergoing a procedure in which a potential poly-A tail was searched
-and clipped. After the clipping the resulting sequences were filtered
-by sequence size: All sequences that were shorter than $min_seq_length
-nucleotides were removed. The other remaining reads were aligned to
-the genome in a second round. After this mapping results were
-combined. These combined entries were then filtered by the
-A-content. All entries with more than $max_a_content\\% of A's were
-removed. These cleaned results are then split by the genome files (of
-chromosome and/or plasmids) they are mapped to.\\\\
-
-If you look at the mapping results you might noticed that some reads
-are listed more than once. We allowed only one best \\texttt{segemehl}
-hit per read but for certain reads there were some hits sharing the
-same best value. In such case two or more placements are accepted.
+Basic statistics (e.g. number of reads) about these file are stored in
+the file \\texttt{$rna_seq_file_stats}.
 
 \\subsection{Used Genome files}
 
@@ -110,17 +200,19 @@ set:
 
 $genome_file_listing
 
-\\texttt{segemehl} generates one combined index files of them.
+\\texttt{segemehl} generates one combined index files of them save as\\\\
+\\texttt{$index_file_name} \\\\
+in the folder \\texttt{$index_folder}. 
 
 \\subsection{First read mapping}
 
 The output files of the first mapping can be found in the subfolder
-named \\textit{$read_mapping_folder}.
+named \\texttt{$read_mapping_folder}.
 
 \\subsection{Unmapped reads, poly-A clipping and size filtering}
 
 The files which contain read that were not mapped in the first run are
-put in the folter \\textit{$unmapped_read_first_run_folder}. The
+put in the folter \\texttt{$unmapped_read_first_run_folder}. The
 clipped files based on these files are also there. Likewise the files
 that contain the reads which are equal or greate the given cut-off
 (they have a "gtoe" in the file name) and the file that contains the
@@ -180,6 +272,8 @@ intensities, the minus strand file should contain only negative
 intensities.
 
 \\subsection{IGB usage in a nutshell}
+
+http://www.bioviz.org/igb/
 
 ftp://ftp.ncbi.nih.gov/genomes/Bacteria/ \\\\
 ftp://ftp.ncbi.nih.gov/genbank/genomes/Bacteria/
