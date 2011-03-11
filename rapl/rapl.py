@@ -82,7 +82,7 @@ class Rapl(object):
         self.read_mappings_first_run_folder = "%s/read_mappings_first_run" % (
             self.output_folder)
         self.read_mappings_second_run_folder = (
-            "%s/read_mappings_first_run" % self.output_folder)
+            "%s/read_mappings_second_run" % self.output_folder)
         self.gr_folder = "%s/gr_files" % self.output_folder
         self.read_mapping_index_folder = "%s/read_mapping_index" % (
             self.output_folder)
@@ -117,6 +117,8 @@ class Rapl(object):
             self.report_folder)
         self.report_tex_file = "%s/report.tex" % (
             self.report_folder)
+        self.lib_genome_read_mapping_summary = (
+            "%s/read_coutings_per_genome_file.cvs" % (self.report_folder))
 
     def _set_bin_paths(self):
         """Set file/folder paths for some needed binaries."""
@@ -175,6 +177,7 @@ class Rapl(object):
         self.split_mappings_by_genome_files()
         self.trace_reads_after_mapping()
         self.create_tracing_summay()
+        self.create_lib_genome_summary()
     
     def create_gr_files(self, args):
         """Create GR files based on the combined Segemehl mappings.
@@ -939,6 +942,8 @@ class Rapl(object):
         summary_fh.close()
 
     def _summarize_tracing_file(self, tracing_file):
+        """
+        """
         stati_and_countings = {}
         for line in open(tracing_file):
             if line[0] in ["#", "\n"]:
@@ -947,6 +952,26 @@ class Rapl(object):
             stati_and_countings.setdefault(final_status, 0)
             stati_and_countings[final_status] += 1
         return(stati_and_countings)
+
+    def create_lib_genome_summary(self):
+        """Create a file with lib/genome based read coutings."""
+        coutings = []
+        segemehl_parser = SegemehlParser()
+        for read_file in self.read_files:
+            counting_row = []
+            for genome_file in self.genome_files:
+                reads = {}
+                for entry in segemehl_parser.entries(
+                    self._combined_mapping_file_a_filtered_split_path(
+                        read_file, genome_file)):
+                    reads[entry["id"]] = 1
+                counting_row.append(len(reads))
+            coutings.append(counting_row)
+        summary_fh = open(self.lib_genome_read_mapping_summary, "w")
+        summary_fh.write("\t%s\n" % ("\t".join(self.genome_files)))
+        for read_file, row in zip(self.read_files, coutings):
+            summary_fh.write("%s\t%s\n" % (read_file, "\t".join(
+                        [str(value) for value in row])))
 
     ####################        
     # Paths

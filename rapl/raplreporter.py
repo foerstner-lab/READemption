@@ -34,6 +34,10 @@ class RaplReporter(object):
                 rna_seq_file_stats = self._latex_safe(
                     self.rapl_instance.read_file_stats),
                 trace_summary_table = self._trace_summary_table(),
+                lib_genome_summary_table = (
+                    self._lib_genome_read_summary_table()),
+                lib_genome_summary_file = self._latex_safe(
+                    self.rapl_instance.lib_genome_read_mapping_summary),
                 genome_file_listing = self._genome_file_listing(),
                 index_file_name = self._latex_safe(
                     self.rapl_instance._segemehl_index_name()),
@@ -43,8 +47,23 @@ class RaplReporter(object):
                 max_a_content = self.rapl_instance.max_a_content,
                 read_mapping_folder = self._latex_safe(
                     self.rapl_instance.read_mappings_first_run_folder),
+                read_mapping_folder_second_run = self._latex_safe(
+                    self.rapl_instance.read_mappings_second_run_folder),
                 unmapped_read_first_run_folder = self._latex_safe(
-                    self.rapl_instance.umapped_reads_of_first_mapping_folder)))
+                    self.rapl_instance.umapped_reads_of_first_mapping_folder),
+                unmapped_read_second_run_folder = self._latex_safe(
+                    self.rapl_instance.umapped_reads_of_second_mapping_folder),
+                combined_mappings_folder = self._latex_safe(
+                    self.rapl_instance.combined_mappings_folder),
+                tracs_file_folder = self._latex_safe(
+                    self.rapl_instance.read_tracing_folder),
+                combined_mapping_split_folder = self._latex_safe(
+                    self.rapl_instance.combined_mapping_split_folder),
+                genome_file_stats = self._latex_safe(
+                    self.rapl_instance.genome_file_stats),
+                gr_folder = self._latex_safe(
+                    self.rapl_instance.gr_folder)
+               ))
     
     def _trace_summary_table(self):
         raw_table = open(self.rapl_instance.tracing_summary_file).read()
@@ -62,9 +81,23 @@ class RaplReporter(object):
                 ["\\rotatebox{90}{%s}" % head_item.replace("_", " ")
                  for head_item in table_header]))
         for row in table_data:
-            table_string += "%s\\\\\n" % (" & ".join(row
-                    
-                    ))
+            table_string += "%s\\\\\n" % (" & ".join(row))
+        table_string += "\\end{tabular}\n"
+        return(table_string)
+
+    def _lib_genome_read_summary_table(self):
+        rows = []
+        for line in open(self.rapl_instance.lib_genome_read_mapping_summary):
+            rows.append(line[:-1].split("\t"))
+
+        table_string = "\\begin{tabular}{l%s}\n" % ("r" * (len(rows[0])-1))
+
+        table_string += " & ".join(
+            ["\\rotatebox{90}{%s}" % (self._latex_safe((cell))) 
+             for cell in rows[0]]) + "\\\\\n"
+        for row in rows[1:]:
+                    table_string += " & ".join(
+                        [self._latex_safe(cell) for cell in row]) + "\\\\\n"
         table_string += "\\end{tabular}\n"
         return(table_string)
 
@@ -154,7 +187,15 @@ For the impatient among us who do not want to be bothered with details
 $trace_summary_table
 
 The data of this table can also be found in the file\\\\
-\\texttt{$tracing_summary}.
+\\texttt{$tracing_summary}.\\\\
+
+Number of successfully mapped reads by read library and genome file:\\\\
+
+$lib_genome_summary_table
+\\ \\\\
+The data of this table can also be found in the file\\\\
+\\texttt{$lib_genome_summary_file}.\\\\
+
 
 \\subsection{Description of the mapping process}
 
@@ -170,11 +211,11 @@ tail was searched and clipped. After the clipping the resulting
 sequences were filtered by sequence size: All sequences that were
 shorter than $min_seq_length nucleotides were removed. The other
 remaining reads were aligned to the genome in a second round. After
-this the mapping results of the two runs were combined. These combined
-entries were then filtered by the A-content. All entries with more
-than $max_a_content\\% of A's were removed. These cleaned results are
-then split by the genome files (of chromosome and/or plasmids) they
-are mapped to.\\\\
+this the mapping results of the two runs were combined. These reads of
+these combined files were then filtered by their A-content. All
+entries with more than $max_a_content\\% of A's were removed. These
+cleaned results are then split by the genome files (of chromosome
+and/or plasmids) they are mapped to.\\\\
 
 If you look at the mapping results you might noticed that some reads
 are listed more than once. We allowed only one best \\texttt{segemehl}
@@ -184,21 +225,27 @@ same best value. In such case two or more placements are accepted.
 \\section{Used libraries}
 
 The first step of the process is the actual sequencing of the cDNA
-libraries. The result of this sequencing is a set of FASTA files
-which contain the raw reads. For your project we used the following read
-files stored in the folder \\texttt{$RNA_lib_folder}:
+libraries. The result of this sequencing is a set of FASTA files which
+contain the raw reads. The barcode sequenced that are used for
+multiplexed runs (more than one lib per sequencing lane) are already
+removed from these. For your project we used the following read files
+stored in the folder \\texttt{$RNA_lib_folder}:
 
 $read_lib_listing
 
 Basic statistics (e.g. number of reads) about these file are stored in
 the file \\texttt{$rna_seq_file_stats}.
 
-\\subsection{Used Genome files}
+\\subsection{Used genome files}
 
 The following genome files were used as reference
 set:
 
 $genome_file_listing
+
+Basic statistics (e.g. number of lines) about these file are stored in
+the file \\texttt{$genome_file_stats}.\\\\
+
 
 \\texttt{segemehl} generates one combined index files of them save as\\\\
 \\texttt{$index_file_name} \\\\
@@ -211,25 +258,41 @@ named \\texttt{$read_mapping_folder}.
 
 \\subsection{Unmapped reads, poly-A clipping and size filtering}
 
-The files which contain read that were not mapped in the first run are
-put in the folter \\texttt{$unmapped_read_first_run_folder}. The
+The files which contain reads that were not mapped in the first run
+are put in the folter \\texttt{$unmapped_read_first_run_folder}. The
 clipped files based on these files are also there. Likewise the files
 that contain the reads which are equal or greate the given cut-off
-(they have a "gtoe" in the file name) and the file that contains the
+(they have a "gtoe" in the file name) and the files that contains the
 reads that are too small after the clipping ((they have a "lt" in the
 file name)).
 
 \\subsection{Second read mapping}
 
-\\subsection{Combining of the mapping results}
+The result files of the second mapping are located in the folder\\\\
+\\texttt{$read_mapping_folder_second_run}.\\\\
 
-\\subsection{Filtering the results by A-content}
+Unmappable reads can be found in the files in folder\\\\
+\\texttt{$unmapped_read_second_run_folder}.
+
+\\subsection{Combining of the mapping results and filtering the
+results by A-content}
+
+The combined results of both read mapping steps are stored in the
+files in the folder \\texttt{$combined_mappings_folder}. Also the files
+which are generated in the A-content filtering step are stored here.
 
 \\subsection{Tracing files}
 
-\\subsection{Splitting result by genome file}
+For each library a CVS file is generated that traces the handling of each
+read. It shows at which stage a read is filter out or mapped. These
+files are stored in the folder \\texttt{$tracs_file_folder}.
 
-\\section{Preparing for visualization}
+\\subsection{Splitting result by genome files}
+
+The file that contain the mapping of libraries split by target genome
+file are stored in folder \\texttt{$combined_mapping_split_folder}.
+
+\\section{Interactive visualization}
 
 To visualize and compare the different libraries a genome browser can
 be used. Usually \\texttt{Integrated Genome Browser} (IGB) is a
@@ -237,17 +300,17 @@ suitable tool for this purpose.\\\\
 
 \\subsection{GR files}
 
-Based on the combined and filtered mapping results GR file that can be
-viewed in the IGB were generated. These GR files describe the amount
-of mapped reads per nucleotide position for a each genome file. Above
-it was mentioned that some reads are equally well mapped to different
-locations on a genome. In such a case we divide the raw counting
-(i.e. 1) by the number of mappings. E.g. if a read is mapped to 4
-different places each position only get 1/4 point counted for this
-read.\\\\
+Based on the combined and A-content filtered mapping results GR file
+that can be viewed in the IGB were generated. These GR files describe
+the amount of mapped reads per nucleotide position for a each genome
+file. Above it was mentioned that some reads are equally well mapped
+to different locations on a genome. In such a case we divide the raw
+counting (i.e. 1) by the number of mappings. E.g. if a read is mapped
+to 4 different places each position only get 1/4 point counted for
+this read.\\\\
 
-For each genome file (chromosome/plasmid) two different kind of sets of
-GR files were generated. One set represents the raw countings of
+For each genome file (chromosome/plasmid) two different kind of sets
+of GR files were generated. One set represents the raw countings of
 reads, the other one contains normalized values to make a comparative
 view on the data possible. The normalization was done by dividing the
 value of each position by the number of successfully mapped
@@ -259,8 +322,8 @@ example: We have the two libraries Foo+ and Foo- mapped to the genomes
 file Bar007.fa. If Bar007.fa has 2000,000 mappings of reads from Foo+
 and 1000,000 from Foo- the values for Foo+ are divided by 2000,000 and
 then multiplied by 1000,000. The values for lib Foo- are divided by
-1000,000 and then multiply by 1000,000 (yes, for the libs with the
-lowest number of mapped reads the whole normalization and
+1000,000 and then multiply by 1000,000 (yes, for the libraries with
+the lowest number of mapped reads the whole normalization and
 multiplication process results in the raw countings).\\\\
 
 For each normalized/not-normalized library-genome-file-pair you have
@@ -269,11 +332,14 @@ strand. You can recognize the type by the file name. The plus strand
 files end with "\\_plus.gr", the minus strand files with
 "\\_minus.gr". While the plus strand file should contain only positive
 intensities, the minus strand file should contain only negative
-intensities.
+intensities.\\\\
+
+The GR files are located in the folder \\texttt{$gr_folder}.
 
 \\subsection{IGB usage in a nutshell}
 
-http://www.bioviz.org/igb/
+The Integrated Genome Browser is a open-source application that can be
+downloaded from http://www.bioviz.org/igb/. It requires Java.\\\\
 
 ftp://ftp.ncbi.nih.gov/genomes/Bacteria/ \\\\
 ftp://ftp.ncbi.nih.gov/genbank/genomes/Bacteria/
