@@ -104,7 +104,6 @@ class Rapl(object):
         #self.mapping_stat_folder = "%s/read_mapping_stats" % (
         #    self.output_folder)
 
-
     def _set_file_names(self):
         """Set name of common files."""
         self.config_file = "rapl.config"
@@ -914,7 +913,8 @@ class Rapl(object):
         summary_fh = open(self.tracing_summary_file, "w")
         summary_fh.write(
             "#lib name\t" + 
-            "\t".join(stati) + 
+            "\t".join(stati) +
+            "\t" +
             "total number of reads\t" +
             "sum of mappable reads\t" + 
             "percentage mappable reads\t" + 
