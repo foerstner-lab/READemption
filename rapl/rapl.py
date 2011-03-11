@@ -159,19 +159,19 @@ class Rapl(object):
         self._in_project_folder()
         self._get_genome_file_names()
         self._get_read_file_names()
-        # self._create_read_file_stats()
-        # self._create_genome_file_stats()
-        # self.build_segmehl_index()
-        # self.run_mapping_with_raw_reads()
-        # self.extract_unmapped_reads_raw_read_mapping()
-        # self.clip_unmapped_reads()
-        # self.filter_clipped_reads_by_size()
-        # self.run_mapping_with_clipped_reads()
-        # self.extract_unmapped_reads_of_second_mapping()
-        # self.combine_mappings()
-        # self.filter_combined_mappings_by_a_content()
-        # self.split_mappings_by_genome_files()
-        # self.trace_reads_after_mapping()
+        self._create_read_file_stats()
+        self._create_genome_file_stats()
+        self.build_segmehl_index()
+        self.run_mapping_with_raw_reads()
+        self.extract_unmapped_reads_raw_read_mapping()
+        self.clip_unmapped_reads()
+        self.filter_clipped_reads_by_size()
+        self.run_mapping_with_clipped_reads()
+        self.extract_unmapped_reads_of_second_mapping()
+        self.combine_mappings()
+        self.filter_combined_mappings_by_a_content()
+        self.split_mappings_by_genome_files()
+        self.trace_reads_after_mapping()
         self.create_tracing_summay()
     
     def create_gr_files(self, args):
@@ -800,6 +800,7 @@ class Rapl(object):
              shell=True)
 
     def _sha256_of_file(self, file_path):
+        # Todo: Fix handling of large files
         """Calculate the SHA256 hash sum of a given file
 
         Arguments:
@@ -844,8 +845,8 @@ class Rapl(object):
         stat_fh = open(self.read_file_stats, "w")
         for read_file in self.read_files:
             stat_fh.write("%s:\n" % (read_file))
-            stat_fh.write("* SHA256: %s\n" % (
-                    self._sha256_of_file(self._read_file_path(read_file))))
+            #stat_fh.write("* SHA256: %s\n" % (
+            #        self._sha256_of_file(self._read_file_path(read_file))))
             stat_fh.write("* Number of lines: %s\n" % (
                     self._number_of_lines_in_file(
                         self._read_file_path(read_file))))
@@ -862,8 +863,8 @@ class Rapl(object):
         stat_fh = open(self.genome_file_stats, "w")
         for genome_file in self.genome_files:
             stat_fh.write("%s:\n" % (genome_file))
-            stat_fh.write("* SHA256: %s\n" % (self._sha256_of_file(
-                        self._genome_file_path(genome_file))))
+            #stat_fh.write("* SHA256: %s\n" % (self._sha256_of_file(
+            #            self._genome_file_path(genome_file))))
             stat_fh.write("* Number of lines: %s\n" % (
                     self._number_of_lines_in_file(
                         self._genome_file_path(genome_file))))
