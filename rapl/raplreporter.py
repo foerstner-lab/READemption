@@ -341,8 +341,33 @@ The GR files are located in the folder \\texttt{$gr_folder}.
 The Integrated Genome Browser is a open-source application that can be
 downloaded from http://www.bioviz.org/igb/. It requires Java.\\\\
 
-ftp://ftp.ncbi.nih.gov/genomes/Bacteria/ \\\\
+To make sense of the coordinates of the GR files data of the reference
+genome has to be supplied. This data is taken from a FASTA file (.fna)
+and a gff file of the analysed chromosome/plasmid. These file can be
+downloaded from ftp://ftp.ncbi.nih.gov/genomes/Bacteria/ or\\\\
 ftp://ftp.ncbi.nih.gov/genbank/genomes/Bacteria/
+
+For example: To analyse mapped date of \\textit{E. coli} K12 MG1655
+the files \\texttt{NC\_000913.fna} and \\texttt{NC\_000913.gff} are
+downloaded.  Unfortunately some manual work is needed to modify the
+FASTA so that IGB can handle it. At first the ending has to be changed
+to ".fa". Additionally the head of the Fasta file has to be
+shorted. In the example we change it to "$$>$$NC\_000913.2". Once the
+file changes are done we can start the IGB and load the ggf and the
+FASTA by clicking "File" then "Open File", then selecting the two
+files followed by clicking "Open". After the reference files are load
+the GR files can be added the same way. It makes sense to only load
+normalized and or not-normalized GR files together. The next step
+should be the adjustment of the displayed intesities. If you select a
+library display by clicking on it (you can select more than one by
+holding Shift) and then select the "Graph Adjuster" tab you can set
+the minimal and maximal values shown. For plus strand GR files a
+minimum of 0 and a maximum of 100 is good starting point. For minus
+strand GR files a minimum of -100 and a maximum of 0 should be
+set. Try different value to see which serves your purpose best. You
+can rearrange the order of the libs by shifting them up or down. Once
+you have set up the libraries as described you can start exploring
+your data.
 
 \\section{Counting of annotation overlaps}
 
