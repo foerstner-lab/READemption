@@ -182,16 +182,17 @@ their content can be found in the following sections.
 \\subsection{Results}
 
 For the impatient among us who do not want to be bothered with details
-- here is the mapping result overview:
-
+- here is the mapping result overview:\\\\
+{\\tiny
 $trace_summary_table
-
+}
 The data of this table can also be found in the file\\\\
 \\texttt{$tracing_summary}.\\\\
 
 Number of successfully mapped reads by read library and genome file:\\\\
-
+{\\tiny
 $lib_genome_summary_table
+}
 \\ \\\\
 The data of this table can also be found in the file\\\\
 \\texttt{$lib_genome_summary_file}.\\\\
@@ -369,7 +370,7 @@ can rearrange the order of the libs by shifting them up or down. Once
 you have set up the libraries as described you can start exploring
 your data.
 
-\\section{Counting of annotation overlaps}
+%\\section{Counting of annotation overlaps}
 
 \\end{document}
 """)
