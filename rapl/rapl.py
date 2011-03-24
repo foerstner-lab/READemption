@@ -4,6 +4,8 @@ import sys
 import json
 import hashlib
 from subprocess import call
+from subprocess import Popen
+from subprocess import PIPE
 from rapl.segemehl import SegemehlParser
 from rapl.segemehl import SegemehlBuilder
 from rapl.fasta import FastaParser
@@ -805,14 +807,17 @@ class Rapl(object):
              shell=True)
 
     def _sha256_of_file(self, file_path):
-        # Todo: Fix handling of large files
         """Calculate the SHA256 hash sum of a given file
 
         Arguments:
         - `file_path`: path of the file to process
 
         """
-        return(hashlib.sha256(open(file_path).read().encode()).hexdigest())
+        # Todo: Fix handling of large files and then use this again
+        # instead of calling the shell command
+        #return(hashlib.sha256(open(file_path).read().encode()).hexdigest())
+        return(Popen("sha256sum %s" % file_path , shell=True, stdout=PIPE
+                     ).communicate()[0].split()[0].decode("utf-8"))
 
     def _file_size(self, file_path):
         """Return the size of a given file.
@@ -850,8 +855,8 @@ class Rapl(object):
         stat_fh = open(self.read_file_stats, "w")
         for read_file in self.read_files:
             stat_fh.write("%s:\n" % (read_file))
-            #stat_fh.write("* SHA256: %s\n" % (
-            #        self._sha256_of_file(self._read_file_path(read_file))))
+            stat_fh.write("* SHA256: %s\n" % (
+                    self._sha256_of_file(self._read_file_path(read_file))))
             stat_fh.write("* Number of lines: %s\n" % (
                     self._number_of_lines_in_file(
                         self._read_file_path(read_file))))
@@ -868,8 +873,8 @@ class Rapl(object):
         stat_fh = open(self.genome_file_stats, "w")
         for genome_file in self.genome_files:
             stat_fh.write("%s:\n" % (genome_file))
-            #stat_fh.write("* SHA256: %s\n" % (self._sha256_of_file(
-            #            self._genome_file_path(genome_file))))
+            stat_fh.write("* SHA256: %s\n" % (self._sha256_of_file(
+                        self._genome_file_path(genome_file))))
             stat_fh.write("* Number of lines: %s\n" % (
                     self._number_of_lines_in_file(
                         self._genome_file_path(genome_file))))
@@ -1164,3 +1169,5 @@ class Rapl(object):
         """
         return("%s/%s_all_annotation_hits.csv" % (
                 self.annotation_hit_overview_folder, annotation_file))
+        
+
