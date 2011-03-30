@@ -501,7 +501,8 @@ class Rapl(object):
         trace_fh.write("#Read id\tRead length\tNumber of mappings first run\t"
                        "length after clipping\tPassed size filter\t"
                        "Number of mappings second run\t"
-                       "Passed a-content filter\tFinal status\n")
+                       "Passed a-content filter\tMapping length\t"
+                       "Final status\n")
         for read_id in self.read_ids:
             trace = self.read_ids_and_traces[read_id]
             trace.setdefault("no_of_mappings_first_run", "-")
@@ -509,11 +510,13 @@ class Rapl(object):
             trace.setdefault("passed_size_filtering", "-")
             trace.setdefault("no_of_mappings_second_run", "-")
             trace.setdefault("passed_a-content_filtering", "-")
-            result_line = "%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n" % (
+            trace.setdefault("mapping_length", "-")
+            result_line = "%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n" % (
                 read_id, trace["length"], trace["no_of_mappings_first_run"],
                 trace["length_after_clipping"], trace["passed_size_filtering"],
                 trace["no_of_mappings_second_run"], 
                 trace["passed_a-content_filtering"], 
+                trace["mapping_length"],
                 self._final_mapping_status(trace))
             trace_fh.write(result_line)
 
@@ -647,6 +650,8 @@ class Rapl(object):
             entry_id = entry["id"][1:] # remove ">"
             self.read_ids_and_traces[entry_id][
                 "passed_a-content_filtering"] = True
+            self.read_ids_and_traces[entry_id][
+                "mapping_length"] = len(entry["sequence"])
     
     def _read_combined_mapping_a_filtered_failed(self, read_file):
         """Read file of mapping not passing the A-contend filtering.
@@ -953,7 +958,7 @@ class Rapl(object):
         for line in open(tracing_file):
             if line[0] in ["#", "\n"]:
                 continue
-            final_status = line[:-1].split("\t")[7]
+            final_status = line[:-1].split("\t")[8]
             stati_and_countings.setdefault(final_status, 0)
             stati_and_countings[final_status] += 1
         return(stati_and_countings)
