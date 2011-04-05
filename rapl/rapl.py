@@ -62,11 +62,14 @@ class Rapl(object):
             self.input_folder, self.output_folder, self.rna_seq_folder,
             self.annotation_folder, self.read_mappings_first_run_folder,
             self.read_mappings_second_run_folder, self.gr_folder,
+            self.gr_folder_read_normalized, self.gr_folder_nucl_normalized,
             self.read_mapping_index_folder, self.genome_folder,
             self.umapped_reads_of_first_mapping_folder,
             self.umapped_reads_of_second_mapping_folder,
             self.combined_mappings_folder, self.combined_mapping_split_folder,
             self.annotation_hit_folder, self.annotation_hit_overview_folder,
+            self.annotation_hit_overview_read_normalized_folder,
+            self.annotation_hit_overview_nucl_normalized_folder,
             self.read_tracing_folder, self.input_file_stats_folder, 
             self.report_folder]:
             folder_in_root_folder = "%s/%s" % (project_name, folder)
@@ -86,6 +89,10 @@ class Rapl(object):
         self.read_mappings_second_run_folder = (
             "%s/read_mappings_second_run" % self.output_folder)
         self.gr_folder = "%s/gr_files" % self.output_folder
+        self.gr_folder_read_normalized = "%s/gr_read_normalized_files" % (
+            self.output_folder)
+        self.gr_folder_nucl_normalized = "%s/gr_nucleotide_normalized_files" % (
+            self.output_folder)
         self.read_mapping_index_folder = "%s/read_mapping_index" % (
             self.output_folder)
         self.umapped_reads_of_first_mapping_folder = (
@@ -100,6 +107,11 @@ class Rapl(object):
         self.annotation_hit_folder = "%s/annotation_hits" % self.output_folder
         self.annotation_hit_overview_folder = (
             "%s/annotation_hit_overviews" % self.output_folder)
+        self.annotation_hit_overview_read_normalized_folder = (
+            "%s/annotation_hit_overviews_read_normalized" % self.output_folder)
+        self.annotation_hit_overview_nucl_normalized_folder = (
+            "%s/annotation_hit_overviews_nucleotide_normalized" % 
+            self.output_folder)
         self.read_tracing_folder = "%s/read_tracing" % (self.output_folder)
         self.report_folder = "%s/reports_and_stats" % (self.output_folder)
         # Currently not needed
@@ -132,8 +144,8 @@ class Rapl(object):
     def _set_segemehl_parameters(self):
         """Set paremeters for Segemehl."""
         self.segemehl_accuracy = 85
-        self.segemehl_hit_strategy = "1"
-        self.segemehl_max_e_value = 10
+        self.segemehl_hit_strategy = "2"
+        self.segemehl_max_e_value = 5.0
         self.segemehl_number_of_threads = 1
 
     def _set_filtering_parameters(self):
@@ -192,7 +204,8 @@ class Rapl(object):
         self._get_genome_file_names()
         self._get_read_file_names()
         self.build_gr_files()
-        self.build_normalized_files()
+        self.build_read_normalized_gr_files()
+        self.build_nucl_normalized_gr_files()
 
     def search_annotation_overlaps(self, args):
         """Search for overlaps of reads and annotations.
@@ -688,18 +701,45 @@ class Rapl(object):
                                                                   genome_file)),
              shell=True)
 
-    def build_normalized_files(self):
+    def build_read_normalized_gr_files(self):
         """Generate normalized GR files for all read/genome files"""
         for genome_file in self.genome_files:
             lowest_number_of_mappings = self._lowest_number_of_mappings(
                 genome_file)
             for read_file in self.read_files:
-                self._build_normalized_gr_file(
+                self._build_read_normalized_gr_file(
                     read_file, genome_file, lowest_number_of_mappings)
             
-    def _build_normalized_gr_file(self, read_file, genome_file, 
+    def _build_read_normalized_gr_file(self, read_file, genome_file, 
                                   lowest_number_of_mappings):
-        """Generate normalized GR files
+        """Generate read normalized GR files
+
+        Arguments:
+        - `read_file`: orignal read file used to generate the mappings.
+        - `genome_file,`: target genome file
+        - `lowest_number_of_mappings`: the lowester number of mappings
+                                       found for all read libs for a
+                                       the genome file.
+
+        """
+        call("%s %s/segemehl2gr.py -r -m %s -o %s %s" % (
+                self.python_bin, self.bin_folder, lowest_number_of_mappings,
+                self._gr_read_normalized_file_path(read_file, genome_file),
+                self._combined_mapping_file_a_filtered_split_path(
+                    read_file, genome_file)), shell=True)
+
+    def build_nucl_normalized_gr_files(self):
+        """Generate normalized GR files for all read/genome files"""
+        for genome_file in self.genome_files:
+            lowest_number_of_mapped_nucleotides = (
+                self._lowest_number_of_mapped_nucleotides(genome_file))
+            for read_file in self.read_files:
+                self._build_nucl_normalized_gr_file(
+                    read_file, genome_file, lowest_number_of_mapped_nucleotides)
+            
+    def _build_nucl_normalized_gr_file(self, read_file, genome_file, 
+                                  lowest_number_of_mapped_nucleotides):
+        """Generate read normalized GR files
 
         Arguments:
         - `read_file`: orignal read file used to generate the mappings.
@@ -710,8 +750,9 @@ class Rapl(object):
 
         """
         call("%s %s/segemehl2gr.py -n -m %s -o %s %s" % (
-                self.python_bin, self.bin_folder, lowest_number_of_mappings,
-                self._gr_file_path(read_file, genome_file),
+                self.python_bin, self.bin_folder, 
+                lowest_number_of_mapped_nucleotides,
+                self._gr_nucl_normalized_file_path(read_file, genome_file),
                 self._combined_mapping_file_a_filtered_split_path(
                     read_file, genome_file)), shell=True)
 
@@ -730,6 +771,21 @@ class Rapl(object):
             lowest_number_of_mappings = 1
         return(lowest_number_of_mappings)
 
+    def _lowest_number_of_mapped_nucleotides(self, genome_file):
+        """Return the lowest number of mapping mapped nucleotides.
+
+        Arguments:
+        - `genome_file`: target genome file
+
+        """
+        lowest_number_of_mapped_nucleotides = min(
+            [self._count_mapped_nucleotides(read_file, genome_file) 
+             for read_file in self.read_files])
+        # Do avoid multiplication by zero
+        if lowest_number_of_mapped_nucleotides == 0:
+            lowest_number_of_nucleotides = 1
+        return(lowest_number_of_mapped_nucleotides)
+
     def _count_mapped_reads(self, read_file, genome_file):
         """Count number of successfully mapped reads.
 
@@ -745,6 +801,26 @@ class Rapl(object):
                 read_file, genome_file)):
             seen_ids[entry['id']] = 1
         return(len(seen_ids))
+    
+    def _count_mapped_nucleotides(self, read_file, genome_file):
+        """Count number of successfully mapped reads.
+
+        Arguments:
+        - `read_file`: orignal read file used to generate the mappings.
+        - `genome_file`: targe genome file
+
+        """
+        segemehl_parser = SegemehlParser()
+        seen_ids = []
+        nucleotide_counting = 0
+        for entry in segemehl_parser.entries(
+            self._combined_mapping_file_a_filtered_split_path(
+                read_file, genome_file)):
+            if entry['id'] in seen_ids:
+                continue
+            nucleotide_counting += len(entry['sequence'])
+            seen_ids.append(entry['id'])
+        return(nucleotide_counting)
 
     def find_annotation_hits(self):
         """Search for overlaps of reads and annotations."""
@@ -1140,13 +1216,35 @@ class Rapl(object):
                 self.read_tracing_folder, read_file))
 
     def _gr_file_path(self, read_file, genome_file):
-        """Return the GR file path of a given read and genome files
+        """Return the GR file path of a given read and genome file.
 
         Arguments:
         - `read_file,`: name of the read file
         - `genome_file`: name of the genome file
         """
         return("%s/%s_in_%s.gr" % (self.gr_folder, read_file, genome_file))
+
+    def _gr_read_normalized_file_path(self, read_file, genome_file):
+        """Return the GR read normalized file path of a given read and
+        genome file.
+
+        Arguments:
+        - `read_file,`: name of the read file
+        - `genome_file`: name of the genome file
+        """
+        return("%s/%s_in_%s.gr" % (
+                self.gr_folder_read_normalized, read_file, genome_file))
+
+    def _gr_nucl_normalized_file_path(self, read_file, genome_file):
+        """Return the GR nucleotide normalized file path of a given read and
+        genome file.
+
+        Arguments:
+        - `read_file,`: name of the read file
+        - `genome_file`: name of the genome file
+        """
+        return("%s/%s_in_%s.gr" % (
+                self.gr_folder_nucl_normalized, read_file, genome_file))
 
     def _annotation_hit_file_path(self, read_file, annotation_file):
         """Return the path of the annoation hit file.
