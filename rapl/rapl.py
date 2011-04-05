@@ -251,11 +251,11 @@ class Rapl(object):
 
     def _get_read_file_names(self):
         """Read the names of the read files."""
-        self.read_files = os.listdir(self.rna_seq_folder)
+        self.read_files = sorted(os.listdir(self.rna_seq_folder))
 
     def _get_genome_file_names(self):
         """Read the names of genome files."""
-        self.genome_files = os.listdir(self.genome_folder)
+        self.genome_files = sorted(os.listdir(self.genome_folder))
         
     def build_segmehl_index(self):
         """Create the segemehl index based on the genome files."""
