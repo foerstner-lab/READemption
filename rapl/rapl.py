@@ -221,6 +221,8 @@ class Rapl(object):
         self._get_annotation_files_from_config()
         self.find_annotation_hits()
         self.build_annotation_hit_overview()
+        self.build_annotation_hit_overview_read_normalized()
+        self.build_annotation_hit_overview_nucl_normalized()
 
     def generate_report(self, args):
         """Create final report of the analysis.
@@ -266,8 +268,10 @@ class Rapl(object):
 
     def _segemehl_index_name(self):
         """Return the name of the segemehl index file."""
-        index_file_name = "_".join(self.genome_files) + ".idx"
-        index_file_name.replace(".fa", "")
+        # TODO Avoid too long file name later.
+        #index_file_name = "_".join(self.genome_files) + ".idx"
+        #index_file_name.replace(".fa", "")
+        index_file_name = "genome.idx"
         return(index_file_name)
 
     def run_mapping_with_raw_reads(self):
@@ -864,8 +868,44 @@ class Rapl(object):
         for annotation_file in self.annotation_files.keys():
             self._build_annotation_hit_overview(annotation_file)
 
+    def build_annotation_hit_overview_read_normalized(self):
+        """Create annotation hit overview tables normalized by mapped
+           reads.
+
+        """
+        for annotation_file in self.annotation_files.keys():
+            self._build_annotation_hit_overview_read_normalized(annotation_file)
+
+    def build_annotation_hit_overview_nucl_normalized(self):
+        """Create annotation hit overview tables normalized by mapped
+        nucleotides.
+
+        """
+        for annotation_file in self.annotation_files.keys():
+            self._build_annotation_hit_overview_nucl_normalized(annotation_file)
+
     def _build_annotation_hit_overview(self, annotation_file):
         """Create annotation hit overview table. 
+
+        Arguments:
+        - `annotation_file`: an (NCBI) annotation file
+
+        """
+        genome_file = self.annotation_files[annotation_file]
+        annotation_hit_files_string = " ".join(
+            [self._annotation_hit_file_path(read_file, annotation_file) 
+             for read_file in self.read_files])
+        call("%s %s/%s %s %s > %s" % (
+                self.python_bin, self.bin_folder,
+                "build_annotation_table_with_read_countings.py",
+                self._annotation_file_path(annotation_file),
+                annotation_hit_files_string,
+                self._annotation_hit_overview_file_path(annotation_file)), 
+             shell=True)
+
+    def _build_annotation_hit_overview_read_normalized(self, annotation_file):
+        """Create annotation hit overview table normalized by mapped
+           reads.
 
         Arguments:
         - `annotation_file`: an (NCBI) annotation file
@@ -884,7 +924,31 @@ class Rapl(object):
                 mapped_reads_counting_string,
                 self._annotation_file_path(annotation_file),
                 annotation_hit_files_string,
-                self._annotation_hit_overview_file_path(annotation_file)), 
+                self._annotation_hit_overview_read_normalized_file_path(annotation_file)), 
+             shell=True)
+
+    def _build_annotation_hit_overview_nucl_normalized(self, annotation_file):
+        """Create annotation hit overview table normalized by mapped
+           nucleotides.
+
+        Arguments:
+        - `annotation_file`: an (NCBI) annotation file
+
+        """
+        genome_file = self.annotation_files[annotation_file]
+        mapped_nucl_counting_string = ":".join(
+            [str(self._count_mapped_nucleotides(read_file, genome_file)) 
+             for read_file in self.read_files])
+        annotation_hit_files_string = " ".join(
+            [self._annotation_hit_file_path(read_file, annotation_file) 
+             for read_file in self.read_files])
+        call("%s %s/%s -n %s %s %s > %s" % (
+                self.python_bin, self.bin_folder,
+                "build_annotation_table_with_read_countings.py",
+                mapped_nucl_counting_string,
+                self._annotation_file_path(annotation_file),
+                annotation_hit_files_string,
+                self._annotation_hit_overview_nucl_normalized_file_path(annotation_file)), 
              shell=True)
 
     def _sha256_of_file(self, file_path):
@@ -1272,5 +1336,22 @@ class Rapl(object):
         """
         return("%s/%s_all_annotation_hits.csv" % (
                 self.annotation_hit_overview_folder, annotation_file))
+
+
+    def _annotation_hit_overview_read_normalized_file_path(self, annotation_file):
+        """Return the path of the annotation overview normalized by
+           mapped reads file.
+        """
+        return("%s/%s_all_annotation_hits_normalized_by_reads.csv" % (
+                self.annotation_hit_overview_read_normalized_folder, 
+                annotation_file))
+
+    def _annotation_hit_overview_nucl_normalized_file_path(self, annotation_file):
+        """Return the path of the annotation overview normalized by
+           mapped nucleotides file.
+        """
+        return("%s/%s_all_annotation_hits_normalized_by_nucleotides.csv" % (
+                self.annotation_hit_overview_nucl_normalized_folder, 
+                annotation_file))
         
 
