@@ -1,8 +1,12 @@
+import os
+
 class RaplPathes(object):
 
     def __init__(self):
         self._set_folder_names()
         self._set_file_names()
+        self._get_read_file_names()
+        self._get_genome_file_names()
 
     def _set_folder_names(self):
         """Set the name of folders used in a project."""
@@ -58,6 +62,27 @@ class RaplPathes(object):
             self.report_folder)
         self.lib_genome_read_mapping_summary = (
             "%s/read_coutings_per_genome_file.cvs" % (self.report_folder))
+
+    def _get_read_file_names(self):
+        """Read the names of the read files."""
+        if os.path.exists(self.rna_seq_folder):
+            self.read_files = sorted(os.listdir(self.rna_seq_folder))
+        else:
+            self.read_files = []
+
+    def _get_genome_file_names(self):
+        """Read the names of genome files."""
+        if os.path.exists(self.genome_folder):
+            self.genome_files = sorted(os.listdir(self.genome_folder))
+        else:
+            self.genome_files = []
+
+    def _set_bin_paths(self):
+        """Set file/folder paths for some needed binaries."""
+        self.segemehl_bin = "segemehl"
+        # DEV
+        self.python_bin = "/opt/Python-3.2/python"
+        self.bin_folder = "~/rapl_tools"
 
     def required_folders(self):
         return([self.input_folder, self.output_folder, self.rna_seq_folder,

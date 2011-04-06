@@ -3,13 +3,12 @@ import shutil
 import sys
 import hashlib
 from subprocess import call
-from subprocess import Popen
-from subprocess import PIPE
 from rapl.segemehl import SegemehlParser
 from rapl.segemehl import SegemehlBuilder
-from rapl.fasta import FastaParser
 from rapl.raplreporter import RaplReporter
 from rapl.raplcreator import RaplCreator
+from rapl.raplinputstats import RaplInputStats
+from rapl.fasta import FastaParser
 
 class Rapl(object):
 
@@ -42,85 +41,6 @@ class Rapl(object):
                          "genome files into folder \"%s\".\n" % (
                 self.rna_seq_folder, self.genome_folder))
 
-
-    def _set_folder_names(self):
-        """Set the name of folders used in a project."""
-        self.input_folder = "input"
-        self.output_folder = "output"
-        self.rna_seq_folder = "%s/RNA_seqs" % self.input_folder
-        self.genome_folder = "%s/genomes" % self.input_folder
-        self.input_file_stats_folder = "%s/input_file_stats" % self.output_folder
-        self.annotation_folder = "%s/annotation_files" % self.input_folder
-        self.read_mappings_first_run_folder = "%s/read_mappings_first_run" % (
-            self.output_folder)
-        self.read_mappings_second_run_folder = (
-            "%s/read_mappings_second_run" % self.output_folder)
-        self.gr_folder = "%s/gr_files" % self.output_folder
-        self.gr_folder_read_normalized = "%s/gr_read_normalized_files" % (
-            self.output_folder)
-        self.gr_folder_nucl_normalized = "%s/gr_nucleotide_normalized_files" % (
-            self.output_folder)
-        self.read_mapping_index_folder = "%s/read_mapping_index" % (
-            self.output_folder)
-        self.umapped_reads_of_first_mapping_folder = (
-            "%s/unmapped_reads_of_first_mapping" % self.output_folder)
-        self.umapped_reads_of_second_mapping_folder = (
-            "%s/unmapped_reads_of_second_mapping" % self.output_folder)
-        self.combined_mappings_folder = "%s/read_mappings_combined" % (
-            self.output_folder)
-        self.combined_mapping_split_folder = (
-            "%s/read_mappings_combined_split_by_genome_files" % 
-            self.output_folder)
-        self.annotation_hit_folder = "%s/annotation_hits" % self.output_folder
-        self.annotation_hit_overview_folder = (
-            "%s/annotation_hit_overviews" % self.output_folder)
-        self.annotation_hit_overview_read_normalized_folder = (
-            "%s/annotation_hit_overviews_read_normalized" % self.output_folder)
-        self.annotation_hit_overview_nucl_normalized_folder = (
-            "%s/annotation_hit_overviews_nucleotide_normalized" % 
-            self.output_folder)
-        self.read_tracing_folder = "%s/read_tracing" % (self.output_folder)
-        self.report_folder = "%s/reports_and_stats" % (self.output_folder)
-        # Currently not needed
-        #self.mapping_stat_folder = "%s/read_mapping_stats" % (
-        #    self.output_folder)
-
-    def _set_file_names(self):
-        """Set name of common files."""
-        self.config_file = "rapl.config"
-        self.read_file_stats = "%s/read_file_stats.txt" % (
-            self.input_file_stats_folder)
-        self.genome_file_stats = "%s/genome_file_stats.txt" % (
-            self.input_file_stats_folder)
-        self.annotation_file_stats = "%s/annotation_file_stats.txt" % (
-            self.input_file_stats_folder)
-        self.tracing_summary_file = "%s/read_tracing_summary.csv" % (
-            self.report_folder)
-        self.report_tex_file = "%s/report.tex" % (
-            self.report_folder)
-        self.lib_genome_read_mapping_summary = (
-            "%s/read_coutings_per_genome_file.cvs" % (self.report_folder))
-
-    def _set_bin_paths(self):
-        """Set file/folder paths for some needed binaries."""
-        self.segemehl_bin = "segemehl"
-        # DEV
-        self.python_bin = "/opt/Python-3.2/python"
-        self.bin_folder = "~/rapl_tools"
-
-    def _set_segemehl_parameters(self):
-        """Set paremeters for Segemehl."""
-        self.segemehl_accuracy = 85
-        self.segemehl_hit_strategy = "2"
-        self.segemehl_max_e_value = 5.0
-        self.segemehl_number_of_threads = 1
-
-    def _set_filtering_parameters(self):
-        """Set parameters for sequence and Segemehl hit filtering."""
-        self.min_seq_length = 12
-        self.max_a_content = 70.0
-        self.min_overlap = 1
-        
     def map_reads(self, args):
         """Perform the mapping of the reads.
 
@@ -134,8 +54,13 @@ class Rapl(object):
         self._in_project_folder()
         self._get_genome_file_names()
         self._get_read_file_names()
-        self._create_read_file_stats()
-        self._create_genome_file_stats()
+        
+        input_file_stats = RaplInputStats()
+        input_file_stats.create_read_file_stats()
+        input_file_stats.create_genome_file_stats()
+        # self._create_read_file_stats()
+        # self._create_genome_file_stats()
+        
         self.build_segmehl_index()
         self.run_mapping_with_raw_reads()
         self.extract_unmapped_reads_raw_read_mapping()
@@ -149,6 +74,28 @@ class Rapl(object):
         self.trace_reads_after_mapping()
         self.create_tracing_summay()
         self.create_lib_genome_summary()
+
+
+    def _set_bin_paths(self):
+        """Set file/folder paths for some needed binaries."""
+        self.segemehl_bin = "segemehl"
+        # DEV
+        self.python_bin = "/opt/Python-3.2/python"
+        self.bin_folder = "~/rapl_tools"
+        
+    def _set_segemehl_parameters(self):
+        """Set paremeters for Segemehl."""
+        self.segemehl_accuracy = 85
+        self.segemehl_hit_strategy = "2"
+        self.segemehl_max_e_value = 5.0
+        self.segemehl_number_of_threads = 1
+
+    def _set_filtering_parameters(self):
+        """Set parameters for sequence and Segemehl hit filtering."""
+        self.min_seq_length = 12
+        self.max_a_content = 70.0
+        self.min_overlap = 1
+        
     
     def create_gr_files(self, args):
         """Create GR files based on the combined Segemehl mappings.
@@ -930,83 +877,6 @@ class Rapl(object):
                 self._annotation_hit_overview_nucl_normalized_file_path(annotation_file)), 
              shell=True)
 
-    def _sha256_of_file(self, file_path):
-        """Calculate the SHA256 hash sum of a given file
-
-        Arguments:
-        - `file_path`: path of the file to process
-
-        """
-        # Todo: Fix handling of large files and then use this again
-        # instead of calling the shell command
-        #return(hashlib.sha256(open(file_path).read().encode()).hexdigest())
-        return(Popen("sha256sum %s" % file_path , shell=True, stdout=PIPE
-                     ).communicate()[0].split()[0].decode("utf-8"))
-
-    def _file_size(self, file_path):
-        """Return the size of a given file.
-
-        Arguments:
-        - `file_path`: path of the file to process
-
-        """
-        return(os.path.getsize(file_path))
-
-    def _number_of_lines_in_file(self, file_path):
-        """Return the number of lines of a given file.
-
-        Arguments:
-        - `file_path`: path of the file to process
-
-        """
-        return(len(open(file_path).readlines()))
-
-    def _number_of_fasta_entries(self, file_path):
-        """Return the number of fasta entries.
-
-        Arguments:
-        - `file_path`: path of the file to process
-        
-        """
-        fasta_parser = FastaParser()
-        counter = 0
-        for head, seq in fasta_parser.parse_fasta_file(file_path):
-            counter += 1
-        return(counter)
-
-    def _create_read_file_stats(self):
-        """Create a stat file for the input read files."""
-        stat_fh = open(self.read_file_stats, "w")
-        for read_file in self.read_files:
-            stat_fh.write("%s:\n" % (read_file))
-            stat_fh.write("* SHA256: %s\n" % (
-                    self._sha256_of_file(self._read_file_path(read_file))))
-            stat_fh.write("* Number of lines: %s\n" % (
-                    self._number_of_lines_in_file(
-                        self._read_file_path(read_file))))
-            stat_fh.write("* Size: %s\n" % (
-                    self._file_size(self._read_file_path(read_file))))
-            stat_fh.write("* Number of Fasta entries: %s\n" % (
-                    self._number_of_fasta_entries(
-                        self._read_file_path(read_file))))
-            stat_fh.write("\n")
-        stat_fh.close()
-
-    def _create_genome_file_stats(self):
-        """Create a stat file for the input genome files."""
-        stat_fh = open(self.genome_file_stats, "w")
-        for genome_file in self.genome_files:
-            stat_fh.write("%s:\n" % (genome_file))
-            stat_fh.write("* SHA256: %s\n" % (self._sha256_of_file(
-                        self._genome_file_path(genome_file))))
-            stat_fh.write("* Number of lines: %s\n" % (
-                    self._number_of_lines_in_file(
-                        self._genome_file_path(genome_file))))
-            stat_fh.write("* Size: %s\n" % (self._file_size(
-                                    self._genome_file_path(genome_file))))
-            stat_fh.write("\n")
-        stat_fh.close()
-
     def _final_mapping_status(self, trace):
         """Return the final mapping status of a read.
 
@@ -1356,6 +1226,68 @@ class Rapl(object):
         return("%s/%s_all_annotation_hits_normalized_by_nucleotides_antisense.csv" % (
                 self.annotation_hit_overview_nucl_normalized_folder, 
                 annotation_file))
+
+
+
+    def _set_folder_names(self):
+        """Set the name of folders used in a project."""
+        self.input_folder = "input"
+        self.output_folder = "output"
+        self.rna_seq_folder = "%s/RNA_seqs" % self.input_folder
+        self.genome_folder = "%s/genomes" % self.input_folder
+        self.input_file_stats_folder = "%s/input_file_stats" % self.output_folder
+        self.annotation_folder = "%s/annotation_files" % self.input_folder
+        self.read_mappings_first_run_folder = "%s/read_mappings_first_run" % (
+            self.output_folder)
+        self.read_mappings_second_run_folder = (
+            "%s/read_mappings_second_run" % self.output_folder)
+        self.gr_folder = "%s/gr_files" % self.output_folder
+        self.gr_folder_read_normalized = "%s/gr_read_normalized_files" % (
+            self.output_folder)
+        self.gr_folder_nucl_normalized = "%s/gr_nucleotide_normalized_files" % (
+            self.output_folder)
+        self.read_mapping_index_folder = "%s/read_mapping_index" % (
+            self.output_folder)
+        self.umapped_reads_of_first_mapping_folder = (
+            "%s/unmapped_reads_of_first_mapping" % self.output_folder)
+        self.umapped_reads_of_second_mapping_folder = (
+            "%s/unmapped_reads_of_second_mapping" % self.output_folder)
+        self.combined_mappings_folder = "%s/read_mappings_combined" % (
+            self.output_folder)
+        self.combined_mapping_split_folder = (
+            "%s/read_mappings_combined_split_by_genome_files" % 
+            self.output_folder)
+        self.annotation_hit_folder = "%s/annotation_hits" % self.output_folder
+        self.annotation_hit_overview_folder = (
+            "%s/annotation_hit_overviews" % self.output_folder)
+        self.annotation_hit_overview_read_normalized_folder = (
+            "%s/annotation_hit_overviews_read_normalized" % self.output_folder)
+        self.annotation_hit_overview_nucl_normalized_folder = (
+            "%s/annotation_hit_overviews_nucleotide_normalized" % 
+            self.output_folder)
+        self.read_tracing_folder = "%s/read_tracing" % (self.output_folder)
+        self.report_folder = "%s/reports_and_stats" % (self.output_folder)
+        # Currently not needed
+        #self.mapping_stat_folder = "%s/read_mapping_stats" % (
+        #    self.output_folder)
+
+    def _set_file_names(self):
+        """Set name of common files."""
+        self.config_file = "rapl.config"
+        self.read_file_stats = "%s/read_file_stats.txt" % (
+            self.input_file_stats_folder)
+        self.genome_file_stats = "%s/genome_file_stats.txt" % (
+            self.input_file_stats_folder)
+        self.annotation_file_stats = "%s/annotation_file_stats.txt" % (
+            self.input_file_stats_folder)
+        self.tracing_summary_file = "%s/read_tracing_summary.csv" % (
+            self.report_folder)
+        self.report_tex_file = "%s/report.tex" % (
+            self.report_folder)
+        self.lib_genome_read_mapping_summary = (
+            "%s/read_coutings_per_genome_file.cvs" % (self.report_folder))
+
+
         
 # OBSOLETE
 
@@ -1407,3 +1339,80 @@ class Rapl(object):
     #     config_fh.write(json.dumps({"annotation_and_genomes_files" : {}}))
     #     config_fh.close()
 
+
+    # def _create_read_file_stats(self):
+    #     """Create a stat file for the input read files."""
+    #     stat_fh = open(self.read_file_stats, "w")
+    #     for read_file in self.read_files:
+    #         stat_fh.write("%s:\n" % (read_file))
+    #         stat_fh.write("* SHA256: %s\n" % (
+    #                 self._sha256_of_file(self._read_file_path(read_file))))
+    #         stat_fh.write("* Number of lines: %s\n" % (
+    #                 self._number_of_lines_in_file(
+    #                     self._read_file_path(read_file))))
+    #         stat_fh.write("* Size: %s\n" % (
+    #                 self._file_size(self._read_file_path(read_file))))
+    #         stat_fh.write("* Number of Fasta entries: %s\n" % (
+    #                 self._number_of_fasta_entries(
+    #                     self._read_file_path(read_file))))
+    #         stat_fh.write("\n")
+    #     stat_fh.close()
+
+    # def _create_genome_file_stats(self):
+    #     """Create a stat file for the input genome files."""
+    #     stat_fh = open(self.genome_file_stats, "w")
+    #     for genome_file in self.genome_files:
+    #         stat_fh.write("%s:\n" % (genome_file))
+    #         stat_fh.write("* SHA256: %s\n" % (self._sha256_of_file(
+    #                     self._genome_file_path(genome_file))))
+    #         stat_fh.write("* Number of lines: %s\n" % (
+    #                 self._number_of_lines_in_file(
+    #                     self._genome_file_path(genome_file))))
+    #         stat_fh.write("* Size: %s\n" % (self._file_size(
+    #                                 self._genome_file_path(genome_file))))
+    #         stat_fh.write("\n")
+    #     stat_fh.close()
+
+    # def _sha256_of_file(self, file_path):
+    #     """Calculate the SHA256 hash sum of a given file
+
+    #     Arguments:
+    #     - `file_path`: path of the file to process
+
+    #     """
+    #     # Todo: Fix handling of large files and then use this again
+    #     # instead of calling the shell command
+    #     #return(hashlib.sha256(open(file_path).read().encode()).hexdigest())
+    #     return(Popen("sha256sum %s" % file_path , shell=True, stdout=PIPE
+    #                  ).communicate()[0].split()[0].decode("utf-8"))
+
+    # def _file_size(self, file_path):
+    #     """Return the size of a given file.
+
+    #     Arguments:
+    #     - `file_path`: path of the file to process
+
+    #     """
+    #     return(os.path.getsize(file_path))
+
+    # def _number_of_lines_in_file(self, file_path):
+    #     """Return the number of lines of a given file.
+
+    #     Arguments:
+    #     - `file_path`: path of the file to process
+
+    #     """
+    #     return(len(open(file_path).readlines()))
+
+    # def _number_of_fasta_entries(self, file_path):
+    #     """Return the number of fasta entries.
+
+    #     Arguments:
+    #     - `file_path`: path of the file to process
+        
+    #     """
+    #     fasta_parser = FastaParser()
+    #     counter = 0
+    #     for head, seq in fasta_parser.parse_fasta_file(file_path):
+    #         counter += 1
+    #     return(counter)
