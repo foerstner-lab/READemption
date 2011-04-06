@@ -1,7 +1,6 @@
 import os
 import shutil
 import sys
-import json
 import hashlib
 from subprocess import call
 from subprocess import Popen
@@ -10,6 +9,7 @@ from rapl.segemehl import SegemehlParser
 from rapl.segemehl import SegemehlBuilder
 from rapl.fasta import FastaParser
 from rapl.raplreporter import RaplReporter
+from rapl.raplcreator import RaplCreator
 
 class Rapl(object):
 
@@ -28,53 +28,20 @@ class Rapl(object):
         - `args.project_name`: Name of the project root folder
 
         """
-        self._create_root_folder(args.project_name)
-        self._create_subfolders(args.project_name)
-        self._create_config_file(args.project_name)
+        # OBSOLETE - CLEAN
+        #self._create_root_folder(args.project_name)
+        #self._create_subfolders(args.project_name)
+        #self._create_config_file(args.project_name)
+        rapl_creator = RaplCreator()
+        rapl_creator.create_root_folder(args.project_name)
+        rapl_creator.create_subfolders(args.project_name)
+        rapl_creator.create_config_file(args.project_name)
         sys.stdout.write("Created folder \"%s\" and required subfolders.\n" % (
                 args.project_name))
         sys.stdout.write("Please copy read files into folder \"%s\" and "
                          "genome files into folder \"%s\".\n" % (
                 self.rna_seq_folder, self.genome_folder))
 
-    def _create_root_folder(self, project_name):
-        """Create the root folder of a new project with the given name.
-        
-        Arguments:
-        - `project_name`: Name of the project root folder
-
-        """
-        if not os.path.exists(project_name):
-            os.mkdir(project_name)
-        else:
-            sys.stderr.write("Cannot create folder \"%s\"! File/folder with "
-                             "the same name exists already.\n" % project_name)
-            sys.exit(2)
-
-    def _create_subfolders(self, project_name):
-        """Create required subfolders in the given folder.
-        
-        Arguments:
-        - `project_name`: Name of the project root folder
-
-        """
-        for folder in [
-            self.input_folder, self.output_folder, self.rna_seq_folder,
-            self.annotation_folder, self.read_mappings_first_run_folder,
-            self.read_mappings_second_run_folder, self.gr_folder,
-            self.gr_folder_read_normalized, self.gr_folder_nucl_normalized,
-            self.read_mapping_index_folder, self.genome_folder,
-            self.umapped_reads_of_first_mapping_folder,
-            self.umapped_reads_of_second_mapping_folder,
-            self.combined_mappings_folder, self.combined_mapping_split_folder,
-            self.annotation_hit_folder, self.annotation_hit_overview_folder,
-            self.annotation_hit_overview_read_normalized_folder,
-            self.annotation_hit_overview_nucl_normalized_folder,
-            self.read_tracing_folder, self.input_file_stats_folder, 
-            self.report_folder]:
-            folder_in_root_folder = "%s/%s" % (project_name, folder)
-            if not os.path.exists(folder_in_root_folder):
-                os.mkdir(folder_in_root_folder)
 
     def _set_folder_names(self):
         """Set the name of folders used in a project."""
@@ -154,16 +121,6 @@ class Rapl(object):
         self.max_a_content = 70.0
         self.min_overlap = 1
         
-    def _create_config_file(self, project_name):
-        """Create a JSON config file.
-        
-        Arguments:
-        - `project_name`: Name of the project root folder
-        """
-        config_fh = open("%s/%s" % (project_name, self.config_file), "w")
-        config_fh.write(json.dumps({"annotation_and_genomes_files" : {}}))
-        config_fh.close()
-
     def map_reads(self, args):
         """Perform the mapping of the reads.
 
@@ -751,7 +708,6 @@ class Rapl(object):
         - `lowest_number_of_mappings`: the lowester number of mappings
                                        found for all read libs for a
                                        the genome file.
-
         """
         call("%s %s/segemehl2gr.py -n -m %s -o %s %s" % (
                 self.python_bin, self.bin_folder, 
@@ -902,6 +858,13 @@ class Rapl(object):
                 annotation_hit_files_string,
                 self._annotation_hit_overview_file_path(annotation_file)), 
              shell=True)
+        call("%s %s/%s -d a %s %s > %s" % (
+                self.python_bin, self.bin_folder,
+                "build_annotation_table_with_read_countings.py",
+                self._annotation_file_path(annotation_file),
+                annotation_hit_files_string,
+                self._annotation_hit_overview_antisense_file_path(annotation_file)),
+             shell=True)
 
     def _build_annotation_hit_overview_read_normalized(self, annotation_file):
         """Create annotation hit overview table normalized by mapped
@@ -926,6 +889,14 @@ class Rapl(object):
                 annotation_hit_files_string,
                 self._annotation_hit_overview_read_normalized_file_path(annotation_file)), 
              shell=True)
+        call("%s %s/%s -d a -n %s %s %s > %s" % (
+                self.python_bin, self.bin_folder,
+                "build_annotation_table_with_read_countings.py",
+                mapped_reads_counting_string,
+                self._annotation_file_path(annotation_file),
+                annotation_hit_files_string,
+                self._annotation_hit_overview_read_normalized_file_path(annotation_file)), 
+             shell=True)
 
     def _build_annotation_hit_overview_nucl_normalized(self, annotation_file):
         """Create annotation hit overview table normalized by mapped
@@ -943,6 +914,14 @@ class Rapl(object):
             [self._annotation_hit_file_path(read_file, annotation_file) 
              for read_file in self.read_files])
         call("%s %s/%s -n %s %s %s > %s" % (
+                self.python_bin, self.bin_folder,
+                "build_annotation_table_with_read_countings.py",
+                mapped_nucl_counting_string,
+                self._annotation_file_path(annotation_file),
+                annotation_hit_files_string,
+                self._annotation_hit_overview_nucl_normalized_file_path(annotation_file)), 
+             shell=True)
+        call("%s %s/%s -d a -n %s %s %s > %s" % (
                 self.python_bin, self.bin_folder,
                 "build_annotation_table_with_read_countings.py",
                 mapped_nucl_counting_string,
@@ -1334,15 +1313,31 @@ class Rapl(object):
         Arguments:
         - `annotation_file`: name of the (NCBI) annotation file
         """
-        return("%s/%s_all_annotation_hits.csv" % (
+        return("%s/%s_all_annotation_hits_sense.csv" % (
                 self.annotation_hit_overview_folder, annotation_file))
 
+    def _annotation_hit_overview_antisense_file_path(self, annotation_file):
+        """Return the path of the annotation overview file for antisense hits.
+
+        Arguments:
+        - `annotation_file`: name of the (NCBI) annotation file
+        """
+        return("%s/%s_all_annotation_hits_antisense.csv" % (
+                self.annotation_hit_overview_folder, annotation_file))
 
     def _annotation_hit_overview_read_normalized_file_path(self, annotation_file):
         """Return the path of the annotation overview normalized by
            mapped reads file.
         """
-        return("%s/%s_all_annotation_hits_normalized_by_reads.csv" % (
+        return("%s/%s_all_annotation_hits_normalized_by_reads_sense.csv" % (
+                self.annotation_hit_overview_read_normalized_folder, 
+                annotation_file))
+
+    def _annotation_hit_overview_read_normalized_antisense_file_path(self, annotation_file):
+        """Return the path of the annotation overview normalized by
+           mapped reads file.
+        """
+        return("%s/%s_all_annotation_hits_normalized_by_reads_antisense.csv" % (
                 self.annotation_hit_overview_read_normalized_folder, 
                 annotation_file))
 
@@ -1350,8 +1345,65 @@ class Rapl(object):
         """Return the path of the annotation overview normalized by
            mapped nucleotides file.
         """
-        return("%s/%s_all_annotation_hits_normalized_by_nucleotides.csv" % (
+        return("%s/%s_all_annotation_hits_normalized_by_nucleotides_sense.csv" % (
+                self.annotation_hit_overview_nucl_normalized_folder, 
+                annotation_file))
+
+    def _annotation_hit_overview_nucl_normalized_antisense_file_path(self, annotation_file):
+        """Return the path of the annotation overview normalized by
+           mapped nucleotides file.
+        """
+        return("%s/%s_all_annotation_hits_normalized_by_nucleotides_antisense.csv" % (
                 self.annotation_hit_overview_nucl_normalized_folder, 
                 annotation_file))
         
+# OBSOLETE
+
+    # def _create_root_folder(self, project_name):
+    #     """Create the root folder of a new project with the given name.
+        
+    #     Arguments:
+    #     - `project_name`: Name of the project root folder
+
+    #     """
+    #     if not os.path.exists(project_name):
+    #         os.mkdir(project_name)
+    #     else:
+    #         sys.stderr.write("Cannot create folder \"%s\"! File/folder with "
+    #                          "the same name exists already.\n" % project_name)
+    #         sys.exit(2)
+
+    # def _create_subfolders(self, project_name):
+    #     """Create required subfolders in the given folder.
+        
+    #     Arguments:
+    #     - `project_name`: Name of the project root folder
+
+    #     """
+    #     for folder in [
+    #         self.input_folder, self.output_folder, self.rna_seq_folder,
+    #         self.annotation_folder, self.read_mappings_first_run_folder,
+    #         self.read_mappings_second_run_folder, self.gr_folder,
+    #         self.gr_folder_read_normalized, self.gr_folder_nucl_normalized,
+    #         self.read_mapping_index_folder, self.genome_folder,
+    #         self.umapped_reads_of_first_mapping_folder,
+    #         self.umapped_reads_of_second_mapping_folder,
+    #         self.combined_mappings_folder, self.combined_mapping_split_folder,
+    #         self.annotation_hit_folder, self.annotation_hit_overview_folder,
+    #         self.annotation_hit_overview_read_normalized_folder,
+    #         self.annotation_hit_overview_nucl_normalized_folder,
+    #         self.read_tracing_folder, self.input_file_stats_folder, 
+    #         self.report_folder]:
+    #         folder_in_root_folder = "%s/%s" % (project_name, folder)
+    #         if not os.path.exists(folder_in_root_folder):
+    #             os.mkdir(folder_in_root_folder)
+    # def _create_config_file(self, project_name):
+    #     """Create a JSON config file.
+        
+    #     Arguments:
+    #     - `project_name`: Name of the project root folder
+    #     """
+    #     config_fh = open("%s/%s" % (project_name, self.config_file), "w")
+    #     config_fh.write(json.dumps({"annotation_and_genomes_files" : {}}))
+    #     config_fh.close()
 
