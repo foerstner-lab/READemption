@@ -1,10 +1,10 @@
 import csv
-from string import Template
 from datetime import datetime
+from string import Template
 
-from rapl.pathes import Pathes
-from rapl.parameters import Parameters
 from rapl.inputstats import InputStats
+from rapl.parameters import Parameters
+from rapl.pathes import Pathes
 
 class Reporter(object):
 

@@ -1,10 +1,8 @@
 import os
-
-from subprocess import Popen
 from subprocess import PIPE
-
-from rapl.pathes import Pathes
+from subprocess import Popen
 from rapl.fasta import FastaParser
+from rapl.pathes import Pathes
 
 class InputStats(object):
 

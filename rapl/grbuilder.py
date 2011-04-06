@@ -1,7 +1,6 @@
 from subprocess import call
-
-from rapl.pathes import Pathes
 from rapl.parameters import Parameters
+from rapl.pathes import Pathes
 from rapl.segemehl import SegemehlParser
 
 class GrBuilder(object):

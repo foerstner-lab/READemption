@@ -1,8 +1,8 @@
 import json
 from subprocess import call
-from rapl.pathes import Pathes
-from rapl.parameters import Parameters
 from rapl.grbuilder import GrBuilder
+from rapl.parameters import Parameters
+from rapl.pathes import Pathes
 
 class Annotations(object):
 

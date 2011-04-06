@@ -1,7 +1,6 @@
+import json
 import os
 import sys
-import json
-
 from rapl.pathes import Pathes
 
 class Creator(object):
