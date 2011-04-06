@@ -47,8 +47,6 @@ class Rapl(object):
 
         """
         self._in_project_folder()
-        self._get_genome_file_names()
-        self._get_read_file_names()
         input_file_stats = InputStats()
         input_file_stats.create_read_file_stats()
         input_file_stats.create_genome_file_stats()
@@ -72,8 +70,6 @@ class Rapl(object):
     def create_gr_files(self):
         """Create GR files based on the combined Segemehl mappings. """
         self._in_project_folder()
-        self._get_genome_file_names()
-        self._get_read_file_names()
         gr_builder = GrBuilder()
         gr_builder.build_gr_files()
         gr_builder.build_read_normalized_gr_files()
@@ -82,8 +78,6 @@ class Rapl(object):
     def search_annotation_overlaps(self):
         """Search for overlaps of reads and annotations."""
         self._in_project_folder()
-        self._get_genome_file_names()
-        self._get_read_file_names()
         annotations = Annotations()
         annotations.find_annotation_hits()
         annotations.build_annotation_hit_overview()
@@ -93,8 +87,6 @@ class Rapl(object):
     def generate_report(self):
         """Create final report of the analysis."""
         self._in_project_folder()
-        self._get_genome_file_names()
-        self._get_read_file_names()
         rapl_reporter = Reporter(self)
         report_fh = open(self.pathes.report_tex_file, "w")
         report_fh.write(rapl_reporter.report())
@@ -113,23 +105,3 @@ class Rapl(object):
     def _get_read_file_names(self):
         """Read the names of the read files."""
         self.read_files = sorted(os.listdir(self.pathes.rna_seq_folder))
-
-    # TODO: remove
-    def _set_segemehl_parameters(self):
-        """Set paremeters for Segemehl."""
-        self.segemehl_accuracy = 85
-        self.segemehl_hit_strategy = "2"
-        self.segemehl_max_e_value = 5.0
-        self.segemehl_number_of_threads = 1
-
-    # TODO: remove
-    def _set_filtering_parameters(self):
-        """Set parameters for sequence and Segemehl hit filtering."""
-        self.min_seq_length = 12
-        self.max_a_content = 70.0
-        self.min_overlap = 1
-
-    def _get_genome_file_names(self):
-        """Read the names of genome files."""
-        self.genome_files = sorted(os.listdir(self.pathes.genome_folder))
-        
