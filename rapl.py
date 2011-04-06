@@ -54,15 +54,15 @@ def start_project(args, rapl):
     rapl.start_project(args)
 
 def map_reads(args, rapl):
-    rapl.map_reads(args)
+    rapl.map_reads()
 
 def create_gr_files(args, rapl):
-    rapl.create_gr_files(args)
+    rapl.create_gr_files()
 
 def search_annoation_overlaps(args, rapl):
-    rapl.search_annotation_overlaps(args)
+    rapl.search_annotation_overlaps()
 
 def generate_report(args, rapl):
-    rapl.generate_report(args)
+    rapl.generate_report()
 
 main()

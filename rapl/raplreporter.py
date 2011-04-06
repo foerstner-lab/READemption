@@ -1,6 +1,11 @@
 import csv
 from string import Template
 from datetime import datetime
+
+from rapl.raplpathes import RaplPathes
+from rapl.raplparameters import RaplParameters
+from rapl.raplinputstats import RaplInputStats
+
 class RaplReporter(object):
 
     def __init__(self, rapl_instance):
@@ -10,7 +15,10 @@ class RaplReporter(object):
         - `rapl_instance`: The rapl instance that is reported about
                            
         """
-        self.rapl_instance = rapl_instance
+        self.pathes = RaplPathes()
+        self.parameters = RaplParameters()
+        self.input_stats = RaplInputStats()
+
 
     def report(self):
         """
@@ -19,54 +27,54 @@ class RaplReporter(object):
         return(template.substitute(
                 date = datetime.today().strftime("%d.%m.%Y"),
                 input_folder = self._latex_safe(
-                    self.rapl_instance.input_folder),
+                    self.pathes.input_folder),
                 RNA_lib_folder = self._latex_safe(
-                    self.rapl_instance.rna_seq_folder),
+                    self.pathes.rna_seq_folder),
                 genome_file_folder = self._latex_safe(
-                    self.rapl_instance.genome_folder),
+                    self.pathes.genome_folder),
                 annotation_file_folder = self._latex_safe(
-                    self.rapl_instance.annotation_folder),
+                    self.pathes.annotation_folder),
                 output_folder = self._latex_safe(
-                    self.rapl_instance.output_folder),
+                    self.pathes.output_folder),
                 read_lib_listing = self._read_lib_listing(),
                 tracing_summary = self._latex_safe(
-                    self.rapl_instance.tracing_summary_file),
+                    self.pathes.tracing_summary_file),
                 rna_seq_file_stats = self._latex_safe(
-                    self.rapl_instance.read_file_stats),
+                    self.pathes.read_file_stats),
                 trace_summary_table = self._trace_summary_table(),
                 lib_genome_summary_table = (
                     self._lib_genome_read_summary_table()),
                 lib_genome_summary_file = self._latex_safe(
-                    self.rapl_instance.lib_genome_read_mapping_summary),
+                    self.pathes.lib_genome_read_mapping_summary),
                 genome_file_listing = self._genome_file_listing(),
                 index_file_name = self._latex_safe(
-                    self.rapl_instance._segemehl_index_name()),
+                    self.pathes._segemehl_index_name()),
                 index_folder = self._latex_safe(
-                    self.rapl_instance.read_mapping_index_folder),
-                min_seq_length = self.rapl_instance.min_seq_length,
-                max_a_content = self.rapl_instance.max_a_content,
+                    self.pathes.read_mapping_index_folder),
+                min_seq_length = self.parameters.min_seq_length,
+                max_a_content = self.parameters.max_a_content,
                 read_mapping_folder = self._latex_safe(
-                    self.rapl_instance.read_mappings_first_run_folder),
+                    self.pathes.read_mappings_first_run_folder),
                 read_mapping_folder_second_run = self._latex_safe(
-                    self.rapl_instance.read_mappings_second_run_folder),
+                    self.pathes.read_mappings_second_run_folder),
                 unmapped_read_first_run_folder = self._latex_safe(
-                    self.rapl_instance.umapped_reads_of_first_mapping_folder),
+                    self.pathes.umapped_reads_of_first_mapping_folder),
                 unmapped_read_second_run_folder = self._latex_safe(
-                    self.rapl_instance.umapped_reads_of_second_mapping_folder),
+                    self.pathes.umapped_reads_of_second_mapping_folder),
                 combined_mappings_folder = self._latex_safe(
-                    self.rapl_instance.combined_mappings_folder),
+                    self.pathes.combined_mappings_folder),
                 tracs_file_folder = self._latex_safe(
-                    self.rapl_instance.read_tracing_folder),
+                    self.pathes.read_tracing_folder),
                 combined_mapping_split_folder = self._latex_safe(
-                    self.rapl_instance.combined_mapping_split_folder),
+                    self.pathes.combined_mapping_split_folder),
                 genome_file_stats = self._latex_safe(
-                    self.rapl_instance.genome_file_stats),
+                    self.pathes.genome_file_stats),
                 gr_folder = self._latex_safe(
-                    self.rapl_instance.gr_folder)
+                    self.pathes.gr_folder)
                ))
     
     def _trace_summary_table(self):
-        raw_table = open(self.rapl_instance.tracing_summary_file).read()
+        raw_table = open(self.pathes.tracing_summary_file).read()
         row_counter = 0 
         table_header = []
         table_data = []
@@ -87,7 +95,7 @@ class RaplReporter(object):
 
     def _lib_genome_read_summary_table(self):
         rows = []
-        for line in open(self.rapl_instance.lib_genome_read_mapping_summary):
+        for line in open(self.pathes.lib_genome_read_mapping_summary):
             rows.append(line[:-1].split("\t"))
 
         table_string = "\\begin{tabular}{l%s}\n" % ("r" * (len(rows[0])-1))
@@ -104,11 +112,11 @@ class RaplReporter(object):
     def _read_lib_listing(self):
         """ """
         listing = "\\begin{itemize}\n"
-        for read_file in self.rapl_instance.read_files:
+        for read_file in self.pathes.read_files:
             listing += "\\item %s with %s reads " % (
                 self._latex_safe(read_file),
-                self.rapl_instance._number_of_fasta_entries(
-                    self.rapl_instance._read_file_path(read_file)))
+                self.input_stats._number_of_fasta_entries(
+                    self.pathes._read_file_path(read_file)))
         listing += "\\end{itemize}\n"
         return(listing)
 
@@ -116,7 +124,7 @@ class RaplReporter(object):
         listing = "\\begin{itemize}\n"
         listing += "\n".join(
             ["\\item %s\n" % self._latex_safe(genome_file)
-             for genome_file in self.rapl_instance.genome_files])
+             for genome_file in self.pathes.genome_files])
         listing += "\\end{itemize}\n"
         return(listing)
 
