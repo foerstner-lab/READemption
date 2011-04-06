@@ -37,7 +37,7 @@ class Rapl(object):
                 args.project_name))
         sys.stdout.write("Please copy read files into folder \"%s\" and "
                          "genome files into folder \"%s\".\n" % (
-                self.pathes.rna_seq_folder, self.genome_folder))
+                self.pathes.rna_seq_folder, self.pathes.genome_folder))
 
     def map_reads(self):
         """Perform the mapping of the reads.
