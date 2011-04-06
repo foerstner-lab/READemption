@@ -25,8 +25,8 @@ class RaplGrBuilder(object):
         """
         call("%s %s/segemehl2gr.py -o %s %s" % (
                 self.pathes.python_bin, self.pathes.bin_folder,
-                self.pathes._gr_file_path(read_file, genome_file),
-                self.pathes._combined_mapping_file_a_filtered_split_path(
+                self.pathes.gr_file(read_file, genome_file),
+                self.pathes.combined_mapping_file_a_filtered_split(
                     read_file, genome_file)),
              shell=True)
 
@@ -53,8 +53,8 @@ class RaplGrBuilder(object):
         """
         call("%s %s/segemehl2gr.py -r -m %s -o %s %s" % (
                 self.pathes.python_bin, self.pathes.bin_folder, lowest_number_of_mappings,
-                self.pathes._gr_read_normalized_file_path(read_file, genome_file),
-                self.pathes._combined_mapping_file_a_filtered_split_path(
+                self.pathes.gr_read_normalized_file(read_file, genome_file),
+                self.pathes.combined_mapping_file_a_filtered_split(
                     read_file, genome_file)), shell=True)
 
     def build_nucl_normalized_gr_files(self):
@@ -80,8 +80,8 @@ class RaplGrBuilder(object):
         call("%s %s/segemehl2gr.py -n -m %s -o %s %s" % (
                 self.pathes.python_bin, self.pathes.bin_folder, 
                 lowest_number_of_mapped_nucleotides,
-                self.pathes._gr_nucl_normalized_file_path(read_file, genome_file),
-                self.pathes._combined_mapping_file_a_filtered_split_path(
+                self.pathes.gr_nucl_normalized_file(read_file, genome_file),
+                self.pathes.combined_mapping_file_a_filtered_split(
                     read_file, genome_file)), shell=True)
 
     def _lowest_number_of_mappings(self, genome_file):
@@ -125,7 +125,7 @@ class RaplGrBuilder(object):
         segemehl_parser = SegemehlParser()
         seen_ids = {}
         for entry in segemehl_parser.entries(
-            self.pathes._combined_mapping_file_a_filtered_split_path(
+            self.pathes.combined_mapping_file_a_filtered_split(
                 read_file, genome_file)):
             seen_ids[entry['id']] = 1
         return(len(seen_ids))
@@ -142,7 +142,7 @@ class RaplGrBuilder(object):
         seen_ids = []
         nucleotide_counting = 0
         for entry in segemehl_parser.entries(
-            self.pathes._combined_mapping_file_a_filtered_split_path(
+            self.pathes.combined_mapping_file_a_filtered_split(
                 read_file, genome_file)):
             if entry['id'] in seen_ids:
                 continue

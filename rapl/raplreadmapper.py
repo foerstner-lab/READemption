@@ -13,17 +13,17 @@ class RaplReadMapper(object):
     def build_segmehl_index(self):
         """Create the segemehl index based on the genome files."""
         call("%s -x %s -d %s" % (
-                self.pathes.segemehl_bin, self.pathes._segemehl_index_path(),
-                " ".join(self.pathes._genome_file_paths())), 
+                self.pathes.segemehl_bin, self.pathes.segemehl_index(),
+                " ".join(self.pathes.genome_file_paths())), 
              shell=True)
 
     def run_mapping_with_raw_reads(self):
         """Run the mapping of the raw reads using segemehl"""
         for read_file in self.pathes.read_files:
             self._run_segemehl_search(
-                self.pathes._read_file_path(read_file),
-                self.pathes._raw_read_mapping_output_path(read_file),
-                self.pathes._unmapped_raw_read_file_path(read_file))
+                self.pathes.read_file(read_file),
+                self.pathes.raw_read_mapping_output(read_file),
+                self.pathes.unmapped_raw_read_file(read_file))
 
     def _run_segemehl_search(self, read_file_path, output_file_path, 
                              unmapped_read_file_path):
@@ -42,8 +42,8 @@ class RaplReadMapper(object):
                 self.parameters.segemehl_hit_strategy,
                 self.parameters.segemehl_accuracy,
                 self.parameters.segemehl_number_of_threads,
-                self.pathes._segemehl_index_path(),
-                " ".join(self.pathes._genome_file_paths()),
+                self.pathes.segemehl_index(),
+                " ".join(self.pathes.genome_file_paths()),
                 read_file_path,
                 output_file_path),
              shell=True)
@@ -54,8 +54,8 @@ class RaplReadMapper(object):
         #         self.segemehl_hit_strategy,
         #         self.segemehl_accuracy,
         #         self.segemehl_number_of_threads,
-        #         self._segemehl_index_path(),
-        #         self._genome_file_paths(),
+        #         self.segemehl_index(),
+        #         self.genome_files(),
         #         read_file_path,
         #         output_file_path,
         #         unmapped_read_file_path),
@@ -65,9 +65,9 @@ class RaplReadMapper(object):
         """Extract unmapped reads of first mapping round."""
         for read_file in self.pathes.read_files:
             self._extract_unmapped_reads(
-                self.pathes._read_file_path(read_file),
-                self.pathes._raw_read_mapping_output_path(read_file),
-                self.pathes._unmapped_raw_read_file_path(read_file))
+                self.pathes.read_file(read_file),
+                self.pathes.raw_read_mapping_output(read_file),
+                self.pathes.unmapped_raw_read_file(read_file))
 
     def _extract_unmapped_reads(self, read_file, mapping_file, 
                                 output_read_file):
@@ -87,7 +87,7 @@ class RaplReadMapper(object):
     def clip_unmapped_reads(self):
         """Clip reads unmapped in the first segemehl run."""
         for read_file in self.pathes.read_files:
-            self._clip_reads(self.pathes._unmapped_raw_read_file_path(read_file))
+            self._clip_reads(self.pathes.unmapped_raw_read_file(read_file))
 
     def _clip_reads(self, unmapped_raw_read_file_path):
         """Remove the poly-A tail of reads in a file.
@@ -109,7 +109,7 @@ class RaplReadMapper(object):
 
         """
         for read_file in self.pathes.read_files:
-            self._filter_reads_by_size(self.pathes._unmapped_read_clipped_path(read_file))
+            self._filter_reads_by_size(self.pathes.unmapped_read_clipped(read_file))
 
     def _filter_reads_by_size(self, read_file_path):
         """Filter reads by sequence length.
@@ -126,16 +126,16 @@ class RaplReadMapper(object):
         """Run the mapping with clipped and size filtered reads."""
         for read_file in self.pathes.read_files:
             self._run_segemehl_search(
-                self.pathes._unmapped_clipped_size_filtered_read_path(read_file), 
-                self.pathes._clipped_reads_mapping_output_path(read_file),
-                self.pathes._unmapped_reads_of_clipped_reads_file_path(read_file))
+                self.pathes.unmapped_clipped_size_filtered_read(read_file), 
+                self.pathes.clipped_reads_mapping_output(read_file),
+                self.pathes.unmapped_reads_of_clipped_reads_file(read_file))
 
     def extract_unmapped_reads_of_second_mapping(self):
         """Extract reads that are not mapped in the second run."""
         for read_file in  self.pathes.read_files:
             self._extract_unmapped_reads(
-                self.pathes._unmapped_clipped_size_filtered_read_path(read_file),
-                self.pathes._clipped_reads_mapping_output_path(read_file),
+                self.pathes.unmapped_clipped_size_filtered_read(read_file),
+                self.pathes.clipped_reads_mapping_output(read_file),
                 self.pathes._unmapped_reads_second_mapping_path(read_file))
 
     def combine_mappings(self):
@@ -151,9 +151,9 @@ class RaplReadMapper(object):
                        the Segemehl mappings.
 
         """
-        comined_mappings_fh = open(self.pathes._combined_mapping_file_path(read_file), "w")
-        comined_mappings_fh.write(open(self.pathes._raw_read_mapping_output_path(read_file)).read())
-        comined_mappings_fh.write(open(self.pathes._clipped_reads_mapping_output_path(read_file)).read())
+        comined_mappings_fh = open(self.pathes.combined_mapping_file(read_file), "w")
+        comined_mappings_fh.write(open(self.pathes.raw_read_mapping_output(read_file)).read())
+        comined_mappings_fh.write(open(self.pathes.clipped_reads_mapping_output(read_file)).read())
         comined_mappings_fh.close()
 
     def filter_combined_mappings_by_a_content(self):
@@ -180,7 +180,7 @@ class RaplReadMapper(object):
         """
         call("%s %s/filter_segemehl_by_nucleotide_percentage.py %s A %s " % (
             self.pathes.python_bin, self.pathes.bin_folder, 
-            self.pathes._combined_mapping_file_path(mapping_file), self.parameters.max_a_content), 
+            self.pathes.combined_mapping_file(mapping_file), self.parameters.max_a_content), 
              shell=True)
 
     def split_mappings_by_genome_files(self):
@@ -208,12 +208,12 @@ class RaplReadMapper(object):
         # genome files don't have any mapping and so their mapping
         # file would not be created otherwise and be missing later.
         for genome_file in self.pathes.genome_files:
-            output_file = self.pathes._combined_mapping_file_a_filtered_split_path(
+            output_file = self.pathes.combined_mapping_file_a_filtered_split(
                 read_file, genome_file)
             file_handles["%s-%s" % (read_file, genome_file)] = open(
                 output_file, "w")
         for entry in segemehl_parser.entries(
-            self.pathes._combined_mapping_file_a_filtered_path(read_file)):
+            self.pathes.combined_mapping_file_a_filtered(read_file)):
             genome_file = headers_of_genome_files[entry['target_description']]
             file_handles["%s-%s" % (read_file, genome_file)].write(
                 segemehl_builder.entry_to_line(entry))
@@ -224,6 +224,6 @@ class RaplReadMapper(object):
         """Extract the FASTA headers of all genome files."""
         headers = {}
         for genome_file in self.pathes.genome_files:
-            genome_fh = open(self.pathes._genome_file_path(genome_file))
+            genome_fh = open(self.pathes.genome_file(genome_file))
             headers[genome_fh.readline()[:-1]] = genome_file
         return(headers)

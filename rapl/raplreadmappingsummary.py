@@ -15,7 +15,7 @@ class ReadMappingSummary(object):
             for genome_file in self.pathes.genome_files:
                 reads = {}
                 for entry in segemehl_parser.entries(
-                    self.pathes._combined_mapping_file_a_filtered_split_path(
+                    self.pathes.combined_mapping_file_a_filtered_split(
                         read_file, genome_file)):
                     reads[entry["id"]] = 1
                 counting_row.append(len(reads))

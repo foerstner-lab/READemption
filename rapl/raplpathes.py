@@ -103,7 +103,7 @@ class RaplPathes(object):
                 self.report_folder])
     
 
-    def _read_file_path(self, read_file):
+    def read_file(self, read_file):
         """Return the full path of a given read file.
 
         Arguments:
@@ -111,7 +111,7 @@ class RaplPathes(object):
         """
         return("%s/%s" % (self.rna_seq_folder, read_file))
 
-    def _unmapped_raw_read_file_path(self, read_file):
+    def unmapped_raw_read_file(self, read_file):
         """Return the full path of unmapped reads of the first run.
 
         Arguments:
@@ -120,12 +120,12 @@ class RaplPathes(object):
         return("%s/%s.unmapped.fa" % (
                 self.umapped_reads_of_first_mapping_folder, read_file))
 
-    def _segemehl_index_path(self):
+    def segemehl_index(self):
         """Return the full path the the in segemehl index file."""
         return("%s/%s"  % (
-                self.read_mapping_index_folder, self._segemehl_index_name()))
+                self.read_mapping_index_folder, self.segemehl_index_name()))
 
-    def _genome_file_path(self, genome_file):
+    def genome_file(self, genome_file):
         """Return the ull path of a given genome file
 
         Arguments:
@@ -133,21 +133,21 @@ class RaplPathes(object):
         """
         return("%s/%s" % (self.genome_folder, genome_file))
 
-    def _genome_file_paths(self):
+    def genome_file_paths(self):
         """Return the full paths of all genome files"""
-        return([self._genome_file_path(genome_file) 
+        return([self.genome_file(genome_file) 
                 for genome_file in self.genome_files])
 
-    def _raw_read_mapping_output_path(self, read_file):
+    def raw_read_mapping_output(self, read_file):
         """Return the full path of the output file of a segemehl run
 
         Arguments:
         - `read_file`: read file name that is mapped
         """
         return("%s/%s_mapped_to_%s" % (
-                self.read_mappings_first_run_folder, read_file, self._segemehl_index_name()))
+                self.read_mappings_first_run_folder, read_file, self.segemehl_index_name()))
 
-    def _unmapped_read_clipped_path(self, read_file):
+    def unmapped_read_clipped(self, read_file):
         """Return the full path of a file with clipped reads
 
         Arguments:
@@ -157,7 +157,7 @@ class RaplPathes(object):
                 self.umapped_reads_of_first_mapping_folder, read_file))
 
 
-    def _unmapped_clipped_size_filtered_read_path(self, read_file):
+    def unmapped_clipped_size_filtered_read(self, read_file):
         """Return the full path of clipped and size filtered reads.
 
         Arguments:
@@ -168,7 +168,7 @@ class RaplPathes(object):
                 self.umapped_reads_of_first_mapping_folder,
                 read_file, self.parameters.min_seq_length))
 
-    def _clipped_reads_mapping_output_path(self, read_file):
+    def clipped_reads_mapping_output(self, read_file):
         """Return the path of the mapping file of the second run.
 
         Arguments:
@@ -176,9 +176,9 @@ class RaplPathes(object):
         """
         return("%s/%s.clipped_mapped_to_%s" % (
                 self.read_mappings_second_run_folder,
-                read_file, self._segemehl_index_name()))
+                read_file, self.segemehl_index_name()))
 
-    def _unmapped_reads_of_clipped_reads_file_path(self, read_file):
+    def unmapped_reads_of_clipped_reads_file(self, read_file):
         """Return the full path of the unmapped reads of the 2nd run.
 
         Arguments:
@@ -196,7 +196,7 @@ class RaplPathes(object):
         return("%s/%s.unmapped.fa" % (
                 self.umapped_reads_of_second_mapping_folder, read_file))
 
-    def _combined_mapping_file_path(self, read_file):
+    def combined_mapping_file(self, read_file):
         """Return the path of the combined mappings.
 
         Arguments:
@@ -204,9 +204,9 @@ class RaplPathes(object):
         """
         return("%s/%s_mapped_to_%s.combined" % (
                 self.combined_mappings_folder, read_file,
-                self._segemehl_index_name()))
+                self.segemehl_index_name()))
 
-    def _combined_mapping_file_a_filtered_split_path(self, read_file, genome_file):
+    def combined_mapping_file_a_filtered_split(self, read_file, genome_file):
         """Return the path of the split filtered combined mappings.
         
         Arguments:
@@ -214,19 +214,19 @@ class RaplPathes(object):
         """
         return("%s/%s_mapped_to_%s.combined.filtered_ltoe_%s%%_A.txt.from_%s_only" % (
                 self.combined_mapping_split_folder, read_file, 
-                self._segemehl_index_name(), self.parameters.max_a_content, genome_file))
+                self.segemehl_index_name(), self.parameters.max_a_content, genome_file))
 
-    def _combined_mapping_file_a_filtered_path(self, read_file):
+    def combined_mapping_file_a_filtered(self, read_file):
         """Return the path of the filtered combined mappings.
 
         Arguments:
         - `read_file`: name of the read file
         """
         return("%s.filtered_ltoe_%s%%_A.txt" % (
-                self._combined_mapping_file_path(read_file),
+                self.combined_mapping_file(read_file),
                 self.parameters.max_a_content))
 
-    def _unmapped_clipped_size_failed_read_path(self, read_file):
+    def unmapped_clipped_size_failed_read(self, read_file):
         """Return the path of size filter failed clipped reads.
 
         Arguments:
@@ -236,17 +236,17 @@ class RaplPathes(object):
                 self.umapped_reads_of_first_mapping_folder,
                 read_file, self.parameters.min_seq_length))
 
-    def _combined_mapping_file_a_filter_failed_path(self, read_file):
+    def combined_mapping_file_a_filter_failed(self, read_file):
         """Return the path of the A-content filter failed reads.
 
         Arguments:
         - `read_file`: name of the read file
         """
         return("%s.filtered_gt_%s%%_A.txt" % (
-                self._combined_mapping_file_path(read_file),
+                self.combined_mapping_file(read_file),
                 self.parameters.max_a_content))
 
-    def _trace_file_path(self, read_file):
+    def trace_file(self, read_file):
         """Return the path of the trace file of a read file.
 
         Arguments:
@@ -255,7 +255,7 @@ class RaplPathes(object):
         return("%s/%s.mapping_tracing.csv" % (
                 self.read_tracing_folder, read_file))
 
-    def _gr_file_path(self, read_file, genome_file):
+    def gr_file(self, read_file, genome_file):
         """Return the GR file path of a given read and genome file.
 
         Arguments:
@@ -264,7 +264,7 @@ class RaplPathes(object):
         """
         return("%s/%s_in_%s.gr" % (self.gr_folder, read_file, genome_file))
 
-    def _gr_read_normalized_file_path(self, read_file, genome_file):
+    def gr_read_normalized_file(self, read_file, genome_file):
         """Return the GR read normalized file path of a given read and
         genome file.
 
@@ -275,7 +275,7 @@ class RaplPathes(object):
         return("%s/%s_in_%s.gr" % (
                 self.gr_folder_read_normalized, read_file, genome_file))
 
-    def _gr_nucl_normalized_file_path(self, read_file, genome_file):
+    def gr_nucl_normalized_file(self, read_file, genome_file):
         """Return the GR nucleotide normalized file path of a given read and
         genome file.
 
@@ -286,7 +286,7 @@ class RaplPathes(object):
         return("%s/%s_in_%s.gr" % (
                 self.gr_folder_nucl_normalized, read_file, genome_file))
 
-    def _annotation_hit_file_path(self, read_file, annotation_file):
+    def annotation_hit_file(self, read_file, annotation_file):
         """Return the path of the annoation hit file.
 
         Arguments:
@@ -296,7 +296,7 @@ class RaplPathes(object):
         return("%s/%s_in_%s_annotation_hits" % (
                 self.annotation_hit_folder, read_file, annotation_file))
 
-    def _annotation_file_path(self, annotation_file):
+    def annotation_file(self, annotation_file):
         """Return the path of a given annotation files.
 
         Arguments:
@@ -304,7 +304,7 @@ class RaplPathes(object):
         """
         return("%s/%s" % (self.annotation_folder , annotation_file))
 
-    def _annotation_hit_overview_file_path(self, annotation_file):
+    def annotation_hit_overview_file(self, annotation_file):
         """Return the path of the annotation overview file.
 
         Arguments:
@@ -313,7 +313,7 @@ class RaplPathes(object):
         return("%s/%s_all_annotation_hits_sense.csv" % (
                 self.annotation_hit_overview_folder, annotation_file))
 
-    def _annotation_hit_overview_antisense_file_path(self, annotation_file):
+    def annotation_hit_overview_antisense_file(self, annotation_file):
         """Return the path of the annotation overview file for antisense hits.
 
         Arguments:
@@ -322,7 +322,7 @@ class RaplPathes(object):
         return("%s/%s_all_annotation_hits_antisense.csv" % (
                 self.annotation_hit_overview_folder, annotation_file))
 
-    def _annotation_hit_overview_read_normalized_file_path(self, annotation_file):
+    def annotation_hit_overview_read_normalized_file(self, annotation_file):
         """Return the path of the annotation overview normalized by
            mapped reads file.
         """
@@ -338,7 +338,7 @@ class RaplPathes(object):
                 self.annotation_hit_overview_read_normalized_folder, 
                 annotation_file))
 
-    def _annotation_hit_overview_nucl_normalized_file_path(self, annotation_file):
+    def annotation_hit_overview_nucl_normalized_file(self, annotation_file):
         """Return the path of the annotation overview normalized by
            mapped nucleotides file.
         """
@@ -346,7 +346,7 @@ class RaplPathes(object):
                 self.annotation_hit_overview_nucl_normalized_folder, 
                 annotation_file))
 
-    def _annotation_hit_overview_nucl_normalized_antisense_file_path(self, annotation_file):
+    def annotation_hit_overview_nucl_normalized_antisense_file(self, annotation_file):
         """Return the path of the annotation overview normalized by
            mapped nucleotides file.
         """
@@ -354,7 +354,7 @@ class RaplPathes(object):
                 self.annotation_hit_overview_nucl_normalized_folder, 
                 annotation_file))
 
-    def _segemehl_index_name(self):
+    def segemehl_index_name(self):
         """Return the name of the segemehl index file."""
         # TODO Avoid too long file name later.
         #index_file_name = "_".join(self.genome_files) + ".idx"

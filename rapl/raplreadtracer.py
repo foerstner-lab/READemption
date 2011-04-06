@@ -36,7 +36,7 @@ class RaplReadTracer(object):
                         mapping files.
 
         """
-        trace_fh = open(self.pathes._trace_file_path(read_file), "w")
+        trace_fh = open(self.pathes.trace_file(read_file), "w")
         trace_fh.write("#Read id\tRead length\tNumber of mappings first run\t"
                        "length after clipping\tPassed size filter\t"
                        "Number of mappings second run\t"
@@ -85,7 +85,7 @@ class RaplReadTracer(object):
         """
         segemehl_parser = SegemehlParser()
         for entry in segemehl_parser.entries(
-            self.pathes._raw_read_mapping_output_path(read_file)):
+            self.pathes.raw_read_mapping_output(read_file)):
             entry_id = entry["id"][1:] # remove ">"
             self.read_ids_and_traces[entry_id].setdefault(
                 "no_of_mappings_first_run", 0)
@@ -101,7 +101,7 @@ class RaplReadTracer(object):
         """
         fasta_parser = FastaParser()
         for header, seq in fasta_parser.parse_fasta_file(
-            self.pathes._unmapped_raw_read_file_path(read_file)):
+            self.pathes.unmapped_raw_read_file(read_file)):
                 self.read_ids_and_traces[header]["no_of_mappings_first_run"] = 0
 
     def _read_clipped_unmapped_reads(self, read_file):
@@ -116,7 +116,7 @@ class RaplReadTracer(object):
         """
         fasta_parser = FastaParser()
         for header, seq in fasta_parser.parse_fasta_file(
-            self.pathes._unmapped_read_clipped_path(read_file)):
+            self.pathes.unmapped_read_clipped(read_file)):
             self.read_ids_and_traces[header][
                 "length_after_clipping"] = len(seq)
 
@@ -129,7 +129,7 @@ class RaplReadTracer(object):
         """
         fasta_parser = FastaParser()
         for header, seq in fasta_parser.parse_fasta_file(
-            self.pathes._unmapped_clipped_size_filtered_read_path(read_file)):
+            self.pathes.unmapped_clipped_size_filtered_read(read_file)):
             if header == "": continue
             self.read_ids_and_traces[header][
                 "passed_size_filtering"] = True
@@ -143,7 +143,7 @@ class RaplReadTracer(object):
         """
         fasta_parser = FastaParser()
         for header, seq in fasta_parser.parse_fasta_file(
-            self.pathes._unmapped_clipped_size_failed_read_path(read_file)):
+            self.pathes.unmapped_clipped_size_failed_read(read_file)):
             if header == "": continue
             self.read_ids_and_traces[header][
                 "passed_size_filtering"] = False
@@ -157,7 +157,7 @@ class RaplReadTracer(object):
         """
         segemehl_parser = SegemehlParser()
         for entry in segemehl_parser.entries(
-            self.pathes._clipped_reads_mapping_output_path(read_file)):
+            self.pathes.clipped_reads_mapping_output(read_file)):
             entry_id = entry["id"][1:] # remove ">"
             self.read_ids_and_traces[entry_id].setdefault(
                 "no_of_mappings_second_run", 0)
@@ -185,7 +185,7 @@ class RaplReadTracer(object):
         """
         segemehl_parser = SegemehlParser()
         for entry in segemehl_parser.entries(
-            self.pathes._combined_mapping_file_a_filtered_path(read_file)):
+            self.pathes.combined_mapping_file_a_filtered(read_file)):
             entry_id = entry["id"][1:] # remove ">"
             self.read_ids_and_traces[entry_id][
                 "passed_a-content_filtering"] = True
@@ -201,7 +201,7 @@ class RaplReadTracer(object):
         """
         segemehl_parser = SegemehlParser()
         for entry in segemehl_parser.entries(
-            self.pathes._combined_mapping_file_a_filter_failed_path(read_file)):
+            self.pathes.combined_mapping_file_a_filter_failed(read_file)):
             entry_id = entry["id"][1:] # remove ">"
             self.read_ids_and_traces[entry_id][
                 "passed_a-content_filtering"] = False
@@ -252,7 +252,7 @@ class RaplReadTracer(object):
             "\n")
         for read_file in self.pathes.read_files:
             stati_and_countings = self._summarize_tracing_file(
-                self.pathes._trace_file_path(read_file))
+                self.pathes.trace_file(read_file))
             countings = []
             for status in stati:
                 stati_and_countings.setdefault(status, 0)

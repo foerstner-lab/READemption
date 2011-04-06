@@ -48,7 +48,7 @@ class RaplReporter(object):
                     self.pathes.lib_genome_read_mapping_summary),
                 genome_file_listing = self._genome_file_listing(),
                 index_file_name = self._latex_safe(
-                    self.pathes._segemehl_index_name()),
+                    self.pathes.segemehl_index_name()),
                 index_folder = self._latex_safe(
                     self.pathes.read_mapping_index_folder),
                 min_seq_length = self.parameters.min_seq_length,
@@ -116,7 +116,7 @@ class RaplReporter(object):
             listing += "\\item %s with %s reads " % (
                 self._latex_safe(read_file),
                 self.input_stats._number_of_fasta_entries(
-                    self.pathes._read_file_path(read_file)))
+                    self.pathes.read_file(read_file)))
         listing += "\\end{itemize}\n"
         return(listing)
 
