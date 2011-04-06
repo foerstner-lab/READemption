@@ -1,14 +1,14 @@
 from subprocess import call
-from rapl.raplpathes import RaplPathes
-from rapl.raplparameters import RaplParameters
+from rapl.pathes import Pathes
+from rapl.parameters import Parameters
 from rapl.segemehl import SegemehlParser
 from rapl.segemehl import SegemehlBuilder
 
-class RaplReadMapper(object):
+class ReadMapper(object):
 
     def __init__(self):
-        self.pathes = RaplPathes()
-        self.parameters = RaplParameters()
+        self.pathes = Pathes()
+        self.parameters = Parameters()
     
     def build_segmehl_index(self):
         """Create the segemehl index based on the genome files."""

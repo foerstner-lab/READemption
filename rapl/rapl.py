@@ -5,22 +5,22 @@ import hashlib
 from subprocess import call
 from rapl.segemehl import SegemehlParser
 from rapl.segemehl import SegemehlBuilder
-from rapl.raplreporter import RaplReporter
-from rapl.raplcreator import RaplCreator
-from rapl.raplinputstats import RaplInputStats
+from rapl.reporter import Reporter
+from rapl.creator import Creator
+from rapl.inputstats import InputStats
 from rapl.fasta import FastaParser
-from rapl.raplreadmapper import RaplReadMapper
-from rapl.raplreadtracer import RaplReadTracer
-from rapl.raplgrbuilder import RaplGrBuilder
-from rapl.raplreadmappingsummary import ReadMappingSummary
-from rapl.raplannotations import RaplAnnotations
-from rapl.raplpathes import RaplPathes
+from rapl.readmapper import ReadMapper
+from rapl.readtracer import ReadTracer
+from rapl.grbuilder import GrBuilder
+from rapl.readmappingsummary import ReadMappingSummary
+from rapl.annotations import Annotations
+from rapl.pathes import Pathes
 
 class Rapl(object):
 
     def __init__(self):
         """Create an instance."""
-        self.pathes = RaplPathes()
+        self.pathes = Pathes()
 
     def start_project(self, args):
         """Create a new project.
@@ -29,7 +29,7 @@ class Rapl(object):
         - `args.project_name`: Name of the project root folder
 
         """
-        rapl_creator = RaplCreator()
+        rapl_creator = Creator()
         rapl_creator.create_root_folder(args.project_name)
         rapl_creator.create_subfolders(args.project_name)
         rapl_creator.create_config_file(args.project_name)
@@ -49,10 +49,10 @@ class Rapl(object):
         self._in_project_folder()
         self._get_genome_file_names()
         self._get_read_file_names()
-        input_file_stats = RaplInputStats()
+        input_file_stats = InputStats()
         input_file_stats.create_read_file_stats()
         input_file_stats.create_genome_file_stats()
-        read_mapper = RaplReadMapper()
+        read_mapper = ReadMapper()
         read_mapper.build_segmehl_index()
         read_mapper.run_mapping_with_raw_reads()
         read_mapper.extract_unmapped_reads_raw_read_mapping()
@@ -65,13 +65,16 @@ class Rapl(object):
         read_mapper.split_mappings_by_genome_files()
         read_mapping_summary = ReadMappingSummary()
         read_mapping_summary.create()
+        read_tracer = ReadTracer()
+        read_tracer.trace_reads()
+        read_tracer.create_tracing_summay()
     
     def create_gr_files(self):
         """Create GR files based on the combined Segemehl mappings. """
         self._in_project_folder()
         self._get_genome_file_names()
         self._get_read_file_names()
-        gr_builder = RaplGrBuilder()
+        gr_builder = GrBuilder()
         gr_builder.build_gr_files()
         gr_builder.build_read_normalized_gr_files()
         gr_builder.build_nucl_normalized_gr_files()
@@ -81,7 +84,7 @@ class Rapl(object):
         self._in_project_folder()
         self._get_genome_file_names()
         self._get_read_file_names()
-        annotations = RaplAnnotations()
+        annotations = Annotations()
         annotations.find_annotation_hits()
         annotations.build_annotation_hit_overview()
         annotations.build_annotation_hit_overview_read_normalized()
@@ -92,7 +95,7 @@ class Rapl(object):
         self._in_project_folder()
         self._get_genome_file_names()
         self._get_read_file_names()
-        rapl_reporter = RaplReporter(self)
+        rapl_reporter = Reporter(self)
         report_fh = open(self.pathes.report_tex_file, "w")
         report_fh.write(rapl_reporter.report())
         report_fh.close()

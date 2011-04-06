@@ -2,11 +2,11 @@ import csv
 from string import Template
 from datetime import datetime
 
-from rapl.raplpathes import RaplPathes
-from rapl.raplparameters import RaplParameters
-from rapl.raplinputstats import RaplInputStats
+from rapl.pathes import Pathes
+from rapl.parameters import Parameters
+from rapl.inputstats import InputStats
 
-class RaplReporter(object):
+class Reporter(object):
 
     def __init__(self, rapl_instance):
         """Create instance
@@ -15,9 +15,9 @@ class RaplReporter(object):
         - `rapl_instance`: The rapl instance that is reported about
                            
         """
-        self.pathes = RaplPathes()
-        self.parameters = RaplParameters()
-        self.input_stats = RaplInputStats()
+        self.pathes = Pathes()
+        self.parameters = Parameters()
+        self.input_stats = InputStats()
 
 
     def report(self):

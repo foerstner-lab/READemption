@@ -1,15 +1,15 @@
 import json
 from subprocess import call
-from rapl.raplpathes import RaplPathes
-from rapl.raplparameters import RaplParameters
-from rapl.raplgrbuilder import RaplGrBuilder
+from rapl.pathes import Pathes
+from rapl.parameters import Parameters
+from rapl.grbuilder import GrBuilder
 
-class RaplAnnotations(object):
+class Annotations(object):
 
     def __init__(self):
-        self.pathes = RaplPathes()
-        self.parameters = RaplParameters()
-        self.grbuilder = RaplGrBuilder()
+        self.pathes = Pathes()
+        self.parameters = Parameters()
+        self.grbuilder = GrBuilder()
         self._get_annotation_files_from_config()
 
     def find_annotation_hits(self):

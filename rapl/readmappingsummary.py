@@ -1,10 +1,10 @@
-from rapl.raplpathes import RaplPathes
+from rapl.pathes import Pathes
 from rapl.segemehl import SegemehlParser
 
 class ReadMappingSummary(object):
 
     def __init__(self):
-        self.pathes = RaplPathes()
+        self.pathes = Pathes()
 
     def create(self):
         """Create a file with lib/genome based read coutings."""

@@ -1,7 +1,7 @@
 import os
-from rapl.raplparameters import RaplParameters
+from rapl.parameters import Parameters
 
-class RaplPathes(object):
+class Pathes(object):
 
     def __init__(self):
         self._set_folder_names()
@@ -9,7 +9,7 @@ class RaplPathes(object):
         self._set_bin_paths()
         self._get_read_file_names()
         self._get_genome_file_names()
-        self.parameters = RaplParameters()
+        self.parameters = Parameters()
 
     def _set_folder_names(self):
         """Set the name of folders used in a project."""

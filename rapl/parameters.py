@@ -1,5 +1,4 @@
-
-class RaplParameters(object):
+class Parameters(object):
     segemehl_accuracy = 85
     segemehl_hit_strategy = "2"
     segemehl_max_e_value = 5.0

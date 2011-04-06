@@ -1,13 +1,13 @@
-from rapl.raplpathes import RaplPathes
+from rapl.pathes import Pathes
 from rapl.segemehl import SegemehlParser
 from rapl.fasta import FastaParser
 
-class RaplReadTracer(object):
+class ReadTracer(object):
 
     def __init__(self):
-        self.pathes = RaplPathes()
+        self.pathes = Pathes()
     
-    def trace_reads_after_mapping(self):
+    def trace_reads(self):
         """Trace the way of each read during the different steps.
 
         A file is generated that can be used for downstream
@@ -71,7 +71,7 @@ class RaplReadTracer(object):
         """
         fasta_parser = FastaParser()
         for header, seq in fasta_parser.parse_fasta_file(
-            self.pathes._read_file_path(read_file)):
+            self.pathes.read_file(read_file)):
             self.read_ids.append(header)
             self.read_ids_and_traces[header] = {'length' : len(seq)}
 

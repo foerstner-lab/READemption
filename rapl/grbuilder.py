@@ -1,13 +1,13 @@
 from subprocess import call
 
-from rapl.raplpathes import RaplPathes
-from rapl.raplparameters import RaplParameters
+from rapl.pathes import Pathes
+from rapl.parameters import Parameters
 from rapl.segemehl import SegemehlParser
 
-class RaplGrBuilder(object):
+class GrBuilder(object):
 
     def __init__(self):
-        self.pathes = RaplPathes()
+        self.pathes = Pathes()
     
     def build_gr_files(self):
         """Generate GR files for all read/genome file combinations."""

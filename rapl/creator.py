@@ -2,12 +2,12 @@ import os
 import sys
 import json
 
-from rapl.raplpathes import RaplPathes
+from rapl.pathes import Pathes
 
-class RaplCreator(object):
+class Creator(object):
 
     def __init__(self):
-        self.pathes = RaplPathes()
+        self.pathes = Pathes()
 
     def create_root_folder(self, project_name):
         """Create the root folder of a new project with the given name.

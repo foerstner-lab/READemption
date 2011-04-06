@@ -3,13 +3,13 @@ import os
 from subprocess import Popen
 from subprocess import PIPE
 
-from rapl.raplpathes import RaplPathes
+from rapl.pathes import Pathes
 from rapl.fasta import FastaParser
 
-class RaplInputStats(object):
+class InputStats(object):
 
     def __init__(self):
-        self.pathes = RaplPathes()
+        self.pathes = Pathes()
 
     def create_read_file_stats(self):
         """Create a stat file for the input read files."""
