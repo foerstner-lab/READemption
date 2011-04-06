@@ -1,12 +1,15 @@
 import os
+from rapl.raplparameters import RaplParameters
 
 class RaplPathes(object):
 
     def __init__(self):
         self._set_folder_names()
         self._set_file_names()
+        self._set_bin_paths()
         self._get_read_file_names()
         self._get_genome_file_names()
+        self.parameters = RaplParameters()
 
     def _set_folder_names(self):
         """Set the name of folders used in a project."""
@@ -163,7 +166,7 @@ class RaplPathes(object):
         """
         return("%s/%s.unmapped.fa.clipped.fa.size_filtered_gtoe_%sbp.fa" % (
                 self.umapped_reads_of_first_mapping_folder,
-                read_file, self.min_seq_length))
+                read_file, self.parameters.min_seq_length))
 
     def _clipped_reads_mapping_output_path(self, read_file):
         """Return the path of the mapping file of the second run.
@@ -211,7 +214,7 @@ class RaplPathes(object):
         """
         return("%s/%s_mapped_to_%s.combined.filtered_ltoe_%s%%_A.txt.from_%s_only" % (
                 self.combined_mapping_split_folder, read_file, 
-                self._segemehl_index_name(), self.max_a_content, genome_file))
+                self._segemehl_index_name(), self.parameters.max_a_content, genome_file))
 
     def _combined_mapping_file_a_filtered_path(self, read_file):
         """Return the path of the filtered combined mappings.
@@ -221,7 +224,7 @@ class RaplPathes(object):
         """
         return("%s.filtered_ltoe_%s%%_A.txt" % (
                 self._combined_mapping_file_path(read_file),
-                self.max_a_content))
+                self.parameters.max_a_content))
 
     def _unmapped_clipped_size_failed_read_path(self, read_file):
         """Return the path of size filter failed clipped reads.
@@ -231,7 +234,7 @@ class RaplPathes(object):
         """
         return("%s/%s.unmapped.fa.clipped.fa.size_filtered_lt_%sbp.fa" % (
                 self.umapped_reads_of_first_mapping_folder,
-                read_file, self.min_seq_length))
+                read_file, self.parameters.min_seq_length))
 
     def _combined_mapping_file_a_filter_failed_path(self, read_file):
         """Return the path of the A-content filter failed reads.
@@ -241,7 +244,7 @@ class RaplPathes(object):
         """
         return("%s.filtered_gt_%s%%_A.txt" % (
                 self._combined_mapping_file_path(read_file),
-                self.max_a_content))
+                self.parameters.max_a_content))
 
     def _trace_file_path(self, read_file):
         """Return the path of the trace file of a read file.
@@ -350,3 +353,11 @@ class RaplPathes(object):
         return("%s/%s_all_annotation_hits_normalized_by_nucleotides_antisense.csv" % (
                 self.annotation_hit_overview_nucl_normalized_folder, 
                 annotation_file))
+
+    def _segemehl_index_name(self):
+        """Return the name of the segemehl index file."""
+        # TODO Avoid too long file name later.
+        #index_file_name = "_".join(self.genome_files) + ".idx"
+        #index_file_name.replace(".fa", "")
+        index_file_name = "genome.idx"
+        return(index_file_name)
