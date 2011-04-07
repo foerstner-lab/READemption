@@ -138,7 +138,7 @@ class GrBuilder(object):
 
         """
         segemehl_parser = SegemehlParser()
-        seen_ids = []
+        seen_ids = {}
         nucleotide_counting = 0
         for entry in segemehl_parser.entries(
             self.pathes.combined_mapping_file_a_filtered_split(
@@ -146,7 +146,7 @@ class GrBuilder(object):
             if entry['id'] in seen_ids:
                 continue
             nucleotide_counting += len(entry['sequence'])
-            seen_ids.append(entry['id'])
+            seen_ids[entry['id']] = 1
         return(nucleotide_counting)
 
     def find_annotation_hits(self):
