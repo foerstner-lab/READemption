@@ -1,6 +1,6 @@
-from rapl.fasta import FastaParser
+from libs.fasta import FastaParser
+from libs.segemehl import SegemehlParser
 from rapl.pathes import Pathes
-from rapl.segemehl import SegemehlParser
 
 class ReadTracer(object):
 

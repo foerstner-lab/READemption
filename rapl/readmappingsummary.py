@@ -1,5 +1,5 @@
+from libs.segemehl import SegemehlParser
 from rapl.pathes import Pathes
-from rapl.segemehl import SegemehlParser
 
 class ReadMappingSummary(object):
 

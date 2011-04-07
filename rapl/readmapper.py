@@ -1,8 +1,7 @@
 from subprocess import call
 from rapl.parameters import Parameters
 from rapl.pathes import Pathes
-from rapl.segemehl import SegemehlBuilder
-from rapl.segemehl import SegemehlParser
+from libs.segemehl import SegemehlBuilder, SegemehlParser
 
 class ReadMapper(object):
 

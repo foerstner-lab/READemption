@@ -1,11 +1,8 @@
-import hashlib
 import os
-import shutil
 import sys
 from subprocess import call
 from rapl.annotations import Annotations
 from rapl.creator import Creator
-from rapl.fasta import FastaParser
 from rapl.grbuilder import GrBuilder
 from rapl.inputstats import InputStats
 from rapl.pathes import Pathes
@@ -13,7 +10,6 @@ from rapl.readmapper import ReadMapper
 from rapl.readmappingsummary import ReadMappingSummary
 from rapl.readtracer import ReadTracer
 from rapl.reporter import Reporter
-from rapl.segemehl import SegemehlBuilder, SegemehlParser
 
 class Rapl(object):
 
