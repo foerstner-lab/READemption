@@ -1,5 +1,5 @@
 from subprocess import call
-from libs.segemehl import SegemehlParser
+from libs.sam import SamParser
 from rapl.parameters import Parameters
 from rapl.paths import Paths
 
@@ -22,7 +22,7 @@ class GrBuilder(object):
                        the first mapping file.
         - `genome_file`: name of the target genome file.
         """
-        call("%s %s/segemehl2gr.py -o %s %s" % (
+        call("%s %s/sam2gr.py -o %s %s" % (
                 self.paths.python_bin, self.paths.bin_folder,
                 self.paths.gr_file(read_file, genome_file),
                 self.paths.combined_mapping_file_a_filtered_split(
@@ -50,7 +50,7 @@ class GrBuilder(object):
                                        the genome file.
 
         """
-        call("%s %s/segemehl2gr.py -r -m %s -o %s %s" % (
+        call("%s %s/sam2gr.py -r -m %s -o %s %s" % (
                 self.paths.python_bin, self.paths.bin_folder, lowest_number_of_mappings,
                 self.paths.gr_read_normalized_file(read_file, genome_file),
                 self.paths.combined_mapping_file_a_filtered_split(
@@ -76,7 +76,7 @@ class GrBuilder(object):
                                        found for all read libs for a
                                        the genome file.
         """
-        call("%s %s/segemehl2gr.py -n -m %s -o %s %s" % (
+        call("%s %s/sam2gr.py -n -m %s -o %s %s" % (
                 self.paths.python_bin, self.paths.bin_folder, 
                 lowest_number_of_mapped_nucleotides,
                 self.paths.gr_nucl_normalized_file(read_file, genome_file),
@@ -121,12 +121,12 @@ class GrBuilder(object):
         - `genome_file`: targe genome file
 
         """
-        segemehl_parser = SegemehlParser()
+        sam_parser = SamParser()
         seen_ids = {}
-        for entry in segemehl_parser.entries(
+        for entry in sam_parser.entries(
             self.paths.combined_mapping_file_a_filtered_split(
                 read_file, genome_file)):
-            seen_ids[entry['id']] = 1
+            seen_ids[entry['query']] = 1
         return(len(seen_ids))
     
     def _count_mapped_nucleotides(self, read_file, genome_file):
@@ -137,16 +137,16 @@ class GrBuilder(object):
         - `genome_file`: targe genome file
 
         """
-        segemehl_parser = SegemehlParser()
+        sam_parser = SamParser()
         seen_ids = {}
         nucleotide_counting = 0
-        for entry in segemehl_parser.entries(
+        for entry in sam_parser.entries(
             self.paths.combined_mapping_file_a_filtered_split(
                 read_file, genome_file)):
-            if entry['id'] in seen_ids:
+            if entry['query'] in seen_ids:
                 continue
             nucleotide_counting += len(entry['sequence'])
-            seen_ids[entry['id']] = 1
+            seen_ids[entry['query']] = 1
         return(nucleotide_counting)
 
     def find_annotation_hits(self):
