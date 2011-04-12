@@ -1,11 +1,11 @@
 from libs.fasta import FastaParser
 from libs.sam import SamParser
-from rapl.pathes import Pathes
+from rapl.paths import Paths
 
 class ReadTracer(object):
 
     def __init__(self):
-        self.pathes = Pathes()
+        self.paths = Paths()
     
     def trace_reads(self):
         """Trace the way of each read during the different steps.
@@ -13,7 +13,7 @@ class ReadTracer(object):
         A file is generated that can be used for downstream
         statistics.
         """
-        for read_file in self.pathes.read_files:
+        for read_file in self.paths.read_files:
             self.read_ids = []
             self.read_ids_and_traces = {}
             self._get_read_ids_and_lengths(read_file)
@@ -36,7 +36,7 @@ class ReadTracer(object):
                         mapping files.
 
         """
-        trace_fh = open(self.pathes.trace_file(read_file), "w")
+        trace_fh = open(self.paths.trace_file(read_file), "w")
         trace_fh.write("#Read id\tRead length\tNumber of mappings first run\t"
                        "length after clipping\tPassed size filter\t"
                        "Number of mappings second run\t"
@@ -71,7 +71,7 @@ class ReadTracer(object):
         """
         fasta_parser = FastaParser()
         for header, seq in fasta_parser.parse_fasta_file(
-            self.pathes.read_file(read_file)):
+            self.paths.read_file(read_file)):
             # TODO: TMP fix due to modification of the string
             # by segemehl
             header = self.mod_fasta_header(header)
@@ -88,7 +88,7 @@ class ReadTracer(object):
         """
         sam_parser = SamParser()
         for entry in sam_parser.entries(
-            self.pathes.raw_read_mapping_output(read_file)):
+            self.paths.raw_read_mapping_output(read_file)):
             self.read_ids_and_traces[entry["query"]].setdefault(
                 "no_of_mappings_first_run", 0)
             self.read_ids_and_traces[entry["query"]]["no_of_mappings_first_run"] += 1
@@ -103,7 +103,7 @@ class ReadTracer(object):
         """
         fasta_parser = FastaParser()
         for header, seq in fasta_parser.parse_fasta_file(
-            self.pathes.unmapped_raw_read_file(read_file)):
+            self.paths.unmapped_raw_read_file(read_file)):
             # TODO: TMP fix due to modification of the string
             # by segemehl
             header = self.mod_fasta_header(header)
@@ -125,7 +125,7 @@ class ReadTracer(object):
         """
         fasta_parser = FastaParser()
         for header, seq in fasta_parser.parse_fasta_file(
-            self.pathes.unmapped_read_clipped(read_file)):
+            self.paths.unmapped_read_clipped(read_file)):
             # TODO: TMP fix due to modification of the string by segemehl
             header = self.mod_fasta_header(header)
             self.read_ids_and_traces[header][
@@ -140,7 +140,7 @@ class ReadTracer(object):
         """
         fasta_parser = FastaParser()
         for header, seq in fasta_parser.parse_fasta_file(
-            self.pathes.unmapped_clipped_size_filtered_read(read_file)):
+            self.paths.unmapped_clipped_size_filtered_read(read_file)):
             # TODO: TMP fix due to modification of the string by
             # segemehl
             header = self.mod_fasta_header(header)
@@ -157,7 +157,7 @@ class ReadTracer(object):
         """
         fasta_parser = FastaParser()
         for header, seq in fasta_parser.parse_fasta_file(
-            self.pathes.unmapped_clipped_size_failed_read(read_file)):
+            self.paths.unmapped_clipped_size_failed_read(read_file)):
             # TODO: TMP fix due to modification of the string by
             # segemehl
             header = self.mod_fasta_header(header)
@@ -174,7 +174,7 @@ class ReadTracer(object):
         """
         sam_parser = SamParser()
         for entry in sam_parser.entries(
-            self.pathes.clipped_reads_mapping_output(read_file)):
+            self.paths.clipped_reads_mapping_output(read_file)):
             self.read_ids_and_traces[entry["query"]].setdefault(
                 "no_of_mappings_second_run", 0)
             self.read_ids_and_traces[entry["query"]]["no_of_mappings_second_run"] += 1
@@ -188,7 +188,7 @@ class ReadTracer(object):
         """
         fasta_parser = FastaParser()
         for header, seq in fasta_parser.parse_fasta_file(
-            self.pathes._unmapped_reads_second_mapping_path(read_file)):
+            self.paths._unmapped_reads_second_mapping_path(read_file)):
             # TODO: TMP fix due to modification of the string by
             # segemehl
             header = self.mod_fasta_header(header)
@@ -204,7 +204,7 @@ class ReadTracer(object):
         """
         sam_parser = SamParser()
         for entry in sam_parser.entries(
-            self.pathes.combined_mapping_file_a_filtered(read_file)):
+            self.paths.combined_mapping_file_a_filtered(read_file)):
             self.read_ids_and_traces[entry["query"]][
                 "passed_a-content_filtering"] = True
             self.read_ids_and_traces[entry["query"]][
@@ -219,7 +219,7 @@ class ReadTracer(object):
         """
         sam_parser = SamParser()
         for entry in sam_parser.entries(
-            self.pathes.combined_mapping_file_a_filter_failed(read_file)):
+            self.paths.combined_mapping_file_a_filter_failed(read_file)):
             self.read_ids_and_traces[entry["query"]][
                 "passed_a-content_filtering"] = False
 
@@ -258,7 +258,7 @@ class ReadTracer(object):
             "mapped_in_second_round-faild_a_content_filter",
             "failed_size_filter_after_clipping", "not_mappable_in_second_run",
             "lost_somewhere"]
-        summary_fh = open(self.pathes.tracing_summary_file, "w")
+        summary_fh = open(self.paths.tracing_summary_file, "w")
         summary_fh.write(
             "#lib name\t" + 
             "\t".join(stati) +
@@ -267,9 +267,9 @@ class ReadTracer(object):
             "sum of mappable reads\t" + 
             "percentage mappable reads\t" + 
             "\n")
-        for read_file in self.pathes.read_files:
+        for read_file in self.paths.read_files:
             stati_and_countings = self._summarize_tracing_file(
-                self.pathes.trace_file(read_file))
+                self.paths.trace_file(read_file))
             countings = []
             for status in stati:
                 stati_and_countings.setdefault(status, 0)

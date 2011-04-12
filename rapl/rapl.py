@@ -5,7 +5,7 @@ from rapl.annotations import Annotations
 from rapl.creator import Creator
 from rapl.grbuilder import GrBuilder
 from rapl.inputstats import InputStats
-from rapl.pathes import Pathes
+from rapl.paths import Paths
 from rapl.readmapper import ReadMapper
 from rapl.readmappingsummary import ReadMappingSummary
 from rapl.readtracer import ReadTracer
@@ -15,7 +15,7 @@ class Rapl(object):
 
     def __init__(self):
         """Create an instance."""
-        self.pathes = Pathes()
+        self.paths = Paths()
 
     def start_project(self, args):
         """Create a new project.
@@ -32,7 +32,7 @@ class Rapl(object):
                 args.project_name))
         sys.stdout.write("Please copy read files into folder \"%s\" and "
                          "genome files into folder \"%s\".\n" % (
-                self.pathes.rna_seq_folder, self.pathes.genome_folder))
+                self.paths.rna_seq_folder, self.paths.genome_folder))
 
     def map_reads(self):
         """Perform the mapping of the reads.
@@ -81,15 +81,15 @@ class Rapl(object):
         """Create final report of the analysis."""
         self._in_project_folder()
         rapl_reporter = Reporter(self)
-        report_fh = open(self.pathes.report_tex_file, "w")
+        report_fh = open(self.paths.report_tex_file, "w")
         report_fh.write(rapl_reporter.report())
         report_fh.close()
         
     def _in_project_folder(self):
         """Check if the current directory is a RAPL project folder."""
-        if not (os.path.exists(self.pathes.config_file) and 
-            os.path.exists(self.pathes.input_folder) and 
-            os.path.exists(self.pathes.output_folder)):
+        if not (os.path.exists(self.paths.config_file) and 
+            os.path.exists(self.paths.input_folder) and 
+            os.path.exists(self.paths.output_folder)):
             sys.stderr.write("Seems like the current folder is not a RAPL "
                              "project folder.\n")
             sys.stderr.write("Your are currently in \"%s\".\n" % (os.getcwd()))
@@ -97,4 +97,4 @@ class Rapl(object):
 
     def _get_read_file_names(self):
         """Read the names of the read files."""
-        self.read_files = sorted(os.listdir(self.pathes.rna_seq_folder))
+        self.read_files = sorted(os.listdir(self.paths.rna_seq_folder))

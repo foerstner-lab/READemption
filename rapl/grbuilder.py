@@ -1,17 +1,17 @@
 from subprocess import call
 from libs.segemehl import SegemehlParser
 from rapl.parameters import Parameters
-from rapl.pathes import Pathes
+from rapl.paths import Paths
 
 class GrBuilder(object):
 
     def __init__(self):
-        self.pathes = Pathes()
+        self.paths = Paths()
     
     def build_gr_files(self):
         """Generate GR files for all read/genome file combinations."""
-        for read_file in self.pathes.read_files:
-            for genome_file in self.pathes.genome_files:
+        for read_file in self.paths.read_files:
+            for genome_file in self.paths.genome_files:
                 self._build_gr_file(read_file, genome_file)
 
     def _build_gr_file(self, read_file, genome_file):
@@ -23,18 +23,18 @@ class GrBuilder(object):
         - `genome_file`: name of the target genome file.
         """
         call("%s %s/segemehl2gr.py -o %s %s" % (
-                self.pathes.python_bin, self.pathes.bin_folder,
-                self.pathes.gr_file(read_file, genome_file),
-                self.pathes.combined_mapping_file_a_filtered_split(
+                self.paths.python_bin, self.paths.bin_folder,
+                self.paths.gr_file(read_file, genome_file),
+                self.paths.combined_mapping_file_a_filtered_split(
                     read_file, genome_file)),
              shell=True)
 
     def build_read_normalized_gr_files(self):
         """Generate normalized GR files for all read/genome files"""
-        for genome_file in self.pathes.genome_files:
+        for genome_file in self.paths.genome_files:
             lowest_number_of_mappings = self._lowest_number_of_mappings(
                 genome_file)
-            for read_file in self.pathes.read_files:
+            for read_file in self.paths.read_files:
                 self._build_read_normalized_gr_file(
                     read_file, genome_file, lowest_number_of_mappings)
             
@@ -51,17 +51,17 @@ class GrBuilder(object):
 
         """
         call("%s %s/segemehl2gr.py -r -m %s -o %s %s" % (
-                self.pathes.python_bin, self.pathes.bin_folder, lowest_number_of_mappings,
-                self.pathes.gr_read_normalized_file(read_file, genome_file),
-                self.pathes.combined_mapping_file_a_filtered_split(
+                self.paths.python_bin, self.paths.bin_folder, lowest_number_of_mappings,
+                self.paths.gr_read_normalized_file(read_file, genome_file),
+                self.paths.combined_mapping_file_a_filtered_split(
                     read_file, genome_file)), shell=True)
 
     def build_nucl_normalized_gr_files(self):
         """Generate normalized GR files for all read/genome files"""
-        for genome_file in self.pathes.genome_files:
+        for genome_file in self.paths.genome_files:
             lowest_number_of_mapped_nucleotides = (
                 self._lowest_number_of_mapped_nucleotides(genome_file))
-            for read_file in self.pathes.read_files:
+            for read_file in self.paths.read_files:
                 self._build_nucl_normalized_gr_file(
                     read_file, genome_file, lowest_number_of_mapped_nucleotides)
             
@@ -77,10 +77,10 @@ class GrBuilder(object):
                                        the genome file.
         """
         call("%s %s/segemehl2gr.py -n -m %s -o %s %s" % (
-                self.pathes.python_bin, self.pathes.bin_folder, 
+                self.paths.python_bin, self.paths.bin_folder, 
                 lowest_number_of_mapped_nucleotides,
-                self.pathes.gr_nucl_normalized_file(read_file, genome_file),
-                self.pathes.combined_mapping_file_a_filtered_split(
+                self.paths.gr_nucl_normalized_file(read_file, genome_file),
+                self.paths.combined_mapping_file_a_filtered_split(
                     read_file, genome_file)), shell=True)
 
     def _lowest_number_of_mappings(self, genome_file):
@@ -92,7 +92,7 @@ class GrBuilder(object):
         """
         lowest_number_of_mappings = min(
             [self._count_mapped_reads(read_file, genome_file) 
-             for read_file in self.pathes.read_files])
+             for read_file in self.paths.read_files])
         # Do avoid multiplication by zero
         if lowest_number_of_mappings == 0:
             lowest_number_of_mappings = 1
@@ -107,7 +107,7 @@ class GrBuilder(object):
         """
         lowest_number_of_mapped_nucleotides = min(
             [self._count_mapped_nucleotides(read_file, genome_file) 
-             for read_file in self.pathes.read_files])
+             for read_file in self.paths.read_files])
         # Do avoid multiplication by zero
         if lowest_number_of_mapped_nucleotides == 0:
             lowest_number_of_nucleotides = 1
@@ -124,7 +124,7 @@ class GrBuilder(object):
         segemehl_parser = SegemehlParser()
         seen_ids = {}
         for entry in segemehl_parser.entries(
-            self.pathes.combined_mapping_file_a_filtered_split(
+            self.paths.combined_mapping_file_a_filtered_split(
                 read_file, genome_file)):
             seen_ids[entry['id']] = 1
         return(len(seen_ids))
@@ -141,7 +141,7 @@ class GrBuilder(object):
         seen_ids = {}
         nucleotide_counting = 0
         for entry in segemehl_parser.entries(
-            self.pathes.combined_mapping_file_a_filtered_split(
+            self.paths.combined_mapping_file_a_filtered_split(
                 read_file, genome_file)):
             if entry['id'] in seen_ids:
                 continue
@@ -151,6 +151,6 @@ class GrBuilder(object):
 
     def find_annotation_hits(self):
         """Search for overlaps of reads and annotations."""
-        for read_file in self.pathes.read_files:
+        for read_file in self.paths.read_files:
             for annotation_file in self.annotation_files.keys():
                 self._find_annotation_hits(read_file, annotation_file)

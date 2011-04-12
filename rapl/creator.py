@@ -1,12 +1,12 @@
 import json
 import os
 import sys
-from rapl.pathes import Pathes
+from rapl.paths import Paths
 
 class Creator(object):
 
     def __init__(self):
-        self.pathes = Pathes()
+        self.paths = Paths()
 
     def create_root_folder(self, project_name):
         """Create the root folder of a new project with the given name.
@@ -29,7 +29,7 @@ class Creator(object):
         - `project_name`: Name of the project root folder
 
         """
-        for folder in self.pathes.required_folders():
+        for folder in self.paths.required_folders():
             folder_in_root_folder = "%s/%s" % (project_name, folder)
             if not os.path.exists(folder_in_root_folder):
                 os.mkdir(folder_in_root_folder)
@@ -40,6 +40,6 @@ class Creator(object):
         Arguments:
         - `project_name`: Name of the project root folder
         """
-        config_fh = open("%s/%s" % (project_name, self.pathes.config_file), "w")
+        config_fh = open("%s/%s" % (project_name, self.paths.config_file), "w")
         config_fh.write(json.dumps({"annotation_and_genomes_files" : {}}))
         config_fh.close()

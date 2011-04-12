@@ -1,7 +1,7 @@
 import os
 from rapl.parameters import Parameters
 
-class Pathes(object):
+class Paths(object):
 
     def __init__(self):
         self._set_folder_names()
