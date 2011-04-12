@@ -1,7 +1,7 @@
 from subprocess import call
 from rapl.parameters import Parameters
 from rapl.pathes import Pathes
-from libs.segemehl import SegemehlBuilder, SegemehlParser
+from libs.sam import SamBuilder, SamParser
 
 class ReadMapper(object):
 
@@ -35,7 +35,8 @@ class ReadMapper(object):
                                      unmapped reads
 
         """
-        call("%s -E %s -H %s -A %s -t %s -i %s -d %s -q %s -o %s" % (
+        # Can only be used with the developmental version of segemehl
+        call("%s -K -E %s -H %s -A %s -t %s -i %s -d %s -q %s -o %s -u %s" % (
                 self.pathes.segemehl_bin,
                 self.parameters.segemehl_max_e_value,
                 self.parameters.segemehl_hit_strategy,
@@ -44,44 +45,9 @@ class ReadMapper(object):
                 self.pathes.segemehl_index(),
                 " ".join(self.pathes.genome_file_paths()),
                 read_file_path,
-                output_file_path),
+                output_file_path,
+                unmapped_read_file_path),
              shell=True)
-        # FOR THE UPCOMING VERSION
-        # call("%s -E %s -H %s -A %s -t %s -i %s -d %s -q %s -o %s -u %s" % (
-        #         self.segemehl_bin,
-        #         self.segemehl_max_e_value,
-        #         self.segemehl_hit_strategy,
-        #         self.segemehl_accuracy,
-        #         self.segemehl_number_of_threads,
-        #         self.segemehl_index(),
-        #         self.genome_files(),
-        #         read_file_path,
-        #         output_file_path,
-        #         unmapped_read_file_path),
-        #      shell=True)
-
-    def extract_unmapped_reads_raw_read_mapping(self):
-        """Extract unmapped reads of first mapping round."""
-        for read_file in self.pathes.read_files:
-            self._extract_unmapped_reads(
-                self.pathes.read_file(read_file),
-                self.pathes.raw_read_mapping_output(read_file),
-                self.pathes.unmapped_raw_read_file(read_file))
-
-    def _extract_unmapped_reads(self, read_file, mapping_file, 
-                                output_read_file):
-        """Extract unmapped reads of a Segemehl mapping run.
-
-        Arguments:
-        - `read_file`: name of the read fasta file
-        - `mapping_file,`: name of the Segemehl mapping file
-        - `output_read_file`: name of the fasta file with the
-                              unmapped reads
-
-        """
-        call("%s %s/%s -o %s %s %s" % (
-                self.pathes.python_bin, self.pathes.bin_folder, "extract_unmapped_fastas.py", 
-                output_read_file, read_file, mapping_file), shell=True)
 
     def clip_unmapped_reads(self):
         """Clip reads unmapped in the first segemehl run."""
@@ -128,18 +94,11 @@ class ReadMapper(object):
                 self.pathes.unmapped_clipped_size_filtered_read(read_file), 
                 self.pathes.clipped_reads_mapping_output(read_file),
                 self.pathes.unmapped_reads_of_clipped_reads_file(read_file))
-
-    def extract_unmapped_reads_of_second_mapping(self):
-        """Extract reads that are not mapped in the second run."""
-        for read_file in  self.pathes.read_files:
-            self._extract_unmapped_reads(
-                self.pathes.unmapped_clipped_size_filtered_read(read_file),
-                self.pathes.clipped_reads_mapping_output(read_file),
-                self.pathes._unmapped_reads_second_mapping_path(read_file))
+            print(self.pathes.unmapped_reads_of_clipped_reads_file(read_file))
 
     def combine_mappings(self):
         """Combine the results of both segemehl mappings for all libraries."""
-        for read_file in  self.pathes.read_files:
+        for read_file in self.pathes.read_files:
             self._combine_mappings(read_file)
 
     def _combine_mappings(self, read_file):
@@ -177,7 +136,7 @@ class ReadMapper(object):
         - `mapping_file`: the input mapping file 
 
         """
-        call("%s %s/filter_segemehl_by_nucleotide_percentage.py %s A %s " % (
+        call("%s %s/filter_sam_by_nucleotide_percentage.py %s A %s " % (
             self.pathes.python_bin, self.pathes.bin_folder, 
             self.pathes.combined_mapping_file(mapping_file), self.parameters.max_a_content), 
              shell=True)
@@ -200,8 +159,8 @@ class ReadMapper(object):
                                      name of their files as values.
 
         """
-        segemehl_parser = SegemehlParser()
-        segemehl_builder = SegemehlBuilder()
+        sam_parser = SamParser()
+        sam_builder = SamBuilder()        
         file_handles = {}
         # Open an output file for each genome file. Needed as some
         # genome files don't have any mapping and so their mapping
@@ -211,11 +170,11 @@ class ReadMapper(object):
                 read_file, genome_file)
             file_handles["%s-%s" % (read_file, genome_file)] = open(
                 output_file, "w")
-        for entry in segemehl_parser.entries(
+        for entry in sam_parser.entries(
             self.pathes.combined_mapping_file_a_filtered(read_file)):
-            genome_file = headers_of_genome_files[entry['target_description']]
+            genome_file = headers_of_genome_files[entry['reference']]
             file_handles["%s-%s" % (read_file, genome_file)].write(
-                segemehl_builder.entry_to_line(entry))
+                sam_builder.entry_to_line(entry))
         for output_file in file_handles.values():
             output_file.close()
 
@@ -224,5 +183,5 @@ class ReadMapper(object):
         headers = {}
         for genome_file in self.pathes.genome_files:
             genome_fh = open(self.pathes.genome_file(genome_file))
-            headers[genome_fh.readline()[:-1]] = genome_file
+            headers[genome_fh.readline()[1:-1].split()[0]] = genome_file
         return(headers)

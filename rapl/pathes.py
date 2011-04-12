@@ -82,7 +82,8 @@ class Pathes(object):
 
     def _set_bin_paths(self):
         """Set file/folder paths for some needed binaries."""
-        self.segemehl_bin = "segemehl"
+        #self.segemehl_bin = "segemehl"
+        self.segemehl_bin = "segemehl_dev"
         # DEV
         self.python_bin = "/opt/Python-3.2/python"
         self.bin_folder = "~/rapl_tools"
@@ -184,7 +185,7 @@ class Pathes(object):
         Arguments:
         - `read_file`: name of the read file
         """
-        return("%s/%s.unmapped.fa"  % (self.umapped_reads_of_first_mapping_folder, 
+        return("%s/%s.unmapped.fa"  % (self.umapped_reads_of_second_mapping_folder, 
                            read_file))
 
     def _unmapped_reads_second_mapping_path(self, read_file):

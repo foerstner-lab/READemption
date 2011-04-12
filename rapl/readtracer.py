@@ -1,5 +1,5 @@
 from libs.fasta import FastaParser
-from libs.segemehl import SegemehlParser
+from libs.sam import SamParser
 from rapl.pathes import Pathes
 
 class ReadTracer(object):
@@ -72,24 +72,26 @@ class ReadTracer(object):
         fasta_parser = FastaParser()
         for header, seq in fasta_parser.parse_fasta_file(
             self.pathes.read_file(read_file)):
+            # TODO: TMP fix due to modification of the string
+            # by segemehl
+            header = self.mod_fasta_header(header)
             self.read_ids.append(header)
             self.read_ids_and_traces[header] = {'length' : len(seq)}
 
     def _read_first_mapping_output(self, read_file):
-        """Read the result of the first Segemehl mapping.
+        """Read the result of the first Sam mapping.
         
         Arguments:
         - `read_file`: name of the read file that is used to generate
                        the mapping file.
 
         """
-        segemehl_parser = SegemehlParser()
-        for entry in segemehl_parser.entries(
+        sam_parser = SamParser()
+        for entry in sam_parser.entries(
             self.pathes.raw_read_mapping_output(read_file)):
-            entry_id = entry["id"][1:] # remove ">"
-            self.read_ids_and_traces[entry_id].setdefault(
+            self.read_ids_and_traces[entry["query"]].setdefault(
                 "no_of_mappings_first_run", 0)
-            self.read_ids_and_traces[entry_id]["no_of_mappings_first_run"] += 1
+            self.read_ids_and_traces[entry["query"]]["no_of_mappings_first_run"] += 1
 
     def _read_first_mapping_unmapped_reads(self, read_file):
         """Read the file of unmapped reads of the first run.
@@ -102,7 +104,14 @@ class ReadTracer(object):
         fasta_parser = FastaParser()
         for header, seq in fasta_parser.parse_fasta_file(
             self.pathes.unmapped_raw_read_file(read_file)):
-                self.read_ids_and_traces[header]["no_of_mappings_first_run"] = 0
+            # TODO: TMP fix due to modification of the string
+            # by segemehl
+            header = self.mod_fasta_header(header)
+            self.read_ids_and_traces[header]["no_of_mappings_first_run"] = 0
+
+    # TODO: TMP fix due to modification of the string by segemehl
+    def mod_fasta_header(self, fasta_header):
+        return(fasta_header.split("/")[0])
 
     def _read_clipped_unmapped_reads(self, read_file):
         """Read the file of clipped unmapped reads.
@@ -117,6 +126,8 @@ class ReadTracer(object):
         fasta_parser = FastaParser()
         for header, seq in fasta_parser.parse_fasta_file(
             self.pathes.unmapped_read_clipped(read_file)):
+            # TODO: TMP fix due to modification of the string by segemehl
+            header = self.mod_fasta_header(header)
             self.read_ids_and_traces[header][
                 "length_after_clipping"] = len(seq)
 
@@ -130,6 +141,9 @@ class ReadTracer(object):
         fasta_parser = FastaParser()
         for header, seq in fasta_parser.parse_fasta_file(
             self.pathes.unmapped_clipped_size_filtered_read(read_file)):
+            # TODO: TMP fix due to modification of the string by
+            # segemehl
+            header = self.mod_fasta_header(header)
             if header == "": continue
             self.read_ids_and_traces[header][
                 "passed_size_filtering"] = True
@@ -144,24 +158,26 @@ class ReadTracer(object):
         fasta_parser = FastaParser()
         for header, seq in fasta_parser.parse_fasta_file(
             self.pathes.unmapped_clipped_size_failed_read(read_file)):
+            # TODO: TMP fix due to modification of the string by
+            # segemehl
+            header = self.mod_fasta_header(header)
             if header == "": continue
             self.read_ids_and_traces[header][
                 "passed_size_filtering"] = False
 
     def _read_second_mapping_output(self, read_file):
-        """Read the file of the second Segemehl mapping.
+        """Read the file of the second Sam mapping.
 
         Arguments:
         - `read_file`: name of the read file that is used to generate
                        the mapping file.
         """
-        segemehl_parser = SegemehlParser()
-        for entry in segemehl_parser.entries(
+        sam_parser = SamParser()
+        for entry in sam_parser.entries(
             self.pathes.clipped_reads_mapping_output(read_file)):
-            entry_id = entry["id"][1:] # remove ">"
-            self.read_ids_and_traces[entry_id].setdefault(
+            self.read_ids_and_traces[entry["query"]].setdefault(
                 "no_of_mappings_second_run", 0)
-            self.read_ids_and_traces[entry_id]["no_of_mappings_second_run"] += 1
+            self.read_ids_and_traces[entry["query"]]["no_of_mappings_second_run"] += 1
 
     def _read_second_mapping_unmapped_reads(self, read_file):
         """Read the fasta file unmappable read of the second run.
@@ -173,6 +189,9 @@ class ReadTracer(object):
         fasta_parser = FastaParser()
         for header, seq in fasta_parser.parse_fasta_file(
             self.pathes._unmapped_reads_second_mapping_path(read_file)):
+            # TODO: TMP fix due to modification of the string by
+            # segemehl
+            header = self.mod_fasta_header(header)
             if header == "": continue
             self.read_ids_and_traces[header]["no_of_mappings_second_run"] = 0
 
@@ -183,13 +202,12 @@ class ReadTracer(object):
         - `read_file`: name of the read file that is used to generate
                        the first mapping file.
         """
-        segemehl_parser = SegemehlParser()
-        for entry in segemehl_parser.entries(
+        sam_parser = SamParser()
+        for entry in sam_parser.entries(
             self.pathes.combined_mapping_file_a_filtered(read_file)):
-            entry_id = entry["id"][1:] # remove ">"
-            self.read_ids_and_traces[entry_id][
+            self.read_ids_and_traces[entry["query"]][
                 "passed_a-content_filtering"] = True
-            self.read_ids_and_traces[entry_id][
+            self.read_ids_and_traces[entry["query"]][
                 "mapping_length"] = len(entry["sequence"])
     
     def _read_combined_mapping_a_filtered_failed(self, read_file):
@@ -199,11 +217,10 @@ class ReadTracer(object):
         - `read_file`: name of the read file that is used to generate
                        the first mapping file.
         """
-        segemehl_parser = SegemehlParser()
-        for entry in segemehl_parser.entries(
+        sam_parser = SamParser()
+        for entry in sam_parser.entries(
             self.pathes.combined_mapping_file_a_filter_failed(read_file)):
-            entry_id = entry["id"][1:] # remove ">"
-            self.read_ids_and_traces[entry_id][
+            self.read_ids_and_traces[entry["query"]][
                 "passed_a-content_filtering"] = False
 
     def _final_mapping_status(self, trace):
