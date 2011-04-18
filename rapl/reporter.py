@@ -89,7 +89,8 @@ class Reporter(object):
                 ["\\rotatebox{90}{%s}" % head_item.replace("_", " ")
                  for head_item in table_header]))
         for row in table_data:
-            table_string += "%s\\\\\n" % (" & ".join(row))
+            table_string += "%s\\\\\n" % (
+                " & ".join([self._latex_safe(field) for field in row]))
         table_string += "\\end{tabular}\n"
         return(table_string)
 
