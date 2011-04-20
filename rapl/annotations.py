@@ -27,7 +27,7 @@ class Annotations(object):
 
         """
         genome_file = self.annotation_files[annotation_file]
-        call("%s %s/segemehl_hit_annotation_mapping.py -m %s -o %s %s %s" % (
+        call("%s %s/sam_hit_annotation_mapping.py -m %s -o %s %s %s" % (
                 self.paths.python_bin, self.paths.bin_folder,
                 self.parameters.min_overlap,
                 self.paths.annotation_hit_file(read_file, annotation_file),
