@@ -138,15 +138,15 @@ class GrBuilder(object):
 
         """
         sam_parser = SamParser()
-        seen_ids = {}
         nucleotide_counting = 0
+        prev_entry = ""
         for entry in sam_parser.entries(
             self.paths.combined_mapping_file_a_filtered_split(
                 read_file, genome_file)):
-            if entry['query'] in seen_ids:
+            if entry['query'] == prev_entry:
                 continue
             nucleotide_counting += len(entry['sequence'])
-            seen_ids[entry['query']] = 1
+            prev_entry = entry['query']
         return(nucleotide_counting)
 
     def find_annotation_hits(self):
