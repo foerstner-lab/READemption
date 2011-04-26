@@ -265,7 +265,7 @@ class ReadTracer(object):
             "\t" +
             "total number of reads\t" +
             "sum of mappable reads\t" + 
-            "percentage mappable reads\t" + 
+            "% mappable reads\t" + 
             "\n")
         for read_file in self.paths.read_files:
             stati_and_countings = self._summarize_tracing_file(
@@ -280,9 +280,9 @@ class ReadTracer(object):
                 "\t%s" % sum(countings) +
                 "\t%s" % (stati_and_countings["mapped_in_first_round"] + 
                           stati_and_countings["mapped_in_second_round"]) +
-                "\t%s" % ((stati_and_countings["mapped_in_first_round"] + 
+                "\t%s" % round(((stati_and_countings["mapped_in_first_round"] + 
                           stati_and_countings["mapped_in_second_round"])/
-                          sum(countings)*100.0) +
+                          sum(countings)*100.0),3) +
                 "\n")
         summary_fh.close()
 
