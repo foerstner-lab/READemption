@@ -261,11 +261,10 @@ class ReadTracer(object):
         summary_fh = open(self.paths.tracing_summary_file, "w")
         summary_fh.write(
             "#lib name\t" + 
-            "\t".join(stati) +
-            "\t" +
             "total number of reads\t" +
             "sum of mappable reads\t" + 
             "% mappable reads\t" + 
+            "\t".join(stati) +
             "\n")
         for read_file in self.paths.read_files:
             stati_and_countings = self._summarize_tracing_file(
@@ -276,13 +275,13 @@ class ReadTracer(object):
                 countings.append(stati_and_countings[status])
             summary_fh.write(
                 read_file + "\t" + 
-                "\t".join([str(counting) for counting in countings]) + 
                 "\t%s" % sum(countings) +
                 "\t%s" % (stati_and_countings["mapped_in_first_round"] + 
                           stati_and_countings["mapped_in_second_round"]) +
                 "\t%s" % round(((stati_and_countings["mapped_in_first_round"] + 
                           stati_and_countings["mapped_in_second_round"])/
                           sum(countings)*100.0),3) +
+                "\t".join([str(counting) for counting in countings]) + 
                 "\n")
         summary_fh.close()
 
