@@ -70,7 +70,11 @@ class Reporter(object):
                 genome_file_stats = self._latex_safe(
                     self.paths.genome_file_stats),
                 gr_folder = self._latex_safe(
-                    self.paths.gr_folder)
+                    self.paths.gr_folder),
+                gr_folder_read_normalized = self._latex_safe(
+                    self.paths.gr_folder_read_normalized),
+                gr_folder_nucleotide_normalized = self._latex_safe(
+                    self.paths.gr_folder_nucl_normalized)
                ))
     
     def _trace_summary_table(self):
@@ -344,7 +348,10 @@ files end with "\\_plus.gr", the minus strand files with
 intensities, the minus strand file should contain only negative
 intensities.\\\\
 
-The GR files are located in the folder \\texttt{$gr_folder}.
+The GR files based on the raw countings are located in the folder
+\\texttt{$gr_folder}. The GR file normalized by mapped reads or mapped
+nucleotides are located in {$gr_folder_read_normalized} respectively
+{$gr_folder_nucleotide_normalized}.
 
 \\subsection{IGB usage in a nutshell}
 
