@@ -274,7 +274,7 @@ class ReadTracer(object):
                 stati_and_countings.setdefault(status, 0)
                 countings.append(stati_and_countings[status])
             summary_fh.write(
-                read_file + "\t" + 
+                read_file +
                 "\t%s" % sum(countings) +
                 "\t%s" % (stati_and_countings["mapped_in_first_round"] + 
                           stati_and_countings["mapped_in_second_round"]) +
