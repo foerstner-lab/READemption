@@ -276,12 +276,12 @@ class ReadTracer(object):
             summary_fh.write(
                 read_file +
                 "\t%s" % sum(countings) +
-                "\t%s" % (stati_and_countings["mapped_in_first_round"] + 
+                "\t%s" % (stati_and_countings["mapped_in_first_round"] +
                           stati_and_countings["mapped_in_second_round"]) +
-                "\t%s" % round(((stati_and_countings["mapped_in_first_round"] + 
-                          stati_and_countings["mapped_in_second_round"])/
-                          sum(countings)*100.0),3) +
-                "\t".join([str(counting) for counting in countings]) + 
+                "\t%s" % round(((stati_and_countings["mapped_in_first_round"] +
+                                 stati_and_countings["mapped_in_second_round"])/
+                                sum(countings)*100.0),3) + "\t" +
+                "\t".join([str(counting) for counting in countings]) +
                 "\n")
         summary_fh.close()
 
