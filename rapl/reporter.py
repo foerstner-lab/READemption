@@ -90,7 +90,7 @@ class Reporter(object):
             row_counter += 1
         table_string = "\\begin{tabular}{l%s}\n" % ("r" * (len(table_header)-1))
         table_string += "%s\\\\\n" % (" & ".join(
-                ["\\rotatebox{90}{%s}" % head_item.replace("_", " ")
+                ["\\rotatebox{90}{%s}" % self._latex_safe(head_item.replace("_", " "))
                  for head_item in table_header]))
         for row in table_data:
             table_string += "%s\\\\\n" % (
@@ -134,7 +134,9 @@ class Reporter(object):
         return(listing)
 
     def _latex_safe(self, input_string):
-        return(input_string.replace("_", "\_"))
+        safe_string = input_string.replace("_", "\_")
+        safe_string = safe_string.replace("%", "\%")
+        return(safe_string)
 
     def _template_text(self):
         return("""\\documentclass[12pt,a4paper,oneside]{article}
