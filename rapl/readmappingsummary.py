@@ -21,8 +21,9 @@ class ReadMappingSummary(object):
                 counting_row.append(len(reads))
             coutings.append(counting_row)
         summary_fh = open(self.paths.lib_genome_read_mapping_summary, "w")
-        summary_fh.write("\t%s\n" % ("\t".join(self.paths.genome_files)))
+        summary_fh.write("\ttotal\t%s\n" % ("\t".join(self.paths.genome_files)))
         for read_file, row in zip(self.paths.read_files, coutings):
-            summary_fh.write("%s\t%s\n" % (read_file, "\t".join(
-                        [str(value) for value in row])))
-
+            summary_fh.write("%s\t%s\t%s\n" % (
+                    read_file,
+                    sum(row),
+                    "\t".join([str(value) for value in row])))
