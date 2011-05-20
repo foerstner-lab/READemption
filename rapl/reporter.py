@@ -263,7 +263,7 @@ Basic statistics (e.g. number of lines) about these file are stored in
 the file \\texttt{$genome_file_stats}.\\\\
 
 
-\\texttt{segemehl} generates one combined index files of them save as\\\\
+\\texttt{segemehl} generates one combined index files of them save as
 \\texttt{$index_file_name} \\\\
 in the folder \\texttt{$index_folder}. 
 
@@ -357,7 +357,7 @@ nucleotides are located in {$gr_folder_read_normalized} respectively
 
 \\subsection{IGB usage in a nutshell}
 
-The Integrated Genome Browser is a open-source application that can be
+The Integrated Genome Browser is an open-source application that can be
 downloaded from http://www.bioviz.org/igb/. It requires Java.\\\\
 
 To make sense of the coordinates of the GR files data of the reference
