@@ -40,6 +40,7 @@ class Paths(object):
             "%s/read_mappings_combined_split_by_genome_files" % 
             self.output_folder)
         self.annotation_hit_folder = "%s/annotation_hits" % self.output_folder
+        self.no_annotation_hit_folder = "%s/without_annotation_hits" % self.output_folder
         self.annotation_hit_overview_folder = (
             "%s/annotation_hit_overviews" % self.output_folder)
         self.annotation_hit_overview_read_normalized_folder = (
@@ -101,7 +102,7 @@ class Paths(object):
                 self.annotation_hit_overview_read_normalized_folder,
                 self.annotation_hit_overview_nucl_normalized_folder,
                 self.read_tracing_folder, self.input_file_stats_folder, 
-                self.report_folder])
+                self.report_folder, self.no_annotation_hit_folder])
     
 
     def read_file(self, read_file):
@@ -354,6 +355,14 @@ class Paths(object):
         return("%s/%s_all_annotation_hits_normalized_by_nucleotides_antisense.csv" % (
                 self.annotation_hit_overview_nucl_normalized_folder, 
                 annotation_file))
+
+    def no_annotation_hit_file(self, read_file, genome_file):
+        """Return the path of a file containing reads without
+        annotation overlap
+        """
+        return("%s/%s_in_%s_reads_without_annotation" % (
+                self.no_annotation_hit_folder, read_file, 
+                genome_file))
 
     def segemehl_index_name(self):
         """Return the name of the segemehl index file."""

@@ -3,6 +3,7 @@ from subprocess import call
 from rapl.grbuilder import GrBuilder
 from rapl.parameters import Parameters
 from rapl.paths import Paths
+from libs.sam import SamParser
 
 class Annotations(object):
 
@@ -158,5 +159,52 @@ class Annotations(object):
                 mapped_nucl_counting_string,
                 self.paths.annotation_file(annotation_file),
                 annotation_hit_files_string,
-                self.paths.annotation_hit_overview_nucl_normalized_antisense_file(annotation_file)), 
+                self.paths.annotation_hit_overview_nucl_normalized_antisense_file(annotation_file)),
              shell=True)
+
+    def count_reads_in_intergenic_regions(self):
+        """Get the number of reads in intergenic region (IGR)
+
+        These are the reads that do not overlap with any annotations.
+        """
+        for read_file in self.paths.read_files:
+            self._count_reads_in_intergenic_region(read_file)
+
+    def _count_reads_in_intergenic_region(self, read_file):
+        # TODO
+        genome_and_annotation_files = self._group_annotation_files_by_genome_file()
+        for genome_file, annotation_files in genome_and_annotation_files.items():
+            mapped_reads = self._get_mapped_reads(read_file, genome_file)
+            reads_with_annoation_overlaps = self._get_reads_with_annotation_overlap(
+                read_file, annotation_files)
+            reads_without_annotation_overlap = filter(
+                lambda read: read in reads_with_annoation_overlaps, 
+                mapped_reads.keys())
+            fh = open(self.paths.no_annotation_hit_file(read_file, genome_file), "w")
+            fh.write("\n".join(reads_without_annotation_overlap) + "\n")
+
+    def _group_annotation_files_by_genome_file(self):
+        genome_and_annotation_files = {}
+        for annotation_file, genom_file in self.annotation_files.items():
+            genome_and_annotation_files.setdefault(genom_file, [])
+            genome_and_annotation_files[genom_file].append(annotation_file)
+        return(genome_and_annotation_files)
+
+    def _get_mapped_reads(self, read_file, genome_file):
+        sam_parser = SamParser()
+        mapped_reads = {}
+        for entry in sam_parser.entries(
+            self.paths.combined_mapping_file_a_filtered_split(
+                read_file, genome_file)):
+            mapped_reads[entry["query"]] = 1
+        return(mapped_reads)
+            
+    def _get_reads_with_annotation_overlap(
+        self, read_file, annotation_files):
+        reads_with_annotation = {}
+        for annotation_file in annotation_files:
+            for line in open(self.paths.annotation_hit_file(
+                    read_file, annotation_file)):
+                if line[0] in ["#", "\n"]: continue
+                reads_with_annotation[line.split("\t")[0]] = 1
+        return(reads_with_annotation)
