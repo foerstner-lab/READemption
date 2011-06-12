@@ -48,6 +48,9 @@ class Paths(object):
         self.annotation_hit_overview_nucl_normalized_folder = (
             "%s/annotation_hit_overviews_nucleotide_normalized" % 
             self.output_folder)
+        self.annotation_hit_overview_rpkm_normalized_folder = (
+            "%s/annotation_hit_overviews_rpkm_normalized" % 
+            self.output_folder)
         self.read_tracing_folder = "%s/read_tracing" % (self.output_folder)
         self.report_folder = "%s/reports_and_stats" % (self.output_folder)
 
@@ -101,6 +104,7 @@ class Paths(object):
                 self.annotation_hit_folder, self.annotation_hit_overview_folder,
                 self.annotation_hit_overview_read_normalized_folder,
                 self.annotation_hit_overview_nucl_normalized_folder,
+                self.annotation_hit_overview_rpkm_normalized_folder,
                 self.read_tracing_folder, self.input_file_stats_folder, 
                 self.report_folder, self.no_annotation_hit_folder])
     
@@ -354,6 +358,21 @@ class Paths(object):
         """
         return("%s/%s_all_annotation_hits_normalized_by_nucleotides_antisense.csv" % (
                 self.annotation_hit_overview_nucl_normalized_folder, 
+                annotation_file))
+
+    def annotation_hit_overview_rpkm_normalized_file(self, annotation_file):
+        """Return the path of the RPKM normalized annotation overview
+
+        """
+        return("%s/%s_all_annotation_hits_normalized_by_rpkm_sense.csv" % (
+                self.annotation_hit_overview_rpkm_normalized_folder, 
+                annotation_file))
+
+    def annotation_hit_overview_rpkm_normalized_antisense_file(self, annotation_file):
+        """Return the path of the RPKM normalized annotation.
+        """
+        return("%s/%s_all_annotation_hits_normalized_by_rpkm_antisense.csv" % (
+                self.annotation_hit_overview_rpkm_normalized_folder, 
                 annotation_file))
 
     def no_annotation_hit_file(self, read_file, genome_file):
