@@ -57,32 +57,47 @@ class Annotations(object):
 
     def build_annotation_hit_overview(self):
         """Create annotation hit overview tables."""
-        for annotation_file in self.annotation_files.keys():
-            self._build_annotation_hit_overview(annotation_file)
+        with concurrent.futures.ThreadPoolExecutor(
+            max_workers=self.parameters.python_number_of_threads) as executor:
+            for annotation_file in self.annotation_files.keys():
+                executor.submit(
+                    self._build_annotation_hit_overview, annotation_file)
 
     def build_annotation_hit_overview_read_normalized(self):
         """Create annotation hit overview tables normalized by mapped
            reads.
 
         """
-        for annotation_file in self.annotation_files.keys():
-            self._build_annotation_hit_overview_read_normalized(annotation_file)
+        with concurrent.futures.ThreadPoolExecutor(
+            max_workers=self.parameters.python_number_of_threads) as executor:
+            for annotation_file in self.annotation_files.keys():
+                executor.submit(
+                    self._build_annotation_hit_overview_read_normalized, 
+                    annotation_file)
 
     def build_annotation_hit_overview_nucl_normalized(self):
         """Create annotation hit overview tables normalized by mapped
         nucleotides.
 
         """
-        for annotation_file in self.annotation_files.keys():
-            self._build_annotation_hit_overview_nucl_normalized(annotation_file)
+        with concurrent.futures.ThreadPoolExecutor(
+            max_workers=self.parameters.python_number_of_threads) as executor:
+            for annotation_file in self.annotation_files.keys():
+                executor.submit(
+                    self._build_annotation_hit_overview_nucl_normalized,
+                    annotation_file)
 
     def build_annotation_hit_overview_rpkm_normalized(self):
         """Create annotation hit overview tables RPKM normalized
 
         RPKM = Reads per kilobase of exon model per million mapped reads
         """
-        for annotation_file in self.annotation_files.keys():
-            self._build_annotation_hit_overview_rpkm_normalized(annotation_file)
+        with concurrent.futures.ThreadPoolExecutor(
+            max_workers=self.parameters.python_number_of_threads) as executor:
+            for annotation_file in self.annotation_files.keys():
+                executor.submit(
+                    self._build_annotation_hit_overview_rpkm_normalized,
+                    annotation_file)
 
     def _build_annotation_hit_overview(self, annotation_file):
         """Create annotation hit overview table. 
