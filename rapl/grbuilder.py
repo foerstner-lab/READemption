@@ -56,32 +56,32 @@ class GrBuilder(object):
                 self.paths.combined_mapping_file_a_filtered_split(
                     read_file, genome_file)), shell=True)
 
-    def build_nucl_normalized_gr_files(self):
-        """Generate normalized GR files for all read/genome files"""
-        for genome_file in self.paths.genome_files:
-            lowest_number_of_mapped_nucleotides = (
-                self._lowest_number_of_mapped_nucleotides(genome_file))
-            for read_file in self.paths.read_files:
-                self._build_nucl_normalized_gr_file(
-                    read_file, genome_file, lowest_number_of_mapped_nucleotides)
+    # def build_nucl_normalized_gr_files(self):
+    #     """Generate normalized GR files for all read/genome files"""
+    #     for genome_file in self.paths.genome_files:
+    #         lowest_number_of_mapped_nucleotides = (
+    #             self._lowest_number_of_mapped_nucleotides(genome_file))
+    #         for read_file in self.paths.read_files:
+    #             self._build_nucl_normalized_gr_file(
+    #                 read_file, genome_file, lowest_number_of_mapped_nucleotides)
             
-    def _build_nucl_normalized_gr_file(self, read_file, genome_file, 
-                                  lowest_number_of_mapped_nucleotides):
-        """Generate read normalized GR files
+    # def _build_nucl_normalized_gr_file(self, read_file, genome_file, 
+    #                               lowest_number_of_mapped_nucleotides):
+    #     """Generate read normalized GR files
 
-        Arguments:
-        - `read_file`: orignal read file used to generate the mappings.
-        - `genome_file,`: target genome file
-        - `lowest_number_of_mappings`: the lowester number of mappings
-                                       found for all read libs for a
-                                       the genome file.
-        """
-        call("%s %s/sam2gr.py -n -m %s -o %s %s" % (
-                self.paths.python_bin, self.paths.bin_folder, 
-                lowest_number_of_mapped_nucleotides,
-                self.paths.gr_nucl_normalized_file(read_file, genome_file),
-                self.paths.combined_mapping_file_a_filtered_split(
-                    read_file, genome_file)), shell=True)
+    #     Arguments:
+    #     - `read_file`: orignal read file used to generate the mappings.
+    #     - `genome_file,`: target genome file
+    #     - `lowest_number_of_mappings`: the lowester number of mappings
+    #                                    found for all read libs for a
+    #                                    the genome file.
+    #     """
+    #     call("%s %s/sam2gr.py -n -m %s -o %s %s" % (
+    #             self.paths.python_bin, self.paths.bin_folder, 
+    #             lowest_number_of_mapped_nucleotides,
+    #             self.paths.gr_nucl_normalized_file(read_file, genome_file),
+    #             self.paths.combined_mapping_file_a_filtered_split(
+    #                 read_file, genome_file)), shell=True)
 
     def _lowest_number_of_mappings(self, genome_file):
         """Return the lowest number of mappings found.

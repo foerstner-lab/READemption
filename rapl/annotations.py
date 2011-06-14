@@ -75,17 +75,17 @@ class Annotations(object):
                     self._build_annotation_hit_overview_read_normalized, 
                     annotation_file)
 
-    def build_annotation_hit_overview_nucl_normalized(self):
-        """Create annotation hit overview tables normalized by mapped
-        nucleotides.
+    # def build_annotation_hit_overview_nucl_normalized(self):
+    #     """Create annotation hit overview tables normalized by mapped
+    #     nucleotides.
 
-        """
-        with concurrent.futures.ThreadPoolExecutor(
-            max_workers=self.parameters.python_number_of_threads) as executor:
-            for annotation_file in self.annotation_files.keys():
-                executor.submit(
-                    self._build_annotation_hit_overview_nucl_normalized,
-                    annotation_file)
+    #     """
+    #     with concurrent.futures.ThreadPoolExecutor(
+    #         max_workers=self.parameters.python_number_of_threads) as executor:
+    #         for annotation_file in self.annotation_files.keys():
+    #             executor.submit(
+    #                 self._build_annotation_hit_overview_nucl_normalized,
+    #                 annotation_file)
 
     def build_annotation_hit_overview_rpkm_normalized(self):
         """Create annotation hit overview tables RPKM normalized
@@ -158,37 +158,37 @@ class Annotations(object):
                 self.paths._annotation_hit_overview_read_normalized_antisense_file_path(annotation_file)), 
              shell=True)
 
-    def _build_annotation_hit_overview_nucl_normalized(self, annotation_file):
-        """Create annotation hit overview table normalized by mapped
-           nucleotides.
+    # def _build_annotation_hit_overview_nucl_normalized(self, annotation_file):
+    #     """Create annotation hit overview table normalized by mapped
+    #        nucleotides.
 
-        Arguments:
-        - `annotation_file`: an (NCBI) annotation file
+    #     Arguments:
+    #     - `annotation_file`: an (NCBI) annotation file
 
-        """
-        genome_file = self.annotation_files[annotation_file]
-        mapped_nucl_counting_string = ":".join(
-            [str(self.grbuilder._count_mapped_nucleotides(read_file, genome_file)) 
-             for read_file in self.paths.read_files])
-        annotation_hit_files_string = " ".join(
-            [self.paths.annotation_hit_file(read_file, annotation_file) 
-             for read_file in self.paths.read_files])
-        call("%s %s/%s -n %s %s %s > %s" % (
-                self.paths.python_bin, self.paths.bin_folder,
-                "build_annotation_table_with_read_countings.py",
-                mapped_nucl_counting_string,
-                self.paths.annotation_file(annotation_file),
-                annotation_hit_files_string,
-                self.paths.annotation_hit_overview_nucl_normalized_file(annotation_file)), 
-             shell=True)
-        call("%s %s/%s -d a -n %s %s %s > %s" % (
-                self.paths.python_bin, self.paths.bin_folder,
-                "build_annotation_table_with_read_countings.py",
-                mapped_nucl_counting_string,
-                self.paths.annotation_file(annotation_file),
-                annotation_hit_files_string,
-                self.paths.annotation_hit_overview_nucl_normalized_antisense_file(annotation_file)),
-             shell=True)
+    #     """
+    #     genome_file = self.annotation_files[annotation_file]
+    #     mapped_nucl_counting_string = ":".join(
+    #         [str(self.grbuilder._count_mapped_nucleotides(read_file, genome_file)) 
+    #          for read_file in self.paths.read_files])
+    #     annotation_hit_files_string = " ".join(
+    #         [self.paths.annotation_hit_file(read_file, annotation_file) 
+    #          for read_file in self.paths.read_files])
+    #     call("%s %s/%s -n %s %s %s > %s" % (
+    #             self.paths.python_bin, self.paths.bin_folder,
+    #             "build_annotation_table_with_read_countings.py",
+    #             mapped_nucl_counting_string,
+    #             self.paths.annotation_file(annotation_file),
+    #             annotation_hit_files_string,
+    #             self.paths.annotation_hit_overview_nucl_normalized_file(annotation_file)), 
+    #          shell=True)
+    #     call("%s %s/%s -d a -n %s %s %s > %s" % (
+    #             self.paths.python_bin, self.paths.bin_folder,
+    #             "build_annotation_table_with_read_countings.py",
+    #             mapped_nucl_counting_string,
+    #             self.paths.annotation_file(annotation_file),
+    #             annotation_hit_files_string,
+    #             self.paths.annotation_hit_overview_nucl_normalized_antisense_file(annotation_file)),
+    #          shell=True)
 
     def _build_annotation_hit_overview_rpkm_normalized(self, annotation_file):
         """Create annotation hit overview table RPKM normalized. """
