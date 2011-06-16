@@ -102,6 +102,13 @@ class SamParser(object):
             references[entry['reference']] = 1
         return(sorted(references.keys()))
 
+    def number_of_mapped_reads(self, sam_file):
+        """Count the number of mapped reads."""
+        reads = {}
+        for entry in self.entries(sam_file):
+            reads[entry["query"]] = 1
+        return(len(reads))
+
 class SamBuilder(object):
 
     def entry_to_line(self, entry):
