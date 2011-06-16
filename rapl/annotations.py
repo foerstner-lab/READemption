@@ -32,11 +32,9 @@ class Annotations(object):
         - `annotation_file`: an (NCBI) annotation file
 
         """
-        genome_file_path = self.paths.genome_file(
-            self.annotation_files[annotation_file])
+        genome_file_path = self.annotation_files[annotation_file]
         helper = Helper()
-        genome_file_header = helper.get_header_from_fasta_file(
-            genome_file_path)
+        genome_file_header = helper.get_header_of_genome_file(genome_file)
         call("%s %s/sam_hit_annotation_mapping.py -m %s -o %s %s %s \"%s\"" % (
                 self.paths.python_bin, self.paths.bin_folder,
                 self.parameters.min_overlap,
