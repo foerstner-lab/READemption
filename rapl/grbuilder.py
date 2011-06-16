@@ -113,21 +113,17 @@ class GrBuilder(object):
             lowest_number_of_nucleotides = 1
         return(lowest_number_of_mapped_nucleotides)
 
-    def _count_mapped_reads(self, read_file, genome_file):
+    def _count_mapped_reads(self, read_file):
         """Count number of successfully mapped reads.
 
         Arguments:
         - `read_file`: orignal read file used to generate the mappings.
-        - `genome_file`: targe genome file
 
         """
         sam_parser = SamParser()
-        seen_ids = {}
-        for entry in sam_parser.entries(
-            self.paths.combined_mapping_file_a_filtered_split(
-                read_file, genome_file)):
-            seen_ids[entry['query']] = 1
-        return(len(seen_ids))
+        return(
+            sam_parser.number_of_mapped_reads(
+                self.paths.combined_mapping_file_a_filtered(read_file)))
     
     def _count_mapped_nucleotides(self, read_file, genome_file):
         """Count number of successfully mapped reads.
