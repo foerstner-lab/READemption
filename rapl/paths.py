@@ -132,7 +132,7 @@ class Paths(object):
                 self.read_mapping_index_folder, self.segemehl_index_name()))
 
     def genome_file(self, genome_file):
-        """Return the ull path of a given genome file
+        """Return the full path of a given genome file
 
         Arguments:
         - `genome_file`: genome file name
