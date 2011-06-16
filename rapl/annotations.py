@@ -3,6 +3,7 @@ from subprocess import call
 from rapl.grbuilder import GrBuilder
 from rapl.parameters import Parameters
 from rapl.paths import Paths
+from rapl.helper import Helper
 from libs.sam import SamParser
 import concurrent.futures
 
@@ -31,14 +32,18 @@ class Annotations(object):
         - `annotation_file`: an (NCBI) annotation file
 
         """
-        genome_file = self.annotation_files[annotation_file]
-        call("%s %s/sam_hit_annotation_mapping.py -m %s -o %s %s %s" % (
+        genome_file_path = self.paths.genome_file(
+            self.annotation_files[annotation_file])
+        helper = Helper()
+        genome_file_header = helper.get_header_from_fasta_file(
+            genome_file_path)
+        call("%s %s/sam_hit_annotation_mapping.py -m %s -o %s %s %s \"%s\"" % (
                 self.paths.python_bin, self.paths.bin_folder,
                 self.parameters.min_overlap,
                 self.paths.annotation_hit_file(read_file, annotation_file),
-                self.paths.combined_mapping_file_a_filtered_split(
-                    read_file, genome_file),
-                self.paths.annotation_file(annotation_file)), shell=True)
+                self.paths.combined_mapping_file_a_filtered(read_file),
+                self.paths.annotation_file(annotation_file),
+                genome_file_header), shell=True)
     
     def _get_annotation_files_from_config(self):
         """Get the annations files from the config files.
