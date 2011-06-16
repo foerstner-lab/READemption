@@ -59,6 +59,9 @@ class SamParser(object):
             }
         return(entry)
 
+    def number_of_hits_as_int(self, entry):
+        return(int(entry['number_of_hits'].split(":")[-1]))
+
     def entry_start_end_strand(self, entry):
         try:
             self.m_pattern
@@ -91,6 +94,7 @@ class SamParser(object):
             else:
                 exit
         return(head)
+    
 
 class SamBuilder(object):
 
