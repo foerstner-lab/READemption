@@ -95,6 +95,12 @@ class SamParser(object):
                 exit
         return(head)
     
+    def reference_list(self, sam_file):
+        """Return a list of all reference sequence in a SAM file."""
+        references = {}
+        for entry in self.entries(sam_file):
+            references[entry['reference']] = 1
+        return(sorted(references.keys()))
 
 class SamBuilder(object):
 
