@@ -15,6 +15,15 @@ class GrBuilder(object):
             for genome_file in self.paths.genome_files:
                 self._build_gr_file(read_file, genome_file)
 
+    def build_read_normalized_gr_files(self):
+        """Generate normalized GR files for all read/genome files"""
+        for genome_file in self.paths.genome_files:
+            lowest_number_of_mappings = self._lowest_number_of_mappings(
+                genome_file)
+            for read_file in self.paths.read_files:
+                self._build_read_normalized_gr_file(
+                    read_file, genome_file, lowest_number_of_mappings)
+
     def _build_gr_file(self, read_file, genome_file):
         """Generate GR files
 
@@ -30,15 +39,6 @@ class GrBuilder(object):
                 genome_file_header, self.paths.gr_file(read_file, genome_file),
                 self.paths.combined_mapping_file_a_filtered(read_file)), 
              shell=True)
-
-    def build_read_normalized_gr_files(self):
-        """Generate normalized GR files for all read/genome files"""
-        for genome_file in self.paths.genome_files:
-            lowest_number_of_mappings = self._lowest_number_of_mappings(
-                genome_file)
-            for read_file in self.paths.read_files:
-                self._build_read_normalized_gr_file(
-                    read_file, genome_file, lowest_number_of_mappings)
             
     def _build_read_normalized_gr_file(self, read_file, genome_file, 
                                   lowest_number_of_mappings):
