@@ -66,7 +66,6 @@ class Rapl(object):
         gr_builder = GrBuilder()
         gr_builder.build_gr_files()
         gr_builder.build_read_normalized_gr_files()
-        #gr_builder.build_nucl_normalized_gr_files()
 
     def search_annotation_overlaps(self):
         """Search for overlaps of reads and annotations."""
@@ -75,9 +74,8 @@ class Rapl(object):
         annotations.find_annotation_hits()
         annotations.build_annotation_hit_overview()
         annotations.build_annotation_hit_overview_read_normalized()
-        #annotations.build_annotation_hit_overview_nucl_normalized()
         annotations.build_annotation_hit_overview_rpkm_normalized()
-        annotations.count_reads_in_intergenic_regions()
+        # annotations.count_reads_in_intergenic_regions()
 
     def generate_report(self):
         """Create final report of the analysis."""
