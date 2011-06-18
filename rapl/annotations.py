@@ -17,9 +17,9 @@ class Annotations(object):
 
     def find_annotation_hits(self):
         """Search for overlaps of reads and annotations."""
-        for read_file in self.paths.read_files:
-            with concurrent.futures.ThreadPoolExecutor(
-                max_workers=self.parameters.python_number_of_threads) as executor:
+        with concurrent.futures.ThreadPoolExecutor(
+            max_workers=self.parameters.python_number_of_threads) as executor:
+            for read_file in self.paths.read_files:
                 for annotation_file in self.annotation_files.keys():
                     executor.submit(
                         self._find_annotation_hits, read_file, annotation_file)
