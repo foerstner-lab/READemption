@@ -90,8 +90,8 @@ class Paths(object):
         self.segemehl_bin = "segemehl_dev"
         # DEV
         self.python_bin = "/opt/Python-3.2/python"
-        self.bin_folder = "~/rapl_tools"
-
+        self.bin_folder = (os.path.split(os.path.realpath(__file__))[0] + 
+                           "/rapl_tools")
     def required_folders(self):
         return([self.input_folder, self.output_folder, self.rna_seq_folder,
                 self.annotation_folder, self.read_mappings_first_run_folder,
