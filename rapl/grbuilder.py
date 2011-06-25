@@ -1,3 +1,4 @@
+import concurrent.futures
 from subprocess import call
 from libs.sam import SamParser
 from rapl.helper import Helper
@@ -8,21 +9,27 @@ class GrBuilder(object):
 
     def __init__(self):
         self.paths = Paths()
+        self.parameters = Parameters()
     
     def build_gr_files(self):
         """Generate GR files for all read/genome file combinations."""
-        for read_file in self.paths.read_files:
-            for genome_file in self.paths.genome_files:
-                self._build_gr_file(read_file, genome_file)
+        with concurrent.futures.ThreadPoolExecutor(
+            max_workers=self.parameters.python_number_of_threads) as executor:
+            for read_file in self.paths.read_files:
+                for genome_file in self.paths.genome_files:
+                    executor.submit(self._build_gr_file, read_file, genome_file)
 
     def build_read_normalized_gr_files(self):
         """Generate normalized GR files for all read/genome files"""
-        for genome_file in self.paths.genome_files:
-            lowest_number_of_mappings = self._lowest_number_of_mappings(
-                genome_file)
-            for read_file in self.paths.read_files:
-                self._build_read_normalized_gr_file(
-                    read_file, genome_file, lowest_number_of_mappings)
+        with concurrent.futures.ThreadPoolExecutor(
+            max_workers=self.parameters.python_number_of_threads) as executor:
+            for genome_file in self.paths.genome_files:
+                lowest_number_of_mappings = self._lowest_number_of_mappings(
+                    genome_file)
+                for read_file in self.paths.read_files:
+                    executor.submit(
+                        self._build_read_normalized_gr_file, read_file, 
+                        genome_file, lowest_number_of_mappings)
 
     def _build_gr_file(self, read_file, genome_file):
         """Generate GR files
