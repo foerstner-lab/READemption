@@ -1,3 +1,4 @@
+import concurrent.futures
 import json
 from subprocess import call
 from rapl.grbuilder import GrBuilder
@@ -5,7 +6,7 @@ from rapl.parameters import Parameters
 from rapl.paths import Paths
 from rapl.helper import Helper
 from libs.sam import SamParser
-import concurrent.futures
+from rapl.rapl_tools.build_annotation_table_with_read_countings import AnnotationMappingTableBuilder
 
 class Annotations(object):
 
@@ -44,7 +45,7 @@ class Annotations(object):
                 genome_file_header), shell=True)
     
     def _get_annotation_files_from_config(self):
-        """Get the annations files from the config files.
+        """Get the annotations files from the config files.
 
         It extracts a dictionary that contains the names of the
         annotation files as keys and the names of the corresponding
@@ -97,23 +98,24 @@ class Annotations(object):
         - `annotation_file`: an (NCBI) annotation file
 
         """
-        annotation_hit_files_string = " ".join(
-            [self.paths.annotation_hit_file(read_file, annotation_file) 
-             for read_file in self.paths.read_files])
-        call("%s %s/%s %s %s > %s" % (
-                self.paths.python_bin, self.paths.bin_folder,
-                "build_annotation_table_with_read_countings.py",
-                self.paths.annotation_file(annotation_file),
-                annotation_hit_files_string,
-                self.paths.annotation_hit_overview_file(annotation_file)),
-             shell=True)
-        call("%s %s/%s -d a %s %s > %s" % (
-                self.paths.python_bin, self.paths.bin_folder,
-                "build_annotation_table_with_read_countings.py",
-                self.paths.annotation_file(annotation_file),
-                annotation_hit_files_string,
-                self.paths.annotation_hit_overview_antisense_file(
-                    annotation_file)), shell=True)
+        annotation_hit_files = [
+            self.paths.annotation_hit_file(read_file, annotation_file) 
+            for read_file in self.paths.read_files]
+        # Sense
+        annotation_table_builder = AnnotationMappingTableBuilder(
+            self.paths.annotation_file(annotation_file), annotation_hit_files,
+             strand_orientation="s", 
+            output_file=self.paths.annotation_hit_overview_file(annotation_file))
+        annotation_table_builder.read_annotation_mapping_files()
+        annotation_table_builder.read_annotation_file_and_print_output()
+        # Antisense
+        annotation_table_builder = AnnotationMappingTableBuilder(
+            self.paths.annotation_file(annotation_file), annotation_hit_files,
+            strand_orientation="a", 
+            output_file=self.paths.annotation_hit_overview_antisense_file(
+                annotation_file))
+        annotation_table_builder.read_annotation_mapping_files()
+        annotation_table_builder.read_annotation_file_and_print_output()
 
     def _build_annotation_hit_overview_read_normalized(self, annotation_file):
         """Create annotation hit overview table normalized by mapped
@@ -123,53 +125,57 @@ class Annotations(object):
         - `annotation_file`: an (NCBI) annotation file
 
         """
-        mapped_reads_counting_string = ":".join(
-            [str(self.grbuilder._count_mapped_reads(read_file)) 
-             for read_file in self.paths.read_files])
-        annotation_hit_files_string = " ".join(
-            [self.paths.annotation_hit_file(read_file, annotation_file) 
-             for read_file in self.paths.read_files])
-        call("%s %s/%s -n %s %s %s > %s" % (
-                self.paths.python_bin, self.paths.bin_folder,
-                "build_annotation_table_with_read_countings.py",
-                mapped_reads_counting_string,
-                self.paths.annotation_file(annotation_file),
-                annotation_hit_files_string,
-                self.paths.annotation_hit_overview_read_normalized_file(
-                    annotation_file)), shell=True)
-        call("%s %s/%s -d a -n %s %s %s > %s" % (
-                self.paths.python_bin, self.paths.bin_folder,
-                "build_annotation_table_with_read_countings.py",
-                mapped_reads_counting_string,
-                self.paths.annotation_file(annotation_file),
-                annotation_hit_files_string,
-                self.paths._annotation_hit_overview_read_normalized_antisense_file_path(
-                    annotation_file)), shell=True)
+
+        annotation_hit_files = [
+            self.paths.annotation_hit_file(read_file, annotation_file) 
+            for read_file in self.paths.read_files]
+        mapped_reads_countings = [
+            self.grbuilder._count_mapped_reads(read_file) 
+            for read_file in self.paths.read_files]
+        # Sense
+        annotation_table_builder = AnnotationMappingTableBuilder(
+            self.paths.annotation_file(annotation_file), 
+            annotation_hit_files, strand_orientation="s", 
+            normalization_factors=mapped_reads_countings,
+            output_file=self.paths.annotation_hit_overview_read_normalized_file(
+                annotation_file))
+        annotation_table_builder.read_annotation_mapping_files()
+        annotation_table_builder.read_annotation_file_and_print_output()
+        # Antisense
+        annotation_table_builder = AnnotationMappingTableBuilder(
+            self.paths.annotation_file(annotation_file), annotation_hit_files,
+            strand_orientation="a", normalization_factors=mapped_reads_countings,
+            output_file=self.paths._annotation_hit_overview_read_normalized_antisense_file_path(
+                     annotation_file))
+        annotation_table_builder.read_annotation_mapping_files()
+        annotation_table_builder.read_annotation_file_and_print_output()
 
     def _build_annotation_hit_overview_rpkm_normalized(self, annotation_file):
         """Create annotation hit overview table RPKM normalized. """
-        mapped_reads_counting_string = ":".join(
-            [str(self.grbuilder._count_mapped_reads(read_file)) 
-             for read_file in self.paths.read_files])
-        annotation_hit_files_string = " ".join(
-            [self.paths.annotation_hit_file(read_file, annotation_file) 
-             for read_file in self.paths.read_files])
-        call("%s %s/%s -r -n %s %s %s > %s" % (
-                self.paths.python_bin, self.paths.bin_folder,
-                "build_annotation_table_with_read_countings.py",
-                mapped_reads_counting_string,
-                self.paths.annotation_file(annotation_file),
-                annotation_hit_files_string,
-                self.paths.annotation_hit_overview_rpkm_normalized_file(
-                    annotation_file)),  shell=True)
-        call("%s %s/%s -r -d a -n %s %s %s > %s" % (
-                self.paths.python_bin, self.paths.bin_folder,
-                "build_annotation_table_with_read_countings.py",
-                mapped_reads_counting_string,
-                self.paths.annotation_file(annotation_file),
-                annotation_hit_files_string,
-                self.paths.annotation_hit_overview_rpkm_normalized_antisense_file(
-                    annotation_file)),   shell=True)
+        annotation_hit_files = [
+            self.paths.annotation_hit_file(read_file, annotation_file) 
+            for read_file in self.paths.read_files]
+        mapped_reads_countings = [
+            self.grbuilder._count_mapped_reads(read_file) 
+            for read_file in self.paths.read_files]
+        # Sense
+        annotation_table_builder = AnnotationMappingTableBuilder(
+            self.paths.annotation_file(annotation_file), 
+            annotation_hit_files, strand_orientation="s", rpkm=True,
+            normalization_factors=mapped_reads_countings, 
+            output_file=self.paths.annotation_hit_overview_rpkm_normalized_file(
+                annotation_file))
+        annotation_table_builder.read_annotation_mapping_files()
+        annotation_table_builder.read_annotation_file_and_print_output()
+        # Antisense
+        annotation_table_builder = AnnotationMappingTableBuilder(
+            self.paths.annotation_file(annotation_file), annotation_hit_files,
+            strand_orientation="a", rpkm=True,
+            normalization_factors=mapped_reads_countings,
+            output_file=self.paths.annotation_hit_overview_rpkm_normalized_antisense_file(
+                annotation_file))
+        annotation_table_builder.read_annotation_mapping_files()
+        annotation_table_builder.read_annotation_file_and_print_output()
 
     def count_reads_in_intergenic_regions(self):
         """Get the number of reads in intergenic region (IGR)
