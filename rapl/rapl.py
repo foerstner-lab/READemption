@@ -74,6 +74,7 @@ class Rapl(object):
         annotations.find_annotation_hits()
         annotations.build_annotation_hit_overview()
         annotations.build_annotation_hit_overview_read_normalized()
+        annotations.build_annotation_hit_overview_nucleotide_normalized()
         annotations.build_annotation_hit_overview_rpkm_normalized()
         # annotations.count_reads_in_intergenic_regions()
 

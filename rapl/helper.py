@@ -1,6 +1,7 @@
 import concurrent.futures
 import sys
 from rapl.paths import Paths
+from libs.sam import SamParser
 from rapl.parameters import Parameters
 
 class Helper(object):
@@ -37,3 +38,36 @@ class Helper(object):
             sys.stderr.write(str(exception) + ".\n")
         elif self.parameters.exception_handling == "crash":
             raise(exception) 
+    
+    def count_mapped_nucleotides(self, read_file):
+        """Count number of successfully mapped reads.
+
+        Arguments:
+        - `read_file`: orignal read file used to generate the mappings.
+        """
+        sam_parser = SamParser()
+        nucleotide_counting = 0
+        prev_entry = ""
+        for entry in sam_parser.entries(
+            self.paths.combined_mapping_file_a_filtered(read_file)):
+            if entry['query'] == prev_entry:
+                continue
+            nucleotide_counting += len(entry['sequence'])
+            prev_entry = entry['query']
+        return(nucleotide_counting)
+
+    # def lowest_number_of_mapped_nucleotides(self, genome_file):
+    #     """Return the lowest number of mapping mapped nucleotides.
+
+    #     Arguments:
+    #     - `genome_file`: target genome file
+    #     """
+    #     lowest_number_of_mapped_nucleotides = min(
+    #         [self._count_mapped_nucleotides(read_file, genome_file) 
+    #      for var in collection:
+    #              read_file in self.paths.read_files])
+    #     # Avoid multiplication by zero
+    #     if lowest_number_of_mapped_nucleotides == 0:
+    #         lowest_number_of_nucleotides = 1
+    #     return(lowest_number_of_mapped_nucleotides)
+

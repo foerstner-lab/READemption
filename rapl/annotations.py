@@ -31,6 +31,63 @@ class Annotations(object):
         # Evalutate thread outcome
         self.helper.check_thread_completeness(threads)
 
+    def build_annotation_hit_overview(self):
+        """Create annotation hit overview tables."""
+        with concurrent.futures.ThreadPoolExecutor(
+            max_workers=self.parameters.python_number_of_threads) as executor:
+            for annotation_file in self.annotation_files.keys():
+                executor.submit(
+                    self._build_annotation_hit_overview, annotation_file)
+
+    def build_annotation_hit_overview_read_normalized(self):
+        """Create annotation hit overview tables normalized by mapped
+           reads.
+
+        """
+        # Create a thread for each read file
+        threads = []
+        with concurrent.futures.ThreadPoolExecutor(
+            max_workers=self.parameters.python_number_of_threads) as executor:
+            for annotation_file in self.annotation_files.keys():
+                threads.append(executor.submit(
+                    self._build_annotation_hit_overview_read_normalized, 
+                    annotation_file))
+        # Evalutate thread outcome
+        self.helper.check_thread_completeness(threads)
+
+    def build_annotation_hit_overview_nucleotide_normalized(self):
+        """Create annotation hit overview tables - nucleotide based
+        
+        Overlapping nucleotides are counted and normalized by the
+        total number of mapped nucleotides.
+        """
+        # Create a thread for each read file
+        threads = []
+        with concurrent.futures.ThreadPoolExecutor(
+            max_workers=self.parameters.python_number_of_threads) as executor:
+            for annotation_file in self.annotation_files.keys():
+                threads.append(executor.submit(
+                    self._build_annotation_hit_overview_nucleotide_normalized, 
+                    annotation_file))
+        # Evalutate thread outcome
+        self.helper.check_thread_completeness(threads)
+
+    def build_annotation_hit_overview_rpkm_normalized(self):
+        """Create annotation hit overview tables RPKM normalized
+
+        RPKM = Reads per kilobase of exon model per million mapped reads
+        """
+        # Create a thread for each read file
+        threads = []
+        with concurrent.futures.ThreadPoolExecutor(
+            max_workers=self.parameters.python_number_of_threads) as executor:
+            for annotation_file in self.annotation_files.keys():
+                threads.append(executor.submit(
+                    self._build_annotation_hit_overview_rpkm_normalized,
+                    annotation_file))
+        # Evalutate thread outcome
+        self.helper.check_thread_completeness(threads)
+
     def _find_annotation_hits(self, read_file, annotation_file):
         """Search for overlaps of reads and annotations.
 
@@ -64,38 +121,6 @@ class Annotations(object):
         """Read the config file."""
         self.config = json.loads(open(self.paths.config_file).read())
 
-    def build_annotation_hit_overview(self):
-        """Create annotation hit overview tables."""
-        with concurrent.futures.ThreadPoolExecutor(
-            max_workers=self.parameters.python_number_of_threads) as executor:
-            for annotation_file in self.annotation_files.keys():
-                executor.submit(
-                    self._build_annotation_hit_overview, annotation_file)
-
-    def build_annotation_hit_overview_read_normalized(self):
-        """Create annotation hit overview tables normalized by mapped
-           reads.
-
-        """
-        with concurrent.futures.ThreadPoolExecutor(
-            max_workers=self.parameters.python_number_of_threads) as executor:
-            for annotation_file in self.annotation_files.keys():
-                executor.submit(
-                    self._build_annotation_hit_overview_read_normalized, 
-                    annotation_file)
-
-    def build_annotation_hit_overview_rpkm_normalized(self):
-        """Create annotation hit overview tables RPKM normalized
-
-        RPKM = Reads per kilobase of exon model per million mapped reads
-        """
-        with concurrent.futures.ThreadPoolExecutor(
-            max_workers=self.parameters.python_number_of_threads) as executor:
-            for annotation_file in self.annotation_files.keys():
-                executor.submit(
-                    self._build_annotation_hit_overview_rpkm_normalized,
-                    annotation_file)
-
     def _build_annotation_hit_overview(self, annotation_file):
         """Create annotation hit overview table. 
 
@@ -109,7 +134,7 @@ class Annotations(object):
         # Sense
         annotation_table_builder = AnnotationMappingTableBuilder(
             self.paths.annotation_file(annotation_file), annotation_hit_files,
-             strand_orientation="s", 
+             strand_orientation="s",
             output_file=self.paths.annotation_hit_overview_file(annotation_file))
         annotation_table_builder.read_annotation_mapping_files()
         annotation_table_builder.read_annotation_file_and_print_output()
@@ -125,7 +150,7 @@ class Annotations(object):
     def _build_annotation_hit_overview_read_normalized(self, annotation_file):
         """Create annotation hit overview table normalized by mapped
            reads.
-
+n
         Arguments:
         - `annotation_file`: an (NCBI) annotation file
 
@@ -151,6 +176,39 @@ class Annotations(object):
             self.paths.annotation_file(annotation_file), annotation_hit_files,
             strand_orientation="a", normalization_factors=mapped_reads_countings,
             output_file=self.paths._annotation_hit_overview_read_normalized_antisense_file_path(
+                     annotation_file))
+        annotation_table_builder.read_annotation_mapping_files()
+        annotation_table_builder.read_annotation_file_and_print_output()
+
+    def _build_annotation_hit_overview_nucleotide_normalized(self, annotation_file):
+        """Create annotation hit overview table - nucleotide based
+
+        Arguments:
+        - `annotation_file`: an (NCBI) annotation file
+
+        """
+        annotation_hit_files = [
+            self.paths.annotation_hit_file(read_file, annotation_file) 
+            for read_file in self.paths.read_files]
+        mapped_nucleotide_countings = [
+            self.helper.count_mapped_nucleotides(read_file) 
+            for read_file in self.paths.read_files]
+        # Sense
+        annotation_table_builder = AnnotationMappingTableBuilder(
+            self.paths.annotation_file(annotation_file), 
+            annotation_hit_files, strand_orientation="s", 
+            count_nucleotides=True,
+            normalization_factors=mapped_nucleotide_countings,
+            output_file=self.paths.annotation_hit_overview_nucl_normalized_file(
+                annotation_file))
+        annotation_table_builder.read_annotation_mapping_files()
+        annotation_table_builder.read_annotation_file_and_print_output()
+        # Antisense
+        annotation_table_builder = AnnotationMappingTableBuilder(
+            self.paths.annotation_file(annotation_file), annotation_hit_files,
+            strand_orientation="a", normalization_factors=mapped_nucleotide_countings,
+            count_nucleotides=True,
+            output_file=self.paths.annotation_hit_overview_nucl_normalized_antisense_file(
                      annotation_file))
         annotation_table_builder.read_annotation_mapping_files()
         annotation_table_builder.read_annotation_file_and_print_output()
