@@ -1,5 +1,6 @@
 import concurrent.futures
 import json
+import sys
 from subprocess import call
 from rapl.grbuilder import GrBuilder
 from rapl.parameters import Parameters
@@ -14,16 +15,21 @@ class Annotations(object):
         self.paths = Paths()
         self.parameters = Parameters()
         self.grbuilder = GrBuilder()
+        self.helper = Helper()
         self._get_annotation_files_from_config()
 
     def find_annotation_hits(self):
         """Search for overlaps of reads and annotations."""
+        # Create a thread for each read file / annotation file combo.
+        threads = []
         with concurrent.futures.ThreadPoolExecutor(
             max_workers=self.parameters.python_number_of_threads) as executor:
             for read_file in self.paths.read_files:
                 for annotation_file in self.annotation_files.keys():
-                    executor.submit(
-                        self._find_annotation_hits, read_file, annotation_file)
+                    threads.append(executor.submit(
+                        self._find_annotation_hits, read_file, annotation_file))
+        # Evalutate thread outcome
+        self.helper.check_thread_completeness(threads)
 
     def _find_annotation_hits(self, read_file, annotation_file):
         """Search for overlaps of reads and annotations.
@@ -34,8 +40,7 @@ class Annotations(object):
 
         """
         genome_file = self.annotation_files[annotation_file]
-        helper = Helper()
-        genome_file_header = helper.get_header_of_genome_file(genome_file)
+        genome_file_header = self.helper.get_header_of_genome_file(genome_file)
         call("%s %s/sam_hit_annotation_mapping.py -m %s -o %s %s %s \"%s\"" % (
                 self.paths.python_bin, self.paths.bin_folder,
                 self.parameters.min_overlap,
