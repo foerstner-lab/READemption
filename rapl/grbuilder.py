@@ -15,23 +15,34 @@ class GrBuilder(object):
     
     def build_gr_files(self):
         """Generate GR files for all read/genome file combinations."""
+        # Create a thread for each read file / genome file combo
+        threads = []
         with concurrent.futures.ThreadPoolExecutor(
             max_workers=self.parameters.python_number_of_threads) as executor:
             for read_file in self.paths.read_files:
                 for genome_file in self.paths.genome_files:
-                    executor.submit(self._build_gr_file, read_file, genome_file)
+                    threads.append(
+                        executor.submit(
+                            self._build_gr_file, read_file, genome_file))
+        # Evaluate thread outcome
+        self.helper.check_thread_completeness(threads)
 
     def build_read_normalized_gr_files(self):
         """Generate normalized GR files for all read/genome files"""
+        # Create a thread for each read file / genome file combo
+        threads = []
         with concurrent.futures.ThreadPoolExecutor(
             max_workers=self.parameters.python_number_of_threads) as executor:
             for genome_file in self.paths.genome_files:
-                lowest_number_of_mappings = self.helper._lowest_number_of_mappings(
-                    genome_file)
+                lowest_number_of_mappings = (
+                    self.helper._lowest_number_of_mappings(genome_file))
                 for read_file in self.paths.read_files:
-                    executor.submit(
-                        self._build_read_normalized_gr_file, read_file, 
-                        genome_file, lowest_number_of_mappings)
+                    threads.append(
+                        executor.submit(
+                            self._build_read_normalized_gr_file, read_file,
+                            genome_file, lowest_number_of_mappings))
+        # Evaluate thread outcome
+        self.helper.check_thread_completeness(threads)
 
     def _build_gr_file(self, read_file, genome_file):
         """Generate GR files
