@@ -141,47 +141,42 @@ class ReadMapper(object):
             self.paths.combined_mapping_file(mapping_file), self.parameters.max_a_content), 
              shell=True)
 
-    def split_mappings_by_genome_files(self):
-        """Split the Segemehl result entries by genome file."""
-        headers_of_genome_files = self._headers_of_genome_files()
-        for read_file in  self.paths.read_files:
-            self._split_mapping_by_genome_files(
-                read_file, headers_of_genome_files)
+    # # TODO: Obsolete - remove
+    # def split_mappings_by_genome_files(self):
+    #     """Split the Segemehl result entries by genome file."""
+    #     headers_of_genome_files = self.helper.get_headers_of_genome_files()
+    #     for read_file in  self.paths.read_files:
+    #         self._split_mapping_by_genome_files(
+    #             read_file, headers_of_genome_files)
 
-    def _split_mapping_by_genome_files(self, read_file, headers_of_genome_files):
-        """Split the Segemehl results by the target genome files.
+    # # TODO: Obsolete - remove
+    # def _split_mapping_by_genome_files(self, read_file, headers_of_genome_files):
+    #     """Split the Segemehl results by the target genome files.
 
-        Arguments:
-        - `read_file,`: the read file that was used to generate the combined
-                        Segemehl mapping file
-        - `headers_of_genome_files`: A dictionary that contains the headers
-                                     of the genome files as keys and the
-                                     name of their files as values.
+    #     Arguments:
+    #     - `read_file,`: the read file that was used to generate the combined
+    #                     Segemehl mapping file
+    #     - `headers_of_genome_files`: A dictionary that contains the headers
+    #                                  of the genome files as keys and the
+    #                                  name of their files as values.
 
-        """
-        sam_parser = SamParser()
-        sam_builder = SamBuilder()        
-        file_handles = {}
-        # Open an output file for each genome file. Needed as some
-        # genome files don't have any mapping and so their mapping
-        # file would not be created otherwise and be missing later.
-        for genome_file in self.paths.genome_files:
-            output_file = self.paths.combined_mapping_file_a_filtered_split(
-                read_file, genome_file)
-            file_handles["%s-%s" % (read_file, genome_file)] = open(
-                output_file, "w")
-        for entry in sam_parser.entries(
-            self.paths.combined_mapping_file_a_filtered(read_file)):
-            genome_file = headers_of_genome_files[entry['reference']]
-            file_handles["%s-%s" % (read_file, genome_file)].write(
-                sam_builder.entry_to_line(entry))
-        for output_file in file_handles.values():
-            output_file.close()
+    #     """
+    #     sam_parser = SamParser()
+    #     sam_builder = SamBuilder()        
+    #     file_handles = {}
+    #     # Open an output file for each genome file. Needed as some
+    #     # genome files don't have any mapping and so their mapping
+    #     # file would not be created otherwise and be missing later.
+    #     for genome_file in self.paths.genome_files:
+    #         output_file = self.paths.combined_mapping_file_a_filtered_split(
+    #             read_file, genome_file)
+    #         file_handles["%s-%s" % (read_file, genome_file)] = open(
+    #             output_file, "w")
+    #     for entry in sam_parser.entries(
+    #         self.paths.combined_mapping_file_a_filtered(read_file)):
+    #         genome_file = headers_of_genome_files[entry['reference']]
+    #         file_handles["%s-%s" % (read_file, genome_file)].write(
+    #             sam_builder.entry_to_line(entry))
+    #     for output_file in file_handles.values():
+    #         output_file.close()
 
-    def _headers_of_genome_files(self):
-        """Extract the FASTA headers of all genome files."""
-        headers = {}
-        for genome_file in self.paths.genome_files:
-            genome_fh = open(self.paths.genome_file(genome_file))
-            headers[genome_fh.readline()[1:-1].split()[0]] = genome_file
-        return(headers)
