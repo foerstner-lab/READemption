@@ -4,6 +4,7 @@ from libs.sam import SamParser
 from rapl.helper import Helper
 from rapl.parameters import Parameters
 from rapl.paths import Paths
+from rapl.rapl_tools.sam2gr import Sam2Gr
 
 class GrBuilder(object):
 
@@ -41,11 +42,12 @@ class GrBuilder(object):
         """
         helper = Helper()
         genome_file_header = helper.get_header_of_genome_file(genome_file)
-        call("%s %s/sam2gr.py -t %s -o %s %s" % (
-                self.paths.python_bin, self.paths.bin_folder, 
-                genome_file_header, self.paths.gr_file(read_file, genome_file),
-                self.paths.combined_mapping_file_a_filtered(read_file)), 
-             shell=True)
+        sam2gr = Sam2Gr(self.paths.combined_mapping_file_a_filtered(read_file),
+                        mapping_target=genome_file_header,
+                        output_prefix=self.paths.gr_file(read_file, genome_file))
+        sam2gr.check_parameters()
+        sam2gr.collect_intensities()
+        sam2gr.print_output()
             
     def _build_read_normalized_gr_file(self, read_file, genome_file, 
                                   lowest_number_of_mappings):
@@ -61,12 +63,18 @@ class GrBuilder(object):
         """
         helper = Helper()
         genome_file_header = helper.get_header_of_genome_file(genome_file)
-        call("%s %s/sam2gr.py -t %s -r -m %s -o %s %s" % (
-                self.paths.python_bin, self.paths.bin_folder, genome_file_header,
-                lowest_number_of_mappings, 
-                self.paths.gr_read_normalized_file(read_file, genome_file),
-                self.paths.combined_mapping_file_a_filtered(read_file)), shell=True)
+        sam2gr = Sam2Gr(
+            self.paths.combined_mapping_file_a_filtered(read_file),
+            normalize_by_reads=True, 
+            normalization_multiplier=lowest_number_of_mappings,
+            mapping_target=genome_file_header, 
+            output_prefix=self.paths.gr_read_normalized_file(
+                read_file, genome_file))
+        sam2gr.check_parameters()
+        sam2gr.collect_intensities()
+        sam2gr.print_output()
 
+    # TODO: Move to helper
     def _lowest_number_of_mappings(self, genome_file):
         """Return the lowest number of mappings found.
 
@@ -82,6 +90,7 @@ class GrBuilder(object):
             lowest_number_of_mappings = 1
         return(lowest_number_of_mappings)
 
+    # TODO: Move to helper
     def _count_mapped_reads(self, read_file):
         """Count number of successfully mapped reads.
 

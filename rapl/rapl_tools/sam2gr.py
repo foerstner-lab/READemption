@@ -66,6 +66,7 @@ __version__ = "0.1"
 
 import sys
 from argparse import ArgumentParser
+sys.path.append('../libs/')
 from sam import SamParser
 
 def main():
