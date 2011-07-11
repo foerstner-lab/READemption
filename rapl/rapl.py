@@ -53,7 +53,6 @@ class Rapl(object):
         read_mapper.run_mapping_with_clipped_reads()
         read_mapper.combine_mappings()
         read_mapper.filter_combined_mappings_by_a_content()
-        read_mapper.split_mappings_by_genome_files()
         read_mapping_summary = ReadMappingSummary()
         read_mapping_summary.create()
         read_tracer = ReadTracer()
