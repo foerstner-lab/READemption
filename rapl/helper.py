@@ -12,7 +12,7 @@ class Helper(object):
         self.parameters = Parameters()
 
     def get_header_of_genome_file(self, genome_file):
-        """Return the shor header of a given fasta file."""
+        """Return the short header of a given fasta file."""
         genome_file_path = self.paths.genome_file(genome_file)
         return(open(genome_file_path).readline().split()[0][1:])
 
@@ -55,6 +55,34 @@ class Helper(object):
             nucleotide_counting += len(entry['sequence'])
             prev_entry = entry['query']
         return(nucleotide_counting)
+
+    def _lowest_number_of_mappings(self, genome_file):
+        """Return the lowest number of mappings found.
+
+        Arguments:
+        - `genome_file`: target genome file
+
+        """
+        lowest_number_of_mappings = min(
+            [self._count_mapped_reads(read_file) 
+             for read_file in self.paths.read_files])
+        # Do avoid multiplication by zero
+        if lowest_number_of_mappings == 0:
+            lowest_number_of_mappings = 1
+        return(lowest_number_of_mappings)
+
+    def _count_mapped_reads(self, read_file):
+        """Count number of successfully mapped reads.
+
+        Arguments:
+        - `read_file`: orignal read file used to generate the mappings.
+
+        """
+        sam_parser = SamParser()
+        return(
+            sam_parser.number_of_mapped_reads(
+                self.paths.combined_mapping_file_a_filtered(read_file)))
+
 
     # def lowest_number_of_mapped_nucleotides(self, genome_file):
     #     """Return the lowest number of mapping mapped nucleotides.
