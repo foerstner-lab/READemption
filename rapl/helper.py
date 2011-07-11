@@ -16,6 +16,15 @@ class Helper(object):
         genome_file_path = self.paths.genome_file(genome_file)
         return(open(genome_file_path).readline().split()[0][1:])
 
+    # OBSOLETE
+    # def get_headers_of_genome_files(self):
+    #     """Extract the FASTA headers of all genome files."""
+    #     headers = {}
+    #     for genome_file in self.paths.genome_files:
+    #         header = self.get_header_of_genome_file(genome_file)
+    #         headers[header] = genome_file
+    #     return(headers)
+
     def check_thread_completeness(self, threads):
         """Check the completness of each thread in a list
 
