@@ -2,7 +2,6 @@ import concurrent.futures
 import json
 import sys
 from subprocess import call
-from rapl.grbuilder import GrBuilder
 from rapl.parameters import Parameters
 from rapl.paths import Paths
 from rapl.helper import Helper
@@ -14,7 +13,6 @@ class Annotations(object):
     def __init__(self):
         self.paths = Paths()
         self.parameters = Parameters()
-        self.grbuilder = GrBuilder()
         self.helper = Helper()
         self._get_annotation_files_from_config()
 
@@ -160,7 +158,7 @@ n
             self.paths.annotation_hit_file(read_file, annotation_file) 
             for read_file in self.paths.read_files]
         mapped_reads_countings = [
-            self.grbuilder._count_mapped_reads(read_file) 
+            self.helper._count_mapped_reads(read_file) 
             for read_file in self.paths.read_files]
         # Sense
         annotation_table_builder = AnnotationMappingTableBuilder(
@@ -219,7 +217,7 @@ n
             self.paths.annotation_hit_file(read_file, annotation_file) 
             for read_file in self.paths.read_files]
         mapped_reads_countings = [
-            self.grbuilder._count_mapped_reads(read_file) 
+            self.helper._count_mapped_reads(read_file) 
             for read_file in self.paths.read_files]
         # Sense
         annotation_table_builder = AnnotationMappingTableBuilder(
