@@ -28,7 +28,7 @@ class Annotations(object):
                 for annotation_file in self.annotation_files.keys():
                     threads.append(executor.submit(
                         self._find_annotation_hits, read_file, annotation_file))
-        # Evalutate thread outcome
+        # Evaluate thread outcome
         self.helper.check_thread_completeness(threads)
 
     def build_annotation_hit_overview(self):
@@ -52,7 +52,7 @@ class Annotations(object):
                 threads.append(executor.submit(
                     self._build_annotation_hit_overview_read_normalized, 
                     annotation_file))
-        # Evalutate thread outcome
+        # Evaluate thread outcome
         self.helper.check_thread_completeness(threads)
 
     def build_annotation_hit_overview_nucleotide_normalized(self):
