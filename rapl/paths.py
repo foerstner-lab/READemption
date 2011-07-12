@@ -218,6 +218,15 @@ class Paths(object):
                 self.combined_mapping_file(read_file),
                 self.parameters.max_a_content))
 
+    def unique_mappings_only_file(self, read_file):
+        """ Return the path of the file with unique mappings only
+
+        Arguments:
+        - `read_file`: name of the read file
+        """
+        return("%s.unique_mappings_only" % (
+                self.combined_mapping_file(read_file)))
+
     def unmapped_clipped_size_failed_read(self, read_file):
         """Return the path of size filter failed clipped reads.
 

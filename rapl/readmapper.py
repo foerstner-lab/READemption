@@ -53,7 +53,7 @@ class ReadMapper(object):
         """Clip reads unmapped in the first segemehl run."""
         for read_file in self.paths.read_files:
             self._clip_reads(self.paths.unmapped_raw_read_file(read_file))
-
+            
     def _clip_reads(self, unmapped_raw_read_file_path):
         """Remove the poly-A tail of reads in a file.
 
@@ -141,42 +141,20 @@ class ReadMapper(object):
             self.paths.combined_mapping_file(mapping_file), self.parameters.max_a_content), 
              shell=True)
 
-    # # TODO: Obsolete - remove
-    # def split_mappings_by_genome_files(self):
-    #     """Split the Segemehl result entries by genome file."""
-    #     headers_of_genome_files = self.helper.get_headers_of_genome_files()
-    #     for read_file in  self.paths.read_files:
-    #         self._split_mapping_by_genome_files(
-    #             read_file, headers_of_genome_files)
+    def select_uniquely_mapped_reads(self):
+        if self.parameters.uniquely_mapped_reads_only:
+            for read_file in self.paths.read_files:
+                self._select_uniquely_mapped_reads(read_file)
 
-    # # TODO: Obsolete - remove
-    # def _split_mapping_by_genome_files(self, read_file, headers_of_genome_files):
-    #     """Split the Segemehl results by the target genome files.
-
-    #     Arguments:
-    #     - `read_file,`: the read file that was used to generate the combined
-    #                     Segemehl mapping file
-    #     - `headers_of_genome_files`: A dictionary that contains the headers
-    #                                  of the genome files as keys and the
-    #                                  name of their files as values.
-
-    #     """
-    #     sam_parser = SamParser()
-    #     sam_builder = SamBuilder()        
-    #     file_handles = {}
-    #     # Open an output file for each genome file. Needed as some
-    #     # genome files don't have any mapping and so their mapping
-    #     # file would not be created otherwise and be missing later.
-    #     for genome_file in self.paths.genome_files:
-    #         output_file = self.paths.combined_mapping_file_a_filtered_split(
-    #             read_file, genome_file)
-    #         file_handles["%s-%s" % (read_file, genome_file)] = open(
-    #             output_file, "w")
-    #     for entry in sam_parser.entries(
-    #         self.paths.combined_mapping_file_a_filtered(read_file)):
-    #         genome_file = headers_of_genome_files[entry['reference']]
-    #         file_handles["%s-%s" % (read_file, genome_file)].write(
-    #             sam_builder.entry_to_line(entry))
-    #     for output_file in file_handles.values():
-    #         output_file.close()
+    def _select_uniquely_mapped_reads(self, read_file):
+        unique_mappings_fh = open(
+            self.paths.unique_mappings_only_file(read_file), "w")
+        sam_parser = SamParser()
+        sam_builder = SamBuilder()
+        for entry in sam_parser.entries(
+            self.paths.combined_mapping_file_a_filtered(read_file)):
+            if sam_parser.number_of_hits_as_int(entry) != 1:
+                continue
+            output_line = sam_builder.entry_to_line(entry)
+            unique_mappings_fh.write(output_line)
 
