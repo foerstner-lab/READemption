@@ -36,9 +36,10 @@ class Paths(object):
             "%s/unmapped_reads_of_second_mapping" % self.output_folder)
         self.combined_mappings_folder = "%s/read_mappings_combined" % (
             self.output_folder)
-        self.combined_mapping_split_folder = (
-            "%s/read_mappings_combined_split_by_genome_files" % 
-            self.output_folder)
+        # OBSOLETE
+        # self.combined_mapping_split_folder = (
+        #     "%s/read_mappings_combined_split_by_genome_files" % 
+        #     self.output_folder)
         self.annotation_hit_folder = "%s/annotation_hits" % self.output_folder
         self.no_annotation_hit_folder = "%s/without_annotation_hits" % self.output_folder
         self.annotation_hit_overview_folder = (
