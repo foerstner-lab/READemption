@@ -264,11 +264,13 @@ class ReadTracer(object):
             "total number of reads\t" +
             "sum of mappable reads\t" + 
             "% mappable reads\t" + 
+            "uniquely mapped reads\t" +
+            "% of uniquely mapped reads\t" +
             "\t".join(stati) +
             "\n")
         for read_file in self.paths.read_files:
-            stati_and_countings = self._summarize_tracing_file(
-                self.paths.trace_file(read_file))
+            stati_and_countings, uniqely_mapped_read_countings = (
+                self._summarize_tracing_file(self.paths.trace_file(read_file)))
             countings = []
             for status in stati:
                 stati_and_countings.setdefault(status, 0)
@@ -278,6 +280,9 @@ class ReadTracer(object):
                 "\t%s" % sum(countings) +
                 "\t%s" % (stati_and_countings["mapped_in_first_round"] +
                           stati_and_countings["mapped_in_second_round"]) +
+                "\t%s" % round((float(uniqely_mapped_read_countings)/
+                                sum(countings)*100.0),3) +
+                "\t%s" % uniqely_mapped_read_countings +
                 "\t%s" % round(((stati_and_countings["mapped_in_first_round"] +
                                  stati_and_countings["mapped_in_second_round"])/
                                 sum(countings)*100.0),3) + "\t" +
@@ -289,10 +294,19 @@ class ReadTracer(object):
         """
         """
         stati_and_countings = {}
+        uniquely_mapped_read_countings = 0
         for line in open(tracing_file):
             if line[0] in ["#", "\n"]:
                 continue
-            final_status = line[:-1].split("\t")[8]
+            split_line = line[:-1].split("\t")
+            final_status = split_line[8]
+            no_of_mappings_first_run = split_line[2]
+            no_of_mappings_second_run = split_line[5]
+            if ((final_status == "mapped_in_first_round" or 
+                 final_status == "mapped_in_second_round") and 
+                (no_of_mappings_first_run == "1" or 
+                 no_of_mappings_second_run == "1")):
+                uniquely_mapped_read_countings += 1
             stati_and_countings.setdefault(final_status, 0)
             stati_and_countings[final_status] += 1
-        return(stati_and_countings)
+        return(stati_and_countings, uniquely_mapped_read_countings)
