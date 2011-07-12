@@ -385,3 +385,13 @@ class Paths(object):
         #index_file_name.replace(".fa", "")
         index_file_name = "genome.idx"
         return(index_file_name)
+
+    def final_filtered_mapping_file(self, read_file):
+        """Return the final filtered mapping file.
+        
+        Depending of all or only uniquely mapped read mappings should
+        be considered.
+        """
+        if self.parameters.uniquely_mapped_reads_only:
+            return(self.unique_mappings_only_file(read_file))
+        return(self.combined_mapping_file_a_filtered(read_file))

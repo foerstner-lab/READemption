@@ -36,7 +36,7 @@ class ReadMappingSummary(object):
         # used method is a control that everything went fine.
         nonredundat_reads = {}
         for entry in sam_parser.entries(
-            self.paths.combined_mapping_file_a_filtered(read_file)):
+            self.paths.final_filtered_mapping_file(read_file)):
             fasta_headers_and_countings.setdefault(entry["reference"], 0)
             fasta_headers_and_countings[entry["reference"]] += (
                 1.0/float(sam_parser.number_of_hits_as_int(entry)))
