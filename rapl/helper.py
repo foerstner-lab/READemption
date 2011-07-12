@@ -16,15 +16,6 @@ class Helper(object):
         genome_file_path = self.paths.genome_file(genome_file)
         return(open(genome_file_path).readline().split()[0][1:])
 
-    # OBSOLETE
-    # def get_headers_of_genome_files(self):
-    #     """Extract the FASTA headers of all genome files."""
-    #     headers = {}
-    #     for genome_file in self.paths.genome_files:
-    #         header = self.get_header_of_genome_file(genome_file)
-    #         headers[header] = genome_file
-    #     return(headers)
-
     def check_thread_completeness(self, threads):
         """Check the completness of each thread in a list
 
@@ -92,7 +83,6 @@ class Helper(object):
             sam_parser.number_of_mapped_reads(
                 self.paths.combined_mapping_file_a_filtered(read_file)))
 
-
     # def lowest_number_of_mapped_nucleotides(self, genome_file):
     #     """Return the lowest number of mapping mapped nucleotides.
 
@@ -107,4 +97,13 @@ class Helper(object):
     #     if lowest_number_of_mapped_nucleotides == 0:
     #         lowest_number_of_nucleotides = 1
     #     return(lowest_number_of_mapped_nucleotides)
+
+    # OBSOLETE
+    # def get_headers_of_genome_files(self):
+    #     """Extract the FASTA headers of all genome files."""
+    #     headers = {}
+    #     for genome_file in self.paths.genome_files:
+    #         header = self.get_header_of_genome_file(genome_file)
+    #         headers[header] = genome_file
+    #     return(headers)
 
