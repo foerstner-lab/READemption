@@ -28,7 +28,7 @@ class ReadMappingSummary(object):
             self.summary_fh.write("\t".join(
                     [read_file] + [str(total_counting)] + countings) + "\n")
             
-    def _no_of_reads_mapped_to_genome_file(self, genome_file):
+    def _no_of_reads_mapped_to_genome_file(self, read_file):
         sam_parser = SamParser()
         fasta_headers_and_countings = {}
         # The total number of mapped reads could be calculated by
@@ -36,7 +36,7 @@ class ReadMappingSummary(object):
         # used method is a control that everything went fine.
         nonredundat_reads = {}
         for entry in sam_parser.entries(
-            self.paths.combined_mapping_file_a_filtered(genome_file)):
+            self.paths.combined_mapping_file_a_filtered(read_file)):
             fasta_headers_and_countings.setdefault(entry["reference"], 0)
             fasta_headers_and_countings[entry["reference"]] += (
                 1.0/float(sam_parser.number_of_hits_as_int(entry)))
