@@ -53,7 +53,7 @@ class GrBuilder(object):
         - `genome_file`: name of the target genome file.
         """
         genome_file_header = self.helper.get_header_of_genome_file(genome_file)
-        sam2gr = Sam2Gr(self.paths.combined_mapping_file_a_filtered(read_file),
+        sam2gr = Sam2Gr(self.paths.final_filtered_mapping_file(read_file),
                         mapping_target=genome_file_header,
                         output_prefix=self.paths.gr_file(read_file, genome_file))
         sam2gr.check_parameters()
@@ -74,7 +74,7 @@ class GrBuilder(object):
         """
         genome_file_header = self.helper.get_header_of_genome_file(genome_file)
         sam2gr = Sam2Gr(
-            self.paths.combined_mapping_file_a_filtered(read_file),
+            self.paths.final_filtered_mapping_file(read_file),
             normalize_by_reads=True, 
             normalization_multiplier=lowest_number_of_mappings,
             mapping_target=genome_file_header, 
