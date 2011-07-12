@@ -36,10 +36,6 @@ class Paths(object):
             "%s/unmapped_reads_of_second_mapping" % self.output_folder)
         self.combined_mappings_folder = "%s/read_mappings_combined" % (
             self.output_folder)
-        # OBSOLETE
-        # self.combined_mapping_split_folder = (
-        #     "%s/read_mappings_combined_split_by_genome_files" % 
-        #     self.output_folder)
         self.annotation_hit_folder = "%s/annotation_hits" % self.output_folder
         self.no_annotation_hit_folder = "%s/without_annotation_hits" % self.output_folder
         self.annotation_hit_overview_folder = (
@@ -101,7 +97,6 @@ class Paths(object):
                 self.read_mapping_index_folder, self.genome_folder,
                 self.umapped_reads_of_first_mapping_folder,
                 self.umapped_reads_of_second_mapping_folder,
-                self.combined_mappings_folder, self.combined_mapping_split_folder,
                 self.annotation_hit_folder, self.annotation_hit_overview_folder,
                 self.annotation_hit_overview_read_normalized_folder,
                 self.annotation_hit_overview_nucl_normalized_folder,
@@ -212,16 +207,6 @@ class Paths(object):
         return("%s/%s_mapped_to_%s.combined" % (
                 self.combined_mappings_folder, read_file,
                 self.segemehl_index_name()))
-
-    def combined_mapping_file_a_filtered_split(self, read_file, genome_file):
-        """Return the path of the split filtered combined mappings.
-        
-        Arguments:
-        - `read_file`: name of the read file
-        """
-        return("%s/%s_mapped_to_%s.combined.filtered_ltoe_%s%%_A.txt.from_%s_only" % (
-                self.combined_mapping_split_folder, read_file, 
-                self.segemehl_index_name(), self.parameters.max_a_content, genome_file))
 
     def combined_mapping_file_a_filtered(self, read_file):
         """Return the path of the filtered combined mappings.
