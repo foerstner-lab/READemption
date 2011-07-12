@@ -100,7 +100,7 @@ class Annotations(object):
                 self.paths.python_bin, self.paths.bin_folder,
                 self.parameters.min_overlap,
                 self.paths.annotation_hit_file(read_file, annotation_file),
-                self.paths.combined_mapping_file_a_filtered(read_file),
+                self.paths.final_filtered_mapping_file(read_file),
                 self.paths.annotation_file(annotation_file),
                 genome_file_header), shell=True)
     
@@ -270,8 +270,7 @@ n
         sam_parser = SamParser()
         mapped_reads = {}
         for entry in sam_parser.entries(
-            self.paths.combined_mapping_file_a_filtered_split(
-                read_file, genome_file)):
+            self.paths.final_filtered_mapping_file(read_file, genome_file)):
             mapped_reads[entry["query"]] = 1
         return(mapped_reads)
             
