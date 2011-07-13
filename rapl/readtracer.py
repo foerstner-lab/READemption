@@ -16,7 +16,6 @@ class ReadTracer(object):
         statistics.
         """
         for read_file in self.paths.read_files:
-            self.read_ids = []
             self.read_ids_and_traces = {}
             self._get_read_ids_and_lengths(read_file)
             self._read_first_mapping_output(read_file)
@@ -46,7 +45,7 @@ class ReadTracer(object):
                        "Passed a-content filter\tMapping length\t"
                        "Passed Uniquely mapped filter\t"
                        "Final status\n")
-        for read_id in self.read_ids:
+        for read_id in self.read_ids_and_traces.keys():
             trace = self.read_ids_and_traces[read_id]
             trace.setdefault("no_of_mappings_first_run", "-")
             trace.setdefault("length_after_clipping", "-")
@@ -81,7 +80,6 @@ class ReadTracer(object):
             # TODO: TMP fix due to modification of the string
             # by segemehl
             header = self.mod_fasta_header(header)
-            self.read_ids.append(header)
             self.read_ids_and_traces[header] = {'length' : len(seq)}
 
     def _read_first_mapping_output(self, read_file):
@@ -237,7 +235,6 @@ class ReadTracer(object):
             self.paths.unique_mappings_only_file(read_file)):
             self.read_ids_and_traces[entry["query"]][
                 "passed_unique_mapping_filtering"] = True
-            
 
     def _final_mapping_status(self, trace):
         """Return the final mapping status of a read.
@@ -296,9 +293,11 @@ class ReadTracer(object):
                 "\t".join([str(number) for number in
                         [sum(countings),
                         self._total_number_of_mapped_read(stati_and_countings),
-                        self._percentage_of_uniquely_mapped_reads(uniqely_mapped_read_countings, countings),
+                        self._percentage_of_uniquely_mapped_reads(
+                                uniqely_mapped_read_countings, countings),
                         uniqely_mapped_read_countings,
-                        self._percentage_of_mapped_reads(stati_and_countings, countings)]
+                        self._percentage_of_mapped_reads(
+                                stati_and_countings, countings)]
                         ]) +
                 "\t" +
                 "\t".join([str(counting) for counting in countings]) +
