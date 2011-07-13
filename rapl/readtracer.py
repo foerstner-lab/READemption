@@ -1,11 +1,13 @@
 from libs.fasta import FastaParser
 from libs.sam import SamParser
+from rapl.parameters import Parameters
 from rapl.paths import Paths
 
 class ReadTracer(object):
 
     def __init__(self):
         self.paths = Paths()
+        self.parameters = Parameters()        
     
     def trace_reads(self):
         """Trace the way of each read during the different steps.
@@ -26,6 +28,7 @@ class ReadTracer(object):
             self._read_second_mapping_unmapped_reads(read_file)
             self._read_combined_mapping_a_filtered_passed(read_file)
             self._read_combined_mapping_a_filtered_failed(read_file)
+            self._read_uniquely_mapped_reads_file(read_file)
             self._write_trace_file(read_file)
 
     def _write_trace_file(self, read_file):
@@ -41,6 +44,7 @@ class ReadTracer(object):
                        "length after clipping\tPassed size filter\t"
                        "Number of mappings second run\t"
                        "Passed a-content filter\tMapping length\t"
+                       "Passed Uniquely mapped filter\t"
                        "Final status\n")
         for read_id in self.read_ids:
             trace = self.read_ids_and_traces[read_id]
@@ -50,12 +54,14 @@ class ReadTracer(object):
             trace.setdefault("no_of_mappings_second_run", "-")
             trace.setdefault("passed_a-content_filtering", "-")
             trace.setdefault("mapping_length", "-")
+            trace.setdefault("passed_unique_mapping_filtering", False)
             result_line = "%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n" % (
                 read_id, trace["length"], trace["no_of_mappings_first_run"],
                 trace["length_after_clipping"], trace["passed_size_filtering"],
                 trace["no_of_mappings_second_run"], 
                 trace["passed_a-content_filtering"], 
                 trace["mapping_length"],
+                trace["passed_unique_mapping_filtering"],
                 self._final_mapping_status(trace))
             trace_fh.write(result_line)
 
@@ -222,6 +228,16 @@ class ReadTracer(object):
             self.paths.combined_mapping_file_a_filter_failed(read_file)):
             self.read_ids_and_traces[entry["query"]][
                 "passed_a-content_filtering"] = False
+
+    def _read_uniquely_mapped_reads_file(self, read_file):
+        if not self.parameters.uniquely_mapped_reads_only:
+            return()
+        sam_parser = SamParser()
+        for entry in sam_parser.entries(
+            self.paths.unique_mappings_only_file(read_file)):
+            self.read_ids_and_traces[entry["query"]][
+                "passed_unique_mapping_filtering"] = True
+            
 
     def _final_mapping_status(self, trace):
         """Return the final mapping status of a read.
