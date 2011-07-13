@@ -55,7 +55,7 @@ class ReadTracer(object):
             trace.setdefault("passed_a-content_filtering", "-")
             trace.setdefault("mapping_length", "-")
             trace.setdefault("passed_unique_mapping_filtering", False)
-            result_line = "%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n" % (
+            result_line = "%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n" % (
                 read_id, trace["length"], trace["no_of_mappings_first_run"],
                 trace["length_after_clipping"], trace["passed_size_filtering"],
                 trace["no_of_mappings_second_run"], 
@@ -293,18 +293,39 @@ class ReadTracer(object):
                 countings.append(stati_and_countings[status])
             summary_fh.write(
                 read_file +
-                "\t%s" % sum(countings) +
-                "\t%s" % (stati_and_countings["mapped_in_first_round"] +
-                          stati_and_countings["mapped_in_second_round"]) +
-                "\t%s" % round((float(uniqely_mapped_read_countings)/
-                                sum(countings)*100.0),3) +
-                "\t%s" % uniqely_mapped_read_countings +
-                "\t%s" % round(((stati_and_countings["mapped_in_first_round"] +
-                                 stati_and_countings["mapped_in_second_round"])/
-                                sum(countings)*100.0),3) + "\t" +
+                "\t".join([str(number) for number in
+                        [sum(countings),
+                        self._total_number_of_mapped_read(stati_and_countings),
+                        self._percentage_of_uniquely_mapped_reads(uniqely_mapped_read_countings, countings),
+                        uniqely_mapped_read_countings,
+                        self._percentage_of_mapped_reads(stati_and_countings, countings)]
+                        ]) +
+                "\t" +
                 "\t".join([str(counting) for counting in countings]) +
                 "\n")
         summary_fh.close()
+
+    def _total_number_of_mapped_read(self, stati_and_countings):
+        return(stati_and_countings["mapped_in_first_round"] +
+               stati_and_countings["mapped_in_second_round"])
+
+    def _percentage_of_mapped_reads(
+        self, stati_and_countings, countings):
+        try:
+            return(round(
+                    ((stati_and_countings["mapped_in_first_round"] +
+                      stati_and_countings["mapped_in_second_round"])/
+                     sum(countings)*100.0),3))
+        except ZeroDivisionError:
+            return(0)
+
+    def _percentage_of_uniquely_mapped_reads(
+        self, uniqely_mapped_read_countings, countings):
+        try:
+            return(round((float(uniqely_mapped_read_countings) / 
+                          sum(countings)*100.0),3))
+        except ZeroDivisionError:
+            return(0)
 
     def _summarize_tracing_file(self, tracing_file):
         """
