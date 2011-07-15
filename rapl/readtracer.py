@@ -289,7 +289,7 @@ class ReadTracer(object):
                 stati_and_countings.setdefault(status, 0)
                 countings.append(stati_and_countings[status])
             summary_fh.write(
-                read_file +
+                read_file + "\t" + 
                 "\t".join([str(number) for number in
                         [sum(countings),
                         self._total_number_of_mapped_read(stati_and_countings),
@@ -335,7 +335,7 @@ class ReadTracer(object):
             if line[0] in ["#", "\n"]:
                 continue
             split_line = line[:-1].split("\t")
-            final_status = split_line[8]
+            final_status = split_line[9]
             no_of_mappings_first_run = split_line[2]
             no_of_mappings_second_run = split_line[5]
             if ((final_status == "mapped_in_first_round" or 
