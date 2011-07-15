@@ -92,8 +92,9 @@ class Paths(object):
     def required_folders(self):
         return([self.input_folder, self.output_folder, self.rna_seq_folder,
                 self.annotation_folder, self.read_mappings_first_run_folder,
-                self.read_mappings_second_run_folder, self.gr_folder,
-                self.gr_folder_read_normalized, self.gr_folder_nucl_normalized,
+                self.read_mappings_second_run_folder, self.combined_mappings_folder, 
+                self.gr_folder, self.gr_folder_read_normalized, 
+                self.gr_folder_nucl_normalized,
                 self.read_mapping_index_folder, self.genome_folder,
                 self.umapped_reads_of_first_mapping_folder,
                 self.umapped_reads_of_second_mapping_folder,
