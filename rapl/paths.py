@@ -66,6 +66,10 @@ class Paths(object):
             self.report_folder)
         self.lib_genome_read_mapping_summary = (
             "%s/read_coutings_per_genome_file.cvs" % (self.report_folder))
+        self.mapping_length_hist_r_file = (
+            "%s/mapping_length_distributions.R" % self.report_folder)
+        self.mapping_length_hist_pdf_file = (
+            "%s/mapping_length_distributions.pdf" % self.report_folder)
 
     def _get_read_file_names(self):
         """Read the names of the read files."""

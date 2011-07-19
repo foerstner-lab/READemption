@@ -10,6 +10,7 @@ from rapl.readmapper import ReadMapper
 from rapl.readmappingsummary import ReadMappingSummary
 from rapl.readtracer import ReadTracer
 from rapl.reporter import Reporter
+from rapl.readtracerviz import ReadTracerViz
 
 class Rapl(object):
 
@@ -59,6 +60,8 @@ class Rapl(object):
         read_tracer = ReadTracer()
         read_tracer.trace_reads()
         read_tracer.create_tracing_summay()
+        read_tracer_viz = ReadTracerViz()
+        read_tracer_viz.create_mapping_length_histograms()
     
     def create_gr_files(self):
         """Create GR files based on the combined Segemehl mappings. """
