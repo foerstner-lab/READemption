@@ -65,8 +65,6 @@ class Reporter(object):
                     self.paths.combined_mappings_folder),
                 tracs_file_folder = self._latex_safe(
                     self.paths.read_tracing_folder),
-                combined_mapping_split_folder = self._latex_safe(
-                    self.paths.combined_mapping_split_folder),
                 genome_file_stats = self._latex_safe(
                     self.paths.genome_file_stats),
                 gr_folder = self._latex_safe(
@@ -229,9 +227,7 @@ shorter than $min_seq_length nucleotides were removed. The other
 remaining reads were aligned to the genome in a second round. After
 this the mapping results of the two runs were combined. These reads of
 these combined files were then filtered by their A-content. All
-entries with more than $max_a_content\\% of A's were removed. These
-cleaned results are then split by the genome files (of chromosome
-and/or plasmids) they are mapped to.\\\\
+entries with more than $max_a_content\\% of A's were removed.\\\\
 
 If you look at the mapping results you might noticed that some reads
 are listed more than once. We allowed only one best \\texttt{segemehl}
@@ -303,11 +299,6 @@ For each library a CVS file is generated that traces the handling of each
 read. It shows at which stage a read is filter out or mapped. These
 files are stored in the folder \\texttt{$tracs_file_folder}.
 
-\\subsection{Splitting result by genome files}
-
-The file that contain the mapping of libraries split by target genome
-file are stored in folder \\texttt{$combined_mapping_split_folder}.
-
 \\section{Interactive visualization}
 
 To visualize and compare the different libraries a genome browser can
@@ -325,7 +316,7 @@ counting (i.e. 1) by the number of mappings. E.g. if a read is mapped
 to 4 different places each position only get 1/4 point counted for
 this read.\\\\
 
-For each genome file (chromosome/plasmid) two different kind of sets
+For each genome file (chromosome/plasmid) two different kinds of sets
 of GR files were generated. One set represents the raw countings of
 reads, the other one contains normalized values to make a comparative
 view on the data possible. The normalization was done by dividing the
