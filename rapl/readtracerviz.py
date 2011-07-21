@@ -17,6 +17,6 @@ class ReadTracerViz(object):
         return("trace_data_%s <- read.table(\"../../%s\", skip=1, "
                "na.string=\"-\", comment.char=\"\")\n"
                "qplot(trace_data_%s$V8, data=trace_data_%s, binwidth=1, "
-               "xlab=\"Mapping lenght [nt]\", "
+               "xlab=\"Mapping length [nt]\", "
                "main=\"Mapping length distribution for %s\")\n" % (
                 index, self.paths.trace_file(read_file), index, index, read_file))        
