@@ -79,8 +79,8 @@ class Rapl(object):
         annotations.build_annotation_hit_overview_read_normalized()
         annotations.build_annotation_hit_overview_nucleotide_normalized()
         annotations.build_annotation_hit_overview_rpkm_normalized()
-        # annotations.count_reads_in_intergenic_regions()
-
+        annotations.count_reads_in_intergenic_regions()
+        
     def generate_report(self):
         """Create final report of the analysis."""
         self._in_project_folder()

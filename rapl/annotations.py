@@ -270,7 +270,7 @@ n
         sam_parser = SamParser()
         mapped_reads = {}
         for entry in sam_parser.entries(
-            self.paths.final_filtered_mapping_file(read_file, genome_file)):
+            self.paths.final_filtered_mapping_file(read_file)):
             mapped_reads[entry["query"]] = 1
         return(mapped_reads)
             
