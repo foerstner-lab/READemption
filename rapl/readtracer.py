@@ -292,12 +292,12 @@ class ReadTracer(object):
                 read_file + "\t" + 
                 "\t".join([str(number) for number in
                         [sum(countings),
-                        self._total_number_of_mapped_read(stati_and_countings),
-                        self._percentage_of_uniquely_mapped_reads(
-                                uniqely_mapped_read_countings, countings),
-                        uniqely_mapped_read_countings,
-                        self._percentage_of_mapped_reads(
-                                stati_and_countings, countings)]
+                         self._total_number_of_mapped_read(stati_and_countings),
+                         self._percentage_of_mapped_reads(
+                                stati_and_countings, countings),
+                         uniqely_mapped_read_countings,
+                         self._percentage_of_uniquely_mapped_reads(
+                                uniqely_mapped_read_countings, countings)]
                         ]) +
                 "\t" +
                 "\t".join([str(counting) for counting in countings]) +
