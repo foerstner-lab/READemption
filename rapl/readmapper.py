@@ -56,7 +56,12 @@ class ReadMapper(object):
 
         """
         # Can only be used with the developmental version of segemehl
-        call("%s -K -E %s -H %s -A %s -t %s -i %s -d %s -q %s -o %s -u %s" % (
+        # Produces SAM output
+        # Does it's own clipping additionally as the previous clipping step
+        # cannot handle short stretches at the end of an read.
+        call("%s --SAM --evalue %s --hitstrategy %s --accuracy %s "
+             "--threads %s --index %s --database %s --query %s "
+             "--outfile  %s --nomatchfilename %s --polyA --hardclip"  % (
                 self.paths.segemehl_bin,
                 self.parameters.segemehl_max_e_value,
                 self.parameters.segemehl_hit_strategy,
