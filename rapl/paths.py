@@ -179,7 +179,7 @@ class Paths(object):
                 self.clipped_reads_folder, read_file, 
                 self.parameters.min_seq_length))
 
-    def read_mapping_output(self, read_file):
+    def read_mapping_output_file(self, read_file):
         """Return the full path of the output file of a segemehl run
 
         Arguments:

@@ -41,7 +41,7 @@ class ReadMapper(object):
         for read_file in self.paths.read_files:
             self._run_segemehl_search(
                 self.paths.clipped_read_file(read_file),
-                self.paths.read_mapping_output(read_file),
+                self.paths.read_mapping_output_file(read_file),
                 self.paths.unmapped_reads_file(read_file))
 
     def _run_segemehl_search(self, read_file_path, output_file_path, 
@@ -101,25 +101,8 @@ class ReadMapper(object):
                 self.paths.unmapped_reads_of_clipped_reads_file(read_file))
             print(self.paths.unmapped_reads_of_clipped_reads_file(read_file))
 
-    def combine_mappings(self):
-        """Combine the results of both segemehl mappings for all libraries."""
-        for read_file in self.paths.read_files:
-            self._combine_mappings(read_file)
 
-    def _combine_mappings(self, read_file):
-        """Combine the results of both segemehl mappings.
-
-        Arguments:
-        - `read_file`: the name of the read file that was used to generate
-                       the Segemehl mappings.
-
-        """
-        comined_mappings_fh = open(self.paths.combined_mapping_file(read_file), "w")
-        comined_mappings_fh.write(open(self.paths.raw_read_mapping_output(read_file)).read())
-        comined_mappings_fh.write(open(self.paths.clipped_reads_mapping_output(read_file)).read())
-        comined_mappings_fh.close()
-
-    def filter_combined_mappings_by_a_content(self):
+    def filter_mappings_by_a_content(self):
         """Filter Segemehl mapping file entries by amount of A content.
 
         This removes sequences that exceed a certain amount of A that
@@ -127,9 +110,9 @@ class ReadMapper(object):
 
         """
         for read_file in  self.paths.read_files:
-            self._filter_combined_mappings_by_a_content(read_file)
+            self._filter_mappings_by_a_content(read_file)
     
-    def _filter_combined_mappings_by_a_content(self, mapping_file):
+    def _filter_mappings_by_a_content(self, mapping_file):
         """Filter Segemehl mapping file entries by A-content.
 
         Two files are produced. One that contains reads that have an
@@ -143,7 +126,8 @@ class ReadMapper(object):
         """
         call("%s %s/filter_sam_by_nucleotide_percentage.py %s A %s " % (
             self.paths.python_bin, self.paths.bin_folder, 
-            self.paths.combined_mapping_file(mapping_file), self.parameters.max_a_content), 
+            self.paths.read_mapping_output_file(mapping_file), 
+            self.parameters.max_a_content), 
              shell=True)
 
     def select_uniquely_mapped_reads(self):
@@ -186,3 +170,48 @@ class ReadMapper(object):
     #             self.paths.read_file(read_file),
     #             self.paths.raw_read_mapping_output(read_file),
     #             self.paths.unmapped_raw_read_file(read_file))
+
+    # def combine_mappings(self):
+    #     """Combine the results of both segemehl mappings for all libraries."""
+    #     for read_file in self.paths.read_files:
+    #         self._combine_mappings(read_file)
+
+    # def _combine_mappings(self, read_file):
+    #     """Combine the results of both segemehl mappings.
+
+    #     Arguments:
+    #     - `read_file`: the name of the read file that was used to generate
+    #                    the Segemehl mappings.
+
+    #     """
+    #     comined_mappings_fh = open(self.paths.combined_mapping_file(read_file), "w")
+    #     comined_mappings_fh.write(open(self.paths.raw_read_mapping_output(read_file)).read())
+    #     comined_mappings_fh.write(open(self.paths.clipped_reads_mapping_output(read_file)).read())
+    #     comined_mappings_fh.close()
+
+    # def _filter_combined_mappings_by_a_content(self, mapping_file):
+    #     """Filter Segemehl mapping file entries by A-content.
+
+    #     Two files are produced. One that contains reads that have an
+    #     A-content higher than the cut-off value, one that contains the
+    #     reads that have A-content equal or lower than the cut-off
+    #     value.
+
+    #     Arguments:
+    #     - `mapping_file`: the input mapping file 
+
+    #     """
+    #     call("%s %s/filter_sam_by_nucleotide_percentage.py %s A %s " % (
+    #         self.paths.python_bin, self.paths.bin_folder, 
+    #         self.paths.combined_mapping_file(mapping_file), self.parameters.max_a_content), 
+    #          shell=True)
+
+    # def filter_combined_mappings_by_a_content(self):
+    #     """Filter Segemehl mapping file entries by amount of A content.
+
+    #     This removes sequences that exceed a certain amount of A that
+    #     might be introduced during the sample preparion process.
+
+    #     """
+    #     for read_file in  self.paths.read_files:
+    #         self._filter_combined_mappings_by_a_content(read_file)
