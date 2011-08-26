@@ -43,8 +43,10 @@ class Paths(object):
 
         self.read_mappings_folder = "%s/read_mappings" % (
             self.output_folder)
-        self.clipped_reads_folder = "%s/clipped_reads"
-        self.unmapped_reads_folder = "%s/unmapped_reads"
+        self.clipped_reads_folder = "%s/clipped_reads" % (
+            self.output_folder)
+        self.unmapped_reads_folder = "%s/unmapped_reads" % (
+            self.output_folder)
 
         # self.read_mappings_first_run_folder = "%s/read_mappings_first_run" % (
         #     self.output_folder)
@@ -101,13 +103,11 @@ class Paths(object):
                            "/rapl_tools")
     def required_folders(self):
         return([self.input_folder, self.output_folder, self.rna_seq_folder,
-                self.annotation_folder, self.read_mappings_first_run_folder,
-                self.read_mappings_second_run_folder, self.combined_mappings_folder, 
+                self.annotation_folder,              
                 self.gr_folder, self.gr_folder_read_normalized, 
-                self.gr_folder_nucl_normalized,
+                self.gr_folder_nucl_normalized, self.read_mappings_folder,
+                self.clipped_reads_folder, self.unmapped_reads_folder,
                 self.read_mapping_index_folder, self.genome_folder,
-                self.umapped_reads_of_first_mapping_folder,
-                self.umapped_reads_of_second_mapping_folder,
                 self.annotation_hit_folder, self.annotation_hit_overview_folder,
                 self.annotation_hit_overview_read_normalized_folder,
                 self.annotation_hit_overview_nucl_normalized_folder,
@@ -124,14 +124,14 @@ class Paths(object):
         """
         return("%s/%s" % (self.rna_seq_folder, read_file))
 
-    def unmapped_raw_read_file(self, read_file):
-        """Return the full path of unmapped reads of the first run.
+    # def unmapped_raw_read_file(self, read_file):
+    #     """Return the full path of unmapped reads of the first run.
 
-        Arguments:
-        - `read_file`: name of the read file
-        """
-        return("%s/%s.unmapped.fa" % (
-                self.umapped_reads_of_first_mapping_folder, read_file))
+    #     Arguments:
+    #     - `read_file`: name of the read file
+    #     """
+    #     return("%s/%s.unmapped.fa" % (
+    #             self.umapped_reads_of_first_mapping_folder, read_file))
 
     def segemehl_index(self):
         """Return the full path the the in segemehl index file."""
@@ -151,83 +151,92 @@ class Paths(object):
         return([self.genome_file(genome_file) 
                 for genome_file in self.genome_files])
 
-    def raw_read_mapping_output(self, read_file):
-        """Return the full path of the output file of a segemehl run
+    # def raw_read_mapping_output(self, read_file):
+    #     """Return the full path of the output file of a segemehl run
 
-        Arguments:
-        - `read_file`: read file name that is mapped
-        """
-        return("%s/%s_mapped_to_%s" % (
-                self.read_mappings_first_run_folder, read_file, self.segemehl_index_name()))
+    #     Arguments:
+    #     - `read_file`: read file name that is mapped
+    #     """
+    #     return("%s/%s_mapped_to_%s" % (
+    #             self.read_mappings_first_run_folder, read_file, self.segemehl_index_name()))
 
-    def unmapped_read_clipped(self, read_file):
-        """Return the full path of a file with clipped reads
+    # def clipped_read_file(self, read_file):
+    #     """Return the full path of a file with clipped reads
 
-        Arguments:
-        - `read_file`: name of the read file
-        """
-        return("%s/%s.unmapped.fa.clipped.fa" % (
-                self.umapped_reads_of_first_mapping_folder, read_file))
+    #     Arguments:
+    #     - `read_file`: name of the read file
+    #     """
+    #     return("%s/%s.fa.clipped.fa" % (self.unmapped_reads_folder, read_file))
+
+    
+    # def unmapped_read_clipped(self, read_file):
+    #     """Return the full path of a file with clipped reads
+
+    #     Arguments:
+    #     - `read_file`: name of the read file
+    #     """
+    #     return("%s/%s.unmapped.fa.clipped.fa" % (
+    #             self.umapped_reads_of_first_mapping_folder, read_file))
 
 
-    def unmapped_clipped_size_filtered_read(self, read_file):
-        """Return the full path of clipped and size filtered reads.
+    # def unmapped_clipped_size_filtered_read(self, read_file):
+    #     """Return the full path of clipped and size filtered reads.
 
-        Arguments:
-        - `read_file`: name of the read file
+    #     Arguments:
+    #     - `read_file`: name of the read file
 
-        """
-        return("%s/%s.unmapped.fa.clipped.fa.size_filtered_gtoe_%sbp.fa" % (
-                self.umapped_reads_of_first_mapping_folder,
-                read_file, self.parameters.min_seq_length))
+    #     """
+    #     return("%s/%s.unmapped.fa.clipped.fa.size_filtered_gtoe_%sbp.fa" % (
+    #             self.umapped_reads_of_first_mapping_folder,
+    #             read_file, self.parameters.min_seq_length))
 
-    def clipped_reads_mapping_output(self, read_file):
-        """Return the path of the mapping file of the second run.
+    # def clipped_reads_mapping_output(self, read_file):
+    #     """Return the path of the mapping file of the second run.
 
-        Arguments:
-        - `read_file`: name of the read file
-        """
-        return("%s/%s.clipped_mapped_to_%s" % (
-                self.read_mappings_second_run_folder,
-                read_file, self.segemehl_index_name()))
+    #     Arguments:
+    #     - `read_file`: name of the read file
+    #     """
+    #     return("%s/%s.clipped_mapped_to_%s" % (
+    #             self.read_mappings_second_run_folder,
+    #             read_file, self.segemehl_index_name()))
 
-    def unmapped_reads_of_clipped_reads_file(self, read_file):
-        """Return the full path of the unmapped reads of the 2nd run.
+    # def unmapped_reads_of_clipped_reads_file(self, read_file):
+    #     """Return the full path of the unmapped reads of the 2nd run.
 
-        Arguments:
-        - `read_file`: name of the read file
-        """
-        return("%s/%s.unmapped.fa"  % (self.umapped_reads_of_second_mapping_folder, 
-                           read_file))
+    #     Arguments:
+    #     - `read_file`: name of the read file
+    #     """
+    #     return("%s/%s.unmapped.fa"  % (self.umapped_reads_of_second_mapping_folder, 
+    #                        read_file))
 
-    def _unmapped_reads_second_mapping_path(self, read_file):
-        """Return the path of unmapped reads of the second run.
+    # def _unmapped_reads_second_mapping_path(self, read_file):
+    #     """Return the path of unmapped reads of the second run.
 
-        Arguments:
-        - `read_file`: name of the read file
-        """
-        return("%s/%s.unmapped.fa" % (
-                self.umapped_reads_of_second_mapping_folder, read_file))
+    #     Arguments:
+    #     - `read_file`: name of the read file
+    #     """
+    #     return("%s/%s.unmapped.fa" % (
+    #             self.umapped_reads_of_second_mapping_folder, read_file))
 
-    def combined_mapping_file(self, read_file):
-        """Return the path of the combined mappings.
+    # def combined_mapping_file(self, read_file):
+    #     """Return the path of the combined mappings.
 
-        Arguments:
-        - `read_file`: name of the read file
-        """
-        return("%s/%s_mapped_to_%s.combined" % (
-                self.combined_mappings_folder, read_file,
-                self.segemehl_index_name()))
+    #     Arguments:
+    #     - `read_file`: name of the read file
+    #     """
+    #     return("%s/%s_mapped_to_%s.combined" % (
+    #             self.combined_mappings_folder, read_file,
+    #             self.segemehl_index_name()))
 
-    def combined_mapping_file_a_filtered(self, read_file):
-        """Return the path of the filtered combined mappings.
+    # def combined_mapping_file_a_filtered(self, read_file):
+    #     """Return the path of the filtered combined mappings.
 
-        Arguments:
-        - `read_file`: name of the read file
-        """
-        return("%s.filtered_ltoe_%s%%_A.txt" % (
-                self.combined_mapping_file(read_file),
-                self.parameters.max_a_content))
+    #     Arguments:
+    #     - `read_file`: name of the read file
+    #     """
+    #     return("%s.filtered_ltoe_%s%%_A.txt" % (
+    #             self.combined_mapping_file(read_file),
+    #             self.parameters.max_a_content))
 
     def unique_mappings_only_file(self, read_file):
         """ Return the path of the file with unique mappings only
@@ -248,15 +257,15 @@ class Paths(object):
                 self.umapped_reads_of_first_mapping_folder,
                 read_file, self.parameters.min_seq_length))
 
-    def combined_mapping_file_a_filter_failed(self, read_file):
-        """Return the path of the A-content filter failed reads.
+    # def combined_mapping_file_a_filter_failed(self, read_file):
+    #     """Return the path of the A-content filter failed reads.
 
-        Arguments:
-        - `read_file`: name of the read file
-        """
-        return("%s.filtered_gt_%s%%_A.txt" % (
-                self.combined_mapping_file(read_file),
-                self.parameters.max_a_content))
+    #     Arguments:
+    #     - `read_file`: name of the read file
+    #     """
+    #     return("%s.filtered_gt_%s%%_A.txt" % (
+    #             self.combined_mapping_file(read_file),
+    #             self.parameters.max_a_content))
 
     def trace_file(self, read_file):
         """Return the path of the trace file of a read file.
