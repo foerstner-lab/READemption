@@ -131,7 +131,7 @@ class ReadMapper(object):
         sam_parser = SamParser()
         sam_builder = SamBuilder()
         for entry in sam_parser.entries(
-            self.paths.a_filered_mappings_file(read_file)):
+            self.paths.a_filtered_mappings_file(read_file)):
             if sam_parser.number_of_hits_as_int(entry) != 1:
                 continue
             output_line = sam_builder.entry_to_line(entry)
