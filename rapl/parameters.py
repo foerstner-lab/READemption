@@ -16,5 +16,5 @@ class Parameters(object):
     max_a_content = 70.0
     min_overlap = 1
     min_read_overlap_perc = 0.0
-    uniquely_mapped_reads_only = True
+    uniquely_mapped_reads_only = False
 
