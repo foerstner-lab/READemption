@@ -168,6 +168,16 @@ class Paths(object):
         """
         return("%s/%s.clipped.fa" % (self.clipped_reads_folder, read_file))
 
+    def clipped_size_filtered_read_file(self, read_file):
+        """Return the full path of clipped and size filtered reads.
+
+        Arguments:
+        - `read_file`: name of the read file
+
+        """
+        return("%s/%s.clipped.fa.size_filtered_gtoe_%sbp.fa" % (
+                self.clipped_reads_folder, read_file, 
+                self.parameters.min_seq_length))
 
     def read_mapping_output(self, read_file):
         """Return the full path of the output file of a segemehl run

@@ -79,7 +79,7 @@ class ReadMapper(object):
 
         """
         for read_file in self.paths.read_files:
-            self._filter_reads_by_size(self.paths.unmapped_read_clipped(read_file))
+            self._filter_reads_by_size(self.paths.clipped_read_file(read_file))
 
     def _filter_reads_by_size(self, read_file_path):
         """Filter reads by sequence length.
@@ -96,7 +96,7 @@ class ReadMapper(object):
         """Run the mapping with clipped and size filtered reads."""
         for read_file in self.paths.read_files:
             self._run_segemehl_search(
-                self.paths.unmapped_clipped_size_filtered_read(read_file), 
+                self.paths.clipped_size_filtered_read_file(read_file), 
                 self.paths.clipped_reads_mapping_output(read_file),
                 self.paths.unmapped_reads_of_clipped_reads_file(read_file))
             print(self.paths.unmapped_reads_of_clipped_reads_file(read_file))
