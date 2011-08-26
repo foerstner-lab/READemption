@@ -52,7 +52,8 @@ class Rapl(object):
         read_mapper.build_segmehl_index()
         read_mapper.run_mapping()
         read_mapper.filter_mappings_by_a_content()
-        # read_mapper.select_uniquely_mapped_reads()
+        read_mapper.select_uniquely_mapped_reads()
+
         # read_mapping_summary = ReadMappingSummary()
         # read_mapping_summary.create()
         # read_tracer = ReadTracer()

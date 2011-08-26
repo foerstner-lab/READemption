@@ -138,10 +138,11 @@ class ReadMapper(object):
     def _select_uniquely_mapped_reads(self, read_file):
         unique_mappings_fh = open(
             self.paths.unique_mappings_only_file(read_file), "w")
+        print(self.paths.unique_mappings_only_file(read_file))
         sam_parser = SamParser()
         sam_builder = SamBuilder()
         for entry in sam_parser.entries(
-            self.paths.combined_mapping_file_a_filtered(read_file)):
+            self.paths.a_filered_mappings_file(read_file)):
             if sam_parser.number_of_hits_as_int(entry) != 1:
                 continue
             output_line = sam_builder.entry_to_line(entry)

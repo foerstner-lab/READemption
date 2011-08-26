@@ -197,6 +197,14 @@ class Paths(object):
         return("%s/%s.clipped.fa.unmapped" % (
                 self.unmapped_reads_folder, read_file))
 
+    def a_filered_mappings_file(self, read_file):
+        """Return the full path of a file with a filterd mappings
+
+        Arguments:
+        - `read_file`: name of the read file
+        """
+        return("%s.filtered_ltoe_70.0%%_A.txt" % (
+                self.read_mapping_output_file(read_file)))
 
     def unique_mappings_only_file(self, read_file):
         """ Return the path of the file with unique mappings only
@@ -205,17 +213,7 @@ class Paths(object):
         - `read_file`: name of the read file
         """
         return("%s.unique_mappings_only" % (
-                self.combined_mapping_file(read_file)))
-
-    def unmapped_clipped_size_failed_read(self, read_file):
-        """Return the path of size filter failed clipped reads.
-
-        Arguments:
-        - `read_file`: name of the read file
-        """
-        return("%s/%s.unmapped.fa.clipped.fa.size_filtered_lt_%sbp.fa" % (
-                self.umapped_reads_of_first_mapping_folder,
-                read_file, self.parameters.min_seq_length))
+                self.a_filered_mappings_file(read_file)))
 
     def trace_file(self, read_file):
         """Return the path of the trace file of a read file.
@@ -455,3 +453,13 @@ class Paths(object):
     #     return("%s.filtered_gt_%s%%_A.txt" % (
     #             self.combined_mapping_file(read_file),
     #             self.parameters.max_a_content))
+
+    # def unmapped_clipped_size_failed_read(self, read_file):
+    #     """Return the path of size filter failed clipped reads.
+
+    #     Arguments:
+    #     - `read_file`: name of the read file
+    #     """
+    #     return("%s/%s.unmapped.fa.clipped.fa.size_filtered_lt_%sbp.fa" % (
+    #             self.umapped_reads_of_first_mapping_folder,
+    #             read_file, self.parameters.min_seq_length))
