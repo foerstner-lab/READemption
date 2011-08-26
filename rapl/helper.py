@@ -49,7 +49,7 @@ class Helper(object):
         nucleotide_counting = 0
         prev_entry = ""
         for entry in sam_parser.entries(
-            self.paths.combined_mapping_file_a_filtered(read_file)):
+            self.paths.final_filtered_mapping_file(read_file)):
             if entry['query'] == prev_entry:
                 continue
             nucleotide_counting += len(entry['sequence'])
