@@ -48,17 +48,6 @@ class Paths(object):
         self.unmapped_reads_folder = "%s/unmapped_reads" % (
             self.output_folder)
 
-        # self.read_mappings_first_run_folder = "%s/read_mappings_first_run" % (
-        #     self.output_folder)
-        # self.read_mappings_second_run_folder = (
-        #     "%s/read_mappings_second_run" % self.output_folder)
-        # self.umapped_reads_of_first_mapping_folder = (
-        #     "%s/unmapped_reads_of_first_mapping" % self.output_folder)
-        # self.umapped_reads_of_second_mapping_folder = (
-        #     "%s/unmapped_reads_of_second_mapping" % self.output_folder)
-        # self.combined_mappings_folder = "%s/read_mappings_combined" % (
-        #     self.output_folder)        
-
     def _set_file_names(self):
         """Set name of common files."""
         self.config_file = "rapl.config"
@@ -123,15 +112,6 @@ class Paths(object):
         - `read_file`: name of the read file
         """
         return("%s/%s" % (self.rna_seq_folder, read_file))
-
-    # def unmapped_raw_read_file(self, read_file):
-    #     """Return the full path of unmapped reads of the first run.
-
-    #     Arguments:
-    #     - `read_file`: name of the read file
-    #     """
-    #     return("%s/%s.unmapped.fa" % (
-    #             self.umapped_reads_of_first_mapping_folder, read_file))
 
     def segemehl_index(self):
         """Return the full path the the in segemehl index file."""
@@ -363,103 +343,3 @@ class Paths(object):
         if self.parameters.uniquely_mapped_reads_only:
             return(self.unique_mappings_only_file(read_file))
         return(self.combined_mapping_file_a_filtered(read_file))
-
-    # def raw_read_mapping_output(self, read_file):
-    #     """Return the full path of the output file of a segemehl run
-
-    #     Arguments:
-    #     - `read_file`: read file name that is mapped
-    #     """
-    #     return("%s/%s_mapped_to_%s" % (
-    #             self.read_mappings_first_run_folder, read_file, self.segemehl_index_name()))
-
-
-    
-    # def unmapped_read_clipped(self, read_file):
-    #     """Return the full path of a file with clipped reads
-
-    #     Arguments:
-    #     - `read_file`: name of the read file
-    #     """
-    #     return("%s/%s.unmapped.fa.clipped.fa" % (
-    #             self.umapped_reads_of_first_mapping_folder, read_file))
-
-
-    # def unmapped_clipped_size_filtered_read(self, read_file):
-    #     """Return the full path of clipped and size filtered reads.
-
-    #     Arguments:
-    #     - `read_file`: name of the read file
-
-    #     """
-    #     return("%s/%s.unmapped.fa.clipped.fa.size_filtered_gtoe_%sbp.fa" % (
-    #             self.umapped_reads_of_first_mapping_folder,
-    #             read_file, self.parameters.min_seq_length))
-
-    # def clipped_reads_mapping_output(self, read_file):
-    #     """Return the path of the mapping file of the second run.
-
-    #     Arguments:
-    #     - `read_file`: name of the read file
-    #     """
-    #     return("%s/%s.clipped_mapped_to_%s" % (
-    #             self.read_mappings_second_run_folder,
-    #             read_file, self.segemehl_index_name()))
-
-    # def unmapped_reads_of_clipped_reads_file(self, read_file):
-    #     """Return the full path of the unmapped reads of the 2nd run.
-
-    #     Arguments:
-    #     - `read_file`: name of the read file
-    #     """
-    #     return("%s/%s.unmapped.fa"  % (self.umapped_reads_of_second_mapping_folder, 
-    #                        read_file))
-
-    # def _unmapped_reads_second_mapping_path(self, read_file):
-    #     """Return the path of unmapped reads of the second run.
-
-    #     Arguments:
-    #     - `read_file`: name of the read file
-    #     """
-    #     return("%s/%s.unmapped.fa" % (
-    #             self.umapped_reads_of_second_mapping_folder, read_file))
-
-    # def combined_mapping_file(self, read_file):
-    #     """Return the path of the combined mappings.
-
-    #     Arguments:
-    #     - `read_file`: name of the read file
-    #     """
-    #     return("%s/%s_mapped_to_%s.combined" % (
-    #             self.combined_mappings_folder, read_file,
-    #             self.segemehl_index_name()))
-
-    # def combined_mapping_file_a_filtered(self, read_file):
-    #     """Return the path of the filtered combined mappings.
-
-    #     Arguments:
-    #     - `read_file`: name of the read file
-    #     """
-    #     return("%s.filtered_ltoe_%s%%_A.txt" % (
-    #             self.combined_mapping_file(read_file),
-    #             self.parameters.max_a_content))
-
-    # def combined_mapping_file_a_filter_failed(self, read_file):
-    #     """Return the path of the A-content filter failed reads.
-
-    #     Arguments:
-    #     - `read_file`: name of the read file
-    #     """
-    #     return("%s.filtered_gt_%s%%_A.txt" % (
-    #             self.combined_mapping_file(read_file),
-    #             self.parameters.max_a_content))
-
-    # def unmapped_clipped_size_failed_read(self, read_file):
-    #     """Return the path of size filter failed clipped reads.
-
-    #     Arguments:
-    #     - `read_file`: name of the read file
-    #     """
-    #     return("%s/%s.unmapped.fa.clipped.fa.size_filtered_lt_%sbp.fa" % (
-    #             self.umapped_reads_of_first_mapping_folder,
-    #             read_file, self.parameters.min_seq_length))
