@@ -194,13 +194,22 @@ class Paths(object):
         return("%s/%s.clipped.fa.unmapped" % (
                 self.unmapped_reads_folder, read_file))
 
-    def a_filered_mappings_file(self, read_file):
+    def a_filtered_mappings_file(self, read_file):
         """Return the full path of a file with a filterd mappings
 
         Arguments:
         - `read_file`: name of the read file
         """
         return("%s.filtered_ltoe_70.0%%_A.txt" % (
+                self.read_mapping_output_file(read_file)))
+
+    def a_filter_failed_mappings_file(self, read_file):
+        """Return the full path of a file with a filterd mappings
+
+        Arguments:
+        - `read_file`: name of the read file
+        """
+        return("%s.filtered_gt_70.0%%_A.txt" % (
                 self.read_mapping_output_file(read_file)))
 
     def unique_mappings_only_file(self, read_file):
@@ -210,7 +219,7 @@ class Paths(object):
         - `read_file`: name of the read file
         """
         return("%s.unique_mappings_only" % (
-                self.a_filered_mappings_file(read_file)))
+                self.a_filtered_mappings_file(read_file)))
 
     def trace_file(self, read_file):
         """Return the path of the trace file of a read file.
@@ -359,4 +368,4 @@ class Paths(object):
         """
         if self.parameters.uniquely_mapped_reads_only:
             return(self.unique_mappings_only_file(read_file))
-        return(self.a_filered_mappings_file(read_file))
+        return(self.a_filtered_mappings_file(read_file))
