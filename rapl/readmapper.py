@@ -25,7 +25,7 @@ class ReadMapper(object):
         
         call("%s %s/poly_a_clipper.py -o %s %s" % (
                 self.paths.python_bin, self.paths.bin_folder, 
-                self.paths.clipped_read_file(read_file), 
+                self.paths.clipped_read_file_prefix(read_file), 
                 self.paths.read_file(read_file)), 
              shell=True)
     
@@ -36,13 +36,13 @@ class ReadMapper(object):
                 " ".join(self.paths.genome_file_paths())), 
              shell=True)
 
-    def run_mapping_with_raw_reads(self):
-        """Run the mapping of the raw reads using segemehl"""
+    def run_mapping(self):
+        """Run the mapping with the clipped reads using segemehl"""
         for read_file in self.paths.read_files:
             self._run_segemehl_search(
-                self.paths.read_file(read_file),
-                self.paths.raw_read_mapping_output(read_file),
-                self.paths.unmapped_raw_read_file(read_file))
+                self.paths.clipped_read_file(read_file),
+                self.paths.read_mapping_output(read_file),
+                self.paths.unmapped_reads_file(read_file))
 
     def _run_segemehl_search(self, read_file_path, output_file_path, 
                              unmapped_read_file_path):
@@ -69,21 +69,6 @@ class ReadMapper(object):
                 unmapped_read_file_path),
              shell=True)
 
-    # def clip_unmapped_reads(self):
-    #     """Clip reads unmapped in the first segemehl run."""
-    #     for read_file in self.paths.read_files:
-    #         self._clip_reads(self.paths.unmapped_raw_read_file(read_file))
-            
-    # def _clip_reads(self, unmapped_raw_read_file_path):
-    #     """Remove the poly-A tail of reads in a file.
-
-    #     Arguments:
-    #     - `unmapped_raw_read_file_path`: path of the fasta file that
-    #                                      contains unmapped reads
-
-    #     """
-    #     call("%s %s/poly_a_clipper.py %s" % (self.paths.python_bin,
-    #             self.paths.bin_folder, unmapped_raw_read_file_path), shell=True)
 
     def filter_clipped_reads_by_size(self):
         """Filter clipped reads sequence length.
@@ -178,3 +163,26 @@ class ReadMapper(object):
             output_line = sam_builder.entry_to_line(entry)
             unique_mappings_fh.write(output_line)
 
+    # def clip_unmapped_reads(self):
+    #     """Clip reads unmapped in the first segemehl run."""
+    #     for read_file in self.paths.read_files:
+    #         self._clip_reads(self.paths.unmapped_raw_read_file(read_file))
+            
+    # def _clip_reads(self, unmapped_raw_read_file_path):
+    #     """Remove the poly-A tail of reads in a file.
+
+    #     Arguments:
+    #     - `unmapped_raw_read_file_path`: path of the fasta file that
+    #                                      contains unmapped reads
+
+    #     """
+    #     call("%s %s/poly_a_clipper.py %s" % (self.paths.python_bin,
+    #             self.paths.bin_folder, unmapped_raw_read_file_path), shell=True)
+
+    # def run_mapping_with_raw_reads(self):
+    #     """Run the mapping of the raw reads using segemehl"""
+    #     for read_file in self.paths.read_files:
+    #         self._run_segemehl_search(
+    #             self.paths.read_file(read_file),
+    #             self.paths.raw_read_mapping_output(read_file),
+    #             self.paths.unmapped_raw_read_file(read_file))

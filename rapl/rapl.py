@@ -48,8 +48,9 @@ class Rapl(object):
         input_file_stats.create_genome_file_stats()
         read_mapper = ReadMapper()
         read_mapper.clip_reads()
+        read_mapper.build_segmehl_index()
+        read_mapper.run_mapping()
 
-        # read_mapper.build_segmehl_index()
         # read_mapper.run_mapping_with_raw_reads()
         # #read_mapper.clip_unmapped_reads()
         # read_mapper.filter_clipped_reads_by_size()
