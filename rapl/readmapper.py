@@ -40,7 +40,7 @@ class ReadMapper(object):
         """Run the mapping with the clipped reads using segemehl"""
         for read_file in self.paths.read_files:
             self._run_segemehl_search(
-                self.paths.clipped_read_file(read_file),
+                self.paths.clipped_size_filtered_read_file(read_file),
                 self.paths.read_mapping_output_file(read_file),
                 self.paths.unmapped_reads_file(read_file))
 
@@ -69,7 +69,6 @@ class ReadMapper(object):
                 unmapped_read_file_path),
              shell=True)
 
-
     def filter_clipped_reads_by_size(self):
         """Filter clipped reads sequence length.
 
@@ -91,16 +90,6 @@ class ReadMapper(object):
         call("%s %s/filter_fasta_entries_by_size.py %s %s" % (
                 self.paths.python_bin, self.paths.bin_folder, read_file_path, 
                 self.parameters.min_seq_length), shell=True)
-
-    def run_mapping_with_clipped_reads(self):
-        """Run the mapping with clipped and size filtered reads."""
-        for read_file in self.paths.read_files:
-            self._run_segemehl_search(
-                self.paths.clipped_size_filtered_read_file(read_file), 
-                self.paths.clipped_reads_mapping_output(read_file),
-                self.paths.unmapped_reads_of_clipped_reads_file(read_file))
-            print(self.paths.unmapped_reads_of_clipped_reads_file(read_file))
-
 
     def filter_mappings_by_a_content(self):
         """Filter Segemehl mapping file entries by amount of A content.

@@ -148,15 +148,32 @@ class Paths(object):
         """
         return("%s/%s.clipped.fa" % (self.clipped_reads_folder, read_file))
 
-    def clipped_size_filtered_read_file(self, read_file):
-        """Return the full path of clipped and size filtered reads.
+    def clipped_read_file(self, read_file):
+        """Return the full path of a file with clipped reads
 
         Arguments:
         - `read_file`: name of the read file
-
         """
-        return("%s/%s.clipped.fa.size_filtered_gtoe_%sbp.fa" % (
-                self.clipped_reads_folder, read_file, 
+        return("%s/%s.clipped.fa" % (self.clipped_reads_folder, read_file))
+
+    def clipped_size_filtered_read_file(self, read_file):
+        """Return the full path of a file clipped, size filtered reads
+
+        Arguments:
+        - `read_file`: name of the read file
+        """
+        return("%s.size_filtered_gtoe_%sbp.fa" % (
+                self.clipped_read_file(read_file),
+                self.parameters.min_seq_length))
+
+    def clipped_size_filter_failed_read_file(self, read_file):
+        """Return the full path of a file with clipped but too short reads.
+
+        Arguments:
+        - `read_file`: name of the read file
+        """
+        return("%s.size_filtered_lt_%sbp.fa" % (
+                self.clipped_read_file(read_file),
                 self.parameters.min_seq_length))
 
     def read_mapping_output_file(self, read_file):
@@ -342,4 +359,4 @@ class Paths(object):
         """
         if self.parameters.uniquely_mapped_reads_only:
             return(self.unique_mappings_only_file(read_file))
-        return(self.combined_mapping_file_a_filtered(read_file))
+        return(self.a_filered_mappings_file(read_file))
