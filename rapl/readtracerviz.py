@@ -16,7 +16,7 @@ class ReadTracerViz(object):
     def _create_mapping_length_hist_string(self, read_file, index):
         return("trace_data_%s <- read.table(\"../../%s\", skip=1, "
                "na.string=\"-\", comment.char=\"\")\n"
-               "qplot(trace_data_%s$V8, data=trace_data_%s, binwidth=1, "
+               "qplot(trace_data_%s$V7, data=trace_data_%s, binwidth=1, "
                "xlab=\"Mapping length [nt]\", "
                "main=\"Mapping length distribution for %s\")\n" % (
                 index, self.paths.trace_file(read_file), index, index, read_file))        
