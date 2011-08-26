@@ -151,6 +151,15 @@ class Paths(object):
         return([self.genome_file(genome_file) 
                 for genome_file in self.genome_files])
 
+    def clipped_read_file(self, read_file):
+        """Return the full path of a file with clipped reads
+
+        Arguments:
+        - `read_file`: name of the read file
+        """
+        return("%s/%s.fa.clipped.fa" % (self.clipped_reads_folder, read_file))
+
+
     # def raw_read_mapping_output(self, read_file):
     #     """Return the full path of the output file of a segemehl run
 
@@ -160,13 +169,6 @@ class Paths(object):
     #     return("%s/%s_mapped_to_%s" % (
     #             self.read_mappings_first_run_folder, read_file, self.segemehl_index_name()))
 
-    # def clipped_read_file(self, read_file):
-    #     """Return the full path of a file with clipped reads
-
-    #     Arguments:
-    #     - `read_file`: name of the read file
-    #     """
-    #     return("%s/%s.fa.clipped.fa" % (self.unmapped_reads_folder, read_file))
 
     
     # def unmapped_read_clipped(self, read_file):

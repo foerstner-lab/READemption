@@ -8,6 +8,26 @@ class ReadMapper(object):
     def __init__(self):
         self.paths = Paths()
         self.parameters = Parameters()
+
+    def clip_reads(self):
+        """Clip reads i.e. remove the polyA-tail."""
+        for read_file in self.paths.read_files:
+            self._clip_reads(read_file)
+            
+    def _clip_reads(self, read_file):
+        """Remove the poly-A tail of reads in a file.
+
+        Arguments:
+        - `unmapped_raw_read_file_path`: path of the fasta file that
+                                         contains unmapped reads
+
+        """
+        
+        call("%s %s/poly_a_clipper.py -o %s %s" % (
+                self.paths.python_bin, self.paths.bin_folder, 
+                self.paths.clipped_read_file(read_file), 
+                self.paths.read_file(read_file)), 
+             shell=True)
     
     def build_segmehl_index(self):
         """Create the segemehl index based on the genome files."""
@@ -49,21 +69,21 @@ class ReadMapper(object):
                 unmapped_read_file_path),
              shell=True)
 
-    def clip_unmapped_reads(self):
-        """Clip reads unmapped in the first segemehl run."""
-        for read_file in self.paths.read_files:
-            self._clip_reads(self.paths.unmapped_raw_read_file(read_file))
+    # def clip_unmapped_reads(self):
+    #     """Clip reads unmapped in the first segemehl run."""
+    #     for read_file in self.paths.read_files:
+    #         self._clip_reads(self.paths.unmapped_raw_read_file(read_file))
             
-    def _clip_reads(self, unmapped_raw_read_file_path):
-        """Remove the poly-A tail of reads in a file.
+    # def _clip_reads(self, unmapped_raw_read_file_path):
+    #     """Remove the poly-A tail of reads in a file.
 
-        Arguments:
-        - `unmapped_raw_read_file_path`: path of the fasta file that
-                                         contains unmapped reads
+    #     Arguments:
+    #     - `unmapped_raw_read_file_path`: path of the fasta file that
+    #                                      contains unmapped reads
 
-        """
-        call("%s %s/poly_a_clipper.py %s" % (self.paths.python_bin,
-                self.paths.bin_folder, unmapped_raw_read_file_path), shell=True)
+    #     """
+    #     call("%s %s/poly_a_clipper.py %s" % (self.paths.python_bin,
+    #             self.paths.bin_folder, unmapped_raw_read_file_path), shell=True)
 
     def filter_clipped_reads_by_size(self):
         """Filter clipped reads sequence length.
