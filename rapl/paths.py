@@ -19,22 +19,12 @@ class Paths(object):
         self.genome_folder = "%s/genomes" % self.input_folder
         self.input_file_stats_folder = "%s/input_file_stats" % self.output_folder
         self.annotation_folder = "%s/annotation_files" % self.input_folder
-        self.read_mappings_first_run_folder = "%s/read_mappings_first_run" % (
-            self.output_folder)
-        self.read_mappings_second_run_folder = (
-            "%s/read_mappings_second_run" % self.output_folder)
         self.gr_folder = "%s/gr_files" % self.output_folder
         self.gr_folder_read_normalized = "%s/gr_read_normalized_files" % (
             self.output_folder)
         self.gr_folder_nucl_normalized = "%s/gr_nucleotide_normalized_files" % (
             self.output_folder)
         self.read_mapping_index_folder = "%s/read_mapping_index" % (
-            self.output_folder)
-        self.umapped_reads_of_first_mapping_folder = (
-            "%s/unmapped_reads_of_first_mapping" % self.output_folder)
-        self.umapped_reads_of_second_mapping_folder = (
-            "%s/unmapped_reads_of_second_mapping" % self.output_folder)
-        self.combined_mappings_folder = "%s/read_mappings_combined" % (
             self.output_folder)
         self.annotation_hit_folder = "%s/annotation_hits" % self.output_folder
         self.no_annotation_hit_folder = "%s/without_annotation_hits" % self.output_folder
@@ -50,6 +40,22 @@ class Paths(object):
             self.output_folder)
         self.read_tracing_folder = "%s/read_tracing" % (self.output_folder)
         self.report_folder = "%s/reports_and_stats" % (self.output_folder)
+
+        self.read_mappings_folder = "%s/read_mappings" % (
+            self.output_folder)
+        self.clipped_reads_folder = "%s/clipped_reads"
+        self.unmapped_reads_folder = "%s/unmapped_reads"
+
+        # self.read_mappings_first_run_folder = "%s/read_mappings_first_run" % (
+        #     self.output_folder)
+        # self.read_mappings_second_run_folder = (
+        #     "%s/read_mappings_second_run" % self.output_folder)
+        # self.umapped_reads_of_first_mapping_folder = (
+        #     "%s/unmapped_reads_of_first_mapping" % self.output_folder)
+        # self.umapped_reads_of_second_mapping_folder = (
+        #     "%s/unmapped_reads_of_second_mapping" % self.output_folder)
+        # self.combined_mappings_folder = "%s/read_mappings_combined" % (
+        #     self.output_folder)        
 
     def _set_file_names(self):
         """Set name of common files."""
