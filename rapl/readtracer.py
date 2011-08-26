@@ -229,23 +229,11 @@ class ReadTracer(object):
     def create_tracing_summay(self):
         """
         """
-        stati = [
-            "mapped_in_first_round", 
-            "mapped_in_first_round-failed_a-content_filter",
-            "mapped_in_second_round", 
-            "mapped_in_second_round-faild_a_content_filter",
-            "failed_size_filter_after_clipping", "not_mappable_in_second_run",
-            "lost_somewhere"]
+        stati = ["mapped", "mapped_-failed_a-content_filter",
+                 "failed_size_filter_after_clipping", "lost_somewhere"]
         summary_fh = open(self.paths.tracing_summary_file, "w")
-        summary_fh.write(
-            "#lib name\t" + 
-            "total number of reads\t" +
-            "sum of mappable reads\t" + 
-            "% mappable reads\t" + 
-            "uniquely mapped reads\t" +
-            "% of uniquely mapped reads\t" +
-            "\t".join(stati) +
-            "\n")
+        self._write_summary_header(stati, summary_fh)
+
         for read_file in self.paths.read_files:
             stati_and_countings, uniqely_mapped_read_countings = (
                 self._summarize_tracing_file(self.paths.trace_file(read_file)))
@@ -254,32 +242,30 @@ class ReadTracer(object):
                 stati_and_countings.setdefault(status, 0)
                 countings.append(stati_and_countings[status])
             summary_fh.write(
-                read_file + "\t" + 
-                "\t".join([str(number) for number in
-                        [sum(countings),
-                         self._total_number_of_mapped_read(stati_and_countings),
-                         self._percentage_of_mapped_reads(
+                "\t".join(
+                    [read_file] + 
+                    [str(number) for number in [
+                            sum(countings), stati_and_countings["mapped"],
+                            self._percentage_of_mapped_reads(
                                 stati_and_countings, countings),
-                         uniqely_mapped_read_countings,
-                         self._percentage_of_uniquely_mapped_reads(
-                                uniqely_mapped_read_countings, countings)]
-                        ]) +
-                "\t" +
-                "\t".join([str(counting) for counting in countings]) +
-                "\n")
+                            uniqely_mapped_read_countings,
+                            self._percentage_of_uniquely_mapped_reads(
+                                uniqely_mapped_read_countings, countings)]] +
+                    [str(counting) for counting in countings]))
         summary_fh.close()
 
-    def _total_number_of_mapped_read(self, stati_and_countings):
-        return(stati_and_countings["mapped_in_first_round"] +
-               stati_and_countings["mapped_in_second_round"])
+    def _write_summary_header(self, stati, summary_fh):
+        summary_fh.write("\t".join([
+                    "#lib name", "total number of reads",  
+                    "sum of mappable reads", "% mappable reads",
+                    "uniquely mapped reads", "% of uniquely mapped reads"] 
+                                   + stati) + "\n")
 
     def _percentage_of_mapped_reads(
         self, stati_and_countings, countings):
         try:
-            return(round(
-                    ((stati_and_countings["mapped_in_first_round"] +
-                      stati_and_countings["mapped_in_second_round"])/
-                     sum(countings)*100.0),3))
+            return(
+                round((stati_and_countings["mapped"]/sum(countings)*100.0),3))
         except ZeroDivisionError:
             return(0)
 
@@ -300,13 +286,9 @@ class ReadTracer(object):
             if line[0] in ["#", "\n"]:
                 continue
             split_line = line[:-1].split("\t")
-            final_status = split_line[9]
-            no_of_mappings_first_run = split_line[2]
-            no_of_mappings_second_run = split_line[5]
-            if ((final_status == "mapped_in_first_round" or 
-                 final_status == "mapped_in_second_round") and 
-                (no_of_mappings_first_run == "1" or 
-                 no_of_mappings_second_run == "1")):
+            final_status = split_line[8]
+            no_of_mappings = split_line[2]
+            if final_status == "mapped" and no_of_mappings == "1":
                 uniquely_mapped_read_countings += 1
             stati_and_countings.setdefault(final_status, 0)
             stati_and_countings[final_status] += 1
