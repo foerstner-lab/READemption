@@ -81,7 +81,7 @@ class Helper(object):
         sam_parser = SamParser()
         return(
             sam_parser.number_of_mapped_reads(
-                self.final_filtered_mapping_file(read_file)))
+                self.paths.final_filtered_mapping_file(read_file)))
 
     # def lowest_number_of_mapped_nucleotides(self, genome_file):
     #     """Return the lowest number of mapping mapped nucleotides.
@@ -107,3 +107,8 @@ class Helper(object):
     #         headers[header] = genome_file
     #     return(headers)
 
+
+
+        
+
+    
