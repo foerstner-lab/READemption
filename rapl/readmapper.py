@@ -1,4 +1,6 @@
+import concurrent.futures
 from subprocess import call
+from rapl.helper import Helper
 from rapl.parameters import Parameters
 from rapl.paths import Paths
 from libs.sam import SamBuilder, SamParser
@@ -8,6 +10,7 @@ class ReadMapper(object):
     def __init__(self):
         self.paths = Paths()
         self.parameters = Parameters()
+        self.helper = Helper()
 
     def clip_reads(self):
         """Clip reads i.e. remove the polyA-tail."""
@@ -103,8 +106,16 @@ class ReadMapper(object):
         might be introduced during the sample preparion process.
 
         """
-        for read_file in  self.paths.read_files:
-            self._filter_mappings_by_a_content(read_file)
+        # Create a thread for each read file
+        threads = []
+        with concurrent.futures.ThreadPoolExecutor(
+            max_workers=self.parameters.python_number_of_threads) as executor:
+            for read_file in self.paths.read_files:
+                threads.append(
+                    executor.submit(
+                        self._filter_mappings_by_a_content, read_file))
+        # Evaluate thread outcome
+        self.helper.check_thread_completeness(threads)
     
     def _filter_mappings_by_a_content(self, mapping_file):
         """Filter Segemehl mapping file entries by A-content.
