@@ -148,7 +148,7 @@ class Annotations(object):
     def _build_annotation_hit_overview_read_normalized(self, annotation_file):
         """Create annotation hit overview table normalized by mapped
            reads.
-n
+
         Arguments:
         - `annotation_file`: an (NCBI) annotation file
 
