@@ -251,7 +251,7 @@ class ReadTracer(object):
                             uniqely_mapped_read_countings,
                             self._percentage_of_uniquely_mapped_reads(
                                 uniqely_mapped_read_countings, countings)]] +
-                    [str(counting) for counting in countings]))
+                    [str(counting) for counting in countings]) + "\n")
         summary_fh.close()
 
     def _write_summary_header(self, stati, summary_fh):
