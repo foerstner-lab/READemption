@@ -272,6 +272,17 @@ class Paths(object):
         return("%s/%s_in_%s_annotation_hits" % (
                 self.annotation_hit_folder, read_file, annotation_file))
 
+    def annotation_hit_file_with_mapping_coutings(
+        self, read_file, annotation_file):
+        """Return the path of the annoation hit file with number of mappings
+
+        Arguments:
+        - `read_file,`: name of the read file
+        - `annotation_file`: name of the (NCBI) annotation file
+        """
+        return(self.annotation_hit_file(read_file, annotation_file) + 
+               "_with_mapping_countings")
+
     def annotation_file(self, annotation_file):
         """Return the path of a given annotation files.
 

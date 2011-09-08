@@ -29,6 +29,49 @@ class Annotations(object):
         # Evaluate thread outcome
         self.helper.check_thread_completeness(threads)
 
+    def quantify_mapping_redundancy(self):
+        """Count the number of overlaps for each mapping
+
+        For each of the read files parse all the hit annotation
+        overlap files and count the number of overlaps each mapping
+        has. The number is added to the hit overlap lines to make
+        normalization in later steps possible.
+        """
+        for read_file in self.paths.read_files:
+            self._quantify_mapping_redundancy(read_file)
+
+    def _quantify_mapping_redundancy(self, read_file):
+        self.mappings_and_occurances = {}
+        for annotation_file in self.annotation_files.keys():
+            self._count_mapping_occurances(read_file, annotation_file)
+        for annotation_file in self.annotation_files.keys():
+            output_fh = open(
+                self.paths.annotation_hit_file_with_mapping_coutings(
+                    read_file, annotation_file), "w")
+            self._add_mapping_counting_to_overlaps(
+                read_file, annotation_file, output_fh)
+    
+    def _count_mapping_occurances(self, read_file, annotation_file):
+        for line in open(
+            self.paths.annotation_hit_file(read_file, annotation_file)):
+            mapping_key = self._mapping_line_to_mapping_key(line)
+            self.mappings_and_occurances.setdefault(mapping_key, 0)
+            self.mappings_and_occurances[mapping_key] += 1
+
+    def _add_mapping_counting_to_overlaps(
+        self, read_file, annotation_file, output_fh):
+        for line in open(
+            self.paths.annotation_hit_file(read_file, annotation_file)):
+            mapping_key = self._mapping_line_to_mapping_key(line)
+            output_fh.write(
+                line[:-1] + "\t" + 
+                str(self.mappings_and_occurances[mapping_key]) + 
+                "\n")
+
+    def _mapping_line_to_mapping_key(self, line):
+        split_line = line.split("\t")
+        return("-".join(split_line[0:3], ))
+
     def build_annotation_hit_overview(self):
         """Create annotation hit overview tables."""
         with concurrent.futures.ThreadPoolExecutor(

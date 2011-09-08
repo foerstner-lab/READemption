@@ -73,6 +73,7 @@ class Rapl(object):
         self._in_project_folder()
         annotations = Annotations()
         annotations.find_annotation_hits()
+        annotations.quantify_mapping_redundancy()
         annotations.build_annotation_hit_overview()
         annotations.build_annotation_hit_overview_read_normalized()
         annotations.build_annotation_hit_overview_nucleotide_normalized()
