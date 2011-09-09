@@ -241,16 +241,18 @@ class ReadTracer(object):
             for status in stati:
                 stati_and_countings.setdefault(status, 0)
                 countings.append(stati_and_countings[status])
+            no_of_reads = self._get_total_number_of_reads(
+                self.paths.trace_file(read_file))
             summary_fh.write(
                 "\t".join(
                     [read_file] + 
                     [str(number) for number in [
-                            sum(countings), stati_and_countings["mapped"],
+                            no_of_reads, stati_and_countings["mapped"],
                             self._percentage_of_mapped_reads(
-                                stati_and_countings, countings),
+                                stati_and_countings, no_of_reads),
                             uniqely_mapped_read_countings,
                             self._percentage_of_uniquely_mapped_reads(
-                                uniqely_mapped_read_countings, countings)]] +
+                                uniqely_mapped_read_countings, no_of_reads)]] +
                     [str(counting) for counting in countings]) + "\n")
         summary_fh.close()
 
@@ -262,20 +264,28 @@ class ReadTracer(object):
                                    + stati) + "\n")
 
     def _percentage_of_mapped_reads(
-        self, stati_and_countings, countings):
+        self, stati_and_countings, no_of_reads):
         try:
             return(
-                round((stati_and_countings["mapped"]/sum(countings)*100.0),3))
+                round((stati_and_countings["mapped"]/no_of_reads*100.0),3))
         except ZeroDivisionError:
             return(0)
 
     def _percentage_of_uniquely_mapped_reads(
-        self, uniqely_mapped_read_countings, countings):
+        self, uniqely_mapped_read_countings, no_of_reads):
         try:
             return(round((float(uniqely_mapped_read_countings) / 
-                          sum(countings)*100.0),3))
+                          no_of_reads*100.0),3))
         except ZeroDivisionError:
             return(0)
+
+    def _get_total_number_of_reads(self, tracing_file):
+        counter = 0
+        for line in open(tracing_file):
+            if line.startswith("#"):
+                continue
+            counter += 1
+        return(counter)
 
     def _summarize_tracing_file(self, tracing_file):
         """
