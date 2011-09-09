@@ -12,7 +12,7 @@ from rapl.readtracer import ReadTracer
 from rapl.reporter import Reporter
 from rapl.readtracerviz import ReadTracerViz
 
-class Rapl(object):
+class Controler(object):
 
     def __init__(self):
         """Create an instance."""

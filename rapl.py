@@ -3,7 +3,7 @@
 """RAPL - A RNA-seq Analysing PipeLine"""
 
 import argparse
-from rapl.rapl import Rapl
+from rapl.controler import Controler
 
 def main():
     parser = argparse.ArgumentParser()
@@ -47,22 +47,22 @@ def main():
     generate_report_parser.set_defaults(func=generate_report)
     
     args = parser.parse_args()
-    rapl = Rapl()
-    args.func(args, rapl)
+    controler = Controler()
+    args.func(args, controler)
 
-def start_project(args, rapl):
-    rapl.start_project(args)
+def start_project(args, controler):
+    controler.start_project(args)
 
-def map_reads(args, rapl):
-    rapl.map_reads()
+def map_reads(args, controler):
+    controler.map_reads()
 
-def create_gr_files(args, rapl):
-    rapl.create_gr_files()
+def create_gr_files(args, controler):
+    controler.create_gr_files()
 
-def search_annoation_overlaps(args, rapl):
-    rapl.search_annotation_overlaps()
+def search_annoation_overlaps(args, controler):
+    controler.search_annotation_overlaps()
 
-def generate_report(args, rapl):
-    rapl.generate_report()
+def generate_report(args, controler):
+    controler.generate_report()
 
 main()
