@@ -258,9 +258,9 @@ class ReadTracer(object):
 
     def _write_summary_header(self, stati, summary_fh):
         summary_fh.write("\t".join([
-                    "#lib name", "total number of reads",  
-                    "sum of mappable reads", "% mappable reads",
-                    "uniquely mapped reads", "% of uniquely mapped reads"] 
+                    "#Library", "Total number of reads",  
+                    "Sum of mappable reads", "% mappable reads",
+                    "Uniquely mapped reads", "% of uniquely mapped reads"] 
                                    + stati) + "\n")
 
     def _percentage_of_mapped_reads(
