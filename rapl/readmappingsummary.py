@@ -39,7 +39,7 @@ class ReadMappingSummary(object):
     def _write_header(self):
         self.summary_fh.write(
             "\t".join(
-                ["Library", "Total number of mapped reads", 
+                ["#Library", "Total number of mapped reads", 
                  "Total number of mappings"] + 
                 ["Mapped reads in " + genome_file 
                  for genome_file in self.paths.genome_files] +
