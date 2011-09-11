@@ -1,9 +1,9 @@
 class Parameters(object):
-    segemehl_accuracy = 85
+    segemehl_accuracy = 95
     segemehl_hit_strategy = "1"
     segemehl_max_e_value = 5.0
-    segemehl_number_of_threads = 1
-    python_number_of_threads = 3
+    segemehl_number_of_threads = 20
+    python_number_of_threads = 20
 
     # This define how expection should be treated exspecilly the once
     # that run in parellel. The option are "report" or "crash"
