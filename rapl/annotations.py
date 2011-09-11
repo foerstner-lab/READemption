@@ -170,7 +170,8 @@ class Annotations(object):
 
         """
         annotation_hit_files = [
-            self.paths.annotation_hit_file(read_file, annotation_file) 
+            self.paths.annotation_hit_file_with_mapping_coutings(
+                read_file, annotation_file) 
             for read_file in self.paths.read_files]
         # Sense
         annotation_table_builder = AnnotationMappingTableBuilder(
