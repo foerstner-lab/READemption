@@ -2,7 +2,7 @@ import json
 import os
 import sys
 
-class Creator(object):
+class ProjectCreator(object):
 
     def create_root_folder(self, project_name):
         """Create the root folder of a new project with the given name.
