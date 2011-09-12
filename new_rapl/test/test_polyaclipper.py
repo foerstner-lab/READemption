@@ -90,7 +90,6 @@ class TestPolyAClipper(unittest.TestCase):
         result_seq = "AAAAATTTTCCGCCCGGGAAATTTT"
         self.assertEqual(
             self.poly_a_clipper.remove_3_prime_a(test_seq), result_seq)
-
+    
 if __name__ == "__main__":
     unittest.main()
-
