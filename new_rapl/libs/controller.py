@@ -1,18 +1,18 @@
 import os
 import sys
 from subprocess import call
-from rapl.annotations import Annotations
-from rapl.creator import Creator
-from rapl.grbuilder import GrBuilder
-from rapl.inputstats import InputStats
-from rapl.paths import Paths
-from rapl.readmapper import ReadMapper
-from rapl.readmappingsummary import ReadMappingSummary
-from rapl.readtracer import ReadTracer
-from rapl.reporter import Reporter
-from rapl.readtracerviz import ReadTracerViz
+# from rapl.annotations import Annotations
+# from rapl.creator import Creator
+# from rapl.grbuilder import GrBuilder
+# from rapl.inputstats import InputStats
+# from rapl.paths import Paths
+# from rapl.readmapper import ReadMapper
+# from rapl.readmappingsummary import ReadMappingSummary
+# from rapl.readtracer import ReadTracer
+# from rapl.reporter import Reporter
+# from rapl.readtracerviz import ReadTracerViz
 
-class Controler(object):
+class Controller(object):
 
     def __init__(self):
         """Create an instance."""
