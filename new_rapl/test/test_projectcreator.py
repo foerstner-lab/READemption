@@ -3,7 +3,7 @@ import os
 import sys
 import shutil
 sys.path.append(".")
-from libs.creator import Creator
+from libs.projectcreator import ProjectCreator
 
 class TestCreator(unittest.TestCase):
 
