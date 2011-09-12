@@ -9,11 +9,26 @@ class Segemehl(object):
 
     def build_index(self, fasta_files, index_file):
         """Create an index based on a list of fasta files"""
-        call("%s -d %s -x %s" % 
+        call("%s --database %s --generate %s " % 
              (self.segemehl_bin, " ".join(fasta_files), index_file),
              shell=True)
 
-    def map_reads(read_file, index_file, output_file, nonmatch_file=None,
-                  accurary=85.0, hit_strategy=1, other_parameters="",
-                  sam_output=True, order=False, threads=1):
-        pass
+    def map_reads(self, read_file, index_file, fasta_files, output_file,
+                  hit_strategy=1, accuracy=95, evalue=5.0, threads=1,
+                  sam_output=True, order=False, nonmatch_file=None,
+                  other_parameters=None):
+        segemehl_call = (
+            "%s --query %s --index %s --database %s --outfile %s " 
+            "--hitstrategy %s --accuracy %s --evalue %s --threads %s"
+            % (self.segemehl_bin, read_file, index_file, " ".join(fasta_files),
+               output_file, hit_strategy, accuracy, evalue, threads))
+        if sam_output:
+            segemehl_call += " --SAM"
+        if order:
+            segemehl_call += " --order"
+        if nonmatch_file:
+            segemehl_call += " --nomatchfilename %s" % nonmatch_file
+        if other_parameters:
+            segemehl_call += " " + other_parameters
+        call(segemehl_call, shell=True)
+
