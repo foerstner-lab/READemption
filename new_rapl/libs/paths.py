@@ -1,15 +1,16 @@
 import os
-from rapl.parameters import Parameters
+#from rapl.parameters import Parameters
 
 class Paths(object):
 
     def __init__(self):
         self._set_folder_names()
         self._set_file_names()
-        self._set_bin_paths()
-        self._get_read_file_names()
-        self._get_genome_file_names()
-        self.parameters = Parameters()
+        #self._get_read_file_names()
+        #self._get_genome_file_names()
+        # TMP deactivated
+        # self.parameters = Parameters()
+        pass
 
     def _set_folder_names(self):
         """Set the name of folders used in a project."""
@@ -40,7 +41,6 @@ class Paths(object):
             self.output_folder)
         self.read_tracing_folder = "%s/read_tracing" % (self.output_folder)
         self.report_folder = "%s/reports_and_stats" % (self.output_folder)
-
         self.read_mappings_folder = "%s/read_mappings" % (
             self.output_folder)
         self.clipped_reads_folder = "%s/clipped_reads" % (
@@ -69,28 +69,18 @@ class Paths(object):
         self.mapping_length_hist_pdf_file = (
             "%s/mapping_length_distributions.pdf" % self.report_folder)
 
+    def _get_sorted_folder_content(self, folder):
+        """Return the sorted file list of a folder"""
+        return(sorted(os.listdir(folder)))
+
     def _get_read_file_names(self):
         """Read the names of the read files."""
-        if os.path.exists(self.rna_seq_folder):
-            self.read_files = sorted(os.listdir(self.rna_seq_folder))
-        else:
-            self.read_files = []
+        self.read_files = self._get_sorted_folder_content(self.rna_seq_folder)
 
     def _get_genome_file_names(self):
         """Read the names of genome files."""
-        if os.path.exists(self.genome_folder):
-            self.genome_files = sorted(os.listdir(self.genome_folder))
-        else:
-            self.genome_files = []
+        self.genome_files = self._get_sorted_folder_content(self.genome_folder)
 
-    def _set_bin_paths(self):
-        """Set file/folder paths for some needed binaries."""
-        #self.segemehl_bin = "segemehl"
-        self.segemehl_bin = "segemehl_dev"
-        # DEV
-        self.python_bin = "/opt/Python-3.2/python"
-        self.bin_folder = (os.path.split(os.path.realpath(__file__))[0] + 
-                           "/rapl_tools")
     def required_folders(self):
         return([self.input_folder, self.output_folder, self.rna_seq_folder,
                 self.annotation_folder,              
@@ -104,7 +94,6 @@ class Paths(object):
                 self.annotation_hit_overview_rpkm_normalized_folder,
                 self.read_tracing_folder, self.input_file_stats_folder, 
                 self.report_folder, self.no_annotation_hit_folder])
-    
 
     def read_file(self, read_file):
         """Return the full path of a given read file.
