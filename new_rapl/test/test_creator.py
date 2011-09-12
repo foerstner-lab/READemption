@@ -35,9 +35,6 @@ class TestCreator(unittest.TestCase):
         content = fh.read()
         fh.close()
         self.assertEqual(content, '{"annotation_and_genomes_files": {}}')
-        
-        
-        
 
 if __name__ == "__main__":
     unittest.main()
