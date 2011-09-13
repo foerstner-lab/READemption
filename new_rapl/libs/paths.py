@@ -91,7 +91,6 @@ class Paths(object):
                 self.annotation_hit_overview_read_normalized_folder,
                 self.annotation_hit_overview_nucl_normalized_folder,
                 self.annotation_hit_overview_rpkm_normalized_folder,
-
                 self.read_tracing_folder, self.input_file_stats_folder, 
                 self.report_folder, self.no_annotation_hit_folder])
 
