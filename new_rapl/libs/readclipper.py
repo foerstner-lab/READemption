@@ -10,13 +10,17 @@ class ReadClipper(object):
         self.poly_a_clipper = PolyAClipper()
 
     def clip(self, input_file_paths, output_file_pathes):
-        if len(input_file_paths) != len(output_file_pathes):
-            raise Exception("Number of input != number of output files.")
         for input_file_path, output_path in zip(
             input_file_paths, output_file_pathes):
             input_fh = open(input_file_path)
             output_fh = open(output_path, "w")
             self._clip_entries_in_file(input_fh, output_fh)
+        input_fh.close()
+        output_fh.close()
+
+    def _compare_input_paths(self):
+        if len(input_file_paths) != len(output_file_pathes):
+            raise Exception("Number of input != number of output files.")
     
     def _clip_entries_in_file(self, input_fh, output_fh):
         for header, seq in self.fasta_parser.entries(input_fh):

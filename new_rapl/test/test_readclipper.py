@@ -10,14 +10,14 @@ class TestReadClipper(unittest.TestCase):
         self.read_clipper = ReadClipper()
         self.example_data = ExampleData()
 
-    def tearDown(self):
-        pass
+    # TODO: test clip
 
-    def test_clip_with_wrong_file_list_sizes(self):
+    def test_compare_input_paths(self):
         """If the number of input file is not equal the number of
         output file an exception must be raised."""
         self.assertRaises(
-            Exception, self.read_clipper.clip, ["a"], ["a", "b"])
+            Exception, self.read_clipper._compare_input_paths, 
+            ["a"], ["a", "b"])
 
     def test_clip_entries_in_file(self):
         input_fh = StringIO(self.example_data.fasta_input)
