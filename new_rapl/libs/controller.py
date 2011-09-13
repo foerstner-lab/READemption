@@ -1,6 +1,5 @@
 import os
 import sys
-from subprocess import call
 sys.path.append(".")
 from libs.paths import Paths
 from libs.projectcreator import ProjectCreator
@@ -30,31 +29,28 @@ class Controller(object):
                          "genome files into folder \"%s\".\n" % (
                 self.paths.rna_seq_folder, self.paths.genome_folder))
 
-    # def map_reads(self):
-    #     """Perform the mapping of the reads.
-
-    #     The mapping is done using the program segemehl and takes place
-    #     in two steps.
-
-    #     """
-    #     self._in_project_folder()
-    #     input_file_stats = InputStats()
-    #     input_file_stats.create_read_file_stats()
-    #     input_file_stats.create_genome_file_stats()
-    #     read_mapper = ReadMapper()
-    #     read_mapper.clip_reads()
-    #     read_mapper.filter_clipped_reads_by_size()
-    #     read_mapper.build_segmehl_index()
-    #     read_mapper.run_mapping()
-    #     read_mapper.filter_mappings_by_a_content()
-    #     read_mapper.select_uniquely_mapped_reads()
-    #     read_mapping_summary = ReadMappingSummary()
-    #     read_mapping_summary.create()
-    #     read_tracer = ReadTracer()
-    #     read_tracer.trace_reads()
-    #     read_tracer.create_tracing_summay()
-    #     read_tracer_viz = ReadTracerViz()
-    #     read_tracer_viz.create_mapping_length_histograms()
+    def map_reads(self):
+        """Perform the mapping of the reads."""
+        read_file_names = self.path._get_read_file_names()
+        # self._in_project_folder()
+        # input_file_stats = InputStats()
+        # input_file_stats.create_read_file_stats()
+        # input_file_stats.create_genome_file_stats()
+        read_clipper = ReadClipper()
+        read_clipper.clip(self.paths.read_file_paths(read_file_names),
+                          self.paths.clipped_read_file_paths(read_file_names))
+        read_clipper.filter_clipped_reads_by_size()
+        read_mapper = ReadMapper()
+        read_mapper.build_segmehl_index()
+        read_mapper.run_mapping()
+        # read_mapper.select_uniquely_mapped_reads()
+        # read_mapping_summary = ReadMappingSummary()
+        # read_mapping_summary.create()
+        # read_tracer = ReadTracer()
+        # read_tracer.trace_reads()
+        # read_tracer.create_tracing_summay()
+        # read_tracer_viz = ReadTracerViz()
+        # read_tracer_viz.create_mapping_length_histograms()
     
     # def create_gr_files(self):
     #     """Create GR files based on the combined Segemehl mappings. """
