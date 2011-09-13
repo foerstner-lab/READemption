@@ -105,7 +105,7 @@ class TestPaths(unittest.TestCase):
     def test_set_genome_paths(self):
         self.paths.set_genome_paths(self.test_files)
         self.assertEqual(
-            self.paths.genome_file_path, 
+            self.paths.genome_file_paths, 
             ["%s/%s" % (self.paths.genome_folder, file) for 
              file in self.test_files])
 
