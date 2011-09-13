@@ -68,6 +68,7 @@ class Paths(object):
             "%s/mapping_length_distributions.R" % self.report_folder)
         self.mapping_length_hist_pdf_file = (
             "%s/mapping_length_distributions.pdf" % self.report_folder)
+        self.index_file_path = "%s/index.idx" % self.read_mapping_index_folder
 
     def _get_sorted_folder_content(self, folder):
         """Return the sorted file list of a folder"""
@@ -92,6 +93,7 @@ class Paths(object):
                 self.annotation_hit_overview_read_normalized_folder,
                 self.annotation_hit_overview_nucl_normalized_folder,
                 self.annotation_hit_overview_rpkm_normalized_folder,
+
                 self.read_tracing_folder, self.input_file_stats_folder, 
                 self.report_folder, self.no_annotation_hit_folder])
 
@@ -108,7 +110,7 @@ class Paths(object):
         self.read_mapping_result_paths = self._path_list(
             self.read_mappings_folder, read_files)
         self.unmapped_reads_path = self._path_list(
-            self.unmapped_reads_folder, read_files, appendix="unmapped.fa")
+            self.unmapped_reads_folder, read_files, appendix=".unmapped.fa")
 
     def set_genome_paths(self, genome_files):
         self.genome_file_paths = self._path_list(
