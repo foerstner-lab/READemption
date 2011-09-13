@@ -101,10 +101,10 @@ class Paths(object):
             self.clipped_reads_folder, read_files, appendix=".clipped.fa")
         self.clipped_read_file_long_enough_paths = self._path_list(
             self.clipped_reads_folder, read_files, 
-            appendix=".clipped.fa._%s_nt_and_longer.fa" % str(min_seq_length))
+            appendix=".clipped.fa.%s_nt_and_longer.fa" % str(min_seq_length))
         self.clipped_read_file_too_short_paths = self._path_list(
             self.clipped_reads_folder, read_files, 
-            appendix=".clipped.fa.short_than_%s_nt.fa" % str(min_seq_length))
+            appendix=".clipped.fa.shorter_than_%s_nt.fa" % str(min_seq_length))
         self.read_mapping_result_paths = self._path_list(
             self.read_mappings_folder, read_files)
         self.unmapped_reads_path = self._path_list(
