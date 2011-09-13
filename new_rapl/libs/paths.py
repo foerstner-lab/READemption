@@ -110,6 +110,10 @@ class Paths(object):
         self.unmapped_reads_path = self._path_list(
             self.unmapped_reads_folder, read_files, appendix="unmapped.fa")
 
+    def set_genome_paths(self, genome_files):
+        self.genome_file_path = self._path_list(
+            self.genome_folder, genome_files)
+
     def _path_list(self, folder, files, appendix=""):
         return(["%s/%s%s" % (folder, file, appendix) for file in files])
 

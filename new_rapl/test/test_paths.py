@@ -102,6 +102,13 @@ class TestPaths(unittest.TestCase):
                 self.test_folder, self.test_files, appendix=".boing"),
             ['/tmp/test/foo.boing', '/tmp/test/bar.boing'])
 
+    def test_set_genome_paths(self):
+        self.paths.set_genome_paths(self.test_files)
+        self.assertEqual(
+            self.paths.genome_file_path, 
+            ["%s/%s" % (self.paths.genome_folder, file) for 
+             file in self.test_files])
+
     # def test_read_file_path(self):
     #     self.paths.read_fasta_folder = self.test_folder
     #     self._test_a_path(self.paths.read_file_path)
