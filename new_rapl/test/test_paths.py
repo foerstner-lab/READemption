@@ -76,7 +76,7 @@ class TestPaths(unittest.TestCase):
         self._remove_folder_if_exists(self.test_folder)
 
     def test_set_read_files_dep_file_lists(self):
-        self.paths.set_read_files_dep_file_lists(self.test_files)
+        self.paths.set_read_files_dep_file_lists(self.test_files, 20)
         for path_list in  [
             self.paths.read_file_paths, self.paths.clipped_read_file_paths, 
             self.paths.clipped_read_file_long_enough_paths, 
