@@ -8,7 +8,7 @@ from libs.controller import Controller
 class ArgMock(object):
     project_name = None
 
-class TestControler(unittest.TestCase):
+class TestController(unittest.TestCase):
 
     def setUp(self):
         self.controller = Controller()
