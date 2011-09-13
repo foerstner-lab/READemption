@@ -5,7 +5,7 @@ class Paths(object):
 
     def __init__(self):
         self._set_folder_names()
-        self._set_file_names()
+        self._set_static_file_names()
         #self._get_read_file_names()
         #self._get_genome_file_names()
         # TMP deactivated
@@ -48,7 +48,7 @@ class Paths(object):
         self.unmapped_reads_folder = "%s/unmapped_reads" % (
             self.output_folder)
 
-    def _set_file_names(self):
+    def _set_static_file_names(self):
         """Set name of common files."""
         self.config_file = "rapl.config"
         self.read_file_stats = "%s/read_file_stats.txt" % (
@@ -95,29 +95,69 @@ class Paths(object):
                 self.read_tracing_folder, self.input_file_stats_folder, 
                 self.report_folder, self.no_annotation_hit_folder])
 
-    def read_file_path(self, read_file):
-        """Return the full path of a given read file."""
-        return("%s/%s" % (self.rna_seq_folder, read_file))
+    def set_read_files_dep_file_lists(self, read_files):
+        self.read_file_paths = self._path_list(self.rna_seq_folder, read_files)
+        self.clipped_read_file_paths = self._path_list(
+            self.clipped_reads_folder, read_files, appendix=".clipped.fa")
+        self.clipped_read_file_long_enough_paths = self._path_list(
+            self.clipped_reads_folder, read_files, 
+            appendix=".clipped.fa.long_enough.fa")
+        self.clipped_read_file_too_short_paths = self._path_list(
+            self.clipped_reads_folder, read_files, 
+            appendix=".clipped.fa.too_short.fa")
+        self.read_mapping_result_paths = self._path_list(
+            self.read_mappings_folder, read_files)
+        self.unmapped_reads_path = self._path_list(
+            self.unmapped_reads_folder, read_files, appendix="unmapped.fa")
 
-    def read_file_paths(self, read_files):
-        return([self.read_file_path(read_file) for read_file in read_files])
+    def _path_list(self, folder, files, appendix=""):
+        return(["%s/%s%s" % (folder, file, appendix) for file in files])
+
+    # def read_file_path(self, read_file):
+    #     """Return the full path of a given read file."""
+    #     return("%s/%s" % (self.rna_seq_folder, read_file))
+
+    # def read_file_paths(self, read_files):
+    #     return([self.read_file_path(read_file) for read_file in read_files])
     
-    def clipped_read_file_path(self, read_file):
-        """Return the full path of a file with clipped reads
+    # def clipped_read_file_path(self, read_file):
+    #     """Return the full path of a file with clipped reads
 
-        Arguments:
-        - `read_file`: name of the read file
-        """
-        return("%s/%s.clipped.fa" % (self.clipped_reads_folder, read_file))
+    #     Arguments:
+    #     - `read_file`: name of the read file
+    #     """
+    #     return("%s/%s.clipped.fa" % (self.clipped_reads_folder, read_file))
 
-    def clipped_read_file_paths(self, read_files):
-        """Return the full path of a file with clipped reads
+    # def clipped_read_file_paths(self, read_files):
+    #     """Return the full path of a file with clipped reads
 
-        Arguments:
-        - `read_file`: name of the read file
-        """
-        return([self.clipped_read_file_path(read_file) for read_file 
-                in read_files])
+    #     Arguments:
+    #     - `read_file`: name of the read file
+    #     """
+    #     return([self.clipped_read_file_path(read_file) for read_file 
+    #             in read_files])
+
+    # def genome_file_path(self, genome_file):
+    #     """Return the full path of a given genome file
+
+    #     Arguments:
+    #     - `genome_file`: genome file name
+    #     """
+    #     return("%s/%s" % (self.genome_folder, genome_file))
+
+    # def genome_file_paths(self, genome_files):
+    #     """Return the full paths of all genome files"""
+    #     return([self.genome_file_path(genome_file) for genome_file 
+    #             in genome_files])
+
+    # def unmapped_reads_file_path(self, read_file):
+    #     """Return the full path of a file with unmapped reads
+
+    #     Arguments:
+    #     - `read_file`: name of the read file
+    #     """
+    #     return("%s/%s.clipped.fa.unmapped" % (
+    #             self.unmapped_reads_folder, read_file))
 
     # USE read_file_path INSTEAD
     # def read_file(self, read_file): 
@@ -133,18 +173,6 @@ class Paths(object):
     #     return("%s/%s"  % (
     #             self.read_mapping_index_folder, self.segemehl_index_name()))
 
-    # def genome_file(self, genome_file):
-    #     """Return the full path of a given genome file
-
-    #     Arguments:
-    #     - `genome_file`: genome file name
-    #     """
-    #     return("%s/%s" % (self.genome_folder, genome_file))
-
-    # def genome_file_paths(self):
-    #     """Return the full paths of all genome files"""
-    #     return([self.genome_file(genome_file) 
-    #             for genome_file in self.genome_files])
 
     # def clipped_read_file_prefix(self, read_file):
     #     """Return the full path of a file with clipped reads
