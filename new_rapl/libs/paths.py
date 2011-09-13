@@ -1,5 +1,4 @@
 import os
-#from rapl.parameters import Parameters
 
 class Paths(object):
 
@@ -10,7 +9,6 @@ class Paths(object):
         #self._get_genome_file_names()
         # TMP deactivated
         # self.parameters = Parameters()
-        pass
 
     def _set_folder_names(self, base_path="."):
         """Set the name of folders used in a project."""
