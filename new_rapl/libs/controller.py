@@ -2,13 +2,18 @@ import os
 import sys
 sys.path.append(".")
 from libs.paths import Paths
+from libs.parameters import Parameters
 from libs.projectcreator import ProjectCreator
+from libs.readclipper import ReadClipper
+from libs.readmapper import ReadMapper
+from libs.seqsizefilter import SeqSizeFilter
 
 class Controller(object):
 
     def __init__(self):
         """Create an instance."""
         self.paths = Paths()
+        self.parameters = Parameters()
 
     def start_project(self, args):
         """Create a new project.
@@ -27,22 +32,39 @@ class Controller(object):
                 args.project_name))
         sys.stdout.write("Please copy read files into folder \"%s\" and "
                          "genome files into folder \"%s\".\n" % (
-                self.paths.rna_seq_folder, self.paths.genome_folder))
+                self.paths.read_fasta_folder, self.paths.genome_folder))
 
     def map_reads(self):
         """Perform the mapping of the reads."""
-        read_file_names = self.path._get_read_file_names()
+        read_file_names = self.paths._get_read_file_names()
+        genome_file_names = self.paths._get_genome_file_names()
+        self.paths.set_read_files_dep_file_lists(
+            read_file_names, self.parameters.min_seq_length)
+        self.paths.set_genome_paths(genome_file_names)
         # self._in_project_folder()
         # input_file_stats = InputStats()
         # input_file_stats.create_read_file_stats()
         # input_file_stats.create_genome_file_stats()
         read_clipper = ReadClipper()
-        read_clipper.clip(self.paths.read_file_paths(read_file_names),
-                          self.paths.clipped_read_file_paths(read_file_names))
-        read_clipper.filter_clipped_reads_by_size()
+        read_clipper.clip(
+            self.paths.read_file_paths, self.paths.clipped_read_file_paths)
+        seq_size_filter = SeqSizeFilter()
+        seq_size_filter.filter(
+            self.paths.clipped_read_file_paths, 
+            self.paths.clipped_read_file_long_enough_paths,
+            self.paths.clipped_read_file_too_short_paths, 
+            self.parameters.min_seq_length)
         read_mapper = ReadMapper()
-        read_mapper.build_segmehl_index()
-        read_mapper.run_mapping()
+        read_mapper.build_index(
+            self.paths.genome_file_paths, self.paths.index_file_path)
+        read_mapper.run_mappings(
+            self.paths.clipped_read_file_long_enough_paths,
+            self.paths.genome_file_paths, self.paths.index_file_path,
+            self.paths.read_mapping_result_paths, 
+            self.paths.unmapped_reads_path, 
+            self.parameters.segemehl_number_of_threads, 
+            self.parameters.segemehl_accuracy)
+
         # read_mapper.select_uniquely_mapped_reads()
         # read_mapping_summary = ReadMappingSummary()
         # read_mapping_summary.create()
