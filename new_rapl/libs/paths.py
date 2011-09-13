@@ -16,7 +16,7 @@ class Paths(object):
         """Set the name of folders used in a project."""
         self.input_folder = "input"
         self.output_folder = "output"
-        self.rna_seq_folder = "%s/RNA_seqs" % self.input_folder
+        self.read_fasta_folder = "%s/RNA_seqs" % self.input_folder
         self.genome_folder = "%s/genomes" % self.input_folder
         self.input_file_stats_folder = "%s/input_file_stats" % self.output_folder
         self.annotation_folder = "%s/annotation_files" % self.input_folder
@@ -75,14 +75,14 @@ class Paths(object):
 
     def _get_read_file_names(self):
         """Read the names of the read files."""
-        return(self._get_sorted_folder_content(self.rna_seq_folder))
+        return(self._get_sorted_folder_content(self.read_fasta_folder))
 
     def _get_genome_file_names(self):
         """Read the names of genome files."""
         return(self._get_sorted_folder_content(self.genome_folder))
 
     def required_folders(self):
-        return([self.input_folder, self.output_folder, self.rna_seq_folder,
+        return([self.input_folder, self.output_folder, self.read_fasta_folder,
                 self.annotation_folder,              
                 self.gr_folder, self.gr_folder_read_normalized, 
                 self.gr_folder_nucl_normalized, self.read_mappings_folder,
@@ -96,7 +96,7 @@ class Paths(object):
                 self.report_folder, self.no_annotation_hit_folder])
 
     def set_read_files_dep_file_lists(self, read_files, min_seq_length):
-        self.read_file_paths = self._path_list(self.rna_seq_folder, read_files)
+        self.read_file_paths = self._path_list(self.read_fasta_folder, read_files)
         self.clipped_read_file_paths = self._path_list(
             self.clipped_reads_folder, read_files, appendix=".clipped.fa")
         self.clipped_read_file_long_enough_paths = self._path_list(
@@ -115,7 +115,7 @@ class Paths(object):
 
     # def read_file_path(self, read_file):
     #     """Return the full path of a given read file."""
-    #     return("%s/%s" % (self.rna_seq_folder, read_file))
+    #     return("%s/%s" % (self.read_fasta_folder, read_file))
 
     # def read_file_paths(self, read_files):
     #     return([self.read_file_path(read_file) for read_file in read_files])
@@ -166,7 +166,7 @@ class Paths(object):
     #     Arguments:
     #     - `read_file`: name of the read file
     #     """
-    #     return("%s/%s" % (self.rna_seq_folder, read_file))
+    #     return("%s/%s" % (self.read_fasta_folder, read_file))
 
     # def segemehl_index(self):
     #     """Return the full path the the in segemehl index file."""

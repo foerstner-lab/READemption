@@ -14,7 +14,7 @@ class TestPaths(unittest.TestCase):
         self.paths = Paths()
         self.folder_names = [
             self.paths.input_folder, self.paths.output_folder, 
-            self.paths.rna_seq_folder, self.paths.genome_folder, 
+            self.paths.read_fasta_folder, self.paths.genome_folder, 
             self.paths.input_file_stats_folder, self.paths.annotation_folder, 
             self.paths.gr_folder, self.paths.gr_folder_read_normalized, 
             self.paths.gr_folder_nucl_normalized, 
@@ -62,7 +62,7 @@ class TestPaths(unittest.TestCase):
         self.assertEqual(len(self.paths.required_folders()), 21)
 
     def test_get_read_file_names(self):
-        self.paths.rna_seq_folder = self.test_folder
+        self.paths.read_fasta_folder = self.test_folder
         self._create_folder_with_files(self.test_folder, self.test_files)
         self.assertEqual(self.paths._get_read_file_names(),
                          sorted(self.test_files))
@@ -97,11 +97,11 @@ class TestPaths(unittest.TestCase):
             ['/tmp/test/foo.boing', '/tmp/test/bar.boing'])
 
     # def test_read_file_path(self):
-    #     self.paths.rna_seq_folder = self.test_folder
+    #     self.paths.read_fasta_folder = self.test_folder
     #     self._test_a_path(self.paths.read_file_path)
 
     # def test_read_file_paths(self):
-    #     self.paths.rna_seq_folder = self.test_folder
+    #     self.paths.read_fasta_folder = self.test_folder
     #     self._test_a_list_of_paths(self.paths.read_file_paths)
         
     # def test_clipped_read_file_path(self):
