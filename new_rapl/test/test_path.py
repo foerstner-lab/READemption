@@ -8,6 +8,7 @@ from libs.paths import Paths
 class TestPaths(unittest.TestCase):
 
     test_folder = "/tmp/test"
+    test_files = ["foo", "bar"]
 
     def setUp(self):
         self.paths = Paths()
@@ -36,8 +37,7 @@ class TestPaths(unittest.TestCase):
             self.paths.mapping_length_hist_pdf_file]
 
     def tearDown(self):
-        if os.path.exists(self.test_folder):
-            shutil.rmtree(self.test_folder)
+        self._remove_folder_if_exists(self.test_folder)
 
     def test_set_folder_names(self):
         self.paths._set_folder_names()
@@ -52,13 +52,64 @@ class TestPaths(unittest.TestCase):
             self.assertEqual(self.file_names.count(file_name), 1)
 
     def test_get_sorted_folder_content(self):
+        self._create_folder_with_files(self.test_folder, self.test_files)
+        self.assertEqual(
+            self.paths._get_sorted_folder_content(self.test_folder),
+            sorted(self.test_files))
+        self._remove_folder_if_exists(self.test_folder)
+
+    def test_required_folders(self):
+        self.assertEqual(len(self.paths.required_folders()), 21)
+
+    def test_get_read_file_names(self):
+        self.paths.rna_seq_folder = self.test_folder
+        self._create_folder_with_files(self.test_folder, self.test_files)
+        self.assertEqual(self.paths._get_read_file_names(),
+                         sorted(self.test_files))
+        self._remove_folder_if_exists(self.test_folder)
+
+    def test_get_genome_file_names(self):
+        self.paths.genome_folder = self.test_folder
+        self._create_folder_with_files(self.test_folder, self.test_files)
+        self.assertEqual(self.paths._get_genome_file_names(),
+                         sorted(self.test_files))
+        self._remove_folder_if_exists(self.test_folder)
+
+    def test_read_file_path(self):
+        self.paths.rna_seq_folder = "test_rna_seq_folder"
+        file_name = "test_read_file"
+        self.assertEqual(self.paths.read_file_path(file_name),
+                         "%s/%s" % (self.paths.rna_seq_folder, file_name))
+
+    def test_read_file_paths(self):
+        self.paths.rna_seq_folder = "test_rna_seq_folder"
+        self.assertEqual(
+            self.paths.read_file_paths(self.test_files),
+            ["%s/%s" % (self.paths.rna_seq_folder, file_name) for file_name 
+             in self.test_files])
+
+    def test_clipped_read_file_path(self):
+        self.paths.clipped_reads_folder = "test_clipped_rna_seq_folder"
+        self.assertEqual(
+            self.paths.clipped_read_file_path(self.test_files[0]),
+            "%s/%s.clipped.fa" % (
+                self.paths.clipped_reads_folder, self.test_files[0]))
+
+    def test_clipped_read_file_paths(self):
+        self.paths.clipped_reads_folder = "test_clipped_rna_seq_folder"
+        self.assertEqual(
+            self.paths.clipped_read_file_paths(self.test_files),
+            ["%s/%s.clipped.fa" % (self.paths.clipped_reads_folder, file_name) 
+             for file_name in self.test_files])
+
+    def _create_folder_with_files(self, folder, file_names):
         os.mkdir(self.test_folder)
         for file_name in ["foo", "bar"]:
             open("%s/%s" % (self.test_folder, file_name), "w").close()
-        self.assertEqual(
-            self.paths._get_sorted_folder_content(self.test_folder),
-            ['bar', 'foo'])
-        shutil.rmtree(self.test_folder)
             
+    def _remove_folder_if_exists(self, folder):
+        if os.path.exists(folder):
+            shutil.rmtree(folder)
+
 if __name__ == "__main__":
     unittest.main()

@@ -75,11 +75,11 @@ class Paths(object):
 
     def _get_read_file_names(self):
         """Read the names of the read files."""
-        self.read_files = self._get_sorted_folder_content(self.rna_seq_folder)
+        return(self._get_sorted_folder_content(self.rna_seq_folder))
 
     def _get_genome_file_names(self):
         """Read the names of genome files."""
-        self.genome_files = self._get_sorted_folder_content(self.genome_folder)
+        return(self._get_sorted_folder_content(self.genome_folder))
 
     def required_folders(self):
         return([self.input_folder, self.output_folder, self.rna_seq_folder,
@@ -95,42 +95,14 @@ class Paths(object):
                 self.read_tracing_folder, self.input_file_stats_folder, 
                 self.report_folder, self.no_annotation_hit_folder])
 
-    def read_file(self, read_file):
-        """Return the full path of a given read file.
-
-        Arguments:
-        - `read_file`: name of the read file
-        """
+    def read_file_path(self, read_file):
+        """Return the full path of a given read file."""
         return("%s/%s" % (self.rna_seq_folder, read_file))
 
-    def segemehl_index(self):
-        """Return the full path the the in segemehl index file."""
-        return("%s/%s"  % (
-                self.read_mapping_index_folder, self.segemehl_index_name()))
-
-    def genome_file(self, genome_file):
-        """Return the full path of a given genome file
-
-        Arguments:
-        - `genome_file`: genome file name
-        """
-        return("%s/%s" % (self.genome_folder, genome_file))
-
-    def genome_file_paths(self):
-        """Return the full paths of all genome files"""
-        return([self.genome_file(genome_file) 
-                for genome_file in self.genome_files])
-
-    def clipped_read_file_prefix(self, read_file):
-        """Return the full path of a file with clipped reads
-
-        Arguments:
-        - `read_file`: name of the read file
-        """
-        # ".clipped.fa" will be added by the tool
-        return("%s/%s" % (self.clipped_reads_folder, read_file))
-
-    def clipped_read_file(self, read_file):
+    def read_file_paths(self, read_files):
+        return([self.read_file_path(read_file) for read_file in read_files])
+    
+    def clipped_read_file_path(self, read_file):
         """Return the full path of a file with clipped reads
 
         Arguments:
@@ -138,235 +110,288 @@ class Paths(object):
         """
         return("%s/%s.clipped.fa" % (self.clipped_reads_folder, read_file))
 
-    def clipped_read_file(self, read_file):
+    def clipped_read_file_paths(self, read_files):
         """Return the full path of a file with clipped reads
 
         Arguments:
         - `read_file`: name of the read file
         """
-        return("%s/%s.clipped.fa" % (self.clipped_reads_folder, read_file))
+        return([self.clipped_read_file_path(read_file) for read_file 
+                in read_files])
 
-    def clipped_size_filtered_read_file(self, read_file):
-        """Return the full path of a file clipped, size filtered reads
+    # USE read_file_path INSTEAD
+    # def read_file(self, read_file): 
+    #     """Return the full path of a given read file.
 
-        Arguments:
-        - `read_file`: name of the read file
-        """
-        return("%s.size_filtered_gtoe_%sbp.fa" % (
-                self.clipped_read_file(read_file),
-                self.parameters.min_seq_length))
+    #     Arguments:
+    #     - `read_file`: name of the read file
+    #     """
+    #     return("%s/%s" % (self.rna_seq_folder, read_file))
 
-    def clipped_size_filter_failed_read_file(self, read_file):
-        """Return the full path of a file with clipped but too short reads.
+    # def segemehl_index(self):
+    #     """Return the full path the the in segemehl index file."""
+    #     return("%s/%s"  % (
+    #             self.read_mapping_index_folder, self.segemehl_index_name()))
 
-        Arguments:
-        - `read_file`: name of the read file
-        """
-        return("%s.size_filtered_lt_%sbp.fa" % (
-                self.clipped_read_file(read_file),
-                self.parameters.min_seq_length))
+    # def genome_file(self, genome_file):
+    #     """Return the full path of a given genome file
 
-    def read_mapping_output_file(self, read_file):
-        """Return the full path of the output file of a segemehl run
+    #     Arguments:
+    #     - `genome_file`: genome file name
+    #     """
+    #     return("%s/%s" % (self.genome_folder, genome_file))
 
-        Arguments:
-        - `read_file`: read file name that is mapped
-        """
-        return("%s/%s_mapped_to_%s" % (
-                self.read_mappings_folder, read_file, self.segemehl_index_name()))
+    # def genome_file_paths(self):
+    #     """Return the full paths of all genome files"""
+    #     return([self.genome_file(genome_file) 
+    #             for genome_file in self.genome_files])
 
-    def unmapped_reads_file(self, read_file):
-        """Return the full path of a file with unmapped reads
+    # def clipped_read_file_prefix(self, read_file):
+    #     """Return the full path of a file with clipped reads
 
-        Arguments:
-        - `read_file`: name of the read file
-        """
-        return("%s/%s.clipped.fa.unmapped" % (
-                self.unmapped_reads_folder, read_file))
+    #     Arguments:
+    #     - `read_file`: name of the read file
+    #     """
+    #     # ".clipped.fa" will be added by the tool
+    #     return("%s/%s" % (self.clipped_reads_folder, read_file))
 
-    def a_filtered_mappings_file(self, read_file):
-        """Return the full path of a file with a filterd mappings
+    # def clipped_read_file(self, read_file):
+    #     """Return the full path of a file with clipped reads
 
-        Arguments:
-        - `read_file`: name of the read file
-        """
-        return("%s.filtered_ltoe_70.0%%_A.txt" % (
-                self.read_mapping_output_file(read_file)))
+    #     Arguments:
+    #     - `read_file`: name of the read file
+    #     """
+    #     return("%s/%s.clipped.fa" % (self.clipped_reads_folder, read_file))
 
-    def a_filter_failed_mappings_file(self, read_file):
-        """Return the full path of a file with a filterd mappings
+    # def clipped_read_file(self, read_file):
+    #     """Return the full path of a file with clipped reads
 
-        Arguments:
-        - `read_file`: name of the read file
-        """
-        return("%s.filtered_gt_70.0%%_A.txt" % (
-                self.read_mapping_output_file(read_file)))
+    #     Arguments:
+    #     - `read_file`: name of the read file
+    #     """
+    #     return("%s/%s.clipped.fa" % (self.clipped_reads_folder, read_file))
 
-    def unique_mappings_only_file(self, read_file):
-        """ Return the path of the file with unique mappings only
+    # def clipped_size_filtered_read_file(self, read_file):
+    #     """Return the full path of a file clipped, size filtered reads
 
-        Arguments:
-        - `read_file`: name of the read file
-        """
-        return("%s.unique_mappings_only" % (
-                self.a_filtered_mappings_file(read_file)))
+    #     Arguments:
+    #     - `read_file`: name of the read file
+    #     """
+    #     return("%s.size_filtered_gtoe_%sbp.fa" % (
+    #             self.clipped_read_file(read_file),
+    #             self.parameters.min_seq_length))
 
-    def trace_file(self, read_file):
-        """Return the path of the trace file of a read file.
+    # def clipped_size_filter_failed_read_file(self, read_file):
+    #     """Return the full path of a file with clipped but too short reads.
 
-        Arguments:
-        - `read_file`: name of the read file
-        """
-        return("%s/%s.mapping_tracing.csv" % (
-                self.read_tracing_folder, read_file))
+    #     Arguments:
+    #     - `read_file`: name of the read file
+    #     """
+    #     return("%s.size_filtered_lt_%sbp.fa" % (
+    #             self.clipped_read_file(read_file),
+    #             self.parameters.min_seq_length))
 
-    def gr_file(self, read_file, genome_file):
-        """Return the GR file path of a given read and genome file.
+    # def read_mapping_output_file(self, read_file):
+    #     """Return the full path of the output file of a segemehl run
 
-        Arguments:
-        - `read_file,`: name of the read file
-        - `genome_file`: name of the genome file
-        """
-        return("%s/%s_in_%s.gr" % (self.gr_folder, read_file, genome_file))
+    #     Arguments:
+    #     - `read_file`: read file name that is mapped
+    #     """
+    #     return("%s/%s_mapped_to_%s" % (
+    #             self.read_mappings_folder, read_file, self.segemehl_index_name()))
 
-    def gr_read_normalized_file(self, read_file, genome_file):
-        """Return the GR read normalized file path of a given read and
-        genome file.
+    # def unmapped_reads_file(self, read_file):
+    #     """Return the full path of a file with unmapped reads
 
-        Arguments:
-        - `read_file,`: name of the read file
-        - `genome_file`: name of the genome file
-        """
-        return("%s/%s_in_%s.gr" % (
-                self.gr_folder_read_normalized, read_file, genome_file))
+    #     Arguments:
+    #     - `read_file`: name of the read file
+    #     """
+    #     return("%s/%s.clipped.fa.unmapped" % (
+    #             self.unmapped_reads_folder, read_file))
 
-    def gr_nucl_normalized_file(self, read_file, genome_file):
-        """Return the GR nucleotide normalized file path of a given read and
-        genome file.
+    # def a_filtered_mappings_file(self, read_file):
+    #     """Return the full path of a file with a filterd mappings
 
-        Arguments:
-        - `read_file,`: name of the read file
-        - `genome_file`: name of the genome file
-        """
-        return("%s/%s_in_%s.gr" % (
-                self.gr_folder_nucl_normalized, read_file, genome_file))
+    #     Arguments:
+    #     - `read_file`: name of the read file
+    #     """
+    #     return("%s.filtered_ltoe_70.0%%_A.txt" % (
+    #             self.read_mapping_output_file(read_file)))
 
-    def annotation_hit_file(self, read_file, annotation_file):
-        """Return the path of the annoation hit file.
+    # def a_filter_failed_mappings_file(self, read_file):
+    #     """Return the full path of a file with a filterd mappings
 
-        Arguments:
-        - `read_file,`: name of the read file
-        - `annotation_file`: name of the (NCBI) annotation file
-        """
-        return("%s/%s_in_%s_annotation_hits" % (
-                self.annotation_hit_folder, read_file, annotation_file))
+    #     Arguments:
+    #     - `read_file`: name of the read file
+    #     """
+    #     return("%s.filtered_gt_70.0%%_A.txt" % (
+    #             self.read_mapping_output_file(read_file)))
 
-    def annotation_hit_file_with_mapping_coutings(
-        self, read_file, annotation_file):
-        """Return the path of the annoation hit file with number of mappings
+    # def unique_mappings_only_file(self, read_file):
+    #     """ Return the path of the file with unique mappings only
 
-        Arguments:
-        - `read_file,`: name of the read file
-        - `annotation_file`: name of the (NCBI) annotation file
-        """
-        return(self.annotation_hit_file(read_file, annotation_file) + 
-               "_with_mapping_countings")
+    #     Arguments:
+    #     - `read_file`: name of the read file
+    #     """
+    #     return("%s.unique_mappings_only" % (
+    #             self.a_filtered_mappings_file(read_file)))
 
-    def annotation_file(self, annotation_file):
-        """Return the path of a given annotation files.
+    # def trace_file(self, read_file):
+    #     """Return the path of the trace file of a read file.
 
-        Arguments:
-        - `annotation_file`: name of the (NCBI) annotation file
-        """
-        return("%s/%s" % (self.annotation_folder , annotation_file))
+    #     Arguments:
+    #     - `read_file`: name of the read file
+    #     """
+    #     return("%s/%s.mapping_tracing.csv" % (
+    #             self.read_tracing_folder, read_file))
 
-    def annotation_hit_overview_file(self, annotation_file):
-        """Return the path of the annotation overview file.
+    # def gr_file(self, read_file, genome_file):
+    #     """Return the GR file path of a given read and genome file.
 
-        Arguments:
-        - `annotation_file`: name of the (NCBI) annotation file
-        """
-        return("%s/%s_all_annotation_hits_sense.csv" % (
-                self.annotation_hit_overview_folder, annotation_file))
+    #     Arguments:
+    #     - `read_file,`: name of the read file
+    #     - `genome_file`: name of the genome file
+    #     """
+    #     return("%s/%s_in_%s.gr" % (self.gr_folder, read_file, genome_file))
 
-    def annotation_hit_overview_antisense_file(self, annotation_file):
-        """Return the path of the annotation overview file for antisense hits.
+    # def gr_read_normalized_file(self, read_file, genome_file):
+    #     """Return the GR read normalized file path of a given read and
+    #     genome file.
 
-        Arguments:
-        - `annotation_file`: name of the (NCBI) annotation file
-        """
-        return("%s/%s_all_annotation_hits_antisense.csv" % (
-                self.annotation_hit_overview_folder, annotation_file))
+    #     Arguments:
+    #     - `read_file,`: name of the read file
+    #     - `genome_file`: name of the genome file
+    #     """
+    #     return("%s/%s_in_%s.gr" % (
+    #             self.gr_folder_read_normalized, read_file, genome_file))
 
-    def annotation_hit_overview_read_normalized_file(self, annotation_file):
-        """Return the path of the annotation overview normalized by
-           mapped reads file.
-        """
-        return("%s/%s_all_annotation_hits_normalized_by_reads_sense.csv" % (
-                self.annotation_hit_overview_read_normalized_folder, 
-                annotation_file))
+    # def gr_nucl_normalized_file(self, read_file, genome_file):
+    #     """Return the GR nucleotide normalized file path of a given read and
+    #     genome file.
 
-    def _annotation_hit_overview_read_normalized_antisense_file_path(self, annotation_file):
-        """Return the path of the annotation overview normalized by
-           mapped reads file.
-        """
-        return("%s/%s_all_annotation_hits_normalized_by_reads_antisense.csv" % (
-                self.annotation_hit_overview_read_normalized_folder, 
-                annotation_file))
+    #     Arguments:
+    #     - `read_file,`: name of the read file
+    #     - `genome_file`: name of the genome file
+    #     """
+    #     return("%s/%s_in_%s.gr" % (
+    #             self.gr_folder_nucl_normalized, read_file, genome_file))
 
-    def annotation_hit_overview_nucl_normalized_file(self, annotation_file):
-        """Return the path of the annotation overview normalized by
-           mapped nucleotides file.
-        """
-        return("%s/%s_all_annotation_hits_normalized_by_nucleotides_sense.csv" % (
-                self.annotation_hit_overview_nucl_normalized_folder, 
-                annotation_file))
+    # def annotation_hit_file(self, read_file, annotation_file):
+    #     """Return the path of the annoation hit file.
 
-    def annotation_hit_overview_nucl_normalized_antisense_file(self, annotation_file):
-        """Return the path of the annotation overview normalized by
-           mapped nucleotides file.
-        """
-        return("%s/%s_all_annotation_hits_normalized_by_nucleotides_antisense.csv" % (
-                self.annotation_hit_overview_nucl_normalized_folder, 
-                annotation_file))
+    #     Arguments:
+    #     - `read_file,`: name of the read file
+    #     - `annotation_file`: name of the (NCBI) annotation file
+    #     """
+    #     return("%s/%s_in_%s_annotation_hits" % (
+    #             self.annotation_hit_folder, read_file, annotation_file))
 
-    def annotation_hit_overview_rpkm_normalized_file(self, annotation_file):
-        """Return the path of the RPKM normalized annotation overview
+    # def annotation_hit_file_with_mapping_coutings(
+    #     self, read_file, annotation_file):
+    #     """Return the path of the annoation hit file with number of mappings
 
-        """
-        return("%s/%s_all_annotation_hits_normalized_by_rpkm_sense.csv" % (
-                self.annotation_hit_overview_rpkm_normalized_folder, 
-                annotation_file))
+    #     Arguments:
+    #     - `read_file,`: name of the read file
+    #     - `annotation_file`: name of the (NCBI) annotation file
+    #     """
+    #     return(self.annotation_hit_file(read_file, annotation_file) + 
+    #            "_with_mapping_countings")
 
-    def annotation_hit_overview_rpkm_normalized_antisense_file(self, annotation_file):
-        """Return the path of the RPKM normalized annotation.
-        """
-        return("%s/%s_all_annotation_hits_normalized_by_rpkm_antisense.csv" % (
-                self.annotation_hit_overview_rpkm_normalized_folder, 
-                annotation_file))
+    # def annotation_file(self, annotation_file):
+    #     """Return the path of a given annotation files.
 
-    def no_annotation_hit_file(self, read_file, genome_file):
-        """Return the path of a file containing reads without
-        annotation overlap
-        """
-        return("%s/%s_in_%s_reads_without_annotation" % (
-                self.no_annotation_hit_folder, read_file, 
-                genome_file))
+    #     Arguments:
+    #     - `annotation_file`: name of the (NCBI) annotation file
+    #     """
+    #     return("%s/%s" % (self.annotation_folder , annotation_file))
 
-    def segemehl_index_name(self):
-        """Return the name of the segemehl index file."""
-        # TODO Avoid too long file name later.
-        #index_file_name = "_".join(self.genome_files) + ".idx"
-        #index_file_name.replace(".fa", "")
-        index_file_name = "genome.idx"
-        return(index_file_name)
+    # def annotation_hit_overview_file(self, annotation_file):
+    #     """Return the path of the annotation overview file.
 
-    def final_filtered_mapping_file(self, read_file):
-        """Return the final filtered mapping file.
+    #     Arguments:
+    #     - `annotation_file`: name of the (NCBI) annotation file
+    #     """
+    #     return("%s/%s_all_annotation_hits_sense.csv" % (
+    #             self.annotation_hit_overview_folder, annotation_file))
+
+    # def annotation_hit_overview_antisense_file(self, annotation_file):
+    #     """Return the path of the annotation overview file for antisense hits.
+
+    #     Arguments:
+    #     - `annotation_file`: name of the (NCBI) annotation file
+    #     """
+    #     return("%s/%s_all_annotation_hits_antisense.csv" % (
+    #             self.annotation_hit_overview_folder, annotation_file))
+
+    # def annotation_hit_overview_read_normalized_file(self, annotation_file):
+    #     """Return the path of the annotation overview normalized by
+    #        mapped reads file.
+    #     """
+    #     return("%s/%s_all_annotation_hits_normalized_by_reads_sense.csv" % (
+    #             self.annotation_hit_overview_read_normalized_folder, 
+    #             annotation_file))
+
+    # def _annotation_hit_overview_read_normalized_antisense_file_path(self, annotation_file):
+    #     """Return the path of the annotation overview normalized by
+    #        mapped reads file.
+    #     """
+    #     return("%s/%s_all_annotation_hits_normalized_by_reads_antisense.csv" % (
+    #             self.annotation_hit_overview_read_normalized_folder, 
+    #             annotation_file))
+
+    # def annotation_hit_overview_nucl_normalized_file(self, annotation_file):
+    #     """Return the path of the annotation overview normalized by
+    #        mapped nucleotides file.
+    #     """
+    #     return("%s/%s_all_annotation_hits_normalized_by_nucleotides_sense.csv" % (
+    #             self.annotation_hit_overview_nucl_normalized_folder, 
+    #             annotation_file))
+
+    # def annotation_hit_overview_nucl_normalized_antisense_file(self, annotation_file):
+    #     """Return the path of the annotation overview normalized by
+    #        mapped nucleotides file.
+    #     """
+    #     return("%s/%s_all_annotation_hits_normalized_by_nucleotides_antisense.csv" % (
+    #             self.annotation_hit_overview_nucl_normalized_folder, 
+    #             annotation_file))
+
+    # def annotation_hit_overview_rpkm_normalized_file(self, annotation_file):
+    #     """Return the path of the RPKM normalized annotation overview
+
+    #     """
+    #     return("%s/%s_all_annotation_hits_normalized_by_rpkm_sense.csv" % (
+    #             self.annotation_hit_overview_rpkm_normalized_folder, 
+    #             annotation_file))
+
+    # def annotation_hit_overview_rpkm_normalized_antisense_file(self, annotation_file):
+    #     """Return the path of the RPKM normalized annotation.
+    #     """
+    #     return("%s/%s_all_annotation_hits_normalized_by_rpkm_antisense.csv" % (
+    #             self.annotation_hit_overview_rpkm_normalized_folder, 
+    #             annotation_file))
+
+    # def no_annotation_hit_file(self, read_file, genome_file):
+    #     """Return the path of a file containing reads without
+    #     annotation overlap
+    #     """
+    #     return("%s/%s_in_%s_reads_without_annotation" % (
+    #             self.no_annotation_hit_folder, read_file, 
+    #             genome_file))
+
+    # def segemehl_index_name(self):
+    #     """Return the name of the segemehl index file."""
+    #     # TODO Avoid too long file name later.
+    #     #index_file_name = "_".join(self.genome_files) + ".idx"
+    #     #index_file_name.replace(".fa", "")
+    #     index_file_name = "genome.idx"
+    #     return(index_file_name)
+
+    # def final_filtered_mapping_file(self, read_file):
+    #     """Return the final filtered mapping file.
         
-        Depending of all or only uniquely mapped read mappings should
-        be considered.
-        """
-        if self.parameters.uniquely_mapped_reads_only:
-            return(self.unique_mappings_only_file(read_file))
-        return(self.a_filtered_mappings_file(read_file))
+    #     Depending of all or only uniquely mapped read mappings should
+    #     be considered.
+    #     """
+    #     if self.parameters.uniquely_mapped_reads_only:
+    #         return(self.unique_mappings_only_file(read_file))
+    #     return(self.a_filtered_mappings_file(read_file))
