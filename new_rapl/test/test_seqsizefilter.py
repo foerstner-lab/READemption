@@ -10,11 +10,14 @@ class TestSeqSizeFilter(unittest.TestCase):
         self.seqsizefilter = SeqSizeFilter()
         self.example_data = ExampleData()
 
-    def test_filter(self):
+    # TODO: test filter
+
+    def test_compare_input_paths(self):
         """If the number of input file is not equal the number of
         output file an exception must be raised."""
         self.assertRaises(
-            Exception, self.seqsizefilter.filter, ["a"], ["a", "b"], ["a"])
+            Exception, self.seqsizefilter._compare_input_paths, 
+            ["a"], ["a", "b"], ["a"])
 
     def test_filter_entries_in_file(self):
         input_fh = StringIO(self.example_data.fasta_input)
