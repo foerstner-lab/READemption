@@ -12,10 +12,10 @@ class Paths(object):
         # self.parameters = Parameters()
         pass
 
-    def _set_folder_names(self):
+    def _set_folder_names(self, base_path="."):
         """Set the name of folders used in a project."""
-        self.input_folder = "input"
-        self.output_folder = "output"
+        self.input_folder = "%s/input" % (base_path)
+        self.output_folder = "%s/output" % (base_path)
         self.read_fasta_folder = "%s/RNA_seqs" % self.input_folder
         self.genome_folder = "%s/genomes" % self.input_folder
         self.input_file_stats_folder = "%s/input_file_stats" % self.output_folder

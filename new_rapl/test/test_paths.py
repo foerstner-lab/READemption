@@ -44,7 +44,13 @@ class TestPaths(unittest.TestCase):
         for folder_name in self.folder_names:
             assert(folder_name != '')
             self.assertEqual(self.folder_names.count(folder_name), 1)
-            
+
+    def test_set_folder_names_with_base_path(self):
+        self.paths._set_folder_names(base_path="/tmp")
+        for folder_name in self.folder_names:
+            assert(folder_name != '')
+            self.assertEqual(self.folder_names.count(folder_name), 1)
+
     def test_set_file_names(self):
         self.paths._set_static_file_names
         for file_name in self.static_files:
