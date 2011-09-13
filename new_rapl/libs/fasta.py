@@ -20,5 +20,6 @@ class FastaParser(object):
             # For sequence lines
             else:
                 current_sequence += line[:-1]
-        # For the last entry
-        yield(current_header, current_sequence)
+        # For the last entry if file was not empty
+        if not (current_header == '' and current_sequence == ''):
+            yield(current_header, current_sequence)
