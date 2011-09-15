@@ -364,6 +364,14 @@ class Paths(object):
                 self.no_annotation_hit_folder, read_file, 
                 genome_file))
 
+    def no_annotation_hit_mapping_file(self, read_file, genome_file):
+        """Return the path of a file containing mappings without
+        annotation overlap
+        """
+        return("%s/%s_in_%s_mappings_without_annotation" % (
+                self.no_annotation_hit_folder, read_file, 
+                genome_file))
+
     def segemehl_index_name(self):
         """Return the name of the segemehl index file."""
         # TODO Avoid too long file name later.

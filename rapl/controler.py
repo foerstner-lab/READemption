@@ -74,6 +74,7 @@ class Controler(object):
         annotations = Annotations()
         annotations.find_annotation_hits()
         annotations.quantify_mapping_redundancy()
+        annotations.find_non_overlapping_mappings()
         annotations.build_annotation_hit_overview()
         annotations.build_annotation_hit_overview_read_normalized()
         annotations.build_annotation_hit_overview_nucleotide_normalized()
