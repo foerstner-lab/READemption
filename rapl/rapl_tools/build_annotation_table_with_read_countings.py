@@ -153,6 +153,7 @@ class AnnotationMappingTableBuilder(object):
             self.output_fh = open(output_file, "w")
         else:
             self.output_fh = sys.stdout
+
         # Create for every file a dictionary that contains the
         # number of read mapping annoations overlaps countings per
         # gene.
@@ -185,7 +186,6 @@ class AnnotationMappingTableBuilder(object):
         for mapping_file in self.annotation_mapping_files:
             self.mapping_files_and_annotation_counting[mapping_file] = {}
             self._read_annotation_mapping_file(mapping_file)
-            print(mapping_file,"\t", self.total_sum)
 
     def read_annotation_file_and_print_output(self):
         """Read the annotation file and generate the output. """
@@ -319,11 +319,11 @@ class AnnotationMappingTableBuilder(object):
         # to prevent a too strong influence of single reads.
         # It is also divided by the number of overlap one single mapping
         # has.
-        add_value = (add_value / 
-                     float(entry['query_no_of_mappings']) /
-                     float(entry['no_of_overlaps_of_the_mapping']))
         self.mapping_files_and_annotation_counting[mapping_file][
-            annotation_entry_key] +=  add_value
+            annotation_entry_key] +=  (
+            float(add_value) / 
+            float(entry['query_no_of_mappings']) /
+            float(entry['no_of_overlaps_of_the_mapping']))
 
     def _annotation_entry_key(self, entry):
         """Generate key to descriminate entries."""
