@@ -162,7 +162,7 @@ class AnnotationMappingTableBuilder(object):
     def check_input(self):
         """Test consistency of different parameters."""
         if self.normalization_factors:
-            # There must be on normalization factor per read mapping
+            # There must be one normalization factor per read mapping
             # annotion overlap file.
             if len(self.annotation_mapping_files) != len(
                 self.normalization_factors):
@@ -294,7 +294,6 @@ class AnnotationMappingTableBuilder(object):
 
     def _read_annotation_mapping_file(self, mapping_file):
         """Read an read mapping annotation overlap file."""
-        
         for line in open(mapping_file):
             if line[0] in ["\n", '#']:
                 continue
