@@ -1,5 +1,6 @@
-from sam import SamParser, SamBuilder
 import sys
+sys.path.append('../libs')
+from sam import SamParser, SamBuilder
 
 def main():
     mapping_finder = MappingFinder()
@@ -23,7 +24,8 @@ class MappingFinder(object):
         sam_parser = SamParser()
         sam_builder = SamBuilder()
         for entry in sam_parser.entries(mapping_file):
-            if genome_accession != entry["reference"]
+            if genome_accession != entry["reference"]:
+                continue
             start, end = sam_parser.entry_start_end_strand(entry)[:2]
             mapping_key = "-".join(
                 [entry["query"], str(start), str(end)])
