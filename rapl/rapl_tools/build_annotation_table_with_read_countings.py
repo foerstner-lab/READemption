@@ -85,6 +85,7 @@ def main():
     annotation_mapping_table_builder.check_input()
     annotation_mapping_table_builder.read_annotation_mapping_files()
     annotation_mapping_table_builder.read_annotation_file_and_print_output()
+    annotation_mapping_table_builder.sum_up_cells()
 
 def create_arg_parser():
     parser = ArgumentParser(description=__description__)
@@ -186,16 +187,38 @@ class AnnotationMappingTableBuilder(object):
         for mapping_file in self.annotation_mapping_files:
             self.mapping_files_and_annotation_counting[mapping_file] = {}
             self._read_annotation_mapping_file(mapping_file)
-
+            
     def read_annotation_file_and_print_output(self):
         """Read the annotation file and generate the output. """
         self.output_fh.write(self._parameter_dump())
         self.output_fh.write(self._headline())
+        mappings_files = self.mapping_files_and_annotation_counting.keys()
         for line in open(self.annotation_file):
             split_line = line.split("\t")
             if '..' not in split_line[0] or len(split_line) != 9:
                 continue
-            self.output_fh.write(self._result_line(line))
+            entry = self._parse_annotation_line(line)
+            key = self._annotation_entry_key(entry)
+            countings = [self.mapping_files_and_annotation_counting[
+                        mapping_file].get(key, 0)
+                         for mapping_file in mappings_files]
+            if self.rpkm and self.normalization_factors:
+                countings = self._rpkm_normalized_countings(
+                    read_countings, entry)
+            elif self.normalization_factors:
+                countings = self._normalized_countings(read_countings)
+            countings = [str(counting) for counting in countings]
+            self.output_fh.write(
+                line[:-1] + "\t" + "\t".join(countings) + "\n")
+
+    def sum_up_cells(self):
+        """Sum up all cells for each mapping file"""
+        mapping_files_and_sum = {}
+        for mapping_file, annoations_and_coutings in (
+            self.mapping_files_and_annotation_counting.items()):
+            mapping_files_and_sum[mapping_file.split("/")[-1]] = sum(
+                annoations_and_coutings.values())
+        return(mapping_files_and_sum)
 
     def _parameter_dump(self):
         """Retur a string with selected parameters to be printed."""
@@ -208,27 +231,8 @@ class AnnotationMappingTableBuilder(object):
         return("# Minimal overlap [bp]: %s\n" 
                "# Minimal read mapping length percentage (%%): %s\n" 
                "# Required strand orientation: %s\n\n" % (
-                str(self.min_overlap), str(min_read_percentage), strand_orientation))
-
-    def _result_line(self, line):
-        """Generate line that if ready to be printed."""
-        entry = self._parse_annotation_line(line)
-        read_countings = self._counting_list(self._annotation_entry_key(entry))
-        line = line[:-1] + "\t"
-        if self.rpkm and self.normalization_factors:
-            line += "\t".join(
-                self._rpkm_normalized_countings(read_countings, entry))
-        elif self.normalization_factors:
-            line += "\t".join(self._normalized_countings(read_countings))
-        else:
-            line += "\t".join([str(count) for count in read_countings])
-        return(line + "\n")
-
-    def _counting_list(self, annotation_entry_key):
-        """Generate counting list of overlaps in the different files."""
-        return(self.mapping_files_and_annotation_counting[
-                file_name].get(annotation_entry_key, 0) for
-               file_name in self.annotation_mapping_files)
+                str(self.min_overlap), str(min_read_percentage), 
+                strand_orientation))
 
     def _normalized_countings(self, read_countings):
         """Normalize the countings by using the normalization factors."""
@@ -318,11 +322,12 @@ class AnnotationMappingTableBuilder(object):
         # to prevent a too strong influence of single reads.
         # It is also divided by the number of overlap one single mapping
         # has.
-        self.mapping_files_and_annotation_counting[mapping_file][
-            annotation_entry_key] +=  (
+        add_value = (
             float(add_value) / 
             float(entry['query_no_of_mappings']) /
             float(entry['no_of_overlaps_of_the_mapping']))
+        self.mapping_files_and_annotation_counting[mapping_file][
+            annotation_entry_key] += add_value
 
     def _annotation_entry_key(self, entry):
         """Generate key to descriminate entries."""
@@ -380,7 +385,6 @@ class AnnotationMappingTableBuilder(object):
         if self.min_read_percentage:
             if (self._read_overlap_percentage(entry) 
                 < self.min_read_percentage):
-                print("pong")
                 return(False)
         elif overlap < 0:
             sys.stdout.write('Error! No overlap for entry %s.\n' % entry)
