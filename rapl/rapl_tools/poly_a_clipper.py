@@ -50,6 +50,7 @@ def main():
     args = parser.parse_args()
     poly_a_clipper = PolyAClipper(
         args.input_fasta_file, args.output_file_prefix)
+    poly_a_clipper.read_input_and_clip()
 
 def create_arg_parser():
     parser = ArgumentParser(description=__description__)
