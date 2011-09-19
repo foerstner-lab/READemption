@@ -189,10 +189,10 @@ class AnnotationMappingTableBuilder(object):
             self._read_annotation_mapping_file(mapping_file)
             
     def read_annotation_file_and_print_output(self):
-        """Read the annotation file and generate the output. """
+        """Read the annotation file and generate the output."""
         self.output_fh.write(self._parameter_dump())
         self.output_fh.write(self._headline())
-        mappings_files = self.mapping_files_and_annotation_counting.keys()
+        mapping_files = sorted(self.mapping_files_and_annotation_counting.keys())
         for line in open(self.annotation_file):
             split_line = line.split("\t")
             if '..' not in split_line[0] or len(split_line) != 9:
@@ -201,7 +201,7 @@ class AnnotationMappingTableBuilder(object):
             key = self._annotation_entry_key(entry)
             countings = [self.mapping_files_and_annotation_counting[
                         mapping_file].get(key, 0)
-                         for mapping_file in mappings_files]
+                         for mapping_file in mapping_files]
             if self.rpkm and self.normalization_factors:
                 countings = self._rpkm_normalized_countings(
                     read_countings, entry)
@@ -281,7 +281,7 @@ class AnnotationMappingTableBuilder(object):
     def _raw_counting_column_headers(self):
         """Generate column headers for raw countings."""
         return("\t".join([file_name.split("/")[-1] for 
-                   file_name in self.annotation_mapping_files]))
+                   file_name in sorted(self.annotation_mapping_files)]))
 
     def _calc_rpkm(self, counting, normalization_factor, gene_length):
         """Calculate an RPKM value."""
@@ -363,7 +363,7 @@ class AnnotationMappingTableBuilder(object):
         an entry dictionary.
         """
         split_line = line[:-1].split()
-        start, end = sorted(split_line[0].split(".."))
+        start, end = sorted([int(pos) for pos in split_line[0].split("..")])
         entry = {
             'annotation_start' : int(start),
             'annotation_end' : int(end),
