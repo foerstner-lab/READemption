@@ -8,7 +8,8 @@ class TestReadMapper(unittest.TestCase):
 
     def setUp(self):
         self.read_mapper = ReadMapper()
-    
+
+    @unittest.skip("TODO")
     def test_build_index(self):
         self.build_index()
 
