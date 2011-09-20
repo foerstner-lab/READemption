@@ -5,7 +5,7 @@ import shutil
 sys.path.append(".")
 from libs.projectcreator import ProjectCreator
 
-class TestCreator(unittest.TestCase):
+class TestProjectCreator(unittest.TestCase):
 
     def setUp(self):
         self.projectcreator = ProjectCreator()
