@@ -217,25 +217,25 @@ class LargeOutput(object):
 
     sam_result_mapped_1 = """@HD	VN:1.0
 @SQ	SN:SL1344	LN:960
-@PG	ID:segemehl	VN:0.9.4-$Rev: 270 $ ($Date: 2011-03-11 02:52:55 +0100 (Fr, 11 Mär 2011) $)
-read_01	0	SL1344	181	255	60M	*	0	0	ACAACATCCATGAACCGCATCAGCACCACCACCATTACCACCATCACCATTACCACAGGT	*	NM:i:0	MD:Z:60	NH:i:1
+@PG	ID:segemehl	VN:0.9.4-$Rev: 316 $ ($Date: 2011-08-18 16:37:19 +0200 (Thu, 18 Aug 2011) $)
+read_01	0	SL1344	181	255	60M	*	0	0	ACAACATCCATGAACCGCATCAGCACCACCACCATTACCACCATCACCATTACCACAGGT	*	NM:i:0	MD:Z:60	NH:i:1	XA:Z:Q
 """
 
     sam_result_mapped_2 = """@HD	VN:1.0
 @SQ	SN:SL1344	LN:960
-@PG	ID:segemehl	VN:0.9.4-$Rev: 270 $ ($Date: 2011-03-11 02:52:55 +0100 (Fr, 11 Mär 2011) $)
-read_03	0	SL1344	301	255	20M	*	0	0	GCTTTTTTTTCGACCAGACA	*	NM:i:1	MD:Z:18G1	NH:i:1
+@PG	ID:segemehl	VN:0.9.4-$Rev: 316 $ ($Date: 2011-08-18 16:37:19 +0200 (Thu, 18 Aug 2011) $)
+read_03	0	SL1344	301	255	20M	*	0	0	GCTTTTTTTTCGACCAGACA	*	NM:i:1	MD:Z:18G1	NH:i:1	XA:Z:Q
 """
 
     sam_result_mapped_3 = """@HD	VN:1.0
 @SQ	SN:SL1344	LN:960
-@PG	ID:segemehl	VN:0.9.4-$Rev: 270 $ ($Date: 2011-03-11 02:52:55 +0100 (Fr, 11 Mär 2011) $)
-read_05	0	SL1344	301	255	20M	*	0	0	GCTTTTTTTTCGACCAGTCA	*	NM:i:2	MD:Z:17A0G1	NH:i:1
+@PG	ID:segemehl	VN:0.9.4-$Rev: 316 $ ($Date: 2011-08-18 16:37:19 +0200 (Thu, 18 Aug 2011) $)
+read_05	0	SL1344	301	255	20M	*	0	0	GCTTTTTTTTCGACCAGTCA	*	NM:i:2	MD:Z:17A0G1	NH:i:1	XA:Z:Q
 """
 
     sam_result_no_mappings_1 = """@HD	VN:1.0
 @SQ	SN:SL1344	LN:960
-@PG	ID:segemehl	VN:0.9.4-$Rev: 270 $ ($Date: 2011-03-11 02:52:55 +0100 (Fr, 11 Mär 2011) $)
+@PG	ID:segemehl	VN:0.9.4-$Rev: 316 $ ($Date: 2011-08-18 16:37:19 +0200 (Thu, 18 Aug 2011) $)
 """
 
 if __name__ == "__main__":
