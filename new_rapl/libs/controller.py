@@ -7,6 +7,7 @@ from libs.projectcreator import ProjectCreator
 from libs.readclipper import ReadClipper
 from libs.readmapper import ReadMapper
 from libs.seqsizefilter import SeqSizeFilter
+from libs.readmapperstats import ReadMapperStats
 
 class Controller(object):
 
@@ -64,10 +65,17 @@ class Controller(object):
             self.paths.unmapped_reads_path, 
             self.parameters.segemehl_number_of_threads, 
             self.parameters.segemehl_accuracy)
+        read_mapper_stats = ReadMapperStats()
+        read_mapper_stats.count_raw_reads(
+            read_file_names, self.paths.read_file_paths)
+        read_mapper_stats.count_long_enough_clipped_reads(
+            read_file_names, self.paths.clipped_read_file_long_enough_paths)
+        read_mapper_stats.count_too_small_clipped_reads(
+            read_file_names, self.paths.clipped_read_file_too_short_paths)
+        read_mapper_stats.write_stats_to_file(
+            read_file_names, self.paths.genome_file_stats)
 
         # read_mapper.select_uniquely_mapped_reads()
-        # read_mapping_summary = ReadMappingSummary()
-        # read_mapping_summary.create()
         # read_tracer = ReadTracer()
         # read_tracer.trace_reads()
         # read_tracer.create_tracing_summay()

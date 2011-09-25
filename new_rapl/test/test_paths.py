@@ -30,10 +30,10 @@ class TestPaths(unittest.TestCase):
             self.paths.clipped_reads_folder, self.paths.unmapped_reads_folder]
         self.static_files = [
             self.paths.config_file, self.paths.read_file_stats, 
-            self.paths.genome_file_stats, self.paths.annotation_file_stats, 
-            self.paths.tracing_summary_file, self.paths.report_tex_file, 
+            self.paths.read_mapping_stat_file,  self.paths.genome_file_stats,
+            self.paths.annotation_file_stats, self.paths.tracing_summary_file, 
+            self.paths.report_tex_file, self.paths.mapping_length_hist_r_file,
             self.paths.lib_genome_read_mapping_summary, 
-            self.paths.mapping_length_hist_r_file, 
             self.paths.mapping_length_hist_pdf_file]
 
     def tearDown(self):

@@ -55,6 +55,8 @@ class Paths(object):
             self.input_file_stats_folder)
         self.annotation_file_stats = "%s/annotation_file_stats.txt" % (
             self.input_file_stats_folder)
+        self.read_mapping_stat_file = "%s/read_mapping_stats.csv" % (
+            self.report_folder)
         self.tracing_summary_file = "%s/read_tracing_summary.csv" % (
             self.report_folder)
         self.report_tex_file = "%s/report.tex" % (
