@@ -21,6 +21,11 @@ class SamParser(object):
             if not split_line[0].startswith("@"):
                 yield(SamEntry(split_line))
 
+    def reference_sequences(self, sam_fh):
+        for split_line in csv.reader(sam_fh, delimiter="\t"):
+            if split_line[0].startswith("@SQ"):
+                yield(split_line[1])
+
 class SamEntry(object):
 
     def __init__(self, split_sam_line):

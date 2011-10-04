@@ -15,6 +15,12 @@ class TestSamParser(unittest.TestCase):
         for entry in self.sam_parser.entries(seq_fh):
             self.assertTrue(isinstance(entry, SamEntry))
 
+    def test_reference_sequences(self):
+        seq_fh = StringIO(self.example_data.sam_content_1)
+        self.assertListEqual(
+            ['SN:SL1344', 'SN:SL1344_plasmid1', 'SN:SL1344_plasmid2'], 
+            list(self.sam_parser.reference_sequences(seq_fh)))
+
 class TestSamEntry(unittest.TestCase):
     
     def test_sam_entry_creation_1(self):
@@ -72,7 +78,9 @@ class TestSamEntry(unittest.TestCase):
 class ExampleData(object):
 
     sam_content_1 = """@HD	VN:1.0
-@SQ	SN:SL1344	LN:960
+@SQ	SN:SL1344	LN:10000000
+@SQ	SN:SL1344_plasmid1	LN:5000
+@SQ	SN:SL1344_plasmid2	LN:4000
 @PG	ID:segemehl	VN:0.9.4-$Rev: 316 $ ($Date: 2011-08-18 16:37:19 +0200 (Thu, 18 Aug 2011) $)
 read_01	0	SL1344	10	255	60M	*	0	0	ACAACATCCATGAACCGCATCAGCACCACCACCATTACCACCATCACCATTACCACAGGT	*	NM:i:0	MD:Z:60	NH:i:2	XA:Z:Q
 read_01	0	SL1344	1000	255	60M	*	0	0	ACAACATCCATGAACCGCATCAGCACCACCACCATTACCACCATCACCATTACCACAGGT	*	NM:i:0	MD:Z:60	NH:i:2	XA:Z:Q
