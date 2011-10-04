@@ -19,28 +19,27 @@ class TestSamEntry(unittest.TestCase):
     
     def test_sam_entry_creation_1(self):
         split_line = [
-            "read_01", "0", "SL1344", "10", "255", "60M", "*", "0", "0", 
-            "ACAACATCCATGAACCGCATCAGCACCACCACCATTACCACCATCACCATTACCACAGGT",
-            "*", "NM:i:0", "MD:Z:60",  "NH:i:2", "XA:Z:Q"]
+            "read_01", "0", "SL1344", "1", "255", "10M", "*", "0", "0", 
+            "AACCTTGGAA",
+            "*", "NM:i:0", "MD:Z:10",  "NH:i:2", "XA:Z:Q"]
         sam_entry = SamEntry(split_line)
         self.assertEqual(sam_entry.query_id, "read_01")
         self.assertEqual(sam_entry.flag, 0)
         self.assertEqual(sam_entry.reference, "SL1344")
-        self.assertEqual(sam_entry.start, 10)
+        self.assertEqual(sam_entry.start, 1)
         self.assertEqual(sam_entry.mapping_quality, 255)
-        self.assertEqual(sam_entry.cigar, "60M")
+        self.assertEqual(sam_entry.cigar, "10M")
         self.assertEqual(sam_entry.mate_next_frag, "*")
         self.assertEqual(sam_entry.mate_start, 0)
         self.assertEqual(sam_entry.template_length, 0)
         self.assertEqual(
-            sam_entry.sequence, 
-            "ACAACATCCATGAACCGCATCAGCACCACCACCATTACCACCATCACCATTACCACAGGT")
+            sam_entry.sequence, "AACCTTGGAA")
         self.assertEqual(sam_entry.phred_quality, "*")
         self.assertEqual(sam_entry.distance, "NM:i:0")
-        self.assertEqual(sam_entry.mismatches, "MD:Z:60")
+        self.assertEqual(sam_entry.mismatches, "MD:Z:10")
         self.assertEqual(sam_entry.number_of_hits, "NH:i:2")
         self.assertEqual(sam_entry.xa, "XA:Z:Q")
-        self.assertEqual(sam_entry.end, 70)
+        self.assertEqual(sam_entry.end, 10)
         self.assertEqual(sam_entry.strand, "+")
         self.assertEqual(sam_entry.number_of_hits_as_int, 2)
 
@@ -66,7 +65,7 @@ class TestSamEntry(unittest.TestCase):
         self.assertEqual(sam_entry.mismatches, "MD:Z:40")
         self.assertEqual(sam_entry.number_of_hits, "NH:i:5")
         self.assertEqual(sam_entry.xa, "XA:Z:Q")
-        self.assertEqual(sam_entry.end, 1040)
+        self.assertEqual(sam_entry.end, 1039)
         self.assertEqual(sam_entry.strand, "-")
         self.assertEqual(sam_entry.number_of_hits_as_int, 5)
 
