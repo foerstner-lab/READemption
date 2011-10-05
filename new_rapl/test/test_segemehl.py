@@ -49,9 +49,6 @@ class TestSegemehlIndexBuilding(TestSegemehl):
                          "78668505720e53735f807bb5485b0b38cc3cbc22")
         self._remove_files(self.fasta_file_path, self.index_file_path)
 
-    def test_map_reads(self):
-        pass
-
 class TestSegemehlMapping(TestSegemehl):
 
     read_fasta_file_path = "/tmp/test_reads.fa"
