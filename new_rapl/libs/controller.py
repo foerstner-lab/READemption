@@ -72,6 +72,8 @@ class Controller(object):
             read_file_names, self.paths.clipped_read_file_long_enough_paths)
         read_mapper_stats.count_too_small_clipped_reads(
             read_file_names, self.paths.clipped_read_file_too_short_paths)
+        read_mapper_stats.count_mappings(
+            read_file_names, self.paths.read_mapping_result_paths)
         read_mapper_stats.write_stats_to_file(
             read_file_names, self.paths.genome_file_stats)
 

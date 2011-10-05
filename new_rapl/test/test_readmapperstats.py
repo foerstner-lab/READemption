@@ -75,9 +75,16 @@ class TestReadMapperStats(unittest.TestCase):
             "zzz" : 42, "yyy" : 23, "xxx" : 5}
         self.read_mapper_stats.too_small_clipped_reads = {
             "zzz" : 0, "yyy" : 1, "xxx" : 2}
+        self.read_mapper_stats.no_of_mapped_reads = {
+            "zzz" : {"genome1" : 3, "genome2" : 4}, 
+            "yyy" : {"genome1" : 1, "genome2" : 10}, 
+            "xxx" : {"genome1" : 8,"genome2" : 10}}
+        self.read_mapper_stats.no_of_mappings = {
+            "zzz" : {"genome1" : 1, "genome2" : 12}, 
+            "yyy" : {"genome1" : 2, "genome2" : 9}, 
+            "xxx" : {"genome1" : 4,"genome2" : 18}}
         stat_fh = StringIO()
         self.read_mapper_stats._write_stats_to_fh(read_file_name, stat_fh)
-
         self.assertEqual(
             self.example_data.stat_file_content,
             stat_fh.getvalue())
@@ -95,17 +102,27 @@ class TestReadMapperStats(unittest.TestCase):
             "boing\t8\t1\t5",
             self.read_mapper_stats._value_line(
                 "boing", value_dict, read_file_name))
-        
+
+    def test_dict_value_sum_line(self):
+        read_file_name = ["xxx", "yyy", "zzz"]
+        value_dict = {"zzz" : {"a" : 2, "b" : 4},
+                      "yyy" : {"a" : 3, "b" : 1}, 
+                      "xxx" : {"a" : 5, "b" : 9}}
+        self.assertEqual(
+            "boing\t14\t4\t6",
+            self.read_mapper_stats._dict_value_sum_line(
+                "boing", value_dict, read_file_name))
+
     def test_count_mappings(self):
         sam_fh_1 = StringIO(self.example_data.sam_content_1)
-        ref_seqs_and_mappings, ref_seqs_and_mapped_reads = (
+        no_of_mappings, no_of_mapped_reads = (
             self.read_mapper_stats._count_mappings(sam_fh_1))
         self.assertDictEqual(
             {'SL1344': 6, 'SL1344_plasmid1': 3, 'SL1344_plasmid2': 0},
-            ref_seqs_and_mappings)
+            no_of_mappings)
         self.assertDictEqual(
             {'SL1344': 3.0, 'SL1344_plasmid1': 3.0, 'SL1344_plasmid2': 0},
-            ref_seqs_and_mapped_reads)
+            no_of_mapped_reads)
 
 def _mock_count_fasta_entries(file_path):
     return("the number of entries in %s" % file_path) 
@@ -153,6 +170,8 @@ read_06	16	SL1344_plasmid1	1500	255	60M	*	0	0	ACAACATCCATGAACCGCATCAGCACCACCACCA
 Number of raw reads\t8\t1\t5
 Reads long enough after clipping\t5\t23\t42
 Reads too short after clipping\t2\t1\t0
+Total number of mapped reads\t18\t11\t7
+Total number of mappings\t22\t11\t13
 """
 
 if __name__ == "__main__":

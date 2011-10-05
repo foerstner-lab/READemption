@@ -34,9 +34,17 @@ class ReadMapperStats(object):
         return(self._count_fasta_fh_entries(open(fasta_path)))
 
     def count_mappings(self, read_file_names, read_mapping_result_paths):
+        # self.no_of_mappings and self.no_of_mapped_reads are
+        # dictionaries of dictionaries:
+        # Read file name -> Reference seq -> counting
+        self.no_of_mappings = {} 
+        self.no_of_mapped_reads = {}
         for read_file_name, read_mapping_result_path in zip(
             read_file_names, read_mapping_result_paths):
-            self._count_mappings(open(read_mapping_result_path))
+            no_of_mappings, no_of_mapped_reads = self._count_mappings(
+                open(read_mapping_result_path))
+            self.no_of_mappings[read_file_name] = no_of_mappings
+            self.no_of_mapped_reads[read_file_name] = no_of_mapped_reads
             
     def _count_mappings(self, read_mapping_result_fh):
         ref_seqs_and_mappings = {}
@@ -74,9 +82,14 @@ class ReadMapperStats(object):
             ("Reads long enough after clipping", 
              self.long_enough_clipped_reads),
             ("Reads too short after clipping", 
-             self.too_small_clipped_reads)]:
+             self.too_small_clipped_reads)]: 
             output_fh.write(self._value_line(
                     description, value_dict, read_file_names) + "\n")
+        for description, value_dict_of_dicts in [
+            ("Total number of mapped reads", self.no_of_mapped_reads),
+            ("Total number of mappings", self.no_of_mappings)]:
+            output_fh.write(self._dict_value_sum_line(
+                    description, value_dict_of_dicts, read_file_names) + "\n")
 
     def _head_line(self, read_file_names):
         return("\t" + "\t".join(read_file_names))
@@ -86,3 +99,8 @@ class ReadMapperStats(object):
                 [str(value_dict[read_file_name])
                  for read_file_name in read_file_names]))
         
+    def _dict_value_sum_line(
+        self, description, value_dict_of_dicts, read_file_names):
+        return(description + "\t" + "\t".join(
+                [str(sum(value_dict_of_dicts[read_file_name].values()))
+                 for read_file_name in read_file_names]))
