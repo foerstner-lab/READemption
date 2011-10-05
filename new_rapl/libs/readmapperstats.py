@@ -75,7 +75,8 @@ class ReadMapperStats(object):
     def write_stats_to_file(self, read_file_names, output_file_path):
         self._write_stats_to_fh(read_file_names, open(output_file_path, "w"))
 
-    def _write_stats_to_fh(self, read_file_names, output_fh):
+    def _write_stats_to_fh(
+        self, read_file_names, output_fh):
         output_fh.write(self._head_line(read_file_names) + "\n")
         for description, value_dict in [
             ("Number of raw reads", self.raw_read_countings),
@@ -90,6 +91,19 @@ class ReadMapperStats(object):
             ("Total number of mappings", self.no_of_mappings)]:
             output_fh.write(self._dict_value_sum_line(
                     description, value_dict_of_dicts, read_file_names) + "\n")
+        ref_seq_headers = sorted(list(self.no_of_mapped_reads.items())[0][1].keys())
+        for ref_seq_header in ref_seq_headers:
+            output_fh.write(
+                self._dict_value_per_ref_genome_line(
+                    "Number of mapped reads in %s" % ref_seq_header,
+                    self.no_of_mapped_reads, read_file_names, ref_seq_header)
+                + "\n")
+        for ref_seq_header in ref_seq_headers:
+            output_fh.write(
+                self._dict_value_per_ref_genome_line(
+                    "Number of mapping in %s" % ref_seq_header,
+                    self.no_of_mappings, read_file_names, ref_seq_header)
+                + "\n")
 
     def _head_line(self, read_file_names):
         return("\t" + "\t".join(read_file_names))
@@ -103,4 +117,10 @@ class ReadMapperStats(object):
         self, description, value_dict_of_dicts, read_file_names):
         return(description + "\t" + "\t".join(
                 [str(sum(value_dict_of_dicts[read_file_name].values()))
+                 for read_file_name in read_file_names]))
+
+    def _dict_value_per_ref_genome_line(
+        self, description, value_dict_of_dicts, read_file_names, ref_seq_header):
+        return(description + "\t" + "\t".join(
+                [str(value_dict_of_dicts[read_file_name][ref_seq_header])
                  for read_file_name in read_file_names]))

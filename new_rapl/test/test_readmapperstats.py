@@ -69,6 +69,7 @@ class TestReadMapperStats(unittest.TestCase):
 
     def test_write_stats_to_fh(self):
         read_file_name = ["xxx", "yyy", "zzz"]
+        genome_file_names = ["genome1", "genome2"] 
         self.read_mapper_stats.raw_read_countings = {
             "zzz" : 5, "yyy" : 1, "xxx" : 8}
         self.read_mapper_stats.long_enough_clipped_reads = {
@@ -172,6 +173,10 @@ Reads long enough after clipping\t5\t23\t42
 Reads too short after clipping\t2\t1\t0
 Total number of mapped reads\t18\t11\t7
 Total number of mappings\t22\t11\t13
+Number of mapped reads in genome1\t8\t1\t3
+Number of mapped reads in genome2\t10\t10\t4
+Number of mapping in genome1\t4\t2\t1
+Number of mapping in genome2\t18\t9\t12
 """
 
 if __name__ == "__main__":
