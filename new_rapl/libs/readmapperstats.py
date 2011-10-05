@@ -2,8 +2,13 @@ import sys
 from functools import reduce
 sys.path.append(".")
 from libs.fasta import FastaParser
+from libs.sam import SamParser
 
 class ReadMapperStats(object):
+
+    def __init__(self):
+        self.fasta_parser = FastaParser()
+        self.sam_parser = SamParser()
 
     def count_raw_reads(self, read_file_names, read_file_paths):
         self.raw_read_countings = {}
@@ -28,10 +33,36 @@ class ReadMapperStats(object):
     def _count_fasta_entries(self, fasta_path):
         return(self._count_fasta_fh_entries(open(fasta_path)))
 
+    def count_mappings(self, read_file_names, read_mapping_result_paths):
+        for read_file_name, read_mapping_result_path in zip(
+            read_file_names, read_mapping_result_paths):
+            self._count_mappings(open(read_mapping_result_path))
+            
+    def _count_mappings(self, read_mapping_result_fh):
+        ref_seqs_and_mappings = {}
+        ref_seqs_and_mapped_reads = {}
+        for ref_seq in self.sam_parser.reference_sequences(
+            read_mapping_result_fh):
+            ref_seqs_and_mappings[ref_seq] = 0
+            ref_seqs_and_mapped_reads[ref_seq] = 0
+        for entry in self.sam_parser.entries(read_mapping_result_fh):
+            try:
+                ref_seqs_and_mappings[entry.reference] += 1
+                ref_seqs_and_mapped_reads[
+                    entry.reference] += 1.0/float(entry.number_of_hits_as_int)
+            except:
+                sys.stderr.write(
+                    "SAM entry with unspecified reference found! Stoping\n")
+                sys.exit(2)
+        return(ref_seqs_and_mappings, ref_seqs_and_mapped_reads)
+
+    def count_unmapped_reads(self):
+        pass
+
     def _count_fasta_fh_entries(self, fasta_fh):
-        fasta_parser = FastaParser()
         # A memory saving approach to sum the number of entries
-        return(reduce(lambda x, y: x+1, fasta_parser.entries(fasta_fh), 0))
+        return(reduce(lambda x, y: x+1, 
+                      self.fasta_parser.entries(fasta_fh), 0))
 
     def write_stats_to_file(self, read_file_names, output_file_path):
         self._write_stats_to_fh(read_file_names, open(output_file_path, "w"))

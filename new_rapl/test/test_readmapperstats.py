@@ -95,6 +95,17 @@ class TestReadMapperStats(unittest.TestCase):
             "boing\t8\t1\t5",
             self.read_mapper_stats._value_line(
                 "boing", value_dict, read_file_name))
+        
+    def test_count_mappings(self):
+        sam_fh_1 = StringIO(self.example_data.sam_content_1)
+        ref_seqs_and_mappings, ref_seqs_and_mapped_reads = (
+            self.read_mapper_stats._count_mappings(sam_fh_1))
+        self.assertDictEqual(
+            {'SL1344': 6, 'SL1344_plasmid1': 3, 'SL1344_plasmid2': 0},
+            ref_seqs_and_mappings)
+        self.assertDictEqual(
+            {'SL1344': 3.0, 'SL1344_plasmid1': 3.0, 'SL1344_plasmid2': 0},
+            ref_seqs_and_mapped_reads)
 
 def _mock_count_fasta_entries(file_path):
     return("the number of entries in %s" % file_path) 
@@ -122,8 +133,27 @@ TAGAGACATTGGATTTTATT
 TAGAGACATTGGATTTTATT
 """
 
+    sam_content_1 = """@HD	VN:1.0
+@SQ	SN:SL1344	LN:10000000
+@SQ	SN:SL1344_plasmid1	LN:5000
+@SQ	SN:SL1344_plasmid2	LN:4000
+@PG	ID:segemehl	VN:0.9.4-$Rev: 316 $ ($Date: 2011-08-18 16:37:19 +0200 (Thu, 18 Aug 2011) $)
+read_01	0	SL1344	10	255	60M	*	0	0	ACAACATCCATGAACCGCATCAGCACCACCACCATTACCACCATCACCATTACCACAGGT	*	NM:i:0	MD:Z:60	NH:i:2	XA:Z:Q
+read_01	0	SL1344	1000	255	60M	*	0	0	ACAACATCCATGAACCGCATCAGCACCACCACCATTACCACCATCACCATTACCACAGGT	*	NM:i:0	MD:Z:60	NH:i:2	XA:Z:Q
+read_02	0	SL1344	1000	255	60M	*	0	0	ACAACATCCATGAACCGCATCAGCACCACCACCATTACCACCATCACCATTACCACAGGT	*	NM:i:0	MD:Z:60	NH:i:3	XA:Z:Q
+read_02	0	SL1344	1	255	60M	*	0	0	ACAACATCCATGAACCGCATCAGCACCACCACCATTACCACCATCACCATTACCACAGGT	*	NM:i:0	MD:Z:60	NH:i:3	XA:Z:Q
+read_02	0	SL1344	1000	255	60M	*	0	0	ACAACATCCATGAACCGCATCAGCACCACCACCATTACCACCATCACCATTACCACAGGT	*	NM:i:0	MD:Z:60	NH:i:3	XA:Z:Q
+read_03	16	SL1344	1500	255	60M	*	0	0	ACAACATCCATGAACCGCATCAGCACCACCACCATTACCACCATCACCATTACCACAGGT	*	NM:i:0	MD:Z:60	NH:i:1	XA:Z:Q
+read_04	16	SL1344_plasmid1	1500	255	60M	*	0	0	ACAACATCCATGAACCGCATCAGCACCACCACCATTACCACCATCACCATTACCACAGGT	*	NM:i:0	MD:Z:60	NH:i:1	XA:Z:Q
+read_05	16	SL1344_plasmid1	1500	255	60M	*	0	0	ACAACATCCATGAACCGCATCAGCACCACCACCATTACCACCATCACCATTACCACAGGT	*	NM:i:0	MD:Z:60	NH:i:1	XA:Z:Q
+read_06	16	SL1344_plasmid1	1500	255	60M	*	0	0	ACAACATCCATGAACCGCATCAGCACCACCACCATTACCACCATCACCATTACCACAGGT	*	NM:i:0	MD:Z:60	NH:i:1	XA:Z:Q
+"""
+
     stat_file_content = """\txxx\tyyy\tzzz
 Number of raw reads\t8\t1\t5
 Reads long enough after clipping\t5\t23\t42
 Reads too short after clipping\t2\t1\t0
 """
+
+if __name__ == "__main__":
+    unittest.main()
