@@ -1,6 +1,7 @@
 import os
 import sys
 sys.path.append(".")
+from libs.fasta import FastaParser
 from libs.paths import Paths
 from libs.parameters import Parameters
 from libs.projectcreator import ProjectCreator
@@ -42,6 +43,8 @@ class Controller(object):
         self.paths.set_read_files_dep_file_lists(
             read_file_names, self.parameters.min_seq_length)
         self.paths.set_genome_paths(genome_file_names)
+        ref_ids_to_file_name = self._ref_ids_to_file_name(
+            self.paths.genome_file_paths)
         # self._in_project_folder()
         # input_file_stats = InputStats()
         # input_file_stats.create_read_file_stats()
@@ -76,6 +79,16 @@ class Controller(object):
             read_file_names, self.paths.read_mapping_result_paths)
         read_mapper_stats.write_stats_to_file(
             read_file_names, self.paths.genome_file_stats)
+
+    def _ref_ids_to_file_name(self, genome_file_paths):
+        ref_ids_to_file_name = {}
+        fasta_parser = FastaParser()
+        for genome_file_path in genome_file_paths:
+            genome_file = os.path.basename(genome_file_path)
+            ref_seq_id = fasta_parser.header_id(
+                fasta_parser.single_entry_file_header(open(genome_file_path)))
+            ref_ids_to_file_name[genome_file] = ref_seq_id
+        return(ref_ids_to_file_name)
 
         # read_mapper.select_uniquely_mapped_reads()
         # read_tracer = ReadTracer()
