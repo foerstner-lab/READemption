@@ -47,7 +47,18 @@ class TestSamParser(unittest.TestCase):
         """
         seq_fh = StringIO(self.example_data.sam_content_2)
         self.assertEqual(len(list(self.sam_parser.entries(seq_fh))), 9)
-        self.assertEqual(len(list(self.sam_parser.reference_sequences(seq_fh))), 3)        
+        self.assertEqual(len(list(self.sam_parser.reference_sequences(seq_fh))), 3)
+
+    def test_mapping_countings(self):
+        sam_fh = StringIO(self.example_data.sam_content_2)
+        no_of_mappings, no_of_mapped_reads = (
+            self.sam_parser.mapping_countings(sam_fh))
+        self.assertDictEqual(
+            {'SL1344': 6, 'SL1344_plasmid1': 3, 'SL1344_plasmid2': 0},
+            no_of_mappings)
+        self.assertDictEqual(
+            {'SL1344': 3.0, 'SL1344_plasmid1': 3.0, 'SL1344_plasmid2': 0},
+            no_of_mapped_reads)
 
 class TestSamEntry(unittest.TestCase):
     
@@ -128,10 +139,10 @@ read_01	0	SL1344	1000	255	60M	*	0	0	ACAACATCCATGAACCGCATCAGCACCACCACCATTACCACCAT
 read_02	0	SL1344	1000	255	60M	*	0	0	ACAACATCCATGAACCGCATCAGCACCACCACCATTACCACCATCACCATTACCACAGGT	*	NM:i:0	MD:Z:60	NH:i:3	XA:Z:Q
 read_02	0	SL1344	1	255	60M	*	0	0	ACAACATCCATGAACCGCATCAGCACCACCACCATTACCACCATCACCATTACCACAGGT	*	NM:i:0	MD:Z:60	NH:i:3	XA:Z:Q
 read_02	0	SL1344	1000	255	60M	*	0	0	ACAACATCCATGAACCGCATCAGCACCACCACCATTACCACCATCACCATTACCACAGGT	*	NM:i:0	MD:Z:60	NH:i:3	XA:Z:Q
-read_03	16	SL1344	1500	255	60M	*	0	0	ACAACATCCATGAACCGCATCAGCACCACCACCATTACCACCATCACCATTACCACAGGT	*	NM:i:0	MD:Z:60	NH:i:3	XA:Z:Q
-read_04	16	SL1344_plasmid1	1500	255	60M	*	0	0	ACAACATCCATGAACCGCATCAGCACCACCACCATTACCACCATCACCATTACCACAGGT	*	NM:i:0	MD:Z:60	NH:i:3	XA:Z:Q
-read_05	16	SL1344_plasmid1	1500	255	60M	*	0	0	ACAACATCCATGAACCGCATCAGCACCACCACCATTACCACCATCACCATTACCACAGGT	*	NM:i:0	MD:Z:60	NH:i:3	XA:Z:Q
-read_06	16	SL1344_plasmid1	1500	255	60M	*	0	0	ACAACATCCATGAACCGCATCAGCACCACCACCATTACCACCATCACCATTACCACAGGT	*	NM:i:0	MD:Z:60	NH:i:3	XA:Z:Q
+read_03	16	SL1344	1500	255	60M	*	0	0	ACAACATCCATGAACCGCATCAGCACCACCACCATTACCACCATCACCATTACCACAGGT	*	NM:i:0	MD:Z:60	NH:i:1	XA:Z:Q
+read_04	16	SL1344_plasmid1	1500	255	60M	*	0	0	ACAACATCCATGAACCGCATCAGCACCACCACCATTACCACCATCACCATTACCACAGGT	*	NM:i:0	MD:Z:60	NH:i:1	XA:Z:Q
+read_05	16	SL1344_plasmid1	1500	255	60M	*	0	0	ACAACATCCATGAACCGCATCAGCACCACCACCATTACCACCATCACCATTACCACAGGT	*	NM:i:0	MD:Z:60	NH:i:1	XA:Z:Q
+read_06	16	SL1344_plasmid1	1500	255	60M	*	0	0	ACAACATCCATGAACCGCATCAGCACCACCACCATTACCACCATCACCATTACCACAGGT	*	NM:i:0	MD:Z:60	NH:i:1	XA:Z:Q
 """
 
 if __name__ == "__main__":
