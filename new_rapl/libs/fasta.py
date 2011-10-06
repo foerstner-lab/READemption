@@ -23,3 +23,16 @@ class FastaParser(object):
         # For the last entry if file was not empty
         if not (current_header == '' and current_sequence == ''):
             yield(current_header, current_sequence)
+
+    def single_entry_file_header(self, fasta_fh):
+        first_line = fasta_fh.readline()
+        header = first_line[1:-1]
+        fasta_fh.seek(0)
+        return(header)
+
+    def header_id(self, header):
+        """Return only the id of a fasta header
+
+        Everything after the first white space is discard.
+        """
+        return(header.split()[0])

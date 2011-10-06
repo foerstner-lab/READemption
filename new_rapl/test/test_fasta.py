@@ -4,7 +4,6 @@ import sys
 sys.path.append(".")
 from libs.fasta import FastaParser
 
-
 class TestFasta(unittest.TestCase):
 
     def setUp(self):
@@ -24,6 +23,21 @@ class TestFasta(unittest.TestCase):
         self.assertEqual(
             list(self.fasta_parser.entries(fasta_fh)), [])
 
+    def test_single_entry_file_header(self):
+        fasta_fh = StringIO(self.example_data.fasta_seqs_2)
+        self.assertEqual(self.fasta_parser.single_entry_file_header(fasta_fh), 
+                         "test_4 a random sequence")
+
+    def test_header_id_1(self):
+        self.assertEqual(
+            self.fasta_parser.header_id("seq_10101 An important protein"),
+            "seq_10101")
+
+    def test_header_id_2(self):
+        self.assertEqual(
+            self.fasta_parser.header_id("seq_10101\tAn important protein"),
+            "seq_10101")
+
 class ExampleData(object):
 
     fasta_seqs_1 = """>test_1 a random sequence
@@ -41,6 +55,13 @@ ACATT
 GGATT
 TTATT
 """
+
+    fasta_seqs_2 = """>test_4 a random sequence
+TTTAG
+AAATT
+ACACA
+"""
+    
 
 if __name__ == "__main__":
     unittest.main()
