@@ -88,7 +88,7 @@ class TestPaths(unittest.TestCase):
             self.paths.clipped_read_file_long_enough_paths, 
             self.paths.clipped_read_file_too_short_paths,
             self.paths.read_mapping_result_paths,
-            self.paths.unmapped_reads_path]:
+            self.paths.unmapped_reads_paths]:
             assert(isinstance(path_list, list))
             
     def test_path_list_without_appendix(self):

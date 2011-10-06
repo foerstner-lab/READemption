@@ -65,7 +65,7 @@ class Controller(object):
             self.paths.clipped_read_file_long_enough_paths,
             self.paths.genome_file_paths, self.paths.index_file_path,
             self.paths.read_mapping_result_paths, 
-            self.paths.unmapped_reads_path, 
+            self.paths.unmapped_reads_paths, 
             self.parameters.segemehl_number_of_threads, 
             self.parameters.segemehl_accuracy)
         read_mapper_stats = ReadMapperStats()
@@ -77,6 +77,8 @@ class Controller(object):
             read_file_names, self.paths.clipped_read_file_too_short_paths)
         read_mapper_stats.count_mappings(
             read_file_names, self.paths.read_mapping_result_paths)
+        read_mapper_stats.count_unmapped_reads(
+            read_file_names, self.paths.unmapped_reads_paths)
         read_mapper_stats.write_stats_to_file(
             read_file_names, self.paths.genome_file_stats)
 

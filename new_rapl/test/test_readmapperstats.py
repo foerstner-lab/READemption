@@ -76,6 +76,8 @@ class TestReadMapperStats(unittest.TestCase):
             "zzz" : 42, "yyy" : 23, "xxx" : 5}
         self.read_mapper_stats.too_small_clipped_reads = {
             "zzz" : 0, "yyy" : 1, "xxx" : 2}
+        self.read_mapper_stats.no_of_unmapped_reads = {
+            "zzz" : 4, "yyy" : 2, "xxx" : 4}
         self.read_mapper_stats.no_of_mapped_reads = {
             "zzz" : {"genome1" : 3, "genome2" : 4}, 
             "yyy" : {"genome1" : 1, "genome2" : 10}, 
@@ -146,6 +148,7 @@ Reads long enough after clipping\t5\t23\t42
 Reads too short after clipping\t2\t1\t0
 Total number of mapped reads\t18\t11\t7
 Total number of mappings\t22\t11\t13
+Number of unmappped reads\t4\t2\t4
 Number of mapped reads in genome1\t8\t1\t3
 Number of mapped reads in genome2\t10\t10\t4
 Number of mapping in genome1\t4\t2\t1

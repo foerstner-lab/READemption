@@ -108,7 +108,7 @@ class Paths(object):
             appendix=".clipped.fa.shorter_than_%s_nt.fa" % str(min_seq_length))
         self.read_mapping_result_paths = self._path_list(
             self.read_mappings_folder, read_files)
-        self.unmapped_reads_path = self._path_list(
+        self.unmapped_reads_paths = self._path_list(
             self.unmapped_reads_folder, read_files, appendix=".unmapped.fa")
 
     def set_genome_paths(self, genome_files):

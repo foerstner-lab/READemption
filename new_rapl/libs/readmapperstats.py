@@ -47,8 +47,10 @@ class ReadMapperStats(object):
             self.no_of_mappings[read_file_name] = no_of_mappings
             self.no_of_mapped_reads[read_file_name] = no_of_mapped_reads
 
-    def count_unmapped_reads(self):
-        pass
+    def count_unmapped_reads(self, read_file_names, unmapped_read_paths):
+        self.no_of_unmapped_reads = {}
+        self._count_fasta_entry_set(
+            read_file_names, unmapped_read_paths, self.no_of_unmapped_reads)
 
     def _count_fasta_fh_entries(self, fasta_fh):
         # A memory saving approach to sum the number of entries
@@ -74,7 +76,11 @@ class ReadMapperStats(object):
             ("Total number of mappings", self.no_of_mappings)]:
             output_fh.write(self._dict_value_sum_line(
                     description, value_dict_of_dicts, read_file_names) + "\n")
-        ref_seq_headers = sorted(list(self.no_of_mapped_reads.items())[0][1].keys())
+        output_fh.write(self._value_line(
+                "Number of unmappped reads", 
+                self.no_of_unmapped_reads, read_file_names) + "\n")
+        ref_seq_headers = sorted(
+            list(self.no_of_mapped_reads.items())[0][1].keys())
         for ref_seq_header in ref_seq_headers:
             output_fh.write(
                 self._dict_value_per_ref_genome_line(
