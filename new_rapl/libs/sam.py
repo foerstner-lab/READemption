@@ -1,4 +1,3 @@
-
 import csv
 import sys
 
@@ -32,6 +31,23 @@ class SamParser(object):
                 sam_fh.seek(0) # Go back to file start
                 break
         sam_fh.seek(0) # Go back to file start
+
+    def mapping_countings(self, sam_fh):
+        ref_seqs_and_mappings = {}
+        ref_seqs_and_mapped_reads = {}
+        for ref_seq in self.reference_sequences(sam_fh):
+            ref_seqs_and_mappings[ref_seq] = 0
+            ref_seqs_and_mapped_reads[ref_seq] = 0
+        for entry in self.entries(sam_fh):
+            try:
+                ref_seqs_and_mappings[entry.reference] += 1
+                ref_seqs_and_mapped_reads[
+                    entry.reference] += 1.0/float(entry.number_of_hits_as_int)
+            except:
+                sys.stderr.write(
+                    "SAM entry with unspecified reference found! Stoping\n")
+                sys.exit(2)
+        return(ref_seqs_and_mappings, ref_seqs_and_mapped_reads)
 
 class SamEntry(object):
 
