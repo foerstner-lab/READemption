@@ -46,24 +46,6 @@ class ReadMapperStats(object):
                     open(read_mapping_result_path)))
             self.no_of_mappings[read_file_name] = no_of_mappings
             self.no_of_mapped_reads[read_file_name] = no_of_mapped_reads
-            
-    # def _count_mappings(self, read_mapping_result_fh):
-    #     ref_seqs_and_mappings = {}
-    #     ref_seqs_and_mapped_reads = {}
-    #     for ref_seq in self.sam_parser.reference_sequences(
-    #         read_mapping_result_fh):
-    #         ref_seqs_and_mappings[ref_seq] = 0
-    #         ref_seqs_and_mapped_reads[ref_seq] = 0
-    #     for entry in self.sam_parser.entries(read_mapping_result_fh):
-    #         try:
-    #             ref_seqs_and_mappings[entry.reference] += 1
-    #             ref_seqs_and_mapped_reads[
-    #                 entry.reference] += 1.0/float(entry.number_of_hits_as_int)
-    #         except:
-    #             sys.stderr.write(
-    #                 "SAM entry with unspecified reference found! Stoping\n")
-    #             sys.exit(2)
-    #     return(ref_seqs_and_mappings, ref_seqs_and_mapped_reads)
 
     def count_unmapped_reads(self):
         pass
