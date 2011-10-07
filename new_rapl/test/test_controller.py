@@ -35,8 +35,8 @@ class TestController(unittest.TestCase):
             base_path=self.test_project_name)
         self.controller.paths._set_static_file_names()
         self._generate_input_fasta_files()
-        # If number of reads is < than the number of threads segemehl
-        # stops. So set the number of threads to 1
+        # If number of reads is less than the number of threads
+        # segemehl stops. So set the number of threads to 1
         self.controller.parameters.segemehl_number_of_threads = 1
         self.controller.map_reads()
         self._remove_project_folder()
