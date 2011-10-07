@@ -80,7 +80,8 @@ class Controller(object):
         read_mapper_stats.count_unmapped_reads(
             read_file_names, self.paths.unmapped_reads_paths)
         read_mapper_stats.write_stats_to_file(
-            read_file_names, self.paths.genome_file_stats)
+            read_file_names, ref_ids_to_file_name, 
+            self.paths.genome_file_stats)
 
     def _ref_ids_to_file_name(self, genome_file_paths):
         ref_ids_to_file_name = {}
@@ -89,7 +90,7 @@ class Controller(object):
             genome_file = os.path.basename(genome_file_path)
             ref_seq_id = fasta_parser.header_id(
                 fasta_parser.single_entry_file_header(open(genome_file_path)))
-            ref_ids_to_file_name[genome_file] = ref_seq_id
+            ref_ids_to_file_name[ref_seq_id] = genome_file
         return(ref_ids_to_file_name)
 
         # read_mapper.select_uniquely_mapped_reads()

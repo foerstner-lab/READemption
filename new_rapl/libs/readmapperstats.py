@@ -57,11 +57,13 @@ class ReadMapperStats(object):
         return(reduce(lambda x, y: x+1, 
                       self.fasta_parser.entries(fasta_fh), 0))
 
-    def write_stats_to_file(self, read_file_names, output_file_path):
-        self._write_stats_to_fh(read_file_names, open(output_file_path, "w"))
+    def write_stats_to_file(
+        self, read_file_names, ref_ids_to_file_name, output_file_path):
+        self._write_stats_to_fh(
+            read_file_names, ref_ids_to_file_name, open(output_file_path, "w"))
 
     def _write_stats_to_fh(
-        self, read_file_names, output_fh):
+        self, read_file_names, ref_ids_to_file_name, output_fh):
         output_fh.write(self._head_line(read_file_names) + "\n")
         for description, value_dict in [
             ("Number of raw reads", self.raw_read_countings),
@@ -84,13 +86,15 @@ class ReadMapperStats(object):
         for ref_seq_header in ref_seq_headers:
             output_fh.write(
                 self._dict_value_per_ref_genome_line(
-                    "Number of mapped reads in %s" % ref_seq_header,
+                    "Number of mapped reads in %s" % 
+                    ref_ids_to_file_name[ref_seq_header],
                     self.no_of_mapped_reads, read_file_names, ref_seq_header)
                 + "\n")
         for ref_seq_header in ref_seq_headers:
             output_fh.write(
                 self._dict_value_per_ref_genome_line(
-                    "Number of mapping in %s" % ref_seq_header,
+                    "Number of mapping in %s" % 
+                    ref_ids_to_file_name[ref_seq_header],
                     self.no_of_mappings, read_file_names, ref_seq_header)
                 + "\n")
 

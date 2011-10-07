@@ -81,13 +81,17 @@ class TestReadMapperStats(unittest.TestCase):
         self.read_mapper_stats.no_of_mapped_reads = {
             "zzz" : {"genome1" : 3, "genome2" : 4}, 
             "yyy" : {"genome1" : 1, "genome2" : 10}, 
-            "xxx" : {"genome1" : 8,"genome2" : 10}}
+            "xxx" : {"genome1" : 8, "genome2" : 10}}
         self.read_mapper_stats.no_of_mappings = {
             "zzz" : {"genome1" : 1, "genome2" : 12}, 
             "yyy" : {"genome1" : 2, "genome2" : 9}, 
-            "xxx" : {"genome1" : 4,"genome2" : 18}}
+            "xxx" : {"genome1" : 4, "genome2" : 18}}
+        ref_ids_to_file_name = {
+            "genome1" : "genomefile1",
+            "genome2" : "genomefile2"}
         stat_fh = StringIO()
-        self.read_mapper_stats._write_stats_to_fh(read_file_name, stat_fh)
+        self.read_mapper_stats._write_stats_to_fh(
+            read_file_name, ref_ids_to_file_name, stat_fh)
         self.assertEqual(
             self.example_data.stat_file_content,
             stat_fh.getvalue())
@@ -149,10 +153,10 @@ Reads too short after clipping\t2\t1\t0
 Total number of mapped reads\t18\t11\t7
 Total number of mappings\t22\t11\t13
 Number of unmappped reads\t4\t2\t4
-Number of mapped reads in genome1\t8\t1\t3
-Number of mapped reads in genome2\t10\t10\t4
-Number of mapping in genome1\t4\t2\t1
-Number of mapping in genome2\t18\t9\t12
+Number of mapped reads in genomefile1\t8\t1\t3
+Number of mapped reads in genomefile2\t10\t10\t4
+Number of mapping in genomefile1\t4\t2\t1
+Number of mapping in genomefile2\t18\t9\t12
 """
 
 if __name__ == "__main__":
