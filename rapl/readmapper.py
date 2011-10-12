@@ -64,7 +64,7 @@ class ReadMapper(object):
         # cannot handle short stretches at the end of an read.
         call("%s --SAM --evalue %s --hitstrategy %s --accuracy %s "
              "--threads %s --index %s --database %s --query %s "
-             "--outfile  %s --nomatchfilename %s --polyA --hardclip"  % (
+             "--outfile  %s --nomatchfilename %s"  % (
                 self.paths.segemehl_bin,
                 self.parameters.segemehl_max_e_value,
                 self.parameters.segemehl_hit_strategy,
