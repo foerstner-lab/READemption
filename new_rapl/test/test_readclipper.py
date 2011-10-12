@@ -23,7 +23,8 @@ class TestReadClipper(unittest.TestCase):
         input_fh = StringIO(self.example_data.fasta_input)
         output_fh = StringIO()
         self.read_clipper._clip_entries_in_file(input_fh, output_fh)
-        self.assertEqual(output_fh.getvalue(), self.example_data.fasta_output)
+        self.assertMultiLineEqual(
+            output_fh.getvalue(), self.example_data.fasta_output)
 
 class ExampleData(object):
 

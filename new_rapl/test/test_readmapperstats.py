@@ -92,7 +92,7 @@ class TestReadMapperStats(unittest.TestCase):
         stat_fh = StringIO()
         self.read_mapper_stats._write_stats_to_fh(
             read_file_name, ref_ids_to_file_name, stat_fh)
-        self.assertEqual(
+        self.assertMultiLineEqual(
             self.example_data.stat_file_content,
             stat_fh.getvalue())
         

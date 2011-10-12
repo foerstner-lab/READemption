@@ -25,8 +25,8 @@ class TestSeqSizeFilter(unittest.TestCase):
         output_too_short_fh = StringIO()
         self.seqsizefilter._filter_entries_in_file(
             input_fh, output_long_enough_fh, output_too_short_fh, 12)
-        self.assertEqual(output_long_enough_fh.getvalue(), 
-                         self.example_data.fasta_long_enough_output)
+        self.assertMultiLineEqual(output_long_enough_fh.getvalue(),
+                                  self.example_data.fasta_long_enough_output)
 
 class ExampleData(object):
 

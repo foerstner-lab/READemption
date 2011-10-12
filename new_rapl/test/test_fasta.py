@@ -4,7 +4,7 @@ import sys
 sys.path.append(".")
 from libs.fasta import FastaParser
 
-class TestFasta(unittest.TestCase):
+class TestFastaParser(unittest.TestCase):
 
     def setUp(self):
         self.fasta_parser = FastaParser()
