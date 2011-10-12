@@ -20,14 +20,18 @@ class GRFileBuilder(object):
         self.multiplier = multiplier
 
     def build_gr_files(self):
-        coverage_plus_strand, coverage_plus_minus = self._calc_raw_coverages(
+        coverage_plus_strand, coverage_minus_strand = self._calc_raw_coverages(
             open(input_sam_path))
         if self._norm_or_multi_needed:
             coverage_plus_strand = self._normalize_and_multiply(
                 coverage_plus_strand)
             coverage_minus_strand = self._normalize_and_multiply(
                 coverage_minus_strand)
-            
+        self._build_gr_file(coverage_plus_strand, open(
+                self.plus_strand_output_file))
+        self._build_gr_file(coverage_minus_strand, open(
+                self.minus_strand_output_file))
+        
     def _norm_or_multi_needed(self):
         return(not(self.normalization_value == 1 and self.multiplier == 1))
 
@@ -63,6 +67,10 @@ class GRFileBuilder(object):
     def _extend_coverages(self, coverages, end):
         coverages.extend([0] * (end - len(coverages)))
 
-    def _build_gr_file(self, ref_seq_id, strand, output_fh):
-        pass
-    
+    def _build_gr_file(self, coverages, output_fh):
+        for pos, coverage in enumerate(coverages):
+            # Skip zero values to save file space
+            if coverage == 0.0:
+                continue
+            output_fh.write("%s\t%s\n" % (pos, coverage))
+

@@ -10,6 +10,7 @@ class TestGRFileBuilder(unittest.TestCase):
         self.gr_file_builder = GRFileBuilder(
             "a_sam_file", "a_ref_genome", "output_plus", "output_minus",
             normalization_value=1, multiplier=2)
+        self.example_data = ExampleData()
         
     def test_calc_raw_coverages(self):
         self.gr_file_builder._sam_entries = mock_sam_entries
@@ -96,7 +97,14 @@ class TestGRFileBuilder(unittest.TestCase):
         # If both value are != 0 it should be needed
         gr_file_builder.multiplier = 2.0
         gr_file_builder.normalization_value = 1
-        self.assertTrue(gr_file_builder._norm_or_multi_needed())        
+        self.assertTrue(gr_file_builder._norm_or_multi_needed())
+
+    def test_build_gr_file(self):
+        gr_fh = StringIO()
+        coverages = [1.0, 4.0, 0.0, 10.0, 20.0, 0.0, 4.5]
+        self.gr_file_builder._build_gr_file(coverages, gr_fh)
+        self.assertMultiLineEqual(
+            self.example_data.gr_output_1, gr_fh.getvalue())
 
 class MockSamEntry(object):
     
@@ -118,3 +126,13 @@ def mock_sam_entries(sam_fh):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class ExampleData(object):
+
+    gr_output_1 = """0	1.0
+1	4.0
+3	10.0
+4	20.0
+6	4.5
+"""
