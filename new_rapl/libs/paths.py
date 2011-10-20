@@ -14,47 +14,47 @@ class Paths(object):
         """Set the name of folders used in a project."""
         self.input_folder = "%s/input" % (base_path)
         self.output_folder = "%s/output" % (base_path)
-        self.read_fasta_folder = "%s/RNA_seqs" % self.input_folder
+        self.read_fasta_folder = "%s/reads" % self.input_folder
         self.genome_folder = "%s/genomes" % self.input_folder
-        self.input_file_stats_folder = "%s/input_file_stats" % self.output_folder
         self.annotation_folder = "%s/annotation_files" % self.input_folder
-        self.gr_folder = "%s/gr_files" % self.output_folder
-        self.gr_folder_read_normalized = "%s/gr_read_normalized_files" % (
+        self.gr_folder = "%s/gr-coverages_raw" % self.output_folder
+        self.gr_folder_read_normalized = "%s/gr-coverages_read_normalized" % (
             self.output_folder)
-        self.gr_folder_nucl_normalized = "%s/gr_nucleotide_normalized_files" % (
+        self.gr_folder_nucl_normalized = "%s/gr-coverages_nucleotide_normalized" % (
             self.output_folder)
-        self.read_mapping_index_folder = "%s/read_mapping_index" % (
+        self.read_mapping_index_folder = "%s/read_mappings-index" % (
             self.output_folder)
-        self.annotation_hit_folder = "%s/annotation_hits" % self.output_folder
-        self.no_annotation_hit_folder = "%s/without_annotation_hits" % self.output_folder
+        self.annotation_hit_folder = "%s/annotation_overlaps-raw_hits" % self.output_folder
+        self.no_annotation_hit_folder = "%s/annotation_overlaps-without_annotation_hits" % self.output_folder
         self.annotation_hit_overview_folder = (
-            "%s/annotation_hit_overviews" % self.output_folder)
+            "%s/annotation_overlaps-hit_overviews" % self.output_folder)
         self.annotation_hit_overview_read_normalized_folder = (
-            "%s/annotation_hit_overviews_read_normalized" % self.output_folder)
+            "%s/annotation_overlaps-hit_overviews_read_normalized" % 
+            self.output_folder)
         self.annotation_hit_overview_nucl_normalized_folder = (
-            "%s/annotation_hit_overviews_nucleotide_normalized" % 
+            "%s/annotation_overlaps-hit_overviews_nucleotide_normalized" % 
             self.output_folder)
         self.annotation_hit_overview_rpkm_normalized_folder = (
-            "%s/annotation_hit_overviews_rpkm_normalized" % 
+            "%s/annotation_overlaps-hit_overviews_rpkm_normalized" % 
             self.output_folder)
-        self.read_tracing_folder = "%s/read_tracing" % (self.output_folder)
+        self.read_tracing_folder = "%s/read_mappings-read_tracing" % (self.output_folder)
         self.report_folder = "%s/reports_and_stats" % (self.output_folder)
-        self.read_mappings_folder = "%s/read_mappings" % (
+        self.read_mappings_folder = "%s/read_mappings-mappings" % (
             self.output_folder)
-        self.clipped_reads_folder = "%s/clipped_reads" % (
+        self.clipped_reads_folder = "%s/read_mappings-clipped_reads" % (
             self.output_folder)
-        self.unmapped_reads_folder = "%s/unmapped_reads" % (
+        self.unmapped_reads_folder = "%s/read_mappings-unmapped_reads" % (
             self.output_folder)
 
     def _set_static_file_names(self):
         """Set name of common files."""
         self.config_file = "rapl.config"
         self.read_file_stats = "%s/read_file_stats.txt" % (
-            self.input_file_stats_folder)
+            self.report_folder)
         self.genome_file_stats = "%s/genome_file_stats.txt" % (
-            self.input_file_stats_folder)
+            self.report_folder)
         self.annotation_file_stats = "%s/annotation_file_stats.txt" % (
-            self.input_file_stats_folder)
+            self.report_folder)
         self.read_mapping_stat_file = "%s/read_mapping_stats.csv" % (
             self.report_folder)
         self.tracing_summary_file = "%s/read_tracing_summary.csv" % (
@@ -93,8 +93,8 @@ class Paths(object):
                 self.annotation_hit_overview_read_normalized_folder,
                 self.annotation_hit_overview_nucl_normalized_folder,
                 self.annotation_hit_overview_rpkm_normalized_folder,
-                self.read_tracing_folder, self.input_file_stats_folder, 
-                self.report_folder, self.no_annotation_hit_folder])
+                self.read_tracing_folder, self.report_folder, 
+                self.no_annotation_hit_folder])
 
     def set_read_files_dep_file_lists(self, read_files, min_seq_length):
         self.read_file_paths = self._path_list(self.read_fasta_folder, read_files)
