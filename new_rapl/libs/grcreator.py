@@ -3,9 +3,65 @@ sys.path.append(".")
 from libs.sam import SamParser
 
 class GRCreator(object):
-    pass
 
-#ref_ids_to_file_name, 
+    def create_gr_files(self, read_file_names, read_mapping_result_paths, 
+                        ref_ids_to_file_name, gr_folder):
+        for read_file_name, read_mapping_result_path in zip(
+            read_file_names, read_mapping_result_paths):
+             for ref_seq_id, ref_seq_file_name in ref_ids_to_file_name.items():
+                plus_strand_output_file = self._output_file_path(
+                    gr_folder, read_file_name, ref_seq_file_name, "+")
+                minus_strand_output_file = self._output_file_path(
+                    gr_folder, read_file_name, ref_seq_file_name, "-")
+                gr_file_builder = GRFileBuilder(
+                    read_mapping_result_path, ref_seq_id, 
+                    plus_strand_output_file, minus_strand_output_file)
+                gr_file_builder.build_gr_files()
+
+    def create_read_normalized_gr_files(
+        self, read_file_names, read_mapping_result_paths, 
+        ref_ids_to_file_name, gr_read_normalized_folder):
+        read_file_names_and_mapped_reads = {}
+        sam_parser = SamParser()
+        for read_file_name, read_mapping_result_path in zip(
+            read_file_names, read_mapping_result_paths):
+            ref_seqs_and_mappings, ref_seqs_and_mapped_reads = (
+                sam_parser.mapping_countings(open(read_mapping_result_path)))
+            # Sum the number of mapped reads for all reference sequences
+            read_file_names_and_mapped_reads[read_file_name] = sum(
+                ref_seqs_and_mapped_reads.values())
+        min_no_of_reads = min(read_file_names_and_mapped_reads.values())
+
+        for read_file_name, read_mapping_result_path in zip(
+            read_file_names, read_mapping_result_paths):
+            norm_value = read_file_names_and_mapped_reads[read_file_name]
+            for ref_seq_id, ref_seq_file_name in ref_ids_to_file_name.items():
+                plus_strand_output_file = self._read_normalized_file_path(
+                    gr_read_normalized_folder, read_file_name, 
+                    ref_seq_file_name, "+", norm_value, min_no_of_reads)
+                minus_strand_output_file = self._read_normalized_file_path(
+                    gr_read_normalized_folder, read_file_name, 
+                    ref_seq_file_name, "-", norm_value, min_no_of_reads)
+                gr_file_builder = GRFileBuilder(
+                    read_mapping_result_path, ref_seq_id, 
+                    plus_strand_output_file, minus_strand_output_file,
+                    normalization_value=norm_value, 
+                    multiplier=min_no_of_reads)
+                gr_file_builder.build_gr_files()    
+        
+    def _output_file_path(self, folder_path, 
+                          read_file_name, ref_seq_file_name, strand):
+        strand_string = {"-" : "minus", "+" : "plus"}[strand]
+        return("%s/%s_in_%s.%s_strand.gr" % (
+                folder_path, read_file_name, ref_seq_file_name, strand_string))
+
+    def _read_normalized_file_path(
+        self, folder_path, read_file_name, ref_seq_file_name, strand, 
+        normalization_value, multiplier):
+        strand_string = {"-" : "minus", "+" : "plus"}[strand]
+        return("%s/%s_in_%s_norm_by_%s_mult_by_%s.%s_strand.gr" % (
+                folder_path, read_file_name, ref_seq_file_name, 
+                normalization_value, multiplier, strand_string))
 
 class GRFileBuilder(object):
 
@@ -21,16 +77,16 @@ class GRFileBuilder(object):
 
     def build_gr_files(self):
         coverage_plus_strand, coverage_minus_strand = self._calc_raw_coverages(
-            open(input_sam_path))
+            open(self.input_sam_path))
         if self._norm_or_multi_needed:
             coverage_plus_strand = self._normalize_and_multiply(
                 coverage_plus_strand)
             coverage_minus_strand = self._normalize_and_multiply(
                 coverage_minus_strand)
         self._build_gr_file(coverage_plus_strand, open(
-                self.plus_strand_output_file))
+                self.plus_strand_output_file, "w"))
         self._build_gr_file(coverage_minus_strand, open(
-                self.minus_strand_output_file))
+                self.minus_strand_output_file, "w"))
         
     def _norm_or_multi_needed(self):
         return(not(self.normalization_value == 1 and self.multiplier == 1))

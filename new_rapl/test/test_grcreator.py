@@ -106,6 +106,17 @@ class TestGRFileBuilder(unittest.TestCase):
         self.assertMultiLineEqual(
             self.example_data.gr_output_1, gr_fh.getvalue())
 
+class TestGRCreator(unittest.TestCase):
+
+    def setUp(self):
+        self.gr_creator = GRCreator()
+
+    def test_output_file_path(self):
+        self.assertEqual(
+            "a/long/path/my_foo_lib_in_my_bar_ref_genome.plus_strand.gr",
+            self.gr_creator._output_file_path(
+                "a/long/path", "my_foo_lib", "my_bar_ref_genome", "+"))
+
 class MockSamEntry(object):
     
     def __init__(self, start, end, reference, strand, number_of_hits_as_int):
@@ -124,10 +135,6 @@ def mock_sam_entries(sam_fh):
         MockSamEntry(2, 6, "a_ref_genome", "-", 1)]:
         yield(entry)
 
-if __name__ == "__main__":
-    unittest.main()
-
-
 class ExampleData(object):
 
     gr_output_1 = """0	1.0
@@ -136,3 +143,6 @@ class ExampleData(object):
 4	20.0
 6	4.5
 """
+
+if __name__ == "__main__":
+    unittest.main()

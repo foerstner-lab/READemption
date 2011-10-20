@@ -2,13 +2,14 @@ import os
 import sys
 sys.path.append(".")
 from libs.fasta import FastaParser
-from libs.paths import Paths
+from libs.grcreator import GRCreator
 from libs.parameters import Parameters
+from libs.paths import Paths
 from libs.projectcreator import ProjectCreator
 from libs.readclipper import ReadClipper
 from libs.readmapper import ReadMapper
-from libs.seqsizefilter import SeqSizeFilter
 from libs.readmapperstats import ReadMapperStats
+from libs.seqsizefilter import SeqSizeFilter
 
 class Controller(object):
 
@@ -100,12 +101,23 @@ class Controller(object):
         # read_tracer_viz = ReadTracerViz()
         # read_tracer_viz.create_mapping_length_histograms()
     
-    # def create_gr_files(self):
-    #     """Create GR files based on the combined Segemehl mappings. """
-    #     self._in_project_folder()
-    #     gr_builder = GrBuilder()
-    #     gr_builder.build_gr_files()
-    #     gr_builder.build_read_normalized_gr_files()
+    def create_gr_files(self):
+        """Create GR files based on the combined Segemehl mappings."""
+        #self._in_project_folder()
+        read_file_names = self.paths._get_read_file_names()
+        genome_file_names = self.paths._get_genome_file_names()
+        self.paths.set_read_files_dep_file_lists(
+            read_file_names, self.parameters.min_seq_length)
+        self.paths.set_genome_paths(genome_file_names)
+        ref_ids_to_file_name = self._ref_ids_to_file_name(
+            self.paths.genome_file_paths)
+        gr_creator = GRCreator()
+        gr_creator.create_gr_files(
+            read_file_names, self.paths.read_mapping_result_paths, 
+            ref_ids_to_file_name, self.paths.gr_folder)
+        gr_creator.create_read_normalized_gr_files(
+            read_file_names, self.paths.read_mapping_result_paths, 
+            ref_ids_to_file_name, self.paths.gr_folder_read_normalized)
 
     # def search_annotation_overlaps(self):
     #     """Search for overlaps of reads and annotations."""
