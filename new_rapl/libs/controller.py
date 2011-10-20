@@ -81,7 +81,8 @@ class Controller(object):
         read_mapper_stats.count_unmapped_reads(
             read_file_names, self.paths.unmapped_reads_paths)
         read_mapper_stats.write_stats_to_file(
-            read_file_names, ref_ids_to_file_name, self.paths.report_folder)
+            read_file_names, ref_ids_to_file_name, 
+            self.paths.read_mapping_stat_file)
 
     def _ref_ids_to_file_name(self, genome_file_paths):
         ref_ids_to_file_name = {}
