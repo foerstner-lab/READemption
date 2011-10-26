@@ -37,7 +37,7 @@ class Controller(object):
                          "genome files into folder \"%s\".\n" % (
                 self.paths.read_fasta_folder, self.paths.genome_folder))
 
-    def map_reads(self):
+    def map_reads(self, args=None):
         """Perform the mapping of the reads."""
         read_file_names = self.paths._get_read_file_names()
         genome_file_names = self.paths._get_genome_file_names()
@@ -58,8 +58,8 @@ class Controller(object):
             self.paths.clipped_read_file_paths, 
             self.paths.clipped_read_file_long_enough_paths,
             self.paths.clipped_read_file_too_short_paths, 
-            self.parameters.min_seq_length)
-        read_mapper = ReadMapper()
+            args.min_read_length)
+        read_mapper = ReadMapper(segemehl_bin=args.segemehl_bin)
         read_mapper.build_index(
             self.paths.genome_file_paths, self.paths.index_file_path)
         read_mapper.run_mappings(
@@ -67,8 +67,9 @@ class Controller(object):
             self.paths.genome_file_paths, self.paths.index_file_path,
             self.paths.read_mapping_result_paths, 
             self.paths.unmapped_reads_paths, 
-            self.parameters.segemehl_number_of_threads, 
-            self.parameters.segemehl_accuracy)
+            int(args.threads),
+            int(args.segemehl_accuracy),
+            int(args.segemehl_evalue))
         read_mapper_stats = ReadMapperStats()
         read_mapper_stats.count_raw_reads(
             read_file_names, self.paths.read_file_paths)

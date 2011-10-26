@@ -7,7 +7,7 @@ from libs.readmapper import ReadMapper
 class TestReadMapper(unittest.TestCase):
 
     def setUp(self):
-        self.read_mapper = ReadMapper()
+        self.read_mapper = ReadMapper("segemehl")
 
     @unittest.skip("TODO")
     def test_build_index(self):
