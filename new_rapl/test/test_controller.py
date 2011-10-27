@@ -7,6 +7,11 @@ from libs.controller import Controller
 
 class ArgMock(object):
     project_path = "a_test_project"
+    min_read_length = 12
+    segemehl_bin = "segemehl"
+    threads = 1
+    segemehl_accuracy = 95
+    segemehl_evalue = 5.0
 
 class TestController(unittest.TestCase):
 
@@ -49,25 +54,19 @@ class TestController(unittest.TestCase):
         if os.path.exists(self.test_project_name):
             shutil.rmtree(self.test_project_name)
 
-@unittest.skip("tmp")        
 class TestControllerStartProject(TestController):
 
     def test_start_project(self):
-        arg_mock = ArgMock()
-        arg_mock.project_name = self.test_project_name
-        self.controller.start_project(arg_mock)
+        self.controller.start_project()
         self.assertEqual(
             list(os.listdir(self.test_project_name)), 
             ['rapl.config', 'input', 'output'])
         self._remove_project_folder()
 
-@unittest.skip("tmp")        
 class TestControllerReadMapping(TestController):
 
     def test_read_mapping(self):
-        arg_mock = ArgMock()
-        arg_mock.project_name = self.test_project_name
-        self.controller.start_project(arg_mock)
+        self.controller.start_project()
         self.controller.paths._set_folder_names()
         self.controller.paths._set_static_file_names()
         self._generate_input_fasta_files()

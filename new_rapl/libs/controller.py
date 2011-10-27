@@ -31,7 +31,7 @@ class Controller(object):
                          "genome files into folder \"%s\".\n" % (
                 self.paths.read_fasta_folder, self.paths.genome_folder))
 
-    def map_reads(self, args=None):
+    def map_reads(self):
         """Perform the mapping of the reads."""
         read_file_names = self.paths._get_read_file_names()
         genome_file_names = self.paths._get_genome_file_names()
