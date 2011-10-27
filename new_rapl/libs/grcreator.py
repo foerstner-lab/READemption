@@ -59,6 +59,8 @@ class GRCreator(object):
         self, folder_path, read_file_name, ref_seq_file_name, strand, 
         normalization_value, multiplier):
         strand_string = {"-" : "minus", "+" : "plus"}[strand]
+        normalization_value = round(normalization_value, 2)
+        multiplier = round(multiplier, 2)
         return("%s/%s_in_%s_norm_by_%s_mult_by_%s.%s_strand.gr" % (
                 folder_path, read_file_name, ref_seq_file_name, 
                 normalization_value, multiplier, strand_string))

@@ -51,7 +51,7 @@ class TestGRFileBuilder(unittest.TestCase):
         self.gr_file_builder._add_coverage(sam_entry, coverages)
         self.assertListEqual([1.0, 2.0, 2.0, 1.0], coverages)
 
-    def test__normalize_and_multiply(self):
+    def test_normalize_and_multiply(self):
         # Test multiplier
         self.gr_file_builder.multiplier = 2
         self.gr_file_builder.normalization_value = 1
@@ -116,6 +116,20 @@ class TestGRCreator(unittest.TestCase):
             "a/long/path/my_foo_lib_in_my_bar_ref_genome.plus_strand.gr",
             self.gr_creator._output_file_path(
                 "a/long/path", "my_foo_lib", "my_bar_ref_genome", "+"))
+
+    def test_read_normalized_file_path(self):
+        path = self.gr_creator._read_normalized_file_path(
+            "a_folder", "foo_reads", "bar_genome", "+",
+        1000, 500)
+        self.assertEqual("a_folder/foo_reads_in_bar_genome_norm_by_1000_mult" 
+                         + "_by_500.plus_strand.gr", path)
+        # Test the rounding of the multiplier and normalization factor
+        path2 = self.gr_creator._read_normalized_file_path(
+            "a_folder", "foo_reads", "bar_genome", "+",
+        1000.999999, 500.112312)
+        self.assertEqual("a_folder/foo_reads_in_bar_genome_norm_by_1001.0_mult" 
+                         + "_by_500.11.plus_strand.gr", path2)
+
 
 class MockSamEntry(object):
     
