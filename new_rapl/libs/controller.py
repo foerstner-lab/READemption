@@ -38,12 +38,14 @@ class Controller(object):
         self.paths.set_read_files_dep_file_lists(
             read_file_names, self.parameters.min_seq_length)
         self.paths.set_genome_paths(genome_file_names)
-        ref_ids_to_file_name = self._ref_ids_to_file_name(
-            self.paths.genome_file_paths)
-        # self._in_project_folder()
-        # input_file_stats = InputStats()
-        # input_file_stats.create_read_file_stats()
-        # input_file_stats.create_genome_file_stats()
+        # TODO
+        # - generate input stats before mapping
+        # - read tracing after mapping
+        self._prepare_reads()
+        self._map_reads()
+        self._generate_read_mapping_stats(read_file_names)
+
+    def _prepare_reads(self):
         read_clipper = ReadClipper()
         read_clipper.clip(
             self.paths.read_file_paths, self.paths.clipped_read_file_paths)
@@ -53,6 +55,8 @@ class Controller(object):
             self.paths.clipped_read_file_long_enough_paths,
             self.paths.clipped_read_file_too_short_paths, 
             self.args.min_read_length)
+        
+    def _map_reads(self):
         read_mapper = ReadMapper(segemehl_bin=self.args.segemehl_bin)
         read_mapper.build_index(
             self.paths.genome_file_paths, self.paths.index_file_path)
@@ -64,6 +68,10 @@ class Controller(object):
             int(self.args.threads),
             int(self.args.segemehl_accuracy),
             int(self.args.segemehl_evalue))
+
+    def _generate_read_mapping_stats(self, read_file_names):
+        ref_ids_to_file_name = self._ref_ids_to_file_name(
+            self.paths.genome_file_paths)
         read_mapper_stats = ReadMapperStats()
         read_mapper_stats.count_raw_reads(
             read_file_names, self.paths.read_file_paths)
@@ -88,17 +96,9 @@ class Controller(object):
                 fasta_parser.single_entry_file_header(open(genome_file_path)))
             ref_ids_to_file_name[ref_seq_id] = genome_file
         return(ref_ids_to_file_name)
-
-        # read_mapper.select_uniquely_mapped_reads()
-        # read_tracer = ReadTracer()
-        # read_tracer.trace_reads()
-        # read_tracer.create_tracing_summay()
-        # read_tracer_viz = ReadTracerViz()
-        # read_tracer_viz.create_mapping_length_histograms()
     
     def create_gr_files(self):
         """Create GR files based on the combined Segemehl mappings."""
-        #self._in_project_folder()
         read_file_names = self.paths._get_read_file_names()
         genome_file_names = self.paths._get_genome_file_names()
         self.paths.set_read_files_dep_file_lists(
