@@ -1,0 +1,45 @@
+import csv
+
+class Gff3Parser(object):
+    """
+    A format description can be found at:
+    http://genome.ucsc.edu/FAQ/FAQformat.html#format3
+    http://www.sequenceontology.org/gff3.shtml
+
+    a validator can be found here:
+    http://modencode.oicr.on.ca/cgi-bin/validate_gff3_online
+    """
+
+    def entries(self, input_gff_fh):
+        """
+        """
+        for entry_dict in csv.DictReader(
+            input_gff_fh, delimiter="\t", 
+            fieldnames=["seqid", "source", "feature", "start", 
+                        "end", "score", "strand", "phase", "attributes"]):
+            if entry_dict["seqid"].startswith("#"):
+                continue
+            yield(self._dict_to_entry(entry_dict))
+    
+    def _dict_to_entry(self, entry_dict):
+        return(Gff3Entry(entry_dict))
+
+class Gff3Entry(object):
+
+    def __init__(self, entry_dict):
+        self.seqid = entry_dict["seqid"]
+        self.source = entry_dict["source"]
+        self.feature = entry_dict["feature"]
+        # 1-based coordinates
+        self.start = int(entry_dict["start"])
+        self.end = int(entry_dict["end"])
+        self.score = entry_dict["score"]
+        self.strand = entry_dict["strand"]
+        self.phase = entry_dict["phase"]
+        self.attributes = self._attributes(entry_dict["attributes"])
+    
+    def _attributes(self, attributes_string):
+        """Translate the attribute string to dictionary"""
+        return(dict(
+                [key_value_pair.split("=") 
+                 for key_value_pair in attributes_string.split(";")]))
