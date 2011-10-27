@@ -18,7 +18,7 @@ class ProjectCreator(object):
                              "the same name exists already.\n" % project_name)
             sys.exit(2)
 
-    def create_subfolders(self, project_name, subfolders):
+    def create_subfolders(self, subfolders):
         """Create required subfolders in the given folder.
         
         Arguments:
@@ -26,16 +26,15 @@ class ProjectCreator(object):
 
         """
         for folder in subfolders:
-            folder_in_root_folder = "%s/%s" % (project_name, folder)
-            if not os.path.exists(folder_in_root_folder):
-                os.mkdir(folder_in_root_folder)
+            if not os.path.exists(folder):
+                os.mkdir(folder)
     
-    def create_config_file(self, project_name, config_file_path):
+    def create_config_file(self, config_file_path):
         """Create a JSON config file.
         
         Arguments:
         - `project_name`: Name of the project root folder
         """
-        config_fh = open("%s/%s" % (project_name, config_file_path), "w")
+        config_fh = open(config_file_path, "w")
         config_fh.write(json.dumps({"annotation_and_genomes_files" : {}}))
         config_fh.close()

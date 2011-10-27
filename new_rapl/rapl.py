@@ -13,7 +13,7 @@ def main():
     start_project_parser = subparsers.add_parser(
         "start", help="Start a project")
     start_project_parser.add_argument(
-        "project_name", help="Name of the new project")
+        "project_path", default=".", help="Name/path of the project.")
     start_project_parser.set_defaults(func=start_project)
 
     # Parameters for read mapping
@@ -90,22 +90,22 @@ def main():
     generate_report_parser.set_defaults(func=generate_report)
     
     args = parser.parse_args()
-    controller = Controller()
-    args.func(args, controller)
+    controller = Controller(args)
+    args.func(controller)
 
-def start_project(args, controller):
-    controller.start_project(args)
+def start_project(controller):
+    controller.start_project()
 
-def map_reads(args, controller):
-    controller.map_reads(args)
+def map_reads(controller):
+    controller.map_reads()
 
-def create_gr_files(args, controller):
+def create_gr_files(controller):
     controller.create_gr_files()
 
-def search_annoation_overlaps(args, controller):
+def search_annoation_overlaps(controller):
     controller.search_annotation_overlaps()
 
-def generate_report(args, controller):
+def generate_report(controller):
     controller.generate_report()
 
 main()

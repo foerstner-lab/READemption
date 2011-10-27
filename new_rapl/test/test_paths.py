@@ -11,7 +11,7 @@ class TestPaths(unittest.TestCase):
     test_files = ["foo", "bar"]
 
     def setUp(self):
-        self.paths = Paths()
+        self.paths = Paths(base_path=self.test_folder)
         self.folder_names = [
             self.paths.input_folder, self.paths.output_folder, 
             self.paths.read_fasta_folder, self.paths.genome_folder, 
@@ -43,7 +43,7 @@ class TestPaths(unittest.TestCase):
             self.assertEqual(self.folder_names.count(folder_name), 1)
 
     def test_set_folder_names_with_base_path(self):
-        self.paths._set_folder_names(base_path="/tmp")
+        self.paths._set_folder_names()
         for folder_name in self.folder_names:
             assert(folder_name != '')
             self.assertEqual(self.folder_names.count(folder_name), 1)

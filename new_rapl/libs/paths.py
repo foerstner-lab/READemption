@@ -2,7 +2,8 @@ import os
 
 class Paths(object):
 
-    def __init__(self):
+    def __init__(self, base_path="."):
+        self.base_path = base_path
         self._set_folder_names()
         self._set_static_file_names()
         #self._get_read_file_names()
@@ -10,22 +11,22 @@ class Paths(object):
         # TMP deactivated
         # self.parameters = Parameters()
 
-    def _set_folder_names(self, base_path="."):
+    def _set_folder_names(self):
         """Set the name of folders used in a project."""
-        self.input_folder = "%s/input" % (base_path)
-        self.output_folder = "%s/output" % (base_path)
+        self.input_folder = "%s/input" % (self.base_path)
+        self.output_folder = "%s/output" % (self.base_path)
         self.report_folder = "%s/reports_and_stats" % (self.output_folder)
-        self._set_input_folder_names(base_path)
-        self._set_read_mapping_folder_names(base_path)
-        self._set_gr_folder_names(base_path)
-        self._set_annotation_folder_names(base_path)
+        self._set_input_folder_names()
+        self._set_read_mapping_folder_names()
+        self._set_gr_folder_names()
+        self._set_annotation_folder_names()
 
-    def _set_input_folder_names(self, base_path):
+    def _set_input_folder_names(self):
         self.read_fasta_folder = "%s/reads" % self.input_folder
         self.genome_folder = "%s/genomes" % self.input_folder
         self.annotation_folder = "%s/annotation_files" % self.input_folder    
 
-    def _set_read_mapping_folder_names(self, base_path):
+    def _set_read_mapping_folder_names(self):
         self.read_mapping_index_folder = "%s/read_mappings-index" % (
             self.output_folder)
         self.read_mappings_folder = "%s/read_mappings-mappings" % (
@@ -36,12 +37,12 @@ class Paths(object):
         self.unmapped_reads_folder = "%s/read_mappings-unmapped_reads" % (
             self.output_folder)
 
-    def _set_gr_folder_names(self, base_path):
+    def _set_gr_folder_names(self):
         self.gr_folder = "%s/gr-coverages_raw" % self.output_folder
         self.gr_folder_read_normalized = "%s/gr-coverages_read_normalized" % (
             self.output_folder)
 
-    def _set_annotation_folder_names(self, base_path):
+    def _set_annotation_folder_names(self):
         self.annotation_hit_folder = (
             "%s/annotation_overlaps-raw_hits" % self.output_folder)
         self.no_annotation_hit_folder = (
@@ -55,7 +56,7 @@ class Paths(object):
 
     def _set_static_file_names(self):
         """Set name of common files."""
-        self.config_file = "rapl.config"
+        self.config_file = "%s/rapl.config" % self.base_path
         self.read_file_stats = "%s/read_file_stats.txt" % (
             self.report_folder)
         self.genome_file_stats = "%s/genome_file_stats.txt" % (

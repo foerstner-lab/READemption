@@ -8,8 +8,8 @@ from libs.projectcreator import ProjectCreator
 class TestProjectCreator(unittest.TestCase):
 
     def setUp(self):
-        self.projectcreator = ProjectCreator()
         self.root_folder_name = "a_test_project"
+        self.projectcreator = ProjectCreator()
         
     def tearDown(self):
         if os.path.exists(self.root_folder_name):
@@ -23,16 +23,17 @@ class TestProjectCreator(unittest.TestCase):
     def test_create_subfolders(self):
         self.projectcreator.create_root_folder(self.root_folder_name)
         subfolders = ["test_a", "test_b", "test_c"]
-        self.projectcreator.create_subfolders(self.root_folder_name, subfolders)
+        subfolders = [self.root_folder_name + "/" + subfolder for 
+                      subfolder in subfolders]
+        self.projectcreator.create_subfolders(subfolders)
         for subfolder in subfolders:
-            assert(os.path.exists(self.root_folder_name + "/" + subfolder))
+            assert(os.path.exists(subfolder))
 
     def test_create_config_file(self):
-        file_name = "test_rapl_file.json"
+        file_name = "%s/test_rapl_file.json" % self.root_folder_name
         self.projectcreator.create_root_folder(self.root_folder_name)
-        self.projectcreator.create_config_file(
-            self.root_folder_name, file_name)
-        fh = open("%s/%s" % (self.root_folder_name, file_name))
+        self.projectcreator.create_config_file(file_name)
+        fh = open(file_name)
         content = fh.read()
         fh.close()
         self.assertEqual(content, '{"annotation_and_genomes_files": {}}')

@@ -13,26 +13,20 @@ from libs.seqsizefilter import SeqSizeFilter
 
 class Controller(object):
 
-    def __init__(self):
+    def __init__(self, args):
         """Create an instance."""
-        self.paths = Paths()
+        self.args = args
+        self.paths = Paths(args.project_path)
         self.parameters = Parameters()
 
-    def start_project(self, args):
-        """Create a new project.
-        
-        Arguments:
-        - `args.project_name`: Name of the project root folder
-
-        """
+    def start_project(self):
+        """Create a new project."""
         project_creator = ProjectCreator()
-        project_creator.create_root_folder(args.project_name)
-        project_creator.create_subfolders(
-            args.project_name, self.paths.required_folders())
-        project_creator.create_config_file(
-            args.project_name, self.paths.config_file)
+        project_creator.create_root_folder(self.args.project_path)
+        project_creator.create_subfolders(self.paths.required_folders())
+        project_creator.create_config_file(self.paths.config_file)
         sys.stdout.write("Created folder \"%s\" and required subfolders.\n" % (
-                args.project_name))
+                self.args.project_path))
         sys.stdout.write("Please copy read files into folder \"%s\" and "
                          "genome files into folder \"%s\".\n" % (
                 self.paths.read_fasta_folder, self.paths.genome_folder))
@@ -58,8 +52,8 @@ class Controller(object):
             self.paths.clipped_read_file_paths, 
             self.paths.clipped_read_file_long_enough_paths,
             self.paths.clipped_read_file_too_short_paths, 
-            args.min_read_length)
-        read_mapper = ReadMapper(segemehl_bin=args.segemehl_bin)
+            self.args.min_read_length)
+        read_mapper = ReadMapper(segemehl_bin=self.args.segemehl_bin)
         read_mapper.build_index(
             self.paths.genome_file_paths, self.paths.index_file_path)
         read_mapper.run_mappings(
@@ -67,9 +61,9 @@ class Controller(object):
             self.paths.genome_file_paths, self.paths.index_file_path,
             self.paths.read_mapping_result_paths, 
             self.paths.unmapped_reads_paths, 
-            int(args.threads),
-            int(args.segemehl_accuracy),
-            int(args.segemehl_evalue))
+            int(self.args.threads),
+            int(self.args.segemehl_accuracy),
+            int(self.args.segemehl_evalue))
         read_mapper_stats = ReadMapperStats()
         read_mapper_stats.count_raw_reads(
             read_file_names, self.paths.read_file_paths)

@@ -6,13 +6,14 @@ sys.path.append(".")
 from libs.controller import Controller
 
 class ArgMock(object):
-    project_name = None
+    project_path = "a_test_project"
 
 class TestController(unittest.TestCase):
 
     def setUp(self):
-        self.controller = Controller()
-        self.test_project_name = "a_test_project"
+        arg_mock = ArgMock()
+        self.test_project_name = arg_mock.project_path
+        self.controller = Controller(arg_mock)
         self.example_data = ExampleData()
 
     def tearDown(self):
@@ -67,8 +68,7 @@ class TestControllerReadMapping(TestController):
         arg_mock = ArgMock()
         arg_mock.project_name = self.test_project_name
         self.controller.start_project(arg_mock)
-        self.controller.paths._set_folder_names(
-            base_path=self.test_project_name)
+        self.controller.paths._set_folder_names()
         self.controller.paths._set_static_file_names()
         self._generate_input_fasta_files()
         # If number of reads is less than the number of threads
@@ -82,9 +82,8 @@ class TestControllerGRCreation(TestController):
     def test_create_gr_files(self):
         arg_mock = ArgMock()
         arg_mock.project_name = self.test_project_name
-        self.controller.start_project(arg_mock)
-        self.controller.paths._set_folder_names(
-            base_path=self.test_project_name)
+        self.controller.start_project()
+        self.controller.paths._set_folder_names()
         self.controller.paths._set_static_file_names()
         self._generate_input_fasta_files()
         self._generate_mapping_files()
