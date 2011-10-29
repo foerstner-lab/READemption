@@ -15,15 +15,15 @@ class Segemehl(object):
 
     def map_reads(self, read_file, index_file, fasta_files, output_file,
                   hit_strategy=1, accuracy=95, evalue=5.0, threads=1,
-                  sam_output=True, order=False, nonmatch_file=None,
+                  segemehl_format=False, order=False, nonmatch_file=None,
                   other_parameters=None):
         segemehl_call = (
             "%s --query %s --index %s --database %s --outfile %s " 
             "--hitstrategy %s --accuracy %s --evalue %s --threads %s"
             % (self.segemehl_bin, read_file, index_file, " ".join(fasta_files),
                output_file, hit_strategy, accuracy, evalue, threads))
-        if sam_output:
-            segemehl_call += " --SAM"
+        if segemehl_format:
+            segemehl_call += " --SEGEMEHL"
         if order:
             segemehl_call += " --order"
         if nonmatch_file:

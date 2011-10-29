@@ -14,6 +14,7 @@ class TestSegemehl(unittest.TestCase):
     def setUp(self):
         self.segemehl = Segemehl(segemehl_bin="segemehl")
         self.example_data = ExampleData()
+        self.maxDiff = None
 
     def _create_tmp_fasta_file(self, fasta_file_path, content):
         fasta_fh = open(fasta_file_path, "w")
@@ -214,25 +215,25 @@ class LargeOutput(object):
 
     sam_result_mapped_1 = """@HD	VN:1.0
 @SQ	SN:SL1344	LN:960
-@PG	ID:segemehl	VN:0.9.4-$Rev: 316 $ ($Date: 2011-08-18 16:37:19 +0200 (Thu, 18 Aug 2011) $)
+@PG	ID:segemehl	VN:0.9.4-$Rev: 321 $ ($Date: 2011-10-26 15:11:35 +0200 (Mi, 26. Okt 2011) $)	CL:segemehl --query /tmp/test_reads.fa --index /tmp/test.idx --database /tmp/test.fa --outfile /tmp/test_mapping_results.sam --hitstrategy 1 --accuracy 95 --evalue 5.0 --threads 1
 read_01	0	SL1344	181	255	60M	*	0	0	ACAACATCCATGAACCGCATCAGCACCACCACCATTACCACCATCACCATTACCACAGGT	*	NM:i:0	MD:Z:60	NH:i:1	XA:Z:Q
 """
 
     sam_result_mapped_2 = """@HD	VN:1.0
 @SQ	SN:SL1344	LN:960
-@PG	ID:segemehl	VN:0.9.4-$Rev: 316 $ ($Date: 2011-08-18 16:37:19 +0200 (Thu, 18 Aug 2011) $)
+@PG	ID:segemehl	VN:0.9.4-$Rev: 321 $ ($Date: 2011-10-26 15:11:35 +0200 (Mi, 26. Okt 2011) $)	CL:segemehl --query /tmp/test_reads.fa --index /tmp/test.idx --database /tmp/test.fa --outfile /tmp/test_mapping_results.sam --hitstrategy 1 --accuracy 95 --evalue 5.0 --threads 1
 read_03	0	SL1344	301	255	20M	*	0	0	GCTTTTTTTTCGACCAGACA	*	NM:i:1	MD:Z:18G1	NH:i:1	XA:Z:Q
 """
 
     sam_result_mapped_3 = """@HD	VN:1.0
 @SQ	SN:SL1344	LN:960
-@PG	ID:segemehl	VN:0.9.4-$Rev: 316 $ ($Date: 2011-08-18 16:37:19 +0200 (Thu, 18 Aug 2011) $)
+@PG	ID:segemehl	VN:0.9.4-$Rev: 321 $ ($Date: 2011-10-26 15:11:35 +0200 (Mi, 26. Okt 2011) $)	CL:segemehl --query /tmp/test_reads.fa --index /tmp/test.idx --database /tmp/test.fa --outfile /tmp/test_mapping_results.sam --hitstrategy 1 --accuracy 90 --evalue 5.0 --threads 1
 read_05	0	SL1344	301	255	20M	*	0	0	GCTTTTTTTTCGACCAGTCA	*	NM:i:2	MD:Z:17A0G1	NH:i:1	XA:Z:Q
 """
 
     sam_result_no_mappings_1 = """@HD	VN:1.0
 @SQ	SN:SL1344	LN:960
-@PG	ID:segemehl	VN:0.9.4-$Rev: 316 $ ($Date: 2011-08-18 16:37:19 +0200 (Thu, 18 Aug 2011) $)
+@PG	ID:segemehl	VN:0.9.4-$Rev: 321 $ ($Date: 2011-10-26 15:11:35 +0200 (Mi, 26. Okt 2011) $)	CL:segemehl --query /tmp/test_reads.fa --index /tmp/test.idx --database /tmp/test.fa --outfile /tmp/test_mapping_results.sam --hitstrategy 1 --accuracy 95 --evalue 5.0 --threads 1
 """
 
 if __name__ == "__main__":
