@@ -90,6 +90,10 @@ class Paths(object):
         """Read the names of genome files."""
         return(self._get_sorted_folder_content(self.genome_folder))
 
+    def _get_annotation_file_names(self):
+        """Read the names of annotation files."""
+        return(self._get_sorted_folder_content(self.annotation_folder))
+
     def required_folders(self):
         return(self._required_base_folders() + 
                self._requried_input_folders() + 
@@ -131,10 +135,17 @@ class Paths(object):
             self.read_mappings_folder, read_files, appendix=".mappings.sam")
         self.unmapped_reads_paths = self._path_list(
             self.unmapped_reads_folder, read_files, appendix=".unmapped.fa")
+        self.annotation_overlap_result_paths = self._path_list(
+            self.annotation_hit_folder, read_files, 
+            appendix="_annotation_overlaps.txt")
 
     def set_genome_paths(self, genome_files):
         self.genome_file_paths = self._path_list(
             self.genome_folder, genome_files)
+
+    def set_annotation_paths(self, annotation_files):
+        self.annotation_file_paths = self._path_list(
+            self.annotation_folder, annotation_files)
 
     def _path_list(self, folder, files, appendix=""):
         return(["%s/%s%s" % (folder, file, appendix) for file in files])
