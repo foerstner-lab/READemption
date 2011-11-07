@@ -41,6 +41,29 @@ class TestGff3Entry(unittest.TestCase):
         self.assertDictEqual(
             gff3entry.attributes, {"ID": "foo00001", "Name": "foo"})
 
+
+    def test_entry_creation_1(self):
+        gff3entry = Gff3Entry({
+                "seqid" : "IDfoobar2342",
+                "source" : "a_prog",
+                "feature" : "gene",
+                "start" : "1984",
+                "end" : "2001",
+                "score" : "1323",
+                "strand" : "+",
+                "phase" : ".",
+                "attributes" : "ID=foo00001;Name=foo"})
+        self.assertEqual(gff3entry.seqid, "IDfoobar2342")
+        self.assertEqual(gff3entry.source, "a_prog")
+        self.assertEqual(gff3entry.feature, "gene")
+        self.assertEqual(gff3entry.start, 1984)
+        self.assertEqual(gff3entry.end, 2001)
+        self.assertEqual(gff3entry.score, "1323")
+        self.assertEqual(gff3entry.strand, "+")
+        self.assertEqual(gff3entry.phase, ".")
+        self.assertDictEqual(
+            gff3entry.attributes, {"ID": "foo00001", "Name": "foo"})
+
     def test_entry_creation_2(self):
         gff3entry = Gff3Entry({
                 "seqid" : "accession_424",
@@ -62,6 +85,21 @@ class TestGff3Entry(unittest.TestCase):
         self.assertEqual(gff3entry.phase, "1")
         self.assertDictEqual(
             gff3entry.attributes, {"ID": "blub1", "Name": "wow01"})
+
+    def test_entry_creation_3(self):
+        """Test that start and end are sorted. """
+        gff3entry = Gff3Entry({
+                "seqid" : "accession_111",
+                "source" : "make",
+                "feature" : "CDS",
+                "start" : "1000",
+                "end" : "1",
+                "score" : "",
+                "strand" : "-",
+                "phase" : "",
+                "attributes" : "locus_tag=boing"})
+        self.assertEqual(gff3entry.start, 1)
+        self.assertEqual(gff3entry.end, 1000)
 
 class ExampleData(object):
     
