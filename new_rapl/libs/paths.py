@@ -96,27 +96,27 @@ class Paths(object):
 
     def required_folders(self):
         return(self._required_base_folders() + 
-               self._requried_input_folders() + 
-               self._requried_read_mapping_folders() +
-               self._requried_gr_folders() + 
-               self._requried_annotation_folders())
+               self._required_input_folders() + 
+               self._required_read_mapping_folders() +
+               self._required_gr_folders() + 
+               self._required_annotation_folders())
 
     def _required_base_folders(self):
         return([self.input_folder, self.output_folder, self.report_folder])
     
-    def _requried_input_folders(self):
+    def _required_input_folders(self):
         return([self.read_fasta_folder, self.genome_folder, 
                 self.annotation_folder])
 
-    def _requried_read_mapping_folders(self):
+    def _required_read_mapping_folders(self):
         return([self.read_mappings_folder, self.clipped_reads_folder, 
                 self.unmapped_reads_folder, self.read_mapping_index_folder,
                 self.read_tracing_folder])
 
-    def _requried_gr_folders(self):
+    def _required_gr_folders(self):
         return([self.gr_folder, self.gr_folder_read_normalized])
     
-    def _requried_annotation_folders(self):
+    def _required_annotation_folders(self):
         return([self.annotation_hit_folder, self.no_annotation_hit_folder,
                 self.annotation_hit_overview_folder,
                 self.annotation_hit_overview_read_normalized_folder])
