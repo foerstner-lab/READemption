@@ -78,6 +78,13 @@ class TestPaths(unittest.TestCase):
                          sorted(self.test_files))
         self._remove_folder_if_exists(self.test_folder)
 
+    def test_get_annotation_file_names(self):
+        self.paths.annotation_folder = self.test_folder
+        self._create_folder_with_files(self.test_folder, self.test_files)
+        self.assertEqual(self.paths._get_annotation_file_names(),
+                         sorted(self.test_files))
+        self._remove_folder_if_exists(self.test_folder)
+
     def test_set_read_files_dep_file_lists(self):
         self.paths.set_read_files_dep_file_lists(self.test_files, 20)
         for path_list in  [
