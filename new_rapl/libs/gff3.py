@@ -15,9 +15,9 @@ class Gff3Parser(object):
         """
         for entry_dict in csv.DictReader(
             input_gff_fh, delimiter="\t", 
-            fieldnames=["seqid", "source", "feature", "start", 
+            fieldnames=["seq_id", "source", "feature", "start", 
                         "end", "score", "strand", "phase", "attributes"]):
-            if entry_dict["seqid"].startswith("#"):
+            if entry_dict["seq_id"].startswith("#"):
                 continue
             yield(self._dict_to_entry(entry_dict))
     
@@ -27,12 +27,14 @@ class Gff3Parser(object):
 class Gff3Entry(object):
 
     def __init__(self, entry_dict):
-        self.seqid = entry_dict["seqid"]
+        self.seq_id = entry_dict["seq_id"]
         self.source = entry_dict["source"]
         self.feature = entry_dict["feature"]
         # 1-based coordinates
-        self.start = int(entry_dict["start"])
-        self.end = int(entry_dict["end"])
+        # Make sure that start <= end
+        start, end = sorted([int(entry_dict["start"]), int(entry_dict["end"])])
+        self.start = start
+        self.end = end
         self.score = entry_dict["score"]
         self.strand = entry_dict["strand"]
         self.phase = entry_dict["phase"]

@@ -12,16 +12,16 @@ class TestGff3Parser(unittest.TestCase):
 
     def test_entries(self):
         gff_fh = StringIO(self.example_data.gff_content_1)
-        entry_seqids = [entry.seqid for entry 
+        entry_seq_ids = [entry.seq_id for entry 
                         in self.gff3parser.entries(gff_fh)]
         self.assertListEqual(
-            ['foo01', 'foo01', 'foo02', 'foo02'], entry_seqids)
+            ['foo01', 'foo01', 'foo02', 'foo02'], entry_seq_ids)
         
 class TestGff3Entry(unittest.TestCase):
 
     def test_entry_creation_1(self):
         gff3entry = Gff3Entry({
-                "seqid" : "IDfoobar2342",
+                "seq_id" : "IDfoobar2342",
                 "source" : "a_prog",
                 "feature" : "gene",
                 "start" : "1984",
@@ -30,7 +30,7 @@ class TestGff3Entry(unittest.TestCase):
                 "strand" : "+",
                 "phase" : ".",
                 "attributes" : "ID=foo00001;Name=foo"})
-        self.assertEqual(gff3entry.seqid, "IDfoobar2342")
+        self.assertEqual(gff3entry.seq_id, "IDfoobar2342")
         self.assertEqual(gff3entry.source, "a_prog")
         self.assertEqual(gff3entry.feature, "gene")
         self.assertEqual(gff3entry.start, 1984)
@@ -44,7 +44,7 @@ class TestGff3Entry(unittest.TestCase):
 
     def test_entry_creation_1(self):
         gff3entry = Gff3Entry({
-                "seqid" : "IDfoobar2342",
+                "seq_id" : "IDfoobar2342",
                 "source" : "a_prog",
                 "feature" : "gene",
                 "start" : "1984",
@@ -53,7 +53,7 @@ class TestGff3Entry(unittest.TestCase):
                 "strand" : "+",
                 "phase" : ".",
                 "attributes" : "ID=foo00001;Name=foo"})
-        self.assertEqual(gff3entry.seqid, "IDfoobar2342")
+        self.assertEqual(gff3entry.seq_id, "IDfoobar2342")
         self.assertEqual(gff3entry.source, "a_prog")
         self.assertEqual(gff3entry.feature, "gene")
         self.assertEqual(gff3entry.start, 1984)
@@ -66,7 +66,7 @@ class TestGff3Entry(unittest.TestCase):
 
     def test_entry_creation_2(self):
         gff3entry = Gff3Entry({
-                "seqid" : "accession_424",
+                "seq_id" : "accession_424",
                 "source" : "make",
                 "feature" : "CDS",
                 "start" : "101",
@@ -75,7 +75,7 @@ class TestGff3Entry(unittest.TestCase):
                 "strand" : "-",
                 "phase" : "1",
                 "attributes" : "ID=blub1;Name=wow01"})
-        self.assertEqual(gff3entry.seqid, "accession_424")
+        self.assertEqual(gff3entry.seq_id, "accession_424")
         self.assertEqual(gff3entry.source, "make")
         self.assertEqual(gff3entry.feature, "CDS")
         self.assertEqual(gff3entry.start, 101)
@@ -89,7 +89,7 @@ class TestGff3Entry(unittest.TestCase):
     def test_entry_creation_3(self):
         """Test that start and end are sorted. """
         gff3entry = Gff3Entry({
-                "seqid" : "accession_111",
+                "seq_id" : "accession_111",
                 "source" : "make",
                 "feature" : "CDS",
                 "start" : "1000",
