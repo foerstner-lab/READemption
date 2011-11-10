@@ -19,7 +19,6 @@ class TestPaths(unittest.TestCase):
             self.paths.gr_folder, self.paths.gr_folder_read_normalized, 
             self.paths.read_mapping_index_folder, 
             self.paths.annotation_hit_folder, 
-            self.paths.no_annotation_hit_folder, 
             self.paths.annotation_hit_overview_folder, 
             self.paths.annotation_hit_overview_read_normalized_folder, 
             self.paths.read_tracing_folder, 
@@ -62,7 +61,7 @@ class TestPaths(unittest.TestCase):
         self._remove_folder_if_exists(self.test_folder)
 
     def test_required_folders(self):
-        self.assertEqual(len(self.paths.required_folders()), 17)
+        self.assertEqual(len(self.paths.required_folders()), 16)
 
     def test_get_read_file_names(self):
         self.paths.read_fasta_folder = self.test_folder

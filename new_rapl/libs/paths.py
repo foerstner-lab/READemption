@@ -31,7 +31,8 @@ class Paths(object):
             self.output_folder)
         self.read_mappings_folder = "%s/read_mappings-mappings" % (
             self.output_folder)
-        self.read_tracing_folder = "%s/read_mappings-read_tracing" % (self.output_folder)
+        self.read_tracing_folder = "%s/read_mappings-read_tracing" % (
+            self.output_folder)
         self.clipped_reads_folder = "%s/read_mappings-clipped_reads" % (
             self.output_folder)
         self.unmapped_reads_folder = "%s/read_mappings-unmapped_reads" % (
@@ -45,9 +46,6 @@ class Paths(object):
     def _set_annotation_folder_names(self):
         self.annotation_hit_folder = (
             "%s/annotation_overlaps-raw_hits" % self.output_folder)
-        self.no_annotation_hit_folder = (
-            "%s/annotation_overlaps-without_annotation_hits" % 
-            self.output_folder)
         self.annotation_hit_overview_folder = (
             "%s/annotation_overlaps-hit_overviews" % self.output_folder)
         self.annotation_hit_overview_read_normalized_folder = (
@@ -117,7 +115,7 @@ class Paths(object):
         return([self.gr_folder, self.gr_folder_read_normalized])
     
     def _required_annotation_folders(self):
-        return([self.annotation_hit_folder, self.no_annotation_hit_folder,
+        return([self.annotation_hit_folder, 
                 self.annotation_hit_overview_folder,
                 self.annotation_hit_overview_read_normalized_folder])
 
