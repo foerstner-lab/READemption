@@ -41,7 +41,6 @@ class TestGff3Entry(unittest.TestCase):
         self.assertDictEqual(
             gff3entry.attributes, {"ID": "foo00001", "Name": "foo"})
 
-
     def test_entry_creation_1(self):
         gff3entry = Gff3Entry({
                 "seq_id" : "IDfoobar2342",
@@ -63,6 +62,7 @@ class TestGff3Entry(unittest.TestCase):
         self.assertEqual(gff3entry.phase, ".")
         self.assertDictEqual(
             gff3entry.attributes, {"ID": "foo00001", "Name": "foo"})
+        self.assertEqual(gff3entry.attribute_string, "ID=foo00001;Name=foo")
 
     def test_entry_creation_2(self):
         gff3entry = Gff3Entry({
@@ -85,6 +85,7 @@ class TestGff3Entry(unittest.TestCase):
         self.assertEqual(gff3entry.phase, "1")
         self.assertDictEqual(
             gff3entry.attributes, {"ID": "blub1", "Name": "wow01"})
+        self.assertEqual(gff3entry.attribute_string, "ID=blub1;Name=wow01")
 
     def test_entry_creation_3(self):
         """Test that start and end are sorted. """

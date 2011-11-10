@@ -39,6 +39,7 @@ class Gff3Entry(object):
         self.strand = entry_dict["strand"]
         self.phase = entry_dict["phase"]
         self.attributes = self._attributes(entry_dict["attributes"])
+        self.attribute_string = entry_dict["attributes"]
     
     def _attributes(self, attributes_string):
         """Translate the attribute string to dictionary"""
