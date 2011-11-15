@@ -37,7 +37,7 @@ class AnnotationOverlap(object):
 
     def search_overlaps(self, read_mapping_result_paths,
                         annotation_overlap_result_paths):
-        for read_mapping_result_path, annotation_overlap_result_path  in zip(
+        for read_mapping_result_path, annotation_overlap_result_path in zip(
             read_mapping_result_paths, annotation_overlap_result_paths):
             self._search_overlaps(
                 open(read_mapping_result_path), 
