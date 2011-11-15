@@ -67,6 +67,18 @@ def main():
         help="Path of the project folder. If none is given the current "
         "directory is used.")
     annotation_overlap_parser.add_argument(
+        "--force", "-f", default=False, action="store_true", 
+        help="Overwrite existing files.")
+    annotation_overlap_parser.set_defaults(func=search_annoation_overlaps)
+
+    # Parameters for annotation overlap overviews
+    annotation_overlap_parser = subparsers.add_parser(
+        "annotation_overview", help="Create annotation overlap overviews")
+    annotation_overlap_parser.add_argument(
+        "project_path", default=".", nargs="?", 
+        help="Path of the project folder. If none is given the current "
+        "directory is used.")
+    annotation_overlap_parser.add_argument(
         "--unique_only", "-u", default=False, action="store_true",
         help="Use uniquely mapped reads only.")
     annotation_overlap_parser.add_argument(
