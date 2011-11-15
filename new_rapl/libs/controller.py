@@ -10,6 +10,7 @@ from libs.readclipper import ReadClipper
 from libs.readmapper import ReadMapper
 from libs.readmapperstats import ReadMapperStats
 from libs.seqsizefilter import SeqSizeFilter
+from libs.annotationoverlap import AnnotationOverlap
 
 class Controller(object):
 
@@ -114,17 +115,21 @@ class Controller(object):
             read_file_names, self.paths.read_mapping_result_paths, 
             ref_ids_to_file_name, self.paths.gr_folder_read_normalized)
 
-    # def search_annotation_overlaps(self):
-    #     """Search for overlaps of reads and annotations."""
-    #     self._in_project_folder()
-    #     annotations = Annotations()
-    #     annotations.find_annotation_hits()
-    #     annotations.quantify_mapping_redundancy()
-    #     annotations.build_annotation_hit_overview()
-    #     annotations.build_annotation_hit_overview_read_normalized()
-    #     annotations.build_annotation_hit_overview_nucleotide_normalized()
-    #     annotations.build_annotation_hit_overview_rpkm_normalized()
-    #     annotations.count_reads_in_intergenic_regions()
+    def search_annotation_overlaps(self):
+        """Search for overlaps of reads and annotations."""
+        read_file_names = self.paths._get_read_file_names()
+        genome_file_names = self.paths._get_genome_file_names()
+        self.paths.set_read_files_dep_file_lists(
+            read_file_names, self.parameters.min_seq_length)
+        annotation_file_names = self.paths._get_annotation_file_names()
+        self.paths.set_annotation_paths(annotation_file_names)
+        annotation_overlaps = AnnotationOverlap()
+        annotation_overlaps.read_annotation_files(
+            self.paths.annotation_file_paths)
+        read_file_names = self.paths._get_read_file_names()
+        annotation_overlaps.search_overlaps(
+            self.paths.read_mapping_result_paths, 
+            self.paths.annotation_overlap_result_paths)
         
     # def generate_report(self):
     #     """Create final report of the analysis."""
