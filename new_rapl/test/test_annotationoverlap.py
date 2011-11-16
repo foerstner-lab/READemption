@@ -15,82 +15,82 @@ class Gff3EntryMoc(object):
 class TestAnnotationOverlap(unittest.TestCase):
 
     def setUp(self):
-        self.annotations_overlap = AnnotationOverlap()
+        self.annotation_overlap = AnnotationOverlap()
 
     def test_add_anno_to_genome_interval_gene(self):
         for gff_entry in [
             Gff3EntryMoc("bar", 1, 2), Gff3EntryMoc("bar", 4, 8),
             Gff3EntryMoc("foo", 16, 32), Gff3EntryMoc("foo", 16, 32)]:
-            self.annotations_overlap._add_anno_to_genome_interval_gene(
+            self.annotation_overlap._add_anno_to_genome_interval_gene(
                 gff_entry)
         self.assertListEqual(
-            sorted(self.annotations_overlap.genome_interval_gene.keys()), 
+            sorted(self.annotation_overlap.genome_interval_gene.keys()), 
             ["bar", "foo"])
         self.assertListEqual(
-            sorted(self.annotations_overlap.genome_interval_gene["bar"].keys()), 
+            sorted(self.annotation_overlap.genome_interval_gene["bar"].keys()), 
             ["1-2", "4-8"])
         self.assertEqual(
-            type(self.annotations_overlap.genome_interval_gene["bar"]["1-2"]), 
+            type(self.annotation_overlap.genome_interval_gene["bar"]["1-2"]), 
             list)
         self.assertEqual(
-            type(self.annotations_overlap.genome_interval_gene["bar"]["1-2"][0]), 
+            type(self.annotation_overlap.genome_interval_gene["bar"]["1-2"][0]), 
             Gff3EntryMoc)
         self.assertEqual(
-            type(self.annotations_overlap.genome_interval_gene[
+            type(self.annotation_overlap.genome_interval_gene[
                     "foo"]["16-32"][0]),Gff3EntryMoc)
         self.assertEqual(
-            type(self.annotations_overlap.genome_interval_gene[
+            type(self.annotation_overlap.genome_interval_gene[
                     "foo"]["16-32"][1]),Gff3EntryMoc)
 
     def test_add_anno_to_genome_and_interval(self):
         for gff_entry in [
             Gff3EntryMoc("bar", 1, 2), Gff3EntryMoc("bar", 4, 8),
             Gff3EntryMoc("foo", 16, 32), Gff3EntryMoc("foo", 16, 32)]:
-            self.annotations_overlap._add_anno_to_genome_and_interval(gff_entry)
+            self.annotation_overlap._add_anno_to_genome_and_interval(gff_entry)
         self.assertDictEqual(
-            self.annotations_overlap.genomes_and_intervals, 
+            self.annotation_overlap.genomes_and_intervals, 
             {"bar": [(1, 2), (4, 8)], "foo": [(16, 32), (16, 32)]})
         
     def test_build_interval_trees(self):
-        self.annotations_overlap.genomes_and_intervals = {
+        self.annotation_overlap.genomes_and_intervals = {
             "bar": [(1, 2), (4, 8)], "foo": [(16, 32), (16, 32)]}
-        self.annotations_overlap._build_interval_trees()
+        self.annotation_overlap._build_interval_trees()
         self.assertListEqual(
-            sorted(self.annotations_overlap.genome_and_interval_trees.keys()),
+            sorted(self.annotation_overlap.genome_and_interval_trees.keys()),
             ["bar", "foo"])
         self.assertEqual(
-            type(self.annotations_overlap.genome_and_interval_trees["bar"]), 
+            type(self.annotation_overlap.genome_and_interval_trees["bar"]), 
             IntervalTree)
         
     def test_sorted_start_end(self):
         self.assertEqual(
-            self.annotations_overlap._sorted_start_end(4, 15), [4, 15])
+            self.annotation_overlap._sorted_start_end(4, 15), [4, 15])
         self.assertEqual(
-            self.annotations_overlap._sorted_start_end(15, 4), [4, 15])
+            self.annotation_overlap._sorted_start_end(15, 4), [4, 15])
         self.assertEqual(
-            self.annotations_overlap._sorted_start_end(1000, 50), [50, 1000])
+            self.annotation_overlap._sorted_start_end(1000, 50), [50, 1000])
 
     def test_genes_of_interval(self):
-        self.annotations_overlap.genome_interval_gene = {}
-        self.annotations_overlap.genome_interval_gene["genome_id_x"] = {}
-        self.annotations_overlap.genome_interval_gene[
+        self.annotation_overlap.genome_interval_gene = {}
+        self.annotation_overlap.genome_interval_gene["genome_id_x"] = {}
+        self.annotation_overlap.genome_interval_gene[
             "genome_id_x"]["1-10"] = "fake_gene_list"
-        self.assertEqual(self.annotations_overlap._genes_of_interval(
+        self.assertEqual(self.annotation_overlap._genes_of_interval(
                 "genome_id_x", 1, 10), "fake_gene_list")
 
     def test_mod_seq_id(self):
         self.assertEqual(
-            self.annotations_overlap._mod_seq_id("foobar"), "foobar")
+            self.annotation_overlap._mod_seq_id("foobar"), "foobar")
 
     def test_mod_seq_id(self):
-        self.assertEqual(self.annotations_overlap._mod_seq_id(
+        self.assertEqual(self.annotation_overlap._mod_seq_id(
                 "gi|15791399|ref|NC_002163.1|"), "NC_002163.1")
 
     def test_positions_to_key_string(self):
         self.assertEqual(
-            self.annotations_overlap._positions_to_key_string(1, 4), "1-4")
+            self.annotation_overlap._positions_to_key_string(1, 4), "1-4")
         self.assertEqual(
-            self.annotations_overlap._positions_to_key_string(9, 100), "9-100")
+            self.annotation_overlap._positions_to_key_string(9, 100), "9-100")
 
     def test_write_output_line_with_hit(self):
         output_fh = StringIO()
@@ -98,7 +98,7 @@ class TestAnnotationOverlap(unittest.TestCase):
         gff_entry = MockGff3Entry(
             "bar_genome", "make", "gene", 50, 150, ".", "+", ".", 
             "ID=bar;locus_tag=foo")
-        self.annotations_overlap._write_output_line_with_hit(
+        self.annotation_overlap._write_output_line_with_hit(
             sam_entry, gff_entry, output_fh)
         self.assertEqual(
             output_fh.getvalue(), 
@@ -109,7 +109,7 @@ class TestAnnotationOverlap(unittest.TestCase):
     def test_write_output_line_without_hit(self):
         output_fh = StringIO()
         sam_entry = MockSamEntry("foo_read", "bar_genome", 1, 100, "+", 1)
-        self.annotations_overlap._write_output_line_without_hit(
+        self.annotation_overlap._write_output_line_without_hit(
             sam_entry, output_fh)
         self.assertEqual(
             output_fh.getvalue(), 
