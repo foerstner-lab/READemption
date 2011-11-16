@@ -46,3 +46,9 @@ class Gff3Entry(object):
         return(dict(
                 [key_value_pair.split("=") 
                  for key_value_pair in attributes_string.split(";")]))
+
+    def string(self):
+        return("\t".join([str(field) for field in [
+                        self.seq_id, self.source, self.feature, self.start,
+                        self.end, self.score, self.strand, self.phase, 
+                        self.attribute_string]]))

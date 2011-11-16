@@ -102,6 +102,22 @@ class TestGff3Entry(unittest.TestCase):
         self.assertEqual(gff3entry.start, 1)
         self.assertEqual(gff3entry.end, 1000)
 
+    def test_string_creation(self):
+        gff3entry = Gff3Entry({
+                "seq_id" : "accession_111",
+                "source" : "make",
+                "feature" : "CDS",
+                "start" : "1000",
+                "end" : "1",
+                "score" : "0.5",
+                "strand" : "-",
+                "phase" : ".",
+                "attributes" : "locus_tag=boing;note=zoong"})
+        self.assertEqual(
+            gff3entry.string(), 
+            "accession_111\tmake\tCDS\t1\t1000\t0.5\t-\t.\t"
+            "locus_tag=boing;note=zoong")
+
 class ExampleData(object):
     
     gff_content_1 ="""##gff-version 3
