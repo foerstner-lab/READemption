@@ -95,13 +95,11 @@ class Paths(object):
         return([self.input_folder, self.output_folder, self.rna_seq_folder,
                 self.annotation_folder,              
                 self.gr_folder, self.gr_folder_read_normalized, 
-                self.gr_folder_nucl_normalized, self.read_mappings_folder,
+                self.read_mappings_folder,
                 self.clipped_reads_folder, self.unmapped_reads_folder,
                 self.read_mapping_index_folder, self.genome_folder,
                 self.annotation_hit_folder, self.annotation_hit_overview_folder,
                 self.annotation_hit_overview_read_normalized_folder,
-                self.annotation_hit_overview_nucl_normalized_folder,
-                self.annotation_hit_overview_rpkm_normalized_folder,
                 self.read_tracing_folder, self.input_file_stats_folder, 
                 self.report_folder, self.no_annotation_hit_folder])
     
