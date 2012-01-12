@@ -75,7 +75,6 @@ class PolyAClipper(object):
     """
 
     def __init__(self, input_file, output_file):
-        """"""
         self.input_file = input_file
         if output_file:
             self.output_file = output_file + ".clipped.fa"
@@ -117,6 +116,7 @@ class PolyAClipper(object):
                     if start_pos == 0:
                         sequence = "A"
                     break
+        sequence = self._remove_3_prime_a(sequence)
         return(sequence)
 
     def _aaaa_starting_substrings(self, sequence, length):
@@ -132,5 +132,12 @@ class PolyAClipper(object):
                     yield([sequence[cur_start_pos:cur_start_pos+length], 
                            cur_start_pos])
 
+    def _remove_3_prime_a(self, sequence):
+        if sequence == '':
+            return(sequence)
+        elif sequence[-1] == "A":
+            sequence = self._remove_3_prime_a(sequence[:-1])
+        return(sequence)
+                    
 if __name__ == '__main__': 
     main()
