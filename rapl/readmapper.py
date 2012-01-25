@@ -62,7 +62,7 @@ class ReadMapper(object):
         # Produces SAM output
         # Does it's own clipping additionally as the previous clipping step
         # cannot handle short stretches at the end of an read.
-        call("%s --SAM --evalue %s --hitstrategy %s --accuracy %s "
+        call("%s --evalue %s --hitstrategy %s --accuracy %s "
              "--threads %s --index %s --database %s --query %s "
              "--outfile  %s --nomatchfilename %s"  % (
                 self.paths.segemehl_bin,
