@@ -204,9 +204,9 @@ class AnnotationMappingTableBuilder(object):
                          for mapping_file in mapping_files]
             if self.rpkm and self.normalization_factors:
                 countings = self._rpkm_normalized_countings(
-                    read_countings, entry)
+                    countings, entry)
             elif self.normalization_factors:
-                countings = self._normalized_countings(read_countings)
+                countings = self._normalized_countings(countings)
             countings = [str(counting) for counting in countings]
             self.output_fh.write(
                 line[:-1] + "\t" + "\t".join(countings) + "\n")

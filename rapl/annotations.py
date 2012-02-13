@@ -221,7 +221,8 @@ class Annotations(object):
         """
 
         annotation_hit_files = [
-            self.paths.annotation_hit_file(read_file, annotation_file) 
+            self.paths.annotation_hit_file_with_mapping_coutings(
+                read_file, annotation_file) 
             for read_file in self.paths.read_files]
         mapped_reads_countings = [
             self.helper._count_mapped_reads(read_file) 
