@@ -23,8 +23,8 @@ class IntervalTree(object):
     
     Notes:
 
-    - Intervals with the same coordinates will be save multiple time but when
-      queried only one of will be returned.
+    - Intervals with the same coordinates will be save multiple times
+      but when queried only one of will be returned.
 
     """
 
