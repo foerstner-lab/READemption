@@ -5,6 +5,7 @@ class AnnotationOverview(object):
     # TODO 
     # - Read the overlap tables 
     #   - 1 count the number of overlaps of each mapping with how many gene
+    #        (This has to be globalliy for all ovelap hits files together)
     #   - 2 use these countings in a second run
     # - Once all counting are done read each GFF file and print for each line the 
     #   coutings
