@@ -198,8 +198,9 @@ class Paths(object):
         Arguments:
         - `read_file`: name of the read file
         """
-        return("%s.filtered_ltoe_70.0%%_A.txt" % (
-                self.read_mapping_output_file(read_file)))
+        return("%s.filtered_ltoe_%s%%_A.txt" % (
+                self.read_mapping_output_file(read_file),
+                self.parameters.max_a_content))
 
     def a_filter_failed_mappings_file(self, read_file):
         """Return the full path of a file with a filterd mappings
@@ -207,8 +208,9 @@ class Paths(object):
         Arguments:
         - `read_file`: name of the read file
         """
-        return("%s.filtered_gt_70.0%%_A.txt" % (
-                self.read_mapping_output_file(read_file)))
+        return("%s.filtered_gt_%s%%_A.txt" % (
+                self.read_mapping_output_file(read_file),
+                self.parameters.max_a_content))
 
     def unique_mappings_only_file(self, read_file):
         """ Return the path of the file with unique mappings only
