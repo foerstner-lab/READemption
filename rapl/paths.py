@@ -86,6 +86,7 @@ class Paths(object):
     def _set_bin_paths(self):
         """Set file/folder paths for some needed binaries."""
         self.segemehl_bin = "segemehl"
+        # DEV
         self.python_bin = "/opt/Python-3.2/python"
         self.bin_folder = (os.path.split(os.path.realpath(__file__))[0] + 
                            "/rapl_tools")
