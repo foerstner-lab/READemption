@@ -122,17 +122,17 @@ class Paths(object):
     def set_read_files_dep_file_lists(self, read_files, min_seq_length):
         self.read_file_paths = self._path_list(self.read_fasta_folder, read_files)
         self.clipped_read_file_paths = self._path_list(
-            self.clipped_reads_folder, read_files, appendix=".clipped.fa")
+            self.clipped_reads_folder, read_files, appendix="_clipped.fa")
         self.clipped_read_file_long_enough_paths = self._path_list(
             self.clipped_reads_folder, read_files, 
-            appendix=".clipped.fa.%s_nt_and_longer.fa" % str(min_seq_length))
+            appendix="_clipped_%s_nt_and_longer.fa" % str(min_seq_length))
         self.clipped_read_file_too_short_paths = self._path_list(
             self.clipped_reads_folder, read_files, 
-            appendix=".clipped.fa.shorter_than_%s_nt.fa" % str(min_seq_length))
+            appendix="_clipped_shorter_than_%s_nt.fa" % str(min_seq_length))
         self.read_mapping_result_paths = self._path_list(
-            self.read_mappings_folder, read_files, appendix=".mappings.sam")
+            self.read_mappings_folder, read_files, appendix="_mappings.sam")
         self.unmapped_reads_paths = self._path_list(
-            self.unmapped_reads_folder, read_files, appendix=".unmapped.fa")
+            self.unmapped_reads_folder, read_files, appendix="_unmapped.fa")
         self.annotation_overlap_result_paths = self._path_list(
             self.annotation_hit_folder, read_files, 
             appendix="_annotation_overlaps.txt")
