@@ -40,8 +40,10 @@ def main():
         help="Segemehl's maximal e-value. (default 5.0)")
     read_mapping_parser.add_argument(
         "--segemehl_bin", "-s", default="segemehl",
-        help="Segemehl's binary path.")
-
+        help="segemehl's binary path.")
+    read_mapping_parser.add_argument(
+        "--samtools_bin", "-b", default="samtools",
+        help="samtools' binary path.")
     read_mapping_parser.set_defaults(func=map_reads)
 
     # Parameters for GR building

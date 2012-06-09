@@ -43,7 +43,7 @@ class TestController(unittest.TestCase):
         self.controller.paths.set_read_files_dep_file_lists(
             ["libfoo.fa", "libbar.fa"], 12)
         for file_path, sam_content in zip(
-            self.controller.paths.read_mapping_result_paths, 
+            self.controller.paths.read_mapping_result_sam_paths, 
             [self.example_data.sam_content_1, 
              self.example_data.sam_content_2]):
             mapping_fh = open(file_path, "w")

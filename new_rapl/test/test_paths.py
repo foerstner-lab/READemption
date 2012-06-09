@@ -90,7 +90,7 @@ class TestPaths(unittest.TestCase):
             self.paths.read_file_paths, self.paths.clipped_read_file_paths, 
             self.paths.clipped_read_file_long_enough_paths, 
             self.paths.clipped_read_file_too_short_paths,
-            self.paths.read_mapping_result_paths,
+            self.paths.read_mapping_result_sam_paths,
             self.paths.unmapped_reads_paths]:
             assert(isinstance(path_list, list))
             

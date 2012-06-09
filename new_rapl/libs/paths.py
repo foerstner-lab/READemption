@@ -129,8 +129,11 @@ class Paths(object):
         self.clipped_read_file_too_short_paths = self._path_list(
             self.clipped_reads_folder, read_files, 
             appendix="_clipped_shorter_than_%s_nt.fa" % str(min_seq_length))
-        self.read_mapping_result_paths = self._path_list(
+        self.read_mapping_result_sam_paths = self._path_list(
             self.read_mappings_folder, read_files, appendix="_mappings.sam")
+        # samtool appends ".bam" so only the prefix is required
+        self.read_mapping_result_bam_prefixes_paths = self._path_list(
+            self.read_mappings_folder, read_files, appendix="_mappings")
         self.unmapped_reads_paths = self._path_list(
             self.unmapped_reads_folder, read_files, appendix="_unmapped.fa")
         self.annotation_overlap_result_paths = self._path_list(
