@@ -11,7 +11,7 @@ from libs.readmapper import ReadMapper
 from libs.readmapperstats import ReadMapperStats
 from libs.seqsizefilter import SeqSizeFilter
 from libs.annotationoverlap import AnnotationOverlap
-from libs.samtobamconverter import SamToBamConverter
+from libs.sambamconverter import SamToBamConverter
 
 class Controller(object):
 
@@ -46,7 +46,7 @@ class Controller(object):
         self._prepare_reads()
         self._map_reads()
         self._sam_to_bam()
-        #self._generate_read_mapping_stats(read_file_names)
+        self._generate_read_mapping_stats(read_file_names)
 
     def _prepare_reads(self):
         read_clipper = ReadClipper()
@@ -91,7 +91,8 @@ class Controller(object):
         read_mapper_stats.count_too_small_clipped_reads(
             read_file_names, self.paths.clipped_read_file_too_short_paths)
         read_mapper_stats.count_mappings(
-            read_file_names, self.paths.read_mapping_result_sam_paths)
+            read_file_names, self.paths.read_mapping_result_bam_paths,
+            self.args.samtools_bin)
         read_mapper_stats.count_unmapped_reads(
             read_file_names, self.paths.unmapped_reads_paths)
         read_mapper_stats.write_stats_to_file(

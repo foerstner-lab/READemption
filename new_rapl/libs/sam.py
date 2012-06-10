@@ -17,20 +17,25 @@ class SamParser(object):
     """
 
     def entries(self, sam_fh):
-        for split_line in csv.reader(sam_fh, delimiter="\t"):
+        for split_line in self._split_lines(sam_fh):
             if not split_line[0].startswith("@"):
                 yield(SamEntry(split_line))
-        sam_fh.seek(0) # Go back to file start
+        #sam_fh.seek(0) # Go back to file start # OBSOLETE
+
+    def _split_lines(self, sam_fh):
+        """Convert byte to string and split down."""
+        for line in sam_fh:
+            yield(str(line, encoding="utf8")[:-1].split("\t"))
 
     def reference_sequences(self, sam_fh):
-        for split_line in csv.reader(sam_fh, delimiter="\t"):
+        for split_line in self._split_lines(sam_fh):
             if split_line[0].startswith("@SQ"):
                 yield(split_line[1].replace("SN:", ""))
-            # Stop as soon there the first entry line is found
+            # Stop as soon there the first entry line is found 
             if not split_line[0].startswith("@"):
-                sam_fh.seek(0) # Go back to file start
+                #sam_fh.seek(0) # Go back to file start # OBSOLETE
                 break
-        sam_fh.seek(0) # Go back to file start
+        #sam_fh.seek(0) # Go back to file start # OBSOLETE
 
     def mapping_countings(self, sam_fh):
         ref_seqs_and_mappings = {}

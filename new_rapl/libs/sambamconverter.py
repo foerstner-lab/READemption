@@ -1,4 +1,4 @@
-from subprocess import call
+from subprocess import call, Popen, PIPE
 import os
 
 class SamToBamConverter(object):
@@ -25,3 +25,13 @@ class SamToBamConverter(object):
 
     def _temp_unsorted_bam_file_path(self, bam_file_path_prefix):
         return("%s%s.bam" % (bam_file_path_prefix, self._unsorted_appendix))
+
+
+class BamToSamStreamer(object):
+    
+    def __init__(self, samtools_bin):
+        self._samtools_bin = samtools_bin
+
+    def bam_to_sam_stream(self, bam_file):
+        return(Popen("%s view -h %s" % (self._samtools_bin, bam_file), 
+                  stdout=PIPE, shell=True).stdout)

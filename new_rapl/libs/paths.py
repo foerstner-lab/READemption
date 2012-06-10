@@ -134,6 +134,8 @@ class Paths(object):
         # samtool appends ".bam" so only the prefix is required
         self.read_mapping_result_bam_prefixes_paths = self._path_list(
             self.read_mappings_folder, read_files, appendix="_mappings")
+        self.read_mapping_result_bam_paths = self._path_list(
+            self.read_mappings_folder, read_files, appendix="_mappings.bam")
         self.unmapped_reads_paths = self._path_list(
             self.unmapped_reads_folder, read_files, appendix="_unmapped.fa")
         self.annotation_overlap_result_paths = self._path_list(

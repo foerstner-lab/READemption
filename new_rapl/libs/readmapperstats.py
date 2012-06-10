@@ -3,6 +3,7 @@ from functools import reduce
 sys.path.append(".")
 from libs.fasta import FastaParser
 from libs.sam import SamParser
+from libs.sambamconverter import BamToSamStreamer
 
 class ReadMapperStats(object):
 
@@ -33,17 +34,21 @@ class ReadMapperStats(object):
     def _count_fasta_entries(self, fasta_path):
         return(self._count_fasta_fh_entries(open(fasta_path)))
 
-    def count_mappings(self, read_file_names, read_mapping_result_paths):
+    def count_mappings(self, read_file_names, read_mapping_result_bam_paths,
+                       samtools_bin):
         # self.no_of_mappings and self.no_of_mapped_reads are
         # dictionaries of dictionaries:
         # Read file name -> Reference seq -> counting
+        bam_to_sam_streamer = BamToSamStreamer(samtools_bin)
         self.no_of_mappings = {} 
         self.no_of_mapped_reads = {}
-        for read_file_name, read_mapping_result_path in zip(
-            read_file_names, read_mapping_result_paths):
+        for read_file_name, read_mapping_result_bam_path in zip(
+            read_file_names, read_mapping_result_bam_paths):
+            bam_file_stream = bam_to_sam_streamer.bam_to_sam_stream(
+                read_mapping_result_bam_path)
             no_of_mappings, no_of_mapped_reads = (
                 self.sam_parser.mapping_countings(
-                    open(read_mapping_result_path)))
+                   bam_file_stream))
             self.no_of_mappings[read_file_name] = no_of_mappings
             self.no_of_mapped_reads[read_file_name] = no_of_mapped_reads
 
