@@ -1,5 +1,6 @@
 import csv
 import sys
+from subprocess import Popen, PIPE
 
 class SamParser(object):
     """A parser for SAM files.
@@ -16,31 +17,50 @@ class SamParser(object):
 
     """
 
+    def __init__(self, samtools_bin="samtools"):
+        self._samtools_bin = samtools_bin
+
+    def entries_bam(self, bam_file):
+        for entry in self.entries(self.bam_to_sam_stream(bam_file)):
+            yield(entry)
+
     def entries(self, sam_fh):
         for split_line in self._split_lines(sam_fh):
             if not split_line[0].startswith("@"):
                 yield(SamEntry(split_line))
-        #sam_fh.seek(0) # Go back to file start # OBSOLETE
+
+    def bam_to_sam_stream(self, bam_file):
+        return(Popen("%s view -h %s" % (self._samtools_bin, bam_file), 
+                  stdout=PIPE, shell=True).stdout)
 
     def _split_lines(self, sam_fh):
         """Convert byte to string and split down."""
         for line in sam_fh:
             yield(str(line, encoding="utf8")[:-1].split("\t"))
 
-    def reference_sequences(self, sam_fh):
+    def ref_seq_ids_and_lengths_bam(self, bam_file):
+        return(self.ref_seq_ids_and_lengths(self.bam_to_sam_stream(bam_file)))
+            
+    def ref_seq_ids_and_lengths(self, sam_fh):
+        ref_seq_id_and_lengths = {}
         for split_line in self._split_lines(sam_fh):
             if split_line[0].startswith("@SQ"):
-                yield(split_line[1].replace("SN:", ""))
+                ref_seq = split_line[1].replace("SN:", "")
+                length = int(split_line[2].replace("LN:", ""))
+                ref_seq_id_and_lengths[ref_seq] = length
             # Stop as soon there the first entry line is found 
             if not split_line[0].startswith("@"):
-                #sam_fh.seek(0) # Go back to file start # OBSOLETE
                 break
-        #sam_fh.seek(0) # Go back to file start # OBSOLETE
+        return(ref_seq_id_and_lengths)
 
-    def mapping_countings(self, sam_fh):
+    def mapping_countings_bam(self, bam_file, ref_seq_ids):
+        return(self.mapping_countings(self.bam_to_sam_stream(bam_file), 
+                                      ref_seq_ids))
+
+    def mapping_countings(self, sam_fh, ref_seq_ids):
         ref_seqs_and_mappings = {}
         ref_seqs_and_mapped_reads = {}
-        for ref_seq in self.reference_sequences(sam_fh):
+        for ref_seq in ref_seq_ids:
             ref_seqs_and_mappings[ref_seq] = 0
             ref_seqs_and_mapped_reads[ref_seq] = 0
         for entry in self.entries(sam_fh):
