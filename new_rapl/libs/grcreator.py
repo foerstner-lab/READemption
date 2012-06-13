@@ -25,7 +25,8 @@ class GRCreator(object):
         sam_parser = SamParser()
         for read_file_name, read_mapping_result_path in zip(
             read_file_names, read_mapping_result_paths):
-            ref_seqs_and_mappings, ref_seqs_and_mapped_reads = (
+            (ref_seqs_and_mappings, ref_seqs_and_mapped_reads, 
+             ref_seqs_and_uniquely_mapped_reads) = (
                 sam_parser.mapping_countings(open(read_mapping_result_path)))
             # Sum the number of mapped reads for all reference sequences
             read_file_names_and_mapped_reads[read_file_name] = sum(

@@ -60,19 +60,24 @@ class SamParser(object):
     def mapping_countings(self, sam_fh, ref_seq_ids):
         ref_seqs_and_mappings = {}
         ref_seqs_and_mapped_reads = {}
+        ref_seqs_and_uniquely_mapped_reads = {}
         for ref_seq in ref_seq_ids:
             ref_seqs_and_mappings[ref_seq] = 0
             ref_seqs_and_mapped_reads[ref_seq] = 0
+            ref_seqs_and_uniquely_mapped_reads[ref_seq] = 0
         for entry in self.entries(sam_fh):
             try:
                 ref_seqs_and_mappings[entry.reference] += 1
                 ref_seqs_and_mapped_reads[
                     entry.reference] += 1.0/float(entry.number_of_hits_as_int)
-            except:
+                if entry.number_of_hits_as_int == 1:
+                    ref_seqs_and_uniquely_mapped_reads[entry.reference] += 1
+            except KeyError:
                 sys.stderr.write(
                     "SAM entry with unspecified reference found! Stoping\n")
                 sys.exit(2)
-        return(ref_seqs_and_mappings, ref_seqs_and_mapped_reads)
+        return(ref_seqs_and_mappings, ref_seqs_and_mapped_reads, 
+               ref_seqs_and_uniquely_mapped_reads)
 
 class SamEntry(object):
 

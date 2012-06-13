@@ -35,20 +35,21 @@ class ReadMapperStats(object):
         return(self._count_fasta_fh_entries(open(fasta_path)))
 
     def count_mappings(self, read_file_names, read_mapping_result_bam_paths):
-        # self.no_of_mappings and self.no_of_mapped_reads are
-        # dictionaries of dictionaries:
-        # Read file name -> Reference seq -> counting
+        # self.no_of_mappings, self.no_of_mapped_reads and
+        # self.no_of_uniquely_mapped_reads are dictionaries of
+        # dictionaries: Read file name -> Reference seq -> counting
         self.no_of_mappings = {} 
         self.no_of_mapped_reads = {}
+        self.no_of_uniquely_mapped_reads = {}
         for read_file_name, read_mapping_result_bam_path in zip(
             read_file_names, read_mapping_result_bam_paths):
             ref_seq_ids = self.sam_parser.ref_seq_ids_and_lengths_bam(
                   read_mapping_result_bam_path).keys()
-            no_of_mappings, no_of_mapped_reads = (
-               self.sam_parser.mapping_countings_bam(
-                  read_mapping_result_bam_path, ref_seq_ids))
-            self.no_of_mappings[read_file_name] = no_of_mappings
-            self.no_of_mapped_reads[read_file_name] = no_of_mapped_reads
+            (self.no_of_mappings[read_file_name], 
+             self.no_of_mapped_reads[read_file_name], 
+             self.no_of_uniquely_mapped_reads[read_file_name]) = (
+                self.sam_parser.mapping_countings_bam(
+                     read_mapping_result_bam_path, ref_seq_ids))
 
     def count_unmapped_reads(self, read_file_names, unmapped_read_paths):
         self.no_of_unmapped_reads = {}
@@ -78,6 +79,8 @@ class ReadMapperStats(object):
                     description, value_dict, read_file_names) + "\n")
         for description, value_dict_of_dicts in [
             ("Total number of mapped reads", self.no_of_mapped_reads),
+            ("Total number of uniquely mapped reads", 
+             self.no_of_uniquely_mapped_reads),
             ("Total number of mappings", self.no_of_mappings)]:
             output_fh.write(self._dict_value_sum_line(
                     description, value_dict_of_dicts, read_file_names) + "\n")
@@ -93,6 +96,13 @@ class ReadMapperStats(object):
                     ref_ids_to_file_name[ref_seq_header],
                     self.no_of_mapped_reads, read_file_names, ref_seq_header)
                 + "\n")
+        for ref_seq_header in ref_seq_headers:
+            output_fh.write(
+                self._dict_value_per_ref_genome_line(
+                    "Number of uniquely mapped reads in %s" % 
+                    ref_ids_to_file_name[ref_seq_header],
+                    self.no_of_uniquely_mapped_reads, read_file_names, 
+                    ref_seq_header) + "\n")
         for ref_seq_header in ref_seq_headers:
             output_fh.write(
                 self._dict_value_per_ref_genome_line(
