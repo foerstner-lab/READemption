@@ -18,10 +18,13 @@ class SamToBamConverter(object):
         call("%s sort %s %s" % 
              (self._samtools_bin, temp_unsorted_bam_file_path, 
               bam_file_path_prefix), shell=True)
-        # Remove unsoreted BAM file
+        # Generate index for BAM file
+        call("%s index %s.bam" % 
+             (self._samtools_bin, bam_file_path_prefix), shell=True)
+        # Remove unsorted BAM file
         os.remove(temp_unsorted_bam_file_path)
         # Remove SAM file
-        #os.remove(sam_file_path)
+        os.remove(sam_file_path)
 
     def _temp_unsorted_bam_file_path(self, bam_file_path_prefix):
         return("%s%s.bam" % (bam_file_path_prefix, self._unsorted_appendix))
