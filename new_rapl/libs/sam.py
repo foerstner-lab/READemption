@@ -42,16 +42,16 @@ class SamParser(object):
         return(self.ref_seq_ids_and_lengths(self.bam_to_sam_stream(bam_file)))
             
     def ref_seq_ids_and_lengths(self, sam_fh):
-        ref_seq_id_and_lengths = {}
+        ref_seq_ids_and_lengths = {}
         for split_line in self._split_lines(sam_fh):
             if split_line[0].startswith("@SQ"):
                 ref_seq = split_line[1].replace("SN:", "")
                 length = int(split_line[2].replace("LN:", ""))
-                ref_seq_id_and_lengths[ref_seq] = length
+                ref_seq_ids_and_lengths[ref_seq] = length
             # Stop as soon there the first entry line is found 
             if not split_line[0].startswith("@"):
                 break
-        return(ref_seq_id_and_lengths)
+        return(ref_seq_ids_and_lengths)
 
     def mapping_countings_bam(self, bam_file, ref_seq_ids):
         return(self.mapping_countings(self.bam_to_sam_stream(bam_file), 

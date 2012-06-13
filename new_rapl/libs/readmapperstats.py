@@ -1,3 +1,4 @@
+import csv
 import sys
 from functools import reduce
 sys.path.append(".")
@@ -119,3 +120,27 @@ class ReadMapperStats(object):
         return(description + "\t" + "\t".join(
                 [str(value_dict_of_dicts[read_file_name][ref_seq_header])
                  for read_file_name in read_file_names]))
+
+
+class ReadMapperStatsReader(object):
+    
+    def read_stat_file(self, stat_file_path):
+        return(self._read_stat_file(open(stat_file_path)))
+
+    def _read_stat_file(self, stat_fh):
+        stats = {}
+        libs = stat_fh.readline()[:-1].split("\t")[1:]
+        total_num_of_mapped_read = None
+        for row in csv.reader(stat_fh, delimiter="\t"):
+            if row[0].startswith("Total number of mapped reads"):
+                total_num_of_mapped_read = [float(count) for count in row[1:]]
+                break
+
+        for lib, counting in zip(libs, total_num_of_mapped_read):
+            stats[lib] = {"total_number_of_mapped_reads" : counting}
+        return(stats)
+
+    def min_read_countings(self, stat_file_path):
+        read_mapping_stats = self.read_stat_file(stat_file_path)
+        return(min([lib_features["total_number_of_mapped_reads"] 
+                    for lib_features in read_mapping_stats.values()]))

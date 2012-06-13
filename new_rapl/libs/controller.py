@@ -2,13 +2,14 @@ import os
 import sys
 sys.path.append(".")
 from libs.fasta import FastaParser
-from libs.grcreator import GRCreator
+from libs.coveragecreator import CoverageCreator
+from libs.parameterlog import ParameterLogger
 from libs.parameters import Parameters
 from libs.paths import Paths
 from libs.projectcreator import ProjectCreator
 from libs.readclipper import ReadClipper
 from libs.readmapper import ReadMapper
-from libs.readmapperstats import ReadMapperStats
+from libs.readmapperstats import ReadMapperStats, ReadMapperStatsReader
 from libs.seqsizefilter import SeqSizeFilter
 from libs.annotationoverlap import AnnotationOverlap
 from libs.sambamconverter import SamToBamConverter
@@ -37,8 +38,7 @@ class Controller(object):
         """Perform the mapping of the reads."""
         read_file_names = self.paths._get_read_file_names()
         genome_file_names = self.paths._get_genome_file_names()
-        self.paths.set_read_files_dep_file_lists(
-            read_file_names, self.parameters.min_seq_length)
+        self.paths.set_read_files_dep_file_lists(read_file_names)
         self.paths.set_genome_paths(genome_file_names)
         # TODO
         # - generate input stats before mapping
@@ -47,7 +47,7 @@ class Controller(object):
         self._map_reads()
         self._sam_to_bam()
         self._generate_read_mapping_stats(read_file_names)
-
+        
     def _prepare_reads(self):
         read_clipper = ReadClipper()
         read_clipper.clip(
@@ -83,7 +83,8 @@ class Controller(object):
     def _generate_read_mapping_stats(self, read_file_names):
         ref_ids_to_file_name = self._ref_ids_to_file_name(
             self.paths.genome_file_paths)
-        read_mapper_stats = ReadMapperStats()
+        read_mapper_stats = ReadMapperStats(
+            samtools_bin=self.args.samtools_bin)
         read_mapper_stats.count_raw_reads(
             read_file_names, self.paths.read_file_paths)
         read_mapper_stats.count_long_enough_clipped_reads(
@@ -91,8 +92,7 @@ class Controller(object):
         read_mapper_stats.count_too_small_clipped_reads(
             read_file_names, self.paths.clipped_read_file_too_short_paths)
         read_mapper_stats.count_mappings(
-            read_file_names, self.paths.read_mapping_result_bam_paths,
-            self.args.samtools_bin)
+            read_file_names, self.paths.read_mapping_result_bam_paths)
         read_mapper_stats.count_unmapped_reads(
             read_file_names, self.paths.unmapped_reads_paths)
         read_mapper_stats.write_stats_to_file(
@@ -108,23 +108,47 @@ class Controller(object):
                 fasta_parser.single_entry_file_header(open(genome_file_path)))
             ref_ids_to_file_name[ref_seq_id] = genome_file
         return(ref_ids_to_file_name)
-    
-    def create_gr_files(self):
-        """Create GR files based on the combined Segemehl mappings."""
+
+    def create_coverage_files(self):
+        """Create coverage files based on the combined Segemehl mappings."""
         read_file_names = self.paths._get_read_file_names()
-        genome_file_names = self.paths._get_genome_file_names()
-        self.paths.set_read_files_dep_file_lists(
-            read_file_names, self.parameters.min_seq_length)
-        self.paths.set_genome_paths(genome_file_names)
-        ref_ids_to_file_name = self._ref_ids_to_file_name(
-            self.paths.genome_file_paths)
-        gr_creator = GRCreator()
-        gr_creator.create_gr_files(
-            read_file_names, self.paths.read_mapping_result_sam_paths,
-            ref_ids_to_file_name, self.paths.gr_folder)
-        gr_creator.create_read_normalized_gr_files(
-            read_file_names, self.paths.read_mapping_result_sam_paths, 
-            ref_ids_to_file_name, self.paths.gr_folder_read_normalized)
+        self.paths.set_read_files_dep_file_lists(read_file_names)
+        read_mapper_stat_reader = ReadMapperStatsReader()
+        read_mapping_stats = read_mapper_stat_reader.read_stat_file(
+            self.paths.read_mapping_stat_file)
+        min_read_mapping_counting = read_mapper_stat_reader.min_read_countings(
+            self.paths.read_mapping_stat_file)
+        for read_file_name, bam_file_path in zip(
+            read_file_names, self.paths.read_mapping_result_bam_paths):
+            self._create_coverage_files_for_lib(
+                read_file_name, bam_file_path, read_mapping_stats, 
+                min_read_mapping_counting)
+
+    def _create_coverage_files_for_lib(
+        self, read_file_name, bam_file_path, read_mapping_stats, 
+        min_read_mapping_counting):
+        coverage_creator = CoverageCreator(samtools_bin=self.args.samtools_bin)
+        coverage_creator.init_coverage_lists(bam_file_path)
+        coverage_creator.count_coverage(bam_file_path)
+        # Raw countings
+        coverage_creator.write_to_files(
+            "%s/%s" % (self.paths.coverage_folder, read_file_name), 
+            read_file_name)
+        total_number_of_mapped_reads = read_mapping_stats[read_file_name][
+            "total_number_of_mapped_reads"]
+        # Read normalized countings - multiplied by min read counting
+        factor = (min_read_mapping_counting / total_number_of_mapped_reads)
+        coverage_creator.write_to_files(
+            "%s/%s-div_by_%.1f_multi_by_%.1f" % (
+                self.paths.coverage_folder_norm_reads, read_file_name, 
+                total_number_of_mapped_reads, min_read_mapping_counting),
+            read_file_name, factor=factor)
+        # Read normalized countings - multiplied by 1M
+        factor = (total_number_of_mapped_reads * 1000000)
+        coverage_creator.write_to_files(
+            "%s/%s-per_million" % (
+                self.paths.coverage_folder_norm_per_mill, read_file_name),
+            read_file_name, factor=factor)
 
     def search_annotation_overlaps(self):
         """Search for overlaps of reads and annotations."""

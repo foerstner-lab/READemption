@@ -18,7 +18,7 @@ class Paths(object):
         self.report_folder = "%s/reports_and_stats" % (self.output_folder)
         self._set_input_folder_names()
         self._set_read_mapping_folder_names()
-        self._set_gr_folder_names()
+        self._set_coverage_folder_names()
         self._set_annotation_folder_names()
 
     def _set_input_folder_names(self):
@@ -38,10 +38,12 @@ class Paths(object):
         self.unmapped_reads_folder = "%s/read_mappings-unmapped_reads" % (
             self.output_folder)
 
-    def _set_gr_folder_names(self):
-        self.gr_folder = "%s/gr-coverages_raw" % self.output_folder
-        self.gr_folder_read_normalized = "%s/gr-coverages_read_normalized" % (
+    def _set_coverage_folder_names(self):
+        self.coverage_folder = "%s/coverages" % self.output_folder
+        self.coverage_folder_norm_reads = "%s/coverages-read_normalized" % (
             self.output_folder)
+        self.coverage_folder_norm_per_mill = (
+            "%s/coverages-read_normalized_per_mill" % self.output_folder)
 
     def _set_annotation_folder_names(self):
         self.annotation_hit_folder = (
@@ -62,6 +64,8 @@ class Paths(object):
         self.annotation_file_stats = "%s/annotation_file_stats.txt" % (
             self.report_folder)
         self.read_mapping_stat_file = "%s/read_mapping_stats.csv" % (
+            self.report_folder)
+        self.parameter_file = "%s/parameters.csv" % (
             self.report_folder)
         self.tracing_summary_file = "%s/read_tracing_summary.csv" % (
             self.report_folder)
@@ -96,7 +100,7 @@ class Paths(object):
         return(self._required_base_folders() + 
                self._required_input_folders() + 
                self._required_read_mapping_folders() +
-               self._required_gr_folders() + 
+               self._required_coverage_folders() + 
                self._required_annotation_folders())
 
     def _required_base_folders(self):
@@ -111,24 +115,24 @@ class Paths(object):
                 self.unmapped_reads_folder, self.read_mapping_index_folder,
                 self.read_tracing_folder])
 
-    def _required_gr_folders(self):
-        return([self.gr_folder, self.gr_folder_read_normalized])
+    def _required_coverage_folders(self):
+        return([self.coverage_folder, self.coverage_folder_read_normalized])
     
     def _required_annotation_folders(self):
         return([self.annotation_hit_folder, 
                 self.annotation_hit_overview_folder,
                 self.annotation_hit_overview_read_normalized_folder])
 
-    def set_read_files_dep_file_lists(self, read_files, min_seq_length):
+    def set_read_files_dep_file_lists(self, read_files):
         self.read_file_paths = self._path_list(self.read_fasta_folder, read_files)
         self.clipped_read_file_paths = self._path_list(
             self.clipped_reads_folder, read_files, appendix="_clipped.fa")
         self.clipped_read_file_long_enough_paths = self._path_list(
             self.clipped_reads_folder, read_files, 
-            appendix="_clipped_%s_nt_and_longer.fa" % str(min_seq_length))
+            appendix="_clipped_with_sufficent_length.fa")
         self.clipped_read_file_too_short_paths = self._path_list(
             self.clipped_reads_folder, read_files, 
-            appendix="_clipped_shorter_than_%s_nt.fa" % str(min_seq_length))
+            appendix="_clipped_too_sort.fa")
         self.read_mapping_result_sam_paths = self._path_list(
             self.read_mappings_folder, read_files, appendix="_mappings.sam")
         # samtool appends ".bam" so only the prefix is required

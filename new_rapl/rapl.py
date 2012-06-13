@@ -41,25 +41,31 @@ def main():
     read_mapping_parser.add_argument(
         "--segemehl_bin", "-s", default="segemehl",
         help="segemehl's binary path.")
+    read_mapping_parser.set_defaults(func=map_reads)
     read_mapping_parser.add_argument(
         "--samtools_bin", "-b", default="samtools",
         help="samtools' binary path.")
-    read_mapping_parser.set_defaults(func=map_reads)
 
-    # Parameters for GR building
-    gr_creation_parser = subparsers.add_parser(
-        "gr", help="Create GR files")
-    gr_creation_parser.add_argument(
+    # Parameters for coverage file building
+    coverage_creation_parser = subparsers.add_parser(
+        "coverage", help="Create coverage (WIGGLE) files")
+    coverage_creation_parser.add_argument(
         "project_path", default=".", nargs="?", 
         help="Path of the project folder. If none is given the current "
         "directory is used.")
-    gr_creation_parser.add_argument(
+    coverage_creation_parser.add_argument(
         "--unique_only", "-u", default=False, action="store_true",
         help="Use uniquely mapped reads only.")
-    gr_creation_parser.add_argument(
+    coverage_creation_parser.add_argument(
         "--force", "-f", default=False, action="store_true",
         help="Overwrite existing files.")
-    gr_creation_parser.set_defaults(func=create_gr_files)
+    coverage_creation_parser.set_defaults(func=create_coverage_files)
+    coverage_creation_parser.add_argument(
+        "--threads", "-t", default=1, type=int,
+        help="Number of threads that should be used.")
+    coverage_creation_parser.add_argument(
+        "--samtools_bin", "-b", default="samtools",
+        help="samtools' binary path.")
 
     # Parameters for annotation overlap searches
     annotation_overlap_parser = subparsers.add_parser(
@@ -113,8 +119,12 @@ def start_project(controller):
 def map_reads(controller):
     controller.map_reads()
 
-def create_gr_files(controller):
-    controller.create_gr_files()
+def create_coverage_files(controller):
+    controller.create_coverage_files()
+
+# OBSOLTE
+# def create_gr_files(controller):
+#     controller.create_gr_files()
 
 def search_annoation_overlaps(controller):
     controller.search_annotation_overlaps()
