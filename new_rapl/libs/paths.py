@@ -116,7 +116,8 @@ class Paths(object):
                 self.read_tracing_folder])
 
     def _required_coverage_folders(self):
-        return([self.coverage_folder, self.coverage_folder_read_normalized])
+        return([self.coverage_folder, self.coverage_folder_norm_reads, 
+                self.coverage_folder_norm_per_mill])
     
     def _required_annotation_folders(self):
         return([self.annotation_hit_folder, 
