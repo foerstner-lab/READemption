@@ -36,7 +36,11 @@ class SamParser(object):
     def _split_lines(self, sam_fh):
         """Convert byte to string and split down."""
         for line in sam_fh:
-            yield(str(line, encoding="utf8")[:-1].split("\t"))
+            try:
+                # For lines coming from samtools stdout
+                yield(str(line, encoding="utf8")[:-1].split("\t"))
+            except TypeError:
+                yield(line[:-1].split("\t"))
 
     def ref_seq_ids_and_lengths_bam(self, bam_file):
         return(self.ref_seq_ids_and_lengths(self.bam_to_sam_stream(bam_file)))

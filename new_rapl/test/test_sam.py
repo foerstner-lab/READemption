@@ -23,42 +23,20 @@ class TestSamParser(unittest.TestCase):
         seq_fh = StringIO(self.example_data.sam_content_2)
         self.assertEqual(len(list(self.sam_parser.entries(seq_fh))), 9)
 
-    def test_reference_sequences(self):
-        seq_fh = StringIO(self.example_data.sam_content_1)
-        self.assertListEqual(
-            ['SL1344', 'SL1344_plasmid1', 'SL1344_plasmid2'], 
-            list(self.sam_parser.reference_sequences(seq_fh)))
-
-    def test_reference_sequences_and_entries_1(self):
-        """Make sure that both function which use the same filehandle
-        see all lines even if the other function read the file already. 
-
-        Here: First reference_sequences then entries.
-        """
-        seq_fh = StringIO(self.example_data.sam_content_2)
-        self.assertEqual(len(list(self.sam_parser.reference_sequences(seq_fh))), 3)
-        self.assertEqual(len(list(self.sam_parser.entries(seq_fh))), 9)
-
-    def test_reference_sequences_and_entries_2(self):
-        """Make sure that both function which use the same filehandle
-        see all lines even if the other function read the file already. 
-
-        Here: First entries then reference sequences
-        """
-        seq_fh = StringIO(self.example_data.sam_content_2)
-        self.assertEqual(len(list(self.sam_parser.entries(seq_fh))), 9)
-        self.assertEqual(len(list(self.sam_parser.reference_sequences(seq_fh))), 3)
-
     def test_mapping_countings(self):
         sam_fh = StringIO(self.example_data.sam_content_2)
-        no_of_mappings, no_of_mapped_reads = (
-            self.sam_parser.mapping_countings(sam_fh))
+        no_of_mappings, no_of_mapped_reads, uniquely_mapped_reads = (
+            self.sam_parser.mapping_countings(
+                sam_fh, ["SL1344", "SL1344_plasmid1", "SL1344_plasmid2"]))
         self.assertDictEqual(
             {'SL1344': 6, 'SL1344_plasmid1': 3, 'SL1344_plasmid2': 0},
             no_of_mappings)
         self.assertDictEqual(
-            {'SL1344': 3.0, 'SL1344_plasmid1': 3.0, 'SL1344_plasmid2': 0},
+            {'SL1344': 3.0, 'SL1344_plasmid1': 3, 'SL1344_plasmid2': 0},
             no_of_mapped_reads)
+        self.assertDictEqual(
+            {'SL1344': 1, 'SL1344_plasmid1': 3, 'SL1344_plasmid2': 0},
+            uniquely_mapped_reads)
 
 class TestSamEntry(unittest.TestCase):
     
