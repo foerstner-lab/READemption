@@ -94,6 +94,15 @@ class TestSamEntry(unittest.TestCase):
         self.assertEqual(sam_entry.strand, "-")
         self.assertEqual(sam_entry.number_of_hits_as_int, 5)
 
+
+    def test_calculate_end_1(self):
+        split_line = [
+            "read_02", "16", "foo|bar", "1", "255", "20M1I20M1I20M", "*", "0", "0", 
+            "",
+            "*", "NM:i:0", "MD:Z:40",  "NH:i:5", "XA:Z:Q"]
+        sam_entry = SamEntry(split_line)
+        self.assertEqual(sam_entry.end, 60)
+
 class ExampleData(object):
 
     sam_content_1 = """@HD	VN:1.0

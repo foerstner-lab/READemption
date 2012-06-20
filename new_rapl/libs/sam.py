@@ -1,4 +1,5 @@
 import csv
+import re
 import sys
 from subprocess import Popen, PIPE
 
@@ -108,10 +109,16 @@ class SamEntry(object):
         except IndexError:
             pass
 
-        # Secondary values
-        self.end = None
+        # Secondary values:
+        # end is the end position in the reference sequence
+        self.end = None 
         self.strand = None
         self.number_of_hits_as_int = None
+
+        # CIGAR regular expression for length contributing elementes.
+        # Only certain fields contribute to the length of the
+        # alignment.
+        self.cigar_len_pattern = re.compile("(\d+)[M|D|N|=|X|P]")
         
         # Generate secondary values
         self._calculate_end()
@@ -119,7 +126,11 @@ class SamEntry(object):
         self._set_number_of_hits_as_int()
 
     def _calculate_end(self):
-        self.end = self.start + len(self.sequence) - 1
+        self.end = self.start + self._alignment_length() - 1
+
+    def _alignment_length(self):
+        return(sum([int(counting) for counting in 
+                    re.findall(self.cigar_len_pattern, self.cigar)]))
     
     def _set_strand(self):
         if self.flag == 0: 
