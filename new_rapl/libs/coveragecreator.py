@@ -14,6 +14,14 @@ class CoverageCreator(object):
 
     def count_coverage(self, bam_file, mapping_count_normalization=True):
         for entry in self._sam_parser.entries_bam(bam_file):
+            # Here a translation from 1-based system (SAM) to a
+            # 0-based system (python lists) takes place. Due to this
+            # each position is decreased by one. To cover the full
+            # range of the end postion would need to be increased by
+            # one. The substraction and addition result in a change of
+            # zero.
+            start = entry.start - 1
+            end = entry.end
             # Normalize coverage increment by number of read mappings
             if mapping_count_normalization:
                 increment = 1.0 / float(entry.number_of_hits_as_int)
@@ -21,16 +29,16 @@ class CoverageCreator(object):
                 increment = 1.0
             if entry.strand == "+":
                 self.elements_and_coverages["plus"][entry.reference][
-                    entry.start:entry.end] = [
+                    start:end] = [
                     coverage + increment for coverage in 
                     self.elements_and_coverages["plus"][entry.reference][
-                            entry.start:entry.end]]
+                            start:end]]
             elif entry.strand == "-":
                 self.elements_and_coverages["minus"][entry.reference][
-                    entry.start:entry.end] = [
+                    start:end] = [
                     coverage - increment for coverage in 
                     self.elements_and_coverages["minus"][entry.reference][
-                            entry.start:entry.end]]
+                            start:end]]
 
     def write_to_files(self, output_file_prefix, read_file_name, factor=1.0, 
                       output_format="wiggle"):
@@ -46,10 +54,12 @@ class CoverageCreator(object):
             for element in sorted(self.elements_and_coverages[strand].keys()):
                 output_fh.write("variableStep chrom=%s span=1\n" % (element))
                 # Filter values of 0 and multiply other the remaining
-                # ones by the given factor
+                # ones by the given factor. pos is increased by 1 as a
+                # translation from a 0-based sysem (Python list) to a
+                # 1 based system (wiggle) takes place.
                 output_fh.write(
                     "\n".join(
-                        ["%s %s" % (pos, coverage * factor) 
+                        ["%s %s" % (pos + 1, coverage * factor) 
                          for pos, coverage in
                          filter(lambda pos_and_cov: pos_and_cov[1] != 0.0,
                                 enumerate(self.elements_and_coverages[
