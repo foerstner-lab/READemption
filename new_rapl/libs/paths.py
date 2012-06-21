@@ -42,8 +42,8 @@ class Paths(object):
         self.coverage_folder = "%s/coverages" % self.output_folder
         self.coverage_folder_norm_reads = "%s/coverages-read_normalized" % (
             self.output_folder)
-        self.coverage_folder_norm_per_mill = (
-            "%s/coverages-read_normalized_per_mill" % self.output_folder)
+        self.coverage_folder_norm_reads_mil = (
+            "%s/coverages-read_normalized_times_million" % self.output_folder)
 
     def _set_annotation_folder_names(self):
         self.annotation_hit_folder = (
@@ -117,7 +117,7 @@ class Paths(object):
 
     def _required_coverage_folders(self):
         return([self.coverage_folder, self.coverage_folder_norm_reads, 
-                self.coverage_folder_norm_per_mill])
+                self.coverage_folder_norm_reads_mil])
     
     def _required_annotation_folders(self):
         return([self.annotation_hit_folder, 
