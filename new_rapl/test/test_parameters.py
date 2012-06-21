@@ -10,9 +10,7 @@ class TestParameters(unittest.TestCase):
 
     def test_int_parameters(self):
         for parameter in [
-            self.parameters.segemehl_accuracy,
             self.parameters.segemehl_hit_strategy,
-            self.parameters.segemehl_number_of_threads,
             self.parameters.python_number_of_threads,
             self.parameters.min_seq_length,
             self.parameters.min_overlap,
@@ -21,7 +19,6 @@ class TestParameters(unittest.TestCase):
 
     def test_float_parameters(self):
         for parameter in [
-            self.parameters.segemehl_max_e_value,
             self.parameters.min_read_overlap_perc]:
             assert(isinstance(parameter, float))
 
@@ -37,4 +34,3 @@ class TestParameters(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
-
