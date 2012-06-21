@@ -1,3 +1,4 @@
+import concurrent.futures
 import os
 import sys
 sys.path.append(".")
@@ -124,6 +125,32 @@ class Controller(object):
                 read_file_name, bam_file_path, read_mapping_stats, 
                 min_read_mapping_counting)
 
+        # TODO 
+        # # Run the generation of coverage in parallel
+        # threads = []
+        # with concurrent.futures.ThreadPoolExecutor(
+        #     max_workers=self.parameters.python_number_of_threads) as executor:
+        #     for read_file_name, bam_file_path in zip(
+        #         read_file_names, self.paths.read_mapping_result_bam_paths):
+        #         threads.append(executor.submit(
+        #                 self._create_coverage_files_for_lib, 
+        #                 read_file_name, bam_file_path, read_mapping_stats, 
+        #                 min_read_mapping_counting))
+        # TODO: Evaluate thread outcome
+        # self._check_thread_completeness(threads)
+    # def _check_thread_completeness(self, threads):
+    #     """Check the completness of each thread in a list"""
+    #     for thread in concurrent.futures.as_completed(threads):
+    #         if not thread.exception() == None:
+    #             self._handle_exception(thread.exception())
+
+    # def _handle_exception(self, exception):
+    #     """Tread an exception as configured."""
+    #     if self.parameters.exception_handling == "report":
+    #         sys.stderr.write(str(exception) + ".\n")
+    #     elif self.parameters.exception_handling == "crash":
+    #         raise(exception) 
+
     def _create_coverage_files_for_lib(
         self, read_file_name, bam_file_path, read_mapping_stats, 
         min_read_mapping_counting):
@@ -146,9 +173,9 @@ class Controller(object):
         # Read normalized countings - multiplied by 1M
         factor = (total_number_of_mapped_reads * 1000000)
         coverage_creator.write_to_files(
-            "%s/%s-per_million" % (
-                self.paths.coverage_folder_norm_per_mill, read_file_name),
-            read_file_name, factor=factor)
+            "%s/%s-div_by_%.1f_multi_by_1M" % (
+                self.paths.coverage_folder_norm_reads_mil, read_file_name, 
+                total_number_of_mapped_reads), read_file_name, factor=factor)
 
     def search_annotation_overlaps(self):
         """Search for overlaps of reads and annotations."""
