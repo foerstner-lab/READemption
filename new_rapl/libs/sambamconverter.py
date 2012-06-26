@@ -11,13 +11,12 @@ class SamToBamConverter(object):
         temp_unsorted_bam_file_path = self._temp_unsorted_bam_file_path(
             bam_file_path_prefix)
         # Generate unsorted BAM file
-        call("%s view -Sb -o %s %s" % 
-             (self._samtools_bin, temp_unsorted_bam_file_path, sam_file_path), 
-             shell=True)
+        call([self._samtools_bin, "view", "-Sb", "-o", 
+              temp_unsorted_bam_file_path, sam_file_path])
         # Generate sorted BAM file
-        call("%s sort %s %s" % 
-             (self._samtools_bin, temp_unsorted_bam_file_path, 
-              bam_file_path_prefix), shell=True)
+        call([self._samtools_bin, "sort", temp_unsorted_bam_file_path, 
+              bam_file_path_prefix])
+
         # Generate index for BAM file
         call("%s index %s.bam" % 
              (self._samtools_bin, bam_file_path_prefix), shell=True)
