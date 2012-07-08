@@ -111,7 +111,7 @@ class Controller(object):
         return(ref_ids_to_file_name)
 
     def create_coverage_files(self):
-        """Create coverage files based on the combined Segemehl mappings."""
+        """Create coverage files based on the Segemehl mappings."""
         read_file_names = self.paths._get_read_file_names()
         self.paths.set_read_files_dep_file_lists(read_file_names)
         read_mapper_stat_reader = ReadMapperStatsReader()
@@ -179,38 +179,17 @@ class Controller(object):
 
     def search_annotation_overlaps(self):
         """Search for overlaps of reads and annotations."""
+        annotation_overlap = AnnotationOverlap()
         read_file_names = self.paths._get_read_file_names()
-        genome_file_names = self.paths._get_genome_file_names()
-        self.paths.set_read_files_dep_file_lists(
-            read_file_names, self.parameters.min_seq_length)
-        annotation_file_names = self.paths._get_annotation_file_names()
-        self.paths.set_annotation_paths(annotation_file_names)
-        annotation_overlaps = AnnotationOverlap()
-        annotation_overlaps.read_annotation_files(
-            self.paths.annotation_file_paths)
-        read_file_names = self.paths._get_read_file_names()
-        annotation_overlaps.search_overlaps(
-            self.paths.read_mapping_result_sam_paths, 
-            self.paths.annotation_overlap_result_paths)
-        
-    # def generate_report(self):
-    #     """Create final report of the analysis."""
-    #     self._in_project_folder()
-    #     rapl_reporter = Reporter(self)
-    #     report_fh = open(self.paths.report_tex_file, "w")
-    #     report_fh.write(rapl_reporter.report())
-    #     report_fh.close()
-        
-    # def _in_project_folder(self):
-    #     """Check if the current directory is a RAPL project folder."""
-    #     if not (os.path.exists(self.paths.config_file) and 
-    #         os.path.exists(self.paths.input_folder) and 
-    #         os.path.exists(self.paths.output_folder)):
-    #         sys.stderr.write("Seems like the current folder is not a RAPL "
-    #                          "project folder.\n")
-    #         sys.stderr.write("Your are currently in \"%s\".\n" % (os.getcwd()))
-    #         sys.exit(2)        
-
-    # def _get_read_file_names(self):
-    #     """Read the names of the read files."""
-    #     self.read_files = sorted(os.listdir(self.paths.rna_seq_folder))
+        annotation_files = self.paths._get_annotation_file_names()
+        self.paths.set_annotation_paths(annotation_files)
+        self.paths.set_read_files_dep_file_lists(read_file_names)
+        for read_file_name, read_mapping_path in zip(
+            read_file_names, self.paths.read_mapping_result_bam_paths):
+            for  annotation_file, annotation_file_path in zip(
+                annotation_files, self.paths.annotation_file_paths):
+                annotation_hit_file_path = self.paths.annotation_hit_file_path(
+                    read_file_name, annotation_file)
+                annotation_overlap.find_overlaps(
+                    read_mapping_path, annotation_file_path, 
+                    annotation_hit_file_path)

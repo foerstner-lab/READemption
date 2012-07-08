@@ -158,3 +158,7 @@ class Paths(object):
     def _path_list(self, folder, files, appendix=""):
         return(["%s/%s%s" % (folder, file, appendix) for file in files])
 
+    def annotation_hit_file_path(self, read_mapping_file, annotation_file):
+        return("%s/%s_in_%s.csv" % (
+                self.annotation_hit_folder, read_mapping_file, annotation_file))
+        
