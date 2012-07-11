@@ -161,4 +161,8 @@ class Paths(object):
     def annotation_hit_file_path(self, read_mapping_file, annotation_file):
         return("%s/%s_in_%s.csv" % (
                 self.annotation_hit_folder, read_mapping_file, annotation_file))
-        
+
+    def annotation_hit_overview_file_path(self, annotation_file, orientation):
+        return("%s/%s_read_countings_%s.csv" % (
+                self.annotation_hit_overview_folder, annotation_file, 
+                orientation))
