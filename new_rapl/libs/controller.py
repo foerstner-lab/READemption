@@ -137,20 +137,8 @@ class Controller(object):
         #                 self._create_coverage_files_for_lib, 
         #                 read_file_name, bam_file_path, read_mapping_stats, 
         #                 min_read_mapping_counting))
-        # TODO: Evaluate thread outcome
+        # Evaluate thread outcome
         # self._check_thread_completeness(threads)
-    # def _check_thread_completeness(self, threads):
-    #     """Check the completness of each thread in a list"""
-    #     for thread in concurrent.futures.as_completed(threads):
-    #         if not thread.exception() == None:
-    #             self._handle_exception(thread.exception())
-
-    # def _handle_exception(self, exception):
-    #     """Tread an exception as configured."""
-    #     if self.parameters.exception_handling == "report":
-    #         sys.stderr.write(str(exception) + ".\n")
-    #     elif self.parameters.exception_handling == "crash":
-    #         raise(exception) 
 
     def _create_coverage_files_for_lib(
         self, read_file_name, bam_file_path, read_mapping_stats, 
@@ -186,6 +174,7 @@ class Controller(object):
         self.paths.set_annotation_paths(annotation_files)
         self.paths.set_read_files_dep_file_lists(read_file_names)
         threads = []
+
         with concurrent.futures.ThreadPoolExecutor(
             max_workers=self.args.threads) as executor:
             for read_file_name, read_mapping_path in zip(
@@ -198,19 +187,13 @@ class Controller(object):
                     threads.append(executor.submit(
                             annotation_overlap.find_overlaps, read_mapping_path,
                             annotation_file_path, annotation_hit_file_path))
-        # TODO: Evaluate thread outcome
-        # self._check_thread_completeness(threads)
+        self._check_thread_completeness(threads)
 
-        # Non-threaded version
-        # for read_file_name, read_mapping_path in zip(
-        #     read_file_names, self.paths.read_mapping_result_bam_paths):
-        #     for annotation_file, annotation_file_path in zip(
-        #         annotation_files, self.paths.annotation_file_paths):
-        #         annotation_hit_file_path = self.paths.annotation_hit_file_path(
-        #             read_file_name, annotation_file)
-        #         annotation_overlap.find_overlaps(
-        #             read_mapping_path, annotation_file_path, 
-        #             annotation_hit_file_path)
+    def _check_thread_completeness(self, threads):
+        """Check the completness of each thread in a list"""
+        for thread in concurrent.futures.as_completed(threads):
+            if thread.exception():
+                raise(thread.exception()) 
 
     def create_annotation_overview(self):
         self.annotation_overview = AnnotationOverview(
@@ -257,7 +240,26 @@ class Controller(object):
             annotation_hit_overview_antisense_file_path = (
                 self.paths.annotation_hit_overview_file_path(
                     annotation_file, "antisense"))
+            # Raw countings
             self.annotation_overview.write_overview_tables(
                 annotation_file, annotation_file_path, read_file_names, 
                 annotation_hit_overview_sense_file_path, 
                 annotation_hit_overview_antisense_file_path)
+            # Mapped reads normalized countings
+            # read_mapper_stat_reader = ReadMapperStatsReader()
+            # read_mapping_stats = read_mapper_stat_reader.read_stat_file(
+            #     self.paths.read_mapping_stat_file)
+            # total_numbers_of_mapped_reads = [
+            #     read_mapping_stats[read_file_name][
+            #         "total_number_of_mapped_reads"] 
+            #     for read_file_names in read_file_names]
+            # print(total_number_of_mapped_reads)
+            # self.annotation_overview.write_overview_tables(
+            #     annotation_file, annotation_file_path, read_file_names, 
+            #     annotation_hit_overview_sense_file_path, 
+            #     annotation_hit_overview_antisense_file_path,
+            #     total_numbers_of_mapped_reads=total_numbers_of_mapped_reads)
+
+
+
+

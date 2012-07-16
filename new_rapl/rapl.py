@@ -75,27 +75,32 @@ def main():
         help="Path of the project folder. If none is given the current "
         "directory is used.")
     annotation_overlap_parser.add_argument(
-        "--force", "-f", default=False, action="store_true", 
-        help="Overwrite existing files.")
-    annotation_overlap_parser.set_defaults(func=search_annoation_overlaps)
+        "--threads", "-t", default=1, type=int,
+        help="Number of threads that should be used.")
+    # TODO
+    # annotation_overlap_parser.add_argument(
+    #     "--force", "-f", default=False, action="store_true", 
+    #     help="Overwrite existing files.")
+    annotation_overlap_parser.set_defaults(func=search_annotation_overlaps)
 
     # Parameters for annotation overlap overviews
-    annotation_overlap_parser = subparsers.add_parser(
+    annotation_overview_parser = subparsers.add_parser(
         "annotation_overview", help="Create annotation overlap overviews")
-    annotation_overlap_parser.add_argument(
+    annotation_overview_parser.add_argument(
         "project_path", default=".", nargs="?", 
         help="Path of the project folder. If none is given the current "
         "directory is used.")
-    annotation_overlap_parser.add_argument(
-        "--unique_only", "-u", default=False, action="store_true",
-        help="Use uniquely mapped reads only.")
-    annotation_overlap_parser.add_argument(
+    annotation_overview_parser.add_argument(
         "--min_overlap", "-o", default=10, type=int,
         help="Minimal read-annotation-overlap (in nt) (default 10)")
-    annotation_overlap_parser.add_argument(
-        "--force", "-f", default=False, action="store_true", 
-        help="Overwrite existing files.")
-    annotation_overlap_parser.set_defaults(func=search_annoation_overlaps)
+    # TODO
+    # annotation_overview_parser.add_argument(
+    #     "--unique_only", "-u", default=False, action="store_true",
+    #     help="Use uniquely mapped reads only.")
+    # annotation_overview_parser.add_argument(
+    #     "--force", "-f", default=False, action="store_true", 
+    #     help="Overwrite existing files.")
+    annotation_overview_parser.set_defaults(func=create_annotation_overview)
 
     # Parameters for report generation
     generate_report_parser = subparsers.add_parser(
@@ -122,13 +127,12 @@ def map_reads(controller):
 def create_coverage_files(controller):
     controller.create_coverage_files()
 
-# OBSOLTE
-# def create_gr_files(controller):
-#     controller.create_gr_files()
-
-def search_annoation_overlaps(controller):
+def search_annotation_overlaps(controller):
     controller.search_annotation_overlaps()
 
+def create_annotation_overview(controller):
+    controller.create_annotation_overview()
+    
 def generate_report(controller):
     controller.generate_report()
 
