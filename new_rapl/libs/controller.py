@@ -143,9 +143,14 @@ class Controller(object):
     def _create_coverage_files_for_lib(
         self, read_file_name, bam_file_path, read_mapping_stats, 
         min_read_mapping_counting):
-        coverage_creator = CoverageCreator(samtools_bin=self.args.samtools_bin)
-        coverage_creator.init_coverage_lists(bam_file_path)
-        coverage_creator.count_coverage(bam_file_path)
+        coverage_creator = CoverageCreator(
+            samtools_bin=self.args.samtools_bin)
+        read_count_splitting = True
+        if self.args.skip_read_count_splitting:
+            read_count_splitting = False
+        coverage_creator.init_coverage_lists( bam_file_path)
+        coverage_creator.count_coverage(
+            bam_file_path, read_count_splitting=read_count_splitting)
         # Raw countings
         coverage_creator.write_to_files(
             "%s/%s" % (self.paths.coverage_folder, read_file_name), 

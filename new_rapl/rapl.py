@@ -64,6 +64,11 @@ def main():
         "--threads", "-t", default=1, type=int,
         help="Number of threads that should be used.")
     coverage_creation_parser.add_argument(
+        "--skip_read_count_splitting", "-s", default=False, 
+        action="store_true", help="Do not split the read counting between "
+        "different mappings. Default is to do the splitting.")
+
+    coverage_creation_parser.add_argument(
         "--samtools_bin", "-b", default="samtools",
         help="samtools' binary path.")
 

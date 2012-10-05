@@ -12,7 +12,7 @@ class CoverageCreator(object):
             for strand in ["plus", "minus"]:
                 self.elements_and_coverages[strand][ref_seq] = [0.0] * length
 
-    def count_coverage(self, bam_file, mapping_count_normalization=True):
+    def count_coverage(self, bam_file, read_count_splitting=True):
         for entry in self._sam_parser.entries_bam(bam_file):
             # Here a translation from 1-based system (SAM) to a
             # 0-based system (python lists) takes place. Due to this
@@ -23,7 +23,8 @@ class CoverageCreator(object):
             start = entry.start - 1
             end = entry.end
             # Normalize coverage increment by number of read mappings
-            if mapping_count_normalization:
+            # per read
+            if read_count_splitting:
                 increment = 1.0 / float(entry.number_of_hits_as_int)
             else:
                 increment = 1.0
