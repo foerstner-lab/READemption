@@ -165,7 +165,7 @@ class Controller(object):
                 total_number_of_mapped_reads, min_read_mapping_counting),
             read_file_name, factor=factor)
         # Read normalized countings - multiplied by 1M
-        factor = (total_number_of_mapped_reads * 1000000)
+        factor = (1000000 / total_number_of_mapped_reads)
         coverage_creator.write_to_files(
             "%s/%s-div_by_%.1f_multi_by_1M" % (
                 self.paths.coverage_folder_norm_reads_mil, read_file_name, 
