@@ -49,18 +49,18 @@ class Controller(object):
         self._map_reads()
         self._sam_to_bam()
         self._generate_read_mapping_stats(read_file_names)
-        
+
     def _prepare_reads(self):
         read_clipper = ReadClipper()
         read_clipper.clip(
             self.paths.read_file_paths, self.paths.clipped_read_file_paths)
         seq_size_filter = SeqSizeFilter()
         seq_size_filter.filter(
-            self.paths.clipped_read_file_paths, 
+            self.paths.clipped_read_file_paths,
             self.paths.clipped_read_file_long_enough_paths,
-            self.paths.clipped_read_file_too_short_paths, 
+            self.paths.clipped_read_file_too_short_paths,
             self.args.min_read_length)
-        
+
     def _map_reads(self):
         read_mapper = ReadMapper(segemehl_bin=self.args.segemehl_bin)
         read_mapper.build_index(
@@ -68,8 +68,8 @@ class Controller(object):
         read_mapper.run_mappings(
             self.paths.clipped_read_file_long_enough_paths,
             self.paths.genome_file_paths, self.paths.index_file_path,
-            self.paths.read_mapping_result_sam_paths, 
-            self.paths.unmapped_reads_paths, 
+            self.paths.read_mapping_result_sam_paths,
+            self.paths.unmapped_reads_paths,
             int(self.args.threads),
             int(self.args.segemehl_accuracy),
             int(self.args.segemehl_evalue))
@@ -98,7 +98,7 @@ class Controller(object):
         read_mapper_stats.count_unmapped_reads(
             read_file_names, self.paths.unmapped_reads_paths)
         read_mapper_stats.write_stats_to_file(
-            read_file_names, ref_ids_to_file_name, 
+            read_file_names, ref_ids_to_file_name,
             self.paths.read_mapping_stat_file)
 
     def _ref_ids_to_file_name(self, genome_file_paths):
@@ -123,10 +123,10 @@ class Controller(object):
         for read_file_name, bam_file_path in zip(
             read_file_names, self.paths.read_mapping_result_bam_paths):
             self._create_coverage_files_for_lib(
-                read_file_name, bam_file_path, read_mapping_stats, 
+                read_file_name, bam_file_path, read_mapping_stats,
                 min_read_mapping_counting)
 
-        # TODO 
+        # TODO
         # # Run the generation of coverage in parallel
         # threads = []
         # with concurrent.futures.ThreadPoolExecutor(
@@ -134,26 +134,27 @@ class Controller(object):
         #     for read_file_name, bam_file_path in zip(
         #         read_file_names, self.paths.read_mapping_result_bam_paths):
         #         threads.append(executor.submit(
-        #                 self._create_coverage_files_for_lib, 
-        #                 read_file_name, bam_file_path, read_mapping_stats, 
+        #                 self._create_coverage_files_for_lib,
+        #                 read_file_name, bam_file_path, read_mapping_stats,
         #                 min_read_mapping_counting))
         # Evaluate thread outcome
         # self._check_thread_completeness(threads)
 
     def _create_coverage_files_for_lib(
-        self, read_file_name, bam_file_path, read_mapping_stats, 
+        self, read_file_name, bam_file_path, read_mapping_stats,
         min_read_mapping_counting):
         coverage_creator = CoverageCreator(
             samtools_bin=self.args.samtools_bin)
         read_count_splitting = True
         if self.args.skip_read_count_splitting:
             read_count_splitting = False
-        coverage_creator.init_coverage_lists( bam_file_path)
+        coverage_creator.init_coverage_lists(bam_file_path)
         coverage_creator.count_coverage(
-            bam_file_path, read_count_splitting=read_count_splitting)
+            bam_file_path, read_count_splitting=read_count_splitting,
+            uniqueley_mapped_only=self.args.unique_only)
         # Raw countings
         coverage_creator.write_to_files(
-            "%s/%s" % (self.paths.coverage_folder, read_file_name), 
+            "%s/%s" % (self.paths.coverage_folder, read_file_name),
             read_file_name)
         total_number_of_mapped_reads = read_mapping_stats[read_file_name][
             "total_number_of_mapped_reads"]
@@ -161,14 +162,14 @@ class Controller(object):
         factor = (min_read_mapping_counting / total_number_of_mapped_reads)
         coverage_creator.write_to_files(
             "%s/%s-div_by_%.1f_multi_by_%.1f" % (
-                self.paths.coverage_folder_norm_reads, read_file_name, 
+                self.paths.coverage_folder_norm_reads, read_file_name,
                 total_number_of_mapped_reads, min_read_mapping_counting),
             read_file_name, factor=factor)
         # Read normalized countings - multiplied by 1M
         factor = (1000000 / total_number_of_mapped_reads)
         coverage_creator.write_to_files(
             "%s/%s-div_by_%.1f_multi_by_1M" % (
-                self.paths.coverage_folder_norm_reads_mil, read_file_name, 
+                self.paths.coverage_folder_norm_reads_mil, read_file_name,
                 total_number_of_mapped_reads), read_file_name, factor=factor)
 
     def search_annotation_overlaps(self):
@@ -198,7 +199,7 @@ class Controller(object):
         """Check the completness of each thread in a list"""
         for thread in concurrent.futures.as_completed(threads):
             if thread.exception():
-                raise(thread.exception()) 
+                raise(thread.exception())
 
     def create_annotation_overview(self):
         self.annotation_overview = AnnotationOverview(
@@ -247,8 +248,8 @@ class Controller(object):
                     annotation_file, "antisense"))
             # Raw countings
             self.annotation_overview.write_overview_tables(
-                annotation_file, annotation_file_path, read_file_names, 
-                annotation_hit_overview_sense_file_path, 
+                annotation_file, annotation_file_path, read_file_names,
+                annotation_hit_overview_sense_file_path,
                 annotation_hit_overview_antisense_file_path)
             # Mapped reads normalized countings
             # read_mapper_stat_reader = ReadMapperStatsReader()
@@ -256,12 +257,12 @@ class Controller(object):
             #     self.paths.read_mapping_stat_file)
             # total_numbers_of_mapped_reads = [
             #     read_mapping_stats[read_file_name][
-            #         "total_number_of_mapped_reads"] 
+            #         "total_number_of_mapped_reads"]
             #     for read_file_names in read_file_names]
             # print(total_number_of_mapped_reads)
             # self.annotation_overview.write_overview_tables(
-            #     annotation_file, annotation_file_path, read_file_names, 
-            #     annotation_hit_overview_sense_file_path, 
+            #     annotation_file, annotation_file_path, read_file_names,
+            #     annotation_hit_overview_sense_file_path,
             #     annotation_hit_overview_antisense_file_path,
             #     total_numbers_of_mapped_reads=total_numbers_of_mapped_reads)
 

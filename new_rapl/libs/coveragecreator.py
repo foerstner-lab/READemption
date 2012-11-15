@@ -1,7 +1,7 @@
 from libs.sam import SamParser
 
 class CoverageCreator(object):
-    
+
     def __init__(self, samtools_bin="samtools"):
         self._sam_parser = SamParser(samtools_bin)
         self.elements_and_coverages = {"plus" : {}, "minus" : {}}
@@ -12,8 +12,11 @@ class CoverageCreator(object):
             for strand in ["plus", "minus"]:
                 self.elements_and_coverages[strand][ref_seq] = [0.0] * length
 
-    def count_coverage(self, bam_file, read_count_splitting=True):
+    def count_coverage(self, bam_file, read_count_splitting=True,
+                       uniqueley_mapped_only=False):
         for entry in self._sam_parser.entries_bam(bam_file):
+            if uniqueley_mapped_only and entry.number_of_hits_as_int != 1:
+                continue
             # Here a translation from 1-based system (SAM) to a
             # 0-based system (python lists) takes place. Due to this
             # each position is decreased by one. To cover the full
@@ -31,17 +34,17 @@ class CoverageCreator(object):
             if entry.strand == "+":
                 self.elements_and_coverages["plus"][entry.reference][
                     start:end] = [
-                    coverage + increment for coverage in 
+                    coverage + increment for coverage in
                     self.elements_and_coverages["plus"][entry.reference][
                             start:end]]
             elif entry.strand == "-":
                 self.elements_and_coverages["minus"][entry.reference][
                     start:end] = [
-                    coverage - increment for coverage in 
+                    coverage - increment for coverage in
                     self.elements_and_coverages["minus"][entry.reference][
                             start:end]]
 
-    def write_to_files(self, output_file_prefix, read_file_name, factor=1.0, 
+    def write_to_files(self, output_file_prefix, read_file_name, factor=1.0,
                       output_format="wiggle"):
         if output_format == "wiggle":
             self._write_to_wiggle_files(
@@ -60,7 +63,7 @@ class CoverageCreator(object):
                 # 1 based system (wiggle) takes place.
                 output_fh.write(
                     "\n".join(
-                        ["%s %s" % (pos + 1, coverage * factor) 
+                        ["%s %s" % (pos + 1, coverage * factor)
                          for pos, coverage in
                          filter(lambda pos_and_cov: pos_and_cov[1] != 0.0,
                                 enumerate(self.elements_and_coverages[
