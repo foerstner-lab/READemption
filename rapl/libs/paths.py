@@ -24,7 +24,7 @@ class Paths(object):
     def _set_input_folder_names(self):
         self.read_fasta_folder = "%s/reads" % self.input_folder
         self.genome_folder = "%s/genomes" % self.input_folder
-        self.annotation_folder = "%s/annotation_files" % self.input_folder    
+        self.annotation_folder = "%s/annotation_files" % self.input_folder
 
     def _set_read_mapping_folder_names(self):
         self.read_mapping_index_folder = "%s/read_mappings-index" % (
@@ -51,7 +51,7 @@ class Paths(object):
         self.annotation_hit_overview_folder = (
             "%s/annotation_overlaps-hit_overviews" % self.output_folder)
         self.annotation_hit_overview_read_normalized_folder = (
-            "%s/annotation_overlaps-hit_overviews_read_normalized" % 
+            "%s/annotation_overlaps-hit_overviews_read_normalized" %
             self.output_folder)
 
     def _set_static_file_names(self):
@@ -82,7 +82,8 @@ class Paths(object):
 
     def _get_sorted_folder_content(self, folder):
         """Return the sorted file list of a folder"""
-        return(sorted(os.listdir(folder)))
+        return(filter(lambda file_name: not file_name.endswith("~"),
+                      sorted(os.listdir(folder))))
 
     def _get_read_file_names(self):
         """Read the names of the read files."""
@@ -97,30 +98,30 @@ class Paths(object):
         return(self._get_sorted_folder_content(self.annotation_folder))
 
     def required_folders(self):
-        return(self._required_base_folders() + 
-               self._required_input_folders() + 
+        return(self._required_base_folders() +
+               self._required_input_folders() +
                self._required_read_mapping_folders() +
-               self._required_coverage_folders() + 
+               self._required_coverage_folders() +
                self._required_annotation_folders())
 
     def _required_base_folders(self):
         return([self.input_folder, self.output_folder, self.report_folder])
-    
+
     def _required_input_folders(self):
-        return([self.read_fasta_folder, self.genome_folder, 
+        return([self.read_fasta_folder, self.genome_folder,
                 self.annotation_folder])
 
     def _required_read_mapping_folders(self):
-        return([self.read_mappings_folder, self.clipped_reads_folder, 
+        return([self.read_mappings_folder, self.clipped_reads_folder,
                 self.unmapped_reads_folder, self.read_mapping_index_folder,
                 self.read_tracing_folder])
 
     def _required_coverage_folders(self):
-        return([self.coverage_folder, self.coverage_folder_norm_reads, 
+        return([self.coverage_folder, self.coverage_folder_norm_reads,
                 self.coverage_folder_norm_reads_mil])
-    
+
     def _required_annotation_folders(self):
-        return([self.annotation_hit_folder, 
+        return([self.annotation_hit_folder,
                 self.annotation_hit_overview_folder,
                 self.annotation_hit_overview_read_normalized_folder])
 
@@ -129,10 +130,10 @@ class Paths(object):
         self.clipped_read_file_paths = self._path_list(
             self.clipped_reads_folder, read_files, appendix="_clipped.fa")
         self.clipped_read_file_long_enough_paths = self._path_list(
-            self.clipped_reads_folder, read_files, 
+            self.clipped_reads_folder, read_files,
             appendix="_clipped_with_sufficent_length.fa")
         self.clipped_read_file_too_short_paths = self._path_list(
-            self.clipped_reads_folder, read_files, 
+            self.clipped_reads_folder, read_files,
             appendix="_clipped_too_sort.fa")
         self.read_mapping_result_sam_paths = self._path_list(
             self.read_mappings_folder, read_files, appendix="_mappings.sam")
@@ -144,7 +145,7 @@ class Paths(object):
         self.unmapped_reads_paths = self._path_list(
             self.unmapped_reads_folder, read_files, appendix="_unmapped.fa")
         self.annotation_overlap_result_paths = self._path_list(
-            self.annotation_hit_folder, read_files, 
+            self.annotation_hit_folder, read_files,
             appendix="_annotation_overlaps.txt")
 
     def set_genome_paths(self, genome_files):
@@ -164,5 +165,5 @@ class Paths(object):
 
     def annotation_hit_overview_file_path(self, annotation_file, orientation):
         return("%s/%s_read_countings_%s.csv" % (
-                self.annotation_hit_overview_folder, annotation_file, 
+                self.annotation_hit_overview_folder, annotation_file,
                 orientation))
