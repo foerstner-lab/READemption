@@ -13,7 +13,7 @@ class IntersectBedParser(object):
                       "gff_end", "gff_score", "gff_strand", "gff_phase",
                       "gff_attribute_string", "overlap"]
         if self.with_read_freq:
-            fieldnames.appedend("read_mapping_freq")
+            fieldnames.append("read_mapping_freq")
         for entry_dict in csv.DictReader(input_fh, delimiter="\t",
             fieldnames=fieldnames):
             yield(self._dict_to_entry(entry_dict))
