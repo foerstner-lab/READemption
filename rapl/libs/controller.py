@@ -224,7 +224,7 @@ class Controller(object):
                 annotation_hit_file_path = self.paths.annotation_hit_file_path(
                     read_file_name, annotation_file)
                 self.annotation_overview.get_mapping_overlap_freq(
-                    annotation_file, annotation_hit_file_path)
+                    read_file_name, annotation_hit_file_path)
             for annotation_file, annotation_file_path in zip(
                 annotation_files, self.paths.annotation_file_paths):
                 self.annotation_overview.init_counting_table(
