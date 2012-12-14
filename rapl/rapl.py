@@ -29,9 +29,9 @@ def main():
     read_mapping_parser.add_argument(
         "--threads", "-t", default=1, type=int,
         help="Number of threads that should be used.")
-    read_mapping_parser.add_argument(
-        "--force", "-f", default=False, action="store_true",
-        help="Overwrite existing files.")
+    # read_mapping_parser.add_argument(
+    #     "--force", "-f", default=False, action="store_true",
+    #     help="Overwrite existing files.")
     read_mapping_parser.add_argument(
         "--segemehl_accuracy", "-a", default=95.0, type=float,
         help="Segemehl's minimal accuracy (in %%) (default 95).")
@@ -56,9 +56,9 @@ def main():
     coverage_creation_parser.add_argument(
         "--unique_only", "-u", default=False, action="store_true",
         help="Use uniquely mapped reads only.")
-    coverage_creation_parser.add_argument(
-        "--force", "-f", default=False, action="store_true",
-        help="Overwrite existing files.")
+    # coverage_creation_parser.add_argument(
+    #     "--force", "-f", default=False, action="store_true",
+    #     help="Overwrite existing files.")
     coverage_creation_parser.set_defaults(func=create_coverage_files)
     coverage_creation_parser.add_argument(
         "--threads", "-t", default=1, type=int,
