@@ -19,9 +19,9 @@ class SeqSizeFilter(object):
             self._filter_entries_in_file(
                 input_fh, output_long_enough_fh, output_too_short_fh, 
                 min_seq_length)
-        input_fh.close()
-        output_long_enough_fh.close()
-        output_too_short_fh.close()
+            input_fh.close()
+            output_long_enough_fh.close()
+            output_too_short_fh.close()
 
     def _compare_input_paths(self, input_file_paths, output_long_enough_paths,
                output_too_short_paths):

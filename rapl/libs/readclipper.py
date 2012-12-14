@@ -15,8 +15,8 @@ class ReadClipper(object):
             input_fh = open(input_file_path)
             output_fh = open(output_path, "w")
             self._clip_entries_in_file(input_fh, output_fh)
-        input_fh.close()
-        output_fh.close()
+            input_fh.close()
+            output_fh.close()
 
     def _compare_input_paths(self):
         if len(input_file_paths) != len(output_file_pathes):
