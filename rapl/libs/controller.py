@@ -217,6 +217,7 @@ class Controller(object):
             # Get the number of read mappings for each read - this
             # needs only be done once for each read file
             self.annotation_overview.get_read_mapping_freq(read_mapping_path)
+            self.annotation_overview.add_mapping_counting_table(read_file_name)
             for annotation_file, annotation_file_path in zip(
                 annotation_files, self.paths.annotation_file_paths):
                 # Get the number of overlaps each read mapping

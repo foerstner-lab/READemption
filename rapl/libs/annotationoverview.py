@@ -66,7 +66,9 @@ class AnnotationOverview(object):
             self._mappings_per_read[entry.query_id] = int(
                 entry.number_of_hits_as_int)
 
-        # get_overlapping_genes_of_mappings
+    def add_mapping_counting_table(self, read_file_name):
+        self._mappings_and_no_of_overlaps[read_file_name] = {}
+
     def get_mapping_overlap_freq(
         self, read_file_name, annotation_hit_file_path):
         """Store the genes each mapping is overlapping with
@@ -75,7 +77,6 @@ class AnnotationOverview(object):
         mapping is overlapping with.
 
         """
-        self._mappings_and_no_of_overlaps[read_file_name] = {}
         for entry in self._intersect_bed_parser.entries(
             open(annotation_hit_file_path)):
             if not self._valid_overlap(entry):
