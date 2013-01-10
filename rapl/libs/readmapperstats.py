@@ -3,13 +3,12 @@ import sys
 from functools import reduce
 sys.path.append(".")
 from libs.fasta import FastaParser
-from libs.sam import SamParser
+import pysam
 
 class ReadMapperStats(object):
 
     def __init__(self, samtools_bin="samtools"):
         self.fasta_parser = FastaParser()
-        self.sam_parser = SamParser(samtools_bin)
 
     def count_raw_reads(self, read_file_names, read_file_paths):
         self.raw_read_countings = {}
@@ -38,18 +37,40 @@ class ReadMapperStats(object):
         # self.no_of_mappings, self.no_of_mapped_reads and
         # self.no_of_uniquely_mapped_reads are dictionaries of
         # dictionaries: Read file name -> Reference seq -> counting
-        self.no_of_mappings = {} 
+        self.no_of_mappings = {}
         self.no_of_mapped_reads = {}
         self.no_of_uniquely_mapped_reads = {}
         for read_file_name, read_mapping_result_bam_path in zip(
             read_file_names, read_mapping_result_bam_paths):
-            ref_seq_ids = self.sam_parser.ref_seq_ids_and_lengths_bam(
-                  read_mapping_result_bam_path).keys()
-            (self.no_of_mappings[read_file_name], 
-             self.no_of_mapped_reads[read_file_name], 
+            (self.no_of_mappings[read_file_name],
+             self.no_of_mapped_reads[read_file_name],
              self.no_of_uniquely_mapped_reads[read_file_name]) = (
-                self.sam_parser.mapping_countings_bam(
-                     read_mapping_result_bam_path, ref_seq_ids))
+                self._mapping_countings(read_mapping_result_bam_path))
+
+    def _mapping_countings(self, bam_path):
+        bam = pysam.Samfile(bam_path)
+        ref_seqs_and_mappings = {}
+        ref_seqs_and_mapped_reads = {}
+        ref_seqs_and_uniquely_mapped_reads = {}
+        for ref_seq in bam.references:
+            ref_seqs_and_mappings[ref_seq] = 0
+            ref_seqs_and_mapped_reads[ref_seq] = 0
+            ref_seqs_and_uniquely_mapped_reads[ref_seq] = 0
+        for entry in bam.fetch():
+            ref_id = bam.getrname(entry.tid)
+            try:
+                ref_seqs_and_mappings[ref_id] += 1
+                number_of_hits = dict(entry.tags)["NH"]
+                ref_seqs_and_mapped_reads[
+                    ref_id] += 1.0/float(number_of_hits)
+                if number_of_hits == 1:
+                    ref_seqs_and_uniquely_mapped_reads[ref_id] += 1
+            except KeyError:
+                sys.stderr.write(
+                    "SAM entry with unspecified reference found! Stoping\n")
+                sys.exit(2)
+        return(ref_seqs_and_mappings, ref_seqs_and_mapped_reads,
+               ref_seqs_and_uniquely_mapped_reads)
 
     def count_unmapped_reads(self, read_file_names, unmapped_read_paths):
         self.no_of_unmapped_reads = {}
@@ -58,7 +79,7 @@ class ReadMapperStats(object):
 
     def _count_fasta_fh_entries(self, fasta_fh):
         # A memory saving approach to sum the number of entries
-        return(reduce(lambda x, y: x+1, 
+        return(reduce(lambda x, y: x+1,
                       self.fasta_parser.entries(fasta_fh), 0))
 
     def write_stats_to_file(
@@ -71,42 +92,42 @@ class ReadMapperStats(object):
         output_fh.write(self._head_line(read_file_names) + "\n")
         for description, value_dict in [
             ("Number of raw reads", self.raw_read_countings),
-            ("Reads long enough after clipping", 
+            ("Reads long enough after clipping",
              self.long_enough_clipped_reads),
-            ("Reads too short after clipping", 
-             self.too_small_clipped_reads)]: 
+            ("Reads too short after clipping",
+             self.too_small_clipped_reads)]:
             output_fh.write(self._value_line(
                     description, value_dict, read_file_names) + "\n")
         for description, value_dict_of_dicts in [
             ("Total number of mapped reads", self.no_of_mapped_reads),
-            ("Total number of uniquely mapped reads", 
+            ("Total number of uniquely mapped reads",
              self.no_of_uniquely_mapped_reads),
             ("Total number of mappings", self.no_of_mappings)]:
             output_fh.write(self._dict_value_sum_line(
                     description, value_dict_of_dicts, read_file_names) + "\n")
         output_fh.write(self._value_line(
-                "Number of unmappped reads", 
+                "Number of unmappped reads",
                 self.no_of_unmapped_reads, read_file_names) + "\n")
         ref_seq_headers = sorted(
             list(self.no_of_mapped_reads.items())[0][1].keys())
         for ref_seq_header in ref_seq_headers:
             output_fh.write(
                 self._dict_value_per_ref_genome_line(
-                    "Number of mapped reads in %s" % 
+                    "Number of mapped reads in %s" %
                     ref_ids_to_file_name[ref_seq_header],
                     self.no_of_mapped_reads, read_file_names, ref_seq_header)
                 + "\n")
         for ref_seq_header in ref_seq_headers:
             output_fh.write(
                 self._dict_value_per_ref_genome_line(
-                    "Number of uniquely mapped reads in %s" % 
+                    "Number of uniquely mapped reads in %s" %
                     ref_ids_to_file_name[ref_seq_header],
-                    self.no_of_uniquely_mapped_reads, read_file_names, 
+                    self.no_of_uniquely_mapped_reads, read_file_names,
                     ref_seq_header) + "\n")
         for ref_seq_header in ref_seq_headers:
             output_fh.write(
                 self._dict_value_per_ref_genome_line(
-                    "Number of mapping in %s" % 
+                    "Number of mapping in %s" %
                     ref_ids_to_file_name[ref_seq_header],
                     self.no_of_mappings, read_file_names, ref_seq_header)
                 + "\n")
@@ -118,7 +139,7 @@ class ReadMapperStats(object):
         return(description + "\t" + "\t".join(
                 [str(value_dict[read_file_name])
                  for read_file_name in read_file_names]))
-        
+
     def _dict_value_sum_line(
         self, description, value_dict_of_dicts, read_file_names):
         return(description + "\t" + "\t".join(
@@ -131,9 +152,8 @@ class ReadMapperStats(object):
                 [str(value_dict_of_dicts[read_file_name][ref_seq_header])
                  for read_file_name in read_file_names]))
 
-
 class ReadMapperStatsReader(object):
-    
+
     def read_stat_file(self, stat_file_path):
         return(self._read_stat_file(open(stat_file_path)))
 
@@ -152,5 +172,5 @@ class ReadMapperStatsReader(object):
 
     def min_read_countings(self, stat_file_path):
         read_mapping_stats = self.read_stat_file(stat_file_path)
-        return(min([lib_features["total_number_of_mapped_reads"] 
+        return(min([lib_features["total_number_of_mapped_reads"]
                     for lib_features in read_mapping_stats.values()]))
