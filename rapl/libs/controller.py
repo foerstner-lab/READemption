@@ -85,8 +85,7 @@ class Controller(object):
     def _generate_read_mapping_stats(self, read_file_names):
         ref_ids_to_file_name = self._ref_ids_to_file_name(
             self.paths.genome_file_paths)
-        read_mapper_stats = ReadMapperStats(
-            samtools_bin=self.args.samtools_bin)
+        read_mapper_stats = ReadMapperStats()
         read_mapper_stats.count_raw_reads(
             read_file_names, self.paths.read_file_paths)
         read_mapper_stats.count_long_enough_clipped_reads(

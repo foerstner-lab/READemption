@@ -7,7 +7,7 @@ import pysam
 
 class ReadMapperStats(object):
 
-    def __init__(self, samtools_bin="samtools"):
+    def __init__(self):
         self.fasta_parser = FastaParser()
 
     def count_raw_reads(self, read_file_names, read_file_paths):
