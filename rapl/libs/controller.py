@@ -5,7 +5,6 @@ sys.path.append(".")
 from libs.fasta import FastaParser
 from libs.coveragecreator import CoverageCreator
 from libs.parameterlog import ParameterLogger
-from libs.parameters import Parameters
 from libs.paths import Paths
 from libs.projectcreator import ProjectCreator
 from libs.readclipper import ReadClipper
@@ -22,7 +21,6 @@ class Controller(object):
         """Create an instance."""
         self.args = args
         self.paths = Paths(args.project_path)
-        self.parameters = Parameters()
 
     def start_project(self):
         """Create a new project."""
