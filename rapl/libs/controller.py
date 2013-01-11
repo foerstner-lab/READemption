@@ -75,8 +75,7 @@ class Controller(object):
             int(self.args.segemehl_evalue))
 
     def _sam_to_bam(self):
-        sam_to_bam_converter = SamToBamConverter(
-            samtools_bin=self.args.samtools_bin)
+        sam_to_bam_converter = SamToBamConverter()
         for sam_path, bam_prefix_path in zip(
             self.paths.read_mapping_result_sam_paths,
             self.paths.read_mapping_result_bam_prefixes_paths):
