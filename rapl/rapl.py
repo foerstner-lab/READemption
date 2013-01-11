@@ -42,9 +42,6 @@ def main():
         "--segemehl_bin", "-s", default="segemehl",
         help="segemehl's binary path.")
     read_mapping_parser.set_defaults(func=map_reads)
-    read_mapping_parser.add_argument(
-        "--samtools_bin", "-b", default="samtools",
-        help="samtools' binary path.")
 
     # Parameters for coverage file building
     coverage_creation_parser = subparsers.add_parser(
@@ -67,10 +64,6 @@ def main():
         "--skip_read_count_splitting", "-s", default=False, 
         action="store_true", help="Do not split the read counting between "
         "different mappings. Default is to do the splitting.")
-
-    coverage_creation_parser.add_argument(
-        "--samtools_bin", "-b", default="samtools",
-        help="samtools' binary path.")
 
     # Parameters for annotation overlap searches
     annotation_overlap_parser = subparsers.add_parser(
