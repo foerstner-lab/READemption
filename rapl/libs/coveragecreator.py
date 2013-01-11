@@ -1,21 +1,23 @@
-from libs.sam import SamParser
+import pysam
 
 class CoverageCreator(object):
 
-    def __init__(self, samtools_bin="samtools"):
-        self._sam_parser = SamParser(samtools_bin)
+    def __init__(self):
         self.elements_and_coverages = {"plus" : {}, "minus" : {}}
 
     def init_coverage_lists(self, bam_file):
-        for ref_seq, length in self._sam_parser.ref_seq_ids_and_lengths_bam(
-            bam_file).items():
+        bam = pysam.Samfile(bam_file)
+        for ref_seq, length in zip(bam.references, bam.lengths):
             for strand in ["plus", "minus"]:
                 self.elements_and_coverages[strand][ref_seq] = [0.0] * length
+        bam.close()
 
     def count_coverage(self, bam_file, read_count_splitting=True,
                        uniqueley_mapped_only=False):
-        for entry in self._sam_parser.entries_bam(bam_file):
-            if uniqueley_mapped_only and entry.number_of_hits_as_int != 1:
+        bam = pysam.Samfile(bam_file)
+        for entry in bam.fetch():
+            number_of_hits = dict(entry.tags)["NH"]
+            if uniqueley_mapped_only and number_of_hits != 1:
                 continue
             # Here a translation from 1-based system (SAM) to a
             # 0-based system (python lists) takes place. Due to this
@@ -23,26 +25,24 @@ class CoverageCreator(object):
             # range of the end postion would need to be increased by
             # one. The substraction and addition result in a change of
             # zero.
-            start = entry.start - 1
-            end = entry.end
+            start = entry.pos - 1
+            end = entry.aend
+            ref_id = bam.getrname(entry.tid)
+
             # Normalize coverage increment by number of read mappings
             # per read
             if read_count_splitting:
-                increment = 1.0 / float(entry.number_of_hits_as_int)
+                increment = 1.0 / float(number_of_hits)
             else:
                 increment = 1.0
-            if entry.strand == "+":
-                self.elements_and_coverages["plus"][entry.reference][
-                    start:end] = [
+            if not entry.is_reverse:
+                self.elements_and_coverages["plus"][ref_id][start:end] = [
                     coverage + increment for coverage in
-                    self.elements_and_coverages["plus"][entry.reference][
-                            start:end]]
-            elif entry.strand == "-":
-                self.elements_and_coverages["minus"][entry.reference][
-                    start:end] = [
+                    self.elements_and_coverages["plus"][ref_id][start:end]]
+            else:
+                self.elements_and_coverages["minus"][ref_id][start:end] = [
                     coverage - increment for coverage in
-                    self.elements_and_coverages["minus"][entry.reference][
-                            start:end]]
+                    self.elements_and_coverages["minus"][ref_id][start:end]]
 
     def write_to_files(self, output_file_prefix, read_file_name, factor=1.0,
                       output_format="wiggle"):
@@ -69,4 +69,3 @@ class CoverageCreator(object):
                                 enumerate(self.elements_and_coverages[
                                         strand][element]))]) + "\n")
             output_fh.close()
-
