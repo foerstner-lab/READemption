@@ -282,9 +282,12 @@ class Controller(object):
                 norm_by_overlap_freq=norm_by_overlap_freq)
             gene_wise_quantifier.calc_overlaps_per_mapping(
                 read_mapping_path, self.paths.annotation_file_paths)
-            # for annotation_file_path in self.paths.annotation_file_paths:
-            #     gene_wise_quantifier.quantify(
-            #         read_mapping_path, annotation_file_path, OUTPUT_PATH)
-                
+            for annotation_file_path in self.paths.annotation_file_paths:
+                OUTPUT_PATH="./%s-%s" % (
+                    read_mapping_path.split("/")[-1],
+                    annotation_file_path.split("/")[-1])
+                gene_wise_quantifier.quantify(
+                    read_mapping_path, annotation_file_path, OUTPUT_PATH)
+
         # Then combine the results
         # ...
