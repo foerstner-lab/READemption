@@ -89,44 +89,6 @@ def main():
     # - discard feature in certain lenght range (can help
     #   indirectly remove "region")
 
-    # Obsolete
-    # Parameters for annotation overlap searches
-    # annotation_overlap_parser = subparsers.add_parser(
-    #     "annotate", help="Search annoation overlaps")
-    # annotation_overlap_parser.add_argument(
-    #     "project_path", default=".", nargs="?",
-    #     help="Path of the project folder. If none is given the current "
-    #     "directory is used.")
-    # annotation_overlap_parser.add_argument(
-    #     "--threads", "-t", default=1, type=int,
-    #     help="Number of threads that should be used.")
-
-    # TODO
-    # annotation_overlap_parser.add_argument(
-    #     "--force", "-f", default=False, action="store_true",
-    #     help="Overwrite existing files.")
-    #annotation_overlap_parser.set_defaults(func=search_annotation_overlaps)
-
-    # Obsolete
-    # Parameters for annotation overlap overviews
-    # annotation_overview_parser = subparsers.add_parser(
-    #     "annotation_overview", help="Create annotation overlap overviews")
-    # annotation_overview_parser.add_argument(
-    #     "project_path", default=".", nargs="?",
-    #     help="Path of the project folder. If none is given the current "
-    #     "directory is used.")
-    # annotation_overview_parser.add_argument(
-    #     "--min_overlap", "-o", default=10, type=int,
-    #     help="Minimal read-annotation-overlap (in nt) (default 10)")
-    # TODO
-    # annotation_overview_parser.add_argument(
-    #     "--unique_only", "-u", default=False, action="store_true",
-    #     help="Use uniquely mapped reads only.")
-    # annotation_overview_parser.add_argument(
-    #     "--force", "-f", default=False, action="store_true",
-    #     help="Overwrite existing files.")
-    # annotation_overview_parser.set_defaults(func=create_annotation_overview)
-
     args = parser.parse_args()
     controller = Controller(args)
     args.func(controller)
