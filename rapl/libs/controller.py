@@ -11,8 +11,6 @@ from libs.readclipper import ReadClipper
 from libs.readmapper import ReadMapper
 from libs.readmapperstats import ReadMapperStats, ReadMapperStatsReader
 from libs.seqsizefilter import SeqSizeFilter
-from libs.annotationoverlap import AnnotationOverlap
-from libs.annotationoverview import AnnotationOverview
 from libs.sambamconverter import SamToBamConverter
 from libs.genewisequanti import GeneWiseQuantification
 
