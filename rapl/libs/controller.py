@@ -14,6 +14,7 @@ from libs.seqsizefilter import SeqSizeFilter
 from libs.annotationoverlap import AnnotationOverlap
 from libs.annotationoverview import AnnotationOverview
 from libs.sambamconverter import SamToBamConverter
+from libs.genewisequanty import GeneWiseQuantifier
 
 class Controller(object):
 
@@ -262,6 +263,28 @@ class Controller(object):
             #     annotation_hit_overview_antisense_file_path,
             #     total_numbers_of_mapped_reads=total_numbers_of_mapped_reads)
 
-
-
-
+    def quantify_gene_wise(self):
+        norm_by_mapping_freq = True
+        norm_by_overlap_freq = True
+        if self.args.skip_norm_by_mapping_freq:
+            norm_by_mapping_freq = False
+        if self.args.skip_norm_by_overlap_freq:
+            norm_by_overlap_freq = False
+        # minimal_overlap, normalize_by_mapping, normalize_by_overlapping_genes
+        read_file_names = self.paths._get_read_file_names()
+        annotation_files = self.paths._get_annotation_file_names()
+        self.paths.set_annotation_paths(annotation_files)
+        self.paths.set_read_files_dep_file_lists(read_file_names)
+        for read_mapping_path in self.paths.read_mapping_result_bam_paths:
+            gene_wise_quantifier = GeneWiseQuantifier(
+                min_overlap=self.args.min_overlap,
+                norm_by_mapping_freq=norm_by_mapping_freq,
+                norm_by_overlap_freq=norm_by_overlap_freq)
+            gene_wise_quantifier.calc_overlaps_per_mapping(
+                read_mapping_path, self.paths.annotation_file_paths)
+            # for annotation_file_path in self.paths.annotation_file_paths:
+            #     gene_wise_quantifier.quantify(
+            #         read_mapping_path, annotation_file_path, OUTPUT_PATH)
+                
+        # Then combine the results
+        # ...
