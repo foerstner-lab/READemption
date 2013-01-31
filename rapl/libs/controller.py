@@ -14,7 +14,7 @@ from libs.seqsizefilter import SeqSizeFilter
 from libs.annotationoverlap import AnnotationOverlap
 from libs.annotationoverview import AnnotationOverview
 from libs.sambamconverter import SamToBamConverter
-from libs.genewisequanty import GeneWiseQuantifier
+from libs.genewisequanti import GeneWiseQuantifier
 
 class Controller(object):
 
