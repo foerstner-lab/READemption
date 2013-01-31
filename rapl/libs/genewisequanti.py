@@ -2,7 +2,7 @@ import os.path
 from libs.gff3 import Gff3Parser
 import pysam
 
-class GeneWiseQuantifier(object):
+class GeneWiseQuantification(object):
 
     def __init__(self, min_overlap=1, norm_by_mapping_freq=True,
                  norm_by_overlap_freq=True):
