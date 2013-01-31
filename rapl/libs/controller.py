@@ -275,19 +275,16 @@ class Controller(object):
         annotation_files = self.paths._get_annotation_file_names()
         self.paths.set_annotation_paths(annotation_files)
         self.paths.set_read_files_dep_file_lists(read_file_names)
-        for read_mapping_path in self.paths.read_mapping_result_bam_paths:
+        for read_file_name, read_mapping_path in zip(
+                read_file_names, self.paths.read_mapping_result_bam_paths):
             gene_wise_quantifier = GeneWiseQuantifier(
                 min_overlap=self.args.min_overlap,
                 norm_by_mapping_freq=norm_by_mapping_freq,
                 norm_by_overlap_freq=norm_by_overlap_freq)
             gene_wise_quantifier.calc_overlaps_per_mapping(
                 read_mapping_path, self.paths.annotation_file_paths)
-            for annotation_file_path in self.paths.annotation_file_paths:
-                OUTPUT_PATH="./%s-%s" % (
-                    read_mapping_path.split("/")[-1],
-                    annotation_file_path.split("/")[-1])
+            for  annotation_file, annotation_file_path in zip(
+                    annotation_files, self.paths.annotation_file_paths):
                 gene_wise_quantifier.quantify(
-                    read_mapping_path, annotation_file_path, OUTPUT_PATH)
-
-        # Then combine the results
-        # ...
+                    read_mapping_path, annotation_file_path,
+                    self.paths.gene_quanti_path(read_file_name, annotation_file))

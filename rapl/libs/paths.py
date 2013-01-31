@@ -19,6 +19,7 @@ class Paths(object):
         self._set_input_folder_names()
         self._set_read_mapping_folder_names()
         self._set_coverage_folder_names()
+        self._set_gene_quanti_folder_names()
         self._set_annotation_folder_names()
 
     def _set_input_folder_names(self):
@@ -53,6 +54,10 @@ class Paths(object):
         self.annotation_hit_overview_read_normalized_folder = (
             "%s/annotation_overlaps-hit_overviews_read_normalized" %
             self.output_folder)
+
+    def _set_gene_quanti_folder_names(self):
+        self.gene_quanti_folder = (
+            "%s/gene_wise_quantifications" % self.output_folder)
 
     def _set_static_file_names(self):
         """Set name of common files."""
@@ -102,7 +107,8 @@ class Paths(object):
                self._required_input_folders() +
                self._required_read_mapping_folders() +
                self._required_coverage_folders() +
-               self._required_annotation_folders())
+               self._required_annotation_folders() +
+               self._required_gene_quanti_folder())
 
     def _required_base_folders(self):
         return([self.input_folder, self.output_folder, self.report_folder])
@@ -124,6 +130,9 @@ class Paths(object):
         return([self.annotation_hit_folder,
                 self.annotation_hit_overview_folder,
                 self.annotation_hit_overview_read_normalized_folder])
+
+    def _required_gene_quanti_folder(self):
+        return([self.gene_quanti_folder])
 
     def set_read_files_dep_file_lists(self, read_files):
         self.read_file_paths = self._path_list(self.read_fasta_folder, read_files)
@@ -167,3 +176,7 @@ class Paths(object):
         return("%s/%s_read_countings_%s.csv" % (
                 self.annotation_hit_overview_folder, annotation_file,
                 orientation))
+
+    def gene_quanti_path(self, read_file_name, annotation_file):
+        return("%s/%s_to_%s.csv" % (
+            self.gene_quanti_folder, read_file_name, annotation_file))
