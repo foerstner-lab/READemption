@@ -12,7 +12,7 @@ from libs.readmapper import ReadMapper
 from libs.readmapperstats import ReadMapperStats, ReadMapperStatsReader
 from libs.seqsizefilter import SeqSizeFilter
 from libs.sambamconverter import SamToBamConverter
-from libs.genewisequanti import GeneWiseQuantification
+from libs.genewisequanti import GeneWiseQuantification, GeneWiseOverview
 
 class Controller(object):
 
@@ -178,7 +178,6 @@ class Controller(object):
             norm_by_mapping_freq = False
         if self.args.skip_norm_by_overlap_freq:
             norm_by_overlap_freq = False
-        # minimal_overlap, normalize_by_mapping, normalize_by_overlapping_genes
         read_file_names = self.paths._get_read_file_names()
         annotation_files = self.paths._get_annotation_file_names()
         self.paths.set_annotation_paths(annotation_files)
@@ -195,4 +194,21 @@ class Controller(object):
                     annotation_files, self.paths.annotation_file_paths):
                 gene_wise_quantification.quantify(
                     read_mapping_path, annotation_file_path,
-                    self.paths.gene_quanti_path(read_file_name, annotation_file))
+                    self.paths.gene_quanti_path(
+                        read_file_name, annotation_file))
+        self._gene_quanti_create_overview(
+            annotation_files, self.paths.annotation_file_paths, read_file_names)
+
+    def _gene_quanti_create_overview(
+            self, annotation_files, annotation_file_paths, read_file_names):
+        gene_wise_overview = GeneWiseOverview()
+        path_and_name_combos = {}
+        for annotation_file, annotation_file_path in zip(
+                annotation_files, annotation_file_paths):
+            path_and_name_combos[annotation_file_path] = []
+            for read_file_name in read_file_names:
+                path_and_name_combos[annotation_file_path].append(
+                    [read_file_name, self.paths.gene_quanti_path(
+                        read_file_name, annotation_file)])
+        gene_wise_overview.create_overview(
+            path_and_name_combos, read_file_names, "test.csv")

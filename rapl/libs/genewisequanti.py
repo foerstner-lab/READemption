@@ -1,3 +1,4 @@
+import csv
 import os.path
 from libs.gff3 import Gff3Parser
 import pysam
@@ -103,3 +104,33 @@ class GeneWiseQuantification(object):
     def _values_to_gene_key(self, seq_id, feature, start, end, strand):
         return("|".join(
                 [str(val) for val in [seq_id, feature, start, end, strand]]))
+
+
+class GeneWiseOverview(object):
+
+    def create_overview(
+            self, path_and_name_combos, read_file_names, overview_path):
+        output_fh = open(overview_path, "w")
+        # Write header
+        output_fh.write("\t".join([""] * 10 + read_file_names) + "\n")
+        self._add_to_overview(path_and_name_combos, "sense", 9, output_fh)
+        self._add_to_overview(path_and_name_combos, "anti-sense", 10, output_fh)
+
+    def _add_to_overview(self, path_and_name_combos, direction, column,
+                         output_fh):
+        gff3_parser = Gff3Parser()
+        for annotation_file_path in sorted(path_and_name_combos.keys()):
+            table_columns = []
+            entries = []
+            for entry in gff3_parser.entries(open(annotation_file_path)):
+                entries.append(direction + "\t" + str(entry))
+            table_columns.append(entries)
+            for read_file, gene_quanti_path in path_and_name_combos[
+                    annotation_file_path]:
+                reader = csv.reader(open(gene_quanti_path), delimiter="\t")
+                next(reader) # skip first line
+                table_columns.append([row[column] for row in reader])
+            # Generate a table by rotating the column list
+            table = zip(*table_columns)
+            for row in table:
+                output_fh.write("\t".join(row) + "\n")
