@@ -42,11 +42,11 @@ class GeneWiseQuantification(object):
                   fraction_calc_method):
         sam = pysam.Samfile(read_mapping_path)
         gff3_parser = Gff3Parser()
-        sum_sense = 0
-        sum_antisense = 0
         output_fh = open(output_path, "w")
         output_fh.write("#" + "\t".join([""] * 9) + "sense\tantisense\n")
         for entry in gff3_parser.entries(open(annotation_file_path)):
+            sum_sense = 0
+            sum_antisense = 0
             for mapping in self._overlapping_mappings(sam, entry):
                 mapping_id = self._mapping_id(mapping)
                 fraction = fraction_calc_method(mapping)
