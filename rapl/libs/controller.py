@@ -211,4 +211,5 @@ class Controller(object):
                     [read_file_name, self.paths.gene_quanti_path(
                         read_file_name, annotation_file)])
         gene_wise_overview.create_overview(
-            path_and_name_combos, read_file_names, "test.csv")
+            path_and_name_combos, read_file_names,
+            self.paths.gene_wise_quanti_combined_path)

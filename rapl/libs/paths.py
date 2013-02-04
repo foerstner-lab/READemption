@@ -42,6 +42,8 @@ class Paths(object):
     def _set_gene_quanti_folder_names(self):
         self.gene_quanti_folder = (
             "%s/gene_wise_quantifications" % self.output_folder)
+        self.gene_wise_quanti_combined_path = (
+            "%s/Gene_wise_quantifications_combined.csv" % self.output_folder)
 
     def _set_static_file_names(self):
         """Set name of common files."""
