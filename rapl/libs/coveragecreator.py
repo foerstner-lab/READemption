@@ -3,13 +3,13 @@ import pysam
 class CoverageCreator(object):
 
     def __init__(self):
-        self.elements_and_coverages = {"plus" : {}, "minus" : {}}
+        self.replicons_and_coverages = {"forward" : {}, "reverse" : {}}
 
     def init_coverage_lists(self, bam_file):
         bam = self._open_bam_file(bam_file)
         for ref_seq, length in zip(bam.references, bam.lengths):
-            for strand in ["plus", "minus"]:
-                self.elements_and_coverages[strand][ref_seq] = [0.0] * length
+            for strand in ["forward", "reverse"]:
+                self.replicons_and_coverages[strand][ref_seq] = [0.0] * length
         self._close_bam_fh(bam)
 
     def _open_bam_file(self, bam_file):
@@ -37,13 +37,13 @@ class CoverageCreator(object):
             else:
                 increment = 1.0
             if not entry.is_reverse:
-                self.elements_and_coverages["plus"][ref_id][start:end] = [
+                self.replicons_and_coverages["forward"][ref_id][start:end] = [
                     coverage + increment for coverage in
-                    self.elements_and_coverages["plus"][ref_id][start:end]]
+                    self.replicons_and_coverages["forward"][ref_id][start:end]]
             else:
-                self.elements_and_coverages["minus"][ref_id][start:end] = [
+                self.replicons_and_coverages["reverse"][ref_id][start:end] = [
                     coverage - increment for coverage in
-                    self.elements_and_coverages["minus"][ref_id][start:end]]
+                    self.replicons_and_coverages["reverse"][ref_id][start:end]]
 
     def write_to_files(self, output_file_prefix, read_file_name, factor=1.0,
                       output_format="wiggle"):
@@ -53,7 +53,7 @@ class CoverageCreator(object):
 
     def _write_to_wiggle_files(
             self, output_file_prefix, read_file_name, factor):
-        for strand in ["plus", "minus"]:
+        for strand in ["forward", "reverse"]:
             output_fh = open("%s_%s.wig" % (output_file_prefix, strand), "w")
             self._write_to_wiggle_file(
                 output_fh, read_file_name, factor, strand)
@@ -62,7 +62,7 @@ class CoverageCreator(object):
     def _write_to_wiggle_file(self, output_fh, read_file_name, factor, strand):
         output_fh.write("track type=wiggle_0 name=\"%s_%s\"\n" % (
             read_file_name, strand))
-        for element in sorted(self.elements_and_coverages[strand].keys()):
+        for element in sorted(self.replicons_and_coverages[strand].keys()):
             output_fh.write("variableStep chrom=%s span=1\n" % (element))
             # Filter values of 0 and multiply other the remaining
             # ones by the given factor. pos is increased by 1 as a
@@ -73,5 +73,5 @@ class CoverageCreator(object):
                     ["%s %s" % (pos + 1, coverage * factor)
                      for pos, coverage in
                      filter(lambda pos_and_cov: pos_and_cov[1] != 0.0,
-                            enumerate(self.elements_and_coverages[
+                            enumerate(self.replicons_and_coverages[
                                 strand][element]))]) + "\n")

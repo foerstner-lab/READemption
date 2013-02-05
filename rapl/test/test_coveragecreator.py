@@ -31,22 +31,24 @@ class TestCoverageCreator(unittest.TestCase):
             self.example_data.sam_content_1, self._sam_bam_prefix)
         self.coverage_creator.init_coverage_lists("dummy.bam")
         self.assertListEqual(
-            sorted(self.coverage_creator.elements_and_coverages["minus"].keys()),
+            sorted(self.coverage_creator.replicons_and_coverages[
+                "reverse"].keys()),
             ['chrom', 'plasmid1', 'plasmid2'])
         self.assertListEqual(
-            sorted(self.coverage_creator.elements_and_coverages["plus"].keys()),
+            sorted(
+                self.coverage_creator.replicons_and_coverages["forward"].keys()),
             ['chrom', 'plasmid1', 'plasmid2'])
         self.assertListEqual(
-            self.coverage_creator.elements_and_coverages["minus"]["chrom"],
+            self.coverage_creator.replicons_and_coverages["reverse"]["chrom"],
             [0] * 1500)
         self.assertListEqual(
-            self.coverage_creator.elements_and_coverages["plus"]["chrom"],
+            self.coverage_creator.replicons_and_coverages["forward"]["chrom"],
             [0] * 1500)
         self.assertListEqual(
-            self.coverage_creator.elements_and_coverages["minus"]["plasmid1"],
+            self.coverage_creator.replicons_and_coverages["reverse"]["plasmid1"],
             [0] * 100)
         self.assertListEqual(
-            self.coverage_creator.elements_and_coverages["plus"]["plasmid1"],
+            self.coverage_creator.replicons_and_coverages["forward"]["plasmid1"],
             [0] * 100)
 
     def test_count_coverage_1(self):
@@ -56,14 +58,17 @@ class TestCoverageCreator(unittest.TestCase):
         self.coverage_creator.init_coverage_lists("dummy.bam")
         self.coverage_creator.count_coverage("dummy.bam")
         self.assertEqual(
-            len(self.coverage_creator.elements_and_coverages["plus"]["chrom"]),
+            len(self.coverage_creator.replicons_and_coverages[
+                "forward"]["chrom"]),
             1500)
         self.assertListEqual(
-            self.coverage_creator.elements_and_coverages["plus"]["chrom"][0:15],
+            self.coverage_creator.replicons_and_coverages[
+                "forward"]["chrom"][0:15],
             [5.0, 5.0, 5.0, 5.0, 5.0, 5.0, 5.0, 5.0, 5.0, 5.0,
              0.0, 0.0, 0.0, 0.0, 0.0])
         self.assertListEqual(
-            self.coverage_creator.elements_and_coverages["minus"]["chrom"][0:15],
+            self.coverage_creator.replicons_and_coverages[
+                "reverse"]["chrom"][0:15],
             [-5.0, -5.0, -5.0, -5.0, -5.0, -5.0, -5.0, -5.0, -5.0, -5.0,
              0.0, 0.0, 0.0, 0.0, 0.0])
 
@@ -78,7 +83,8 @@ class TestCoverageCreator(unittest.TestCase):
         self.coverage_creator.init_coverage_lists("dummy.bam")
         self.coverage_creator.count_coverage("dummy.bam")
         self.assertListEqual(
-            self.coverage_creator.elements_and_coverages["plus"]["chrom"][0:15],
+            self.coverage_creator.replicons_and_coverages[
+                "forward"]["chrom"][0:15],
             [0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5,
              0.0, 0.0, 0.0, 0.0, 0.0])
 
@@ -93,7 +99,8 @@ class TestCoverageCreator(unittest.TestCase):
         self.coverage_creator.count_coverage(
             "dummy.bam", read_count_splitting=False)
         self.assertListEqual(
-            self.coverage_creator.elements_and_coverages["plus"]["chrom"][0:15],
+            self.coverage_creator.replicons_and_coverages[
+                "forward"]["chrom"][0:15],
             [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0,
              0.0, 0.0, 0.0, 0.0, 0.0])
 
@@ -107,37 +114,38 @@ class TestCoverageCreator(unittest.TestCase):
         self.coverage_creator.count_coverage(
             "dummy.bam", uniqueley_mapped_only=True)
         self.assertListEqual(
-            self.coverage_creator.elements_and_coverages["plus"]["chrom"][0:15],
+            self.coverage_creator.replicons_and_coverages[
+                "forward"]["chrom"][0:15],
             [3.0, 3.0, 3.0, 3.0, 3.0, 3.0, 3.0, 3.0, 3.0, 3.0,
              0.0, 0.0, 0.0, 0.0, 0.0])
 
     def test_write_to_wiggle_file_1(self):
         self._generate_bam_file(
             self.example_data.sam_content_3, self._sam_bam_prefix)
-        self.coverage_creator.elements_and_coverages = {
-            "plus" : {"mychrom": [1.0, 2.0, 3.0]},
-            "minus" : {"mychrom": [1.0, 2.0, 3.0]}}
+        self.coverage_creator.replicons_and_coverages = {
+            "forward" : {"mychrom": [1.0, 2.0, 3.0]},
+            "reverse" : {"mychrom": [1.0, 2.0, 3.0]}}
         output_fh = StringIO()
         self.coverage_creator._write_to_wiggle_file(
-            output_fh, "boing", 1.0, "plus")
+            output_fh, "boing", 1.0, "forward")
         self.assertEqual(
             output_fh.getvalue(),
-            "track type=wiggle_0 name=\"boing_plus\"\nvariableStep "
+            "track type=wiggle_0 name=\"boing_forward\"\nvariableStep "
             "chrom=mychrom span=1\n1 1.0\n2 2.0\n3 3.0\n")
 
     def test_write_to_wiggle_file_2(self):
         """Write wiggle file with factor."""
         self._generate_bam_file(
             self.example_data.sam_content_3, self._sam_bam_prefix)
-        self.coverage_creator.elements_and_coverages = {
-            "plus" : {"mychrom": [1.0, 2.0, 3.0]},
-            "minus" : {"mychrom": [1.0, 2.0, 3.0]}}
+        self.coverage_creator.replicons_and_coverages = {
+            "forward" : {"mychrom": [1.0, 2.0, 3.0]},
+            "reverse" : {"mychrom": [1.0, 2.0, 3.0]}}
         output_fh = StringIO()
         self.coverage_creator._write_to_wiggle_file(
-            output_fh, "boing", 5.0, "plus")
+            output_fh, "boing", 5.0, "forward")
         self.assertEqual(
             output_fh.getvalue(),
-            "track type=wiggle_0 name=\"boing_plus\"\nvariableStep "
+            "track type=wiggle_0 name=\"boing_forward\"\nvariableStep "
             "chrom=mychrom span=1\n1 5.0\n2 10.0\n3 15.0\n")
 
 class ExampleData(object):
