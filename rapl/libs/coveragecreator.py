@@ -6,11 +6,17 @@ class CoverageCreator(object):
         self.elements_and_coverages = {"plus" : {}, "minus" : {}}
 
     def init_coverage_lists(self, bam_file):
-        bam = pysam.Samfile(bam_file)
+        bam = self._open_bam_file(bam_file)
         for ref_seq, length in zip(bam.references, bam.lengths):
             for strand in ["plus", "minus"]:
                 self.elements_and_coverages[strand][ref_seq] = [0.0] * length
-        bam.close()
+        self._close_bam_fh(bam)
+
+    def _open_bam_file(self, bam_file):
+        return(pysam.Samfile(bam_file))
+
+    def _close_bam_fh(self, bam_fh):
+        bam_fh.close()
 
     def count_coverage(self, bam_file, read_count_splitting=True,
                        uniqueley_mapped_only=False):
@@ -19,12 +25,11 @@ class CoverageCreator(object):
             number_of_hits = dict(entry.tags)["NH"]
             if uniqueley_mapped_only and number_of_hits != 1:
                 continue
-            # No translation from SAMParsers coordinates to python
+            # Note: No translation from SAMParsers coordinates to python
             # list coorindates is needed.
             start = entry.pos
             end = entry.aend
             ref_id = bam.getrname(entry.tid)
-
             # Normalize coverage increment by number of read mappings
             # per read
             if read_count_splitting:
