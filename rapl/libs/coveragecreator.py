@@ -19,13 +19,9 @@ class CoverageCreator(object):
             number_of_hits = dict(entry.tags)["NH"]
             if uniqueley_mapped_only and number_of_hits != 1:
                 continue
-            # Here a translation from 1-based system (SAM) to a
-            # 0-based system (python lists) takes place. Due to this
-            # each position is decreased by one. To cover the full
-            # range of the end postion would need to be increased by
-            # one. The substraction and addition result in a change of
-            # zero.
-            start = entry.pos - 1
+            # No translation from SAMParsers coordinates to python
+            # list coorindates is needed.
+            start = entry.pos
             end = entry.aend
             ref_id = bam.getrname(entry.tid)
 
