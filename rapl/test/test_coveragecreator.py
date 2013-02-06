@@ -31,7 +31,6 @@ class TestCoverageCreator(unittest.TestCase):
     def setUp(self):
         self.coverage_creator = CoverageCreator()
 
-
     def test_init_coverage_lists(self):
         self.coverage_creator._sam_parser = SamParserMock(
             self._generate_sam_entries())
@@ -81,7 +80,6 @@ class TestCoverageCreator(unittest.TestCase):
                'test_ref_2': [1.0, 1.0, 1.0, 1.5, 0.5, 0.5, 0.5, 0.0, 0.0, 0.0]
                }})
         
-
 if __name__ == "__main__":
     unittest.main()
 
