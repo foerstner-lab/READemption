@@ -118,7 +118,7 @@ class TestCoverageCreator(unittest.TestCase):
                 "forward"]["chrom"][0:15],
             [3.0, 3.0, 3.0, 3.0, 3.0, 3.0, 3.0, 3.0, 3.0, 3.0,
              0.0, 0.0, 0.0, 0.0, 0.0])
-
+        
     def test_write_to_wiggle_file_1(self):
         self._generate_bam_file(
             self.example_data.sam_content_3, self._sam_bam_prefix)
@@ -181,7 +181,7 @@ myread:002	0	chrom	1	255	10M	*	0	0	GTGGACAACC	*	NM:i:1	MD:Z:11T3	NH:i:1	XI:i:1	X
 myread:003	0	chrom	1	255	10M	*	0	0	GTGGACAACC	*	NM:i:1	MD:Z:11T3	NH:i:1	XI:i:1	XA:Z:Q
 myread:004	0	chrom	5	255	10M	*	0	0	GTGGACAACC	*	NM:i:1	MD:Z:11T3	NH:i:9	XI:i:1	XA:Z:Q
 myread:005	0	chrom	5	255	10M	*	0	0	GTGGACAACC	*	NM:i:1	MD:Z:11T3	NH:i:9	XI:i:1	XA:Z:Q
-myread:005	6	chrom	5	255	10M	*	0	0	GTGGACAACC	*	NM:i:1	MD:Z:11T3	NH:i:9	XI:i:1	XA:Z:Q
+myread:006	0	chrom	5	255	10M	*	0	0	GTGGACAACC	*	NM:i:1	MD:Z:11T3	NH:i:9	XI:i:1	XA:Z:Q
 """
 
 if __name__ == "__main__":
