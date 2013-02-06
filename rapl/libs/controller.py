@@ -40,9 +40,6 @@ class Controller(object):
         genome_file_names = self.paths._get_genome_file_names()
         self.paths.set_read_files_dep_file_lists(read_file_names)
         self.paths.set_genome_paths(genome_file_names)
-        # TODO
-        # - generate input stats before mapping
-        # - read tracing after mapping
         self._prepare_reads()
         self._map_reads()
         self._sam_to_bam()
@@ -116,25 +113,18 @@ class Controller(object):
             self.paths.read_mapping_stat_file)
         min_read_mapping_counting = read_mapper_stat_reader.min_read_countings(
             self.paths.read_mapping_stat_file)
-        for read_file_name, bam_file_path in zip(
-            read_file_names, self.paths.read_mapping_result_bam_paths):
-            self._create_coverage_files_for_lib(
-                read_file_name, bam_file_path, read_mapping_stats,
-                min_read_mapping_counting)
-
-        # TODO
-        # # Run the generation of coverage in parallel
-        # threads = []
-        # with concurrent.futures.ThreadPoolExecutor(
-        #     max_workers=self.parameters.python_number_of_threads) as executor:
-        #     for read_file_name, bam_file_path in zip(
-        #         read_file_names, self.paths.read_mapping_result_bam_paths):
-        #         threads.append(executor.submit(
-        #                 self._create_coverage_files_for_lib,
-        #                 read_file_name, bam_file_path, read_mapping_stats,
-        #                 min_read_mapping_counting))
+        # Run the generation of coverage in parallel
+        jobs = []
+        with concurrent.futures.ProcessPoolExecutor(
+            max_workers=self.args.threads) as executor:
+            for read_file_name, bam_file_path in zip(
+                read_file_names, self.paths.read_mapping_result_bam_paths):
+                jobs.append(executor.submit(
+                        self._create_coverage_files_for_lib,
+                        read_file_name, bam_file_path, read_mapping_stats,
+                        min_read_mapping_counting))
         # Evaluate thread outcome
-        # self._check_thread_completeness(threads)
+        self._check_job_completeness(jobs)
 
     def _create_coverage_files_for_lib(
         self, read_file_name, bam_file_path, read_mapping_stats,
@@ -189,9 +179,9 @@ class Controller(object):
                     threads.append(executor.submit(
                             annotation_overlap.find_overlaps, read_mapping_path,
                             annotation_file_path, annotation_hit_file_path))
-        self._check_thread_completeness(threads)
+        self._check_job_completeness(threads)
 
-    def _check_thread_completeness(self, threads):
+    def _check_job_completeness(self, threads):
         """Check the completness of each thread in a list"""
         for thread in concurrent.futures.as_completed(threads):
             if thread.exception():
