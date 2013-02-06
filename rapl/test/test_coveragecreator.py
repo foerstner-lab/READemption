@@ -118,7 +118,26 @@ class TestCoverageCreator(unittest.TestCase):
                 "forward"]["chrom"][0:15],
             [3.0, 3.0, 3.0, 3.0, 3.0, 3.0, 3.0, 3.0, 3.0, 3.0,
              0.0, 0.0, 0.0, 0.0, 0.0])
-        
+
+    def test_count_coverage_5(self):
+        """If first_base_only is True only the first nucleotide of a
+        mapping is considered.
+        """
+        self._generate_bam_file(
+            self.example_data.sam_content_1, self._sam_bam_prefix)
+        self.coverage_creator.init_coverage_lists("dummy.bam")
+        self.coverage_creator.count_coverage("dummy.bam", first_base_only=True)
+        self.assertListEqual(
+            self.coverage_creator.replicons_and_coverages[
+                "forward"]["chrom"][0:15],
+            [5.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+             0.0, 0.0, 0.0, 0.0, 0.0])
+        self.assertListEqual(
+            self.coverage_creator.replicons_and_coverages[
+                "reverse"]["chrom"][0:15],
+            [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, -5.0,
+             0.0, 0.0, 0.0, 0.0, 0.0])
+
     def test_write_to_wiggle_file_1(self):
         self._generate_bam_file(
             self.example_data.sam_content_3, self._sam_bam_prefix)

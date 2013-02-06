@@ -19,9 +19,12 @@ class CoverageCreator(object):
         bam_fh.close()
 
     def count_coverage(self, bam_file, read_count_splitting=True,
-                       uniqueley_mapped_only=False):
+                       uniqueley_mapped_only=False, first_base_only=False):
         bam = pysam.Samfile(bam_file)
-        coverage_add_function = self._add_whole_mapping_coverage
+        if first_base_only is False:
+            coverage_add_function = self._add_whole_mapping_coverage
+        else:
+            coverage_add_function = self._add_first_base_coverage
         for entry in bam.fetch():
             number_of_hits = dict(entry.tags)["NH"]
             if uniqueley_mapped_only is True and number_of_hits != 1:
@@ -48,7 +51,17 @@ class CoverageCreator(object):
             self.replicons_and_coverages["reverse"][ref_id][start:end] = [
                 coverage - increment for coverage in
                 self.replicons_and_coverages["reverse"][ref_id][start:end]]
-            
+
+    def _add_first_base_coverage(self, entry, increment, ref_id, start, end):
+        if entry.is_reverse is False:
+            self.replicons_and_coverages[
+                "forward"][ref_id][start] = self.replicons_and_coverages[
+                    "forward"][ref_id][start] + increment
+        else:
+            self.replicons_and_coverages[
+                "reverse"][ref_id][end-1] = self.replicons_and_coverages[
+                    "reverse"][ref_id][end-1] - increment
+
     def write_to_files(self, output_file_prefix, read_file_name, factor=1.0,
                       output_format="wiggle"):
         if output_format == "wiggle":
