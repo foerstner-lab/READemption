@@ -141,12 +141,13 @@ class Controller(object):
         min_read_mapping_counting):
         coverage_creator = CoverageCreator()
         read_count_splitting = True
-        if self.args.skip_read_count_splitting:
+        if self.args.skip_read_count_splitting is True:
             read_count_splitting = False
         coverage_creator.init_coverage_lists(bam_file_path)
         coverage_creator.count_coverage(
             bam_file_path, read_count_splitting=read_count_splitting,
-            uniqueley_mapped_only=self.args.unique_only)
+            uniqueley_mapped_only=self.args.unique_only,
+            first_base_only=self.args.first_base_only)
         # Raw countings
         coverage_creator.write_to_files(
             "%s/%s" % (self.paths.coverage_folder, read_file_name),

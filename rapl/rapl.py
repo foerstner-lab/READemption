@@ -20,7 +20,7 @@ def main():
     read_mapping_parser = subparsers.add_parser(
         "map", help="Run read mappings")
     read_mapping_parser.add_argument(
-        "project_path", default=".", nargs="?", 
+        "project_path", default=".", nargs="?",
         help="Path of the project folder. If none is given the current "
         "directory is used.")
     read_mapping_parser.add_argument(
@@ -47,7 +47,7 @@ def main():
     coverage_creation_parser = subparsers.add_parser(
         "coverage", help="Create coverage (WIGGLE) files")
     coverage_creation_parser.add_argument(
-        "project_path", default=".", nargs="?", 
+        "project_path", default=".", nargs="?",
         help="Path of the project folder. If none is given the current "
         "directory is used.")
     coverage_creation_parser.add_argument(
@@ -61,15 +61,19 @@ def main():
         "--threads", "-t", default=1, type=int,
         help="Number of threads that should be used.")
     coverage_creation_parser.add_argument(
-        "--skip_read_count_splitting", "-s", default=False, 
+        "--skip_read_count_splitting", "-s", default=False,
         action="store_true", help="Do not split the read counting between "
         "different mappings. Default is to do the splitting.")
+    coverage_creation_parser.add_argument(
+        "--first_base_only", "-b", default=False,
+        action="store_true", help="Only the first bases 5' base of each read "
+        "mapping is taken into account.")
 
     # Parameters for annotation overlap searches
     annotation_overlap_parser = subparsers.add_parser(
         "annotate", help="Search annoation overlaps")
     annotation_overlap_parser.add_argument(
-        "project_path", default=".", nargs="?", 
+        "project_path", default=".", nargs="?",
         help="Path of the project folder. If none is given the current "
         "directory is used.")
     annotation_overlap_parser.add_argument(
@@ -77,7 +81,7 @@ def main():
         help="Number of threads that should be used.")
     # TODO
     # annotation_overlap_parser.add_argument(
-    #     "--force", "-f", default=False, action="store_true", 
+    #     "--force", "-f", default=False, action="store_true",
     #     help="Overwrite existing files.")
     annotation_overlap_parser.set_defaults(func=search_annotation_overlaps)
 
@@ -85,7 +89,7 @@ def main():
     annotation_overview_parser = subparsers.add_parser(
         "annotation_overview", help="Create annotation overlap overviews")
     annotation_overview_parser.add_argument(
-        "project_path", default=".", nargs="?", 
+        "project_path", default=".", nargs="?",
         help="Path of the project folder. If none is given the current "
         "directory is used.")
     annotation_overview_parser.add_argument(
@@ -96,7 +100,7 @@ def main():
     #     "--unique_only", "-u", default=False, action="store_true",
     #     help="Use uniquely mapped reads only.")
     # annotation_overview_parser.add_argument(
-    #     "--force", "-f", default=False, action="store_true", 
+    #     "--force", "-f", default=False, action="store_true",
     #     help="Overwrite existing files.")
     annotation_overview_parser.set_defaults(func=create_annotation_overview)
 
@@ -104,14 +108,14 @@ def main():
     generate_report_parser = subparsers.add_parser(
         "report", help="Generate a report")
     generate_report_parser.add_argument(
-        "project_path", default=".", nargs="?", 
+        "project_path", default=".", nargs="?",
         help="Path of the project folder. If none is given the current "
         "directory is used.")
     generate_report_parser.add_argument(
-        "--force", "-f", default=False, action="store_true", 
+        "--force", "-f", default=False, action="store_true",
         help="Overwrite existing files.")
     generate_report_parser.set_defaults(func=generate_report)
-    
+
     args = parser.parse_args()
     controller = Controller(args)
     args.func(controller)
@@ -130,7 +134,7 @@ def search_annotation_overlaps(controller):
 
 def create_annotation_overview(controller):
     controller.create_annotation_overview()
-    
+
 def generate_report(controller):
     controller.generate_report()
 
