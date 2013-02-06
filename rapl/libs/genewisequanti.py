@@ -21,8 +21,8 @@ class GeneWiseQuantification(object):
     def calc_overlaps_per_mapping(self, read_mapping_path,
                                   annotation_file_paths):
         """Calculate for each mapping the number of genes it
-        overlaps. This has to be done for globally i.e. for all
-        annotation files combined in one dictionary.
+        overlaps. This has to be done globally i.e. for all annotation
+        files combined in one dictionary.
         """
         gff3_parser = Gff3Parser()
         self.mappings_and_no_of_overlaps = {}
@@ -91,9 +91,11 @@ class GeneWiseQuantification(object):
                    self._mapping_id(mapping)]))
 
     def _overlapping_mappings(self, sam, entry):
+        # The substraction of 1 from the start is necessary to perform
+        # this correctly (checked in IGB, IGV and the unit testings).
         for mapping in sam.fetch(
-                reference=entry.seq_id, start=entry.start, end=entry.end):
-            if mapping.overlap(entry.start, entry.end) < self._min_overlap:
+                reference=entry.seq_id, start=entry.start-1, end=entry.end):
+            if mapping.overlap(entry.start-1, entry.end) < self._min_overlap:
                 continue
             yield(mapping)
 
@@ -104,7 +106,6 @@ class GeneWiseQuantification(object):
     def _values_to_gene_key(self, seq_id, feature, start, end, strand):
         return("|".join(
                 [str(val) for val in [seq_id, feature, start, end, strand]]))
-
 
 class GeneWiseOverview(object):
 
