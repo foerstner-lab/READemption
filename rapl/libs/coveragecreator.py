@@ -21,9 +21,10 @@ class CoverageCreator(object):
     def count_coverage(self, bam_file, read_count_splitting=True,
                        uniqueley_mapped_only=False):
         bam = pysam.Samfile(bam_file)
+        coverage_add_function = self._add_whole_mapping_coverage
         for entry in bam.fetch():
             number_of_hits = dict(entry.tags)["NH"]
-            if uniqueley_mapped_only and number_of_hits != 1:
+            if uniqueley_mapped_only is True and number_of_hits != 1:
                 continue
             # Note: No translation from SAMParsers coordinates to python
             # list coorindates is needed.
@@ -32,19 +33,22 @@ class CoverageCreator(object):
             ref_id = bam.getrname(entry.tid)
             # Normalize coverage increment by number of read mappings
             # per read
-            if read_count_splitting:
+            if read_count_splitting is True:
                 increment = 1.0 / float(number_of_hits)
             else:
                 increment = 1.0
-            if not entry.is_reverse:
-                self.replicons_and_coverages["forward"][ref_id][start:end] = [
-                    coverage + increment for coverage in
-                    self.replicons_and_coverages["forward"][ref_id][start:end]]
-            else:
-                self.replicons_and_coverages["reverse"][ref_id][start:end] = [
-                    coverage - increment for coverage in
-                    self.replicons_and_coverages["reverse"][ref_id][start:end]]
+            coverage_add_function(entry, increment, ref_id, start, end)
 
+    def _add_whole_mapping_coverage(self, entry, increment, ref_id, start, end):
+        if entry.is_reverse is False:
+            self.replicons_and_coverages["forward"][ref_id][start:end] = [
+                coverage + increment for coverage in
+                self.replicons_and_coverages["forward"][ref_id][start:end]]
+        else:
+            self.replicons_and_coverages["reverse"][ref_id][start:end] = [
+                coverage - increment for coverage in
+                self.replicons_and_coverages["reverse"][ref_id][start:end]]
+            
     def write_to_files(self, output_file_prefix, read_file_name, factor=1.0,
                       output_format="wiggle"):
         if output_format == "wiggle":
