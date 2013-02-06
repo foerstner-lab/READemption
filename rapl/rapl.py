@@ -45,7 +45,7 @@ def main():
 
     # Parameters for coverage file building
     coverage_creation_parser = subparsers.add_parser(
-        "coverage", help="Create coverage (WIGGLE) files")
+        "coverage", help="Create coverage (wiggle) files")
     coverage_creation_parser.add_argument(
         "project_path", default=".", nargs="?",
         help="Path of the project folder. If none is given the current "
@@ -69,52 +69,29 @@ def main():
         action="store_true", help="Only the first bases 5' base of each read "
         "mapping is taken into account.")
 
-    # Parameters for annotation overlap searches
-    annotation_overlap_parser = subparsers.add_parser(
-        "annotate", help="Search annoation overlaps")
-    annotation_overlap_parser.add_argument(
+    # Parameters for gene wise quantification
+    gene_wise_quanti_parser = subparsers.add_parser(
+        "gene_quanti", help="Quantify the expression gene wise")
+    gene_wise_quanti_parser.add_argument(
         "project_path", default=".", nargs="?",
         help="Path of the project folder. If none is given the current "
         "directory is used.")
-    annotation_overlap_parser.add_argument(
-        "--threads", "-t", default=1, type=int,
-        help="Number of threads that should be used.")
-    # TODO
-    # annotation_overlap_parser.add_argument(
-    #     "--force", "-f", default=False, action="store_true",
-    #     help="Overwrite existing files.")
-    annotation_overlap_parser.set_defaults(func=search_annotation_overlaps)
-
-    # Parameters for annotation overlap overviews
-    annotation_overview_parser = subparsers.add_parser(
-        "annotation_overview", help="Create annotation overlap overviews")
-    annotation_overview_parser.add_argument(
-        "project_path", default=".", nargs="?",
-        help="Path of the project folder. If none is given the current "
-        "directory is used.")
-    annotation_overview_parser.add_argument(
-        "--min_overlap", "-o", default=10, type=int,
-        help="Minimal read-annotation-overlap (in nt) (default 10)")
-    # TODO
-    # annotation_overview_parser.add_argument(
-    #     "--unique_only", "-u", default=False, action="store_true",
-    #     help="Use uniquely mapped reads only.")
-    # annotation_overview_parser.add_argument(
-    #     "--force", "-f", default=False, action="store_true",
-    #     help="Overwrite existing files.")
-    annotation_overview_parser.set_defaults(func=create_annotation_overview)
-
-    # Parameters for report generation
-    generate_report_parser = subparsers.add_parser(
-        "report", help="Generate a report")
-    generate_report_parser.add_argument(
-        "project_path", default=".", nargs="?",
-        help="Path of the project folder. If none is given the current "
-        "directory is used.")
-    generate_report_parser.add_argument(
-        "--force", "-f", default=False, action="store_true",
-        help="Overwrite existing files.")
-    generate_report_parser.set_defaults(func=generate_report)
+    gene_wise_quanti_parser.add_argument(
+        "--min_overlap", "-o", default=1, type=int,
+        help="Minimal read-annotation-overlap (in nt) (default 1)")
+    gene_wise_quanti_parser.add_argument(
+        "--skip_norm_by_mapping_freq", default=False)
+    gene_wise_quanti_parser.add_argument(
+        "--skip_norm_by_overlap_freq", default=False)
+    gene_wise_quanti_parser.set_defaults(func=run_gene_wise_quantification)
+    # - uniquely only
+    # - skip antisense
+    # - use gene overlap normalizatoin
+    # - use mapping normalization
+    # - --force (see above)
+    # - use only given features (gene, exon, region)
+    # - discard feature in certain lenght range (can help
+    #   indirectly remove "region")
 
     args = parser.parse_args()
     controller = Controller(args)
@@ -137,5 +114,8 @@ def create_annotation_overview(controller):
 
 def generate_report(controller):
     controller.generate_report()
+
+def run_gene_wise_quantification(controller):
+    controller.quantify_gene_wise()
 
 main()
