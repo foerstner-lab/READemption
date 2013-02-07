@@ -13,7 +13,7 @@ from libs.readmapperstats import ReadMapperStats, ReadMapperStatsReader
 from libs.seqsizefilter import SeqSizeFilter
 from libs.sambamconverter import SamToBamConverter
 from libs.genewisequanti import GeneWiseQuantification, GeneWiseOverview
-from libs.rawstatdata import RawStatDataWriter
+from libs.rawstatdata import RawStatDataWriter, RawStatDataReader
 
 class Controller(object):
 
@@ -43,7 +43,8 @@ class Controller(object):
         self._prepare_reads()
         self._map_reads()
         self._sam_to_bam()
-        #self._generate_read_mapping_stats(read_file_names)
+        self._generate_read_mapping_stats()
+        self._write_mapping_stat_table()
 
     def _prepare_reads(self):
         raw_stat_data_writer = RawStatDataWriter(pretty=True)
@@ -57,7 +58,7 @@ class Controller(object):
                 read_file_path, processed_read_file_path)
             combined_stats[read_file] = processing_stats
         raw_stat_data_writer.write(
-            combined_stats, self.paths.read_processing_stats)
+            combined_stats, self.paths.read_processing_stats_path)
 
     def _map_reads(self):
         read_mapper = ReadMapper(segemehl_bin=self.args.segemehl_bin)
@@ -79,23 +80,101 @@ class Controller(object):
             self.paths.read_mapping_result_bam_prefixes_paths):
             sam_to_bam_converter.sam_to_bam(sam_path, bam_prefix_path)
 
-    def _generate_read_mapping_stats(self, read_file_names):
-        ref_ids_to_file_name = self._ref_ids_to_file_name(
-            self.paths.genome_file_paths)
-        read_mapper_stats = ReadMapperStats()
-        read_mapper_stats.count_raw_reads(
-            read_file_names, self.paths.read_file_paths)
-        read_mapper_stats.count_long_enough_clipped_reads(
-            read_file_names, self.paths.clipped_read_file_long_enough_paths)
-        read_mapper_stats.count_too_small_clipped_reads(
-            read_file_names, self.paths.clipped_read_file_too_short_paths)
-        read_mapper_stats.count_mappings(
-            read_file_names, self.paths.read_mapping_result_bam_paths)
-        read_mapper_stats.count_unmapped_reads(
-            read_file_names, self.paths.unmapped_reads_paths)
-        read_mapper_stats.write_stats_to_file(
-            read_file_names, ref_ids_to_file_name,
-            self.paths.read_mapping_stat_file)
+    def _generate_read_mapping_stats(self):
+        raw_stat_data_writer = RawStatDataWriter(pretty=True)
+        combined_stats = {}
+        for (read_file_name, read_mapping_result_bam_path,
+             unmapped_reads_path) in zip(
+                self.read_file_names,
+                self.paths.read_mapping_result_bam_paths,
+                self.paths.unmapped_reads_paths):
+            read_mapping_stats = ReadMapperStats()
+            combined_stats[read_file_name] = read_mapping_stats.count(
+                read_mapping_result_bam_path,
+                unmapped_reads_path)
+        raw_stat_data_writer.write(
+            combined_stats, self.paths.read_mapping_stats_path)
+
+    def _write_mapping_stat_table(self):
+        raw_stat_data_reader = RawStatDataReader()
+        read_processing_stats = raw_stat_data_reader.read(
+            self.paths.read_processing_stats_path)
+        mapping_stats = raw_stat_data_reader.read(
+            self.paths.read_mapping_stats_path)
+        table = []
+        table.append(["Lib"] + self.read_file_names)
+        ref_ids = sorted(list(list(mapping_stats.values())[0][
+            "countings_per_reference"].keys()))
+        table = [
+            ["Library read file"] + self.read_file_names,
+            ["No. of input reads"] +
+            self._get_read_process_numbers(
+                read_processing_stats, "total_no_of_reads"),
+            [ "No. of reads - PolyA detected and removed"] +
+            self._get_read_process_numbers(
+                read_processing_stats, "polya_removed"),
+            ["No. of reads - Single 3' A removed"] +
+            self._get_read_process_numbers(
+                read_processing_stats, "single_a_removed"),
+            ["No. of reads - Unmodified"] + self._get_read_process_numbers(
+            read_processing_stats, "unmodified"),
+            ["No. of reads - Removed as too short"] +
+            self._get_read_process_numbers(read_processing_stats, "too_short"),
+            ["No. of reads - Long enough and used for mapping"] +
+            self._get_read_process_numbers(
+                read_processing_stats, "long_enough"),
+            ["Total no. of mapped read"] + [
+                round(num) for num in self._total_mapping_stat_numbers(
+                mapping_stats, "no_of_mapped_reads")],
+            ["Total no. of unmapped reads"] + [str(mapping_stats[read_file][
+                "no_of_unmapped_reads"]) for read_file in self.read_file_names],
+            ["Total no. of uniquely mapped reads"] +
+            self._total_mapping_stat_numbers(
+                mapping_stats, "no_of_uniquely_mapped_reads"),
+            ["Total no. of mappings"] + self._total_mapping_stat_numbers(
+                mapping_stats, "no_of_mappings"),
+            ["Percentag of mapped reads (compared to total input reads)"]  + [
+                round(float(mapped_reads)/float(total_reads) * 100, 2)
+                for mapped_reads, total_reads in
+                zip(self._total_mapping_stat_numbers(
+                    mapping_stats, "no_of_mapped_reads"),
+                    self._get_read_process_numbers(
+                        read_processing_stats, "total_no_of_reads"))],
+            ["Percentag of uniquely mapped reads (in relation to all mapped reads)"]  + [
+                round(float(uniquely_mapped_reads)/float(mapped_reads) * 100, 2)
+                for uniquely_mapped_reads, mapped_reads  in zip(
+                        self._total_mapping_stat_numbers(mapping_stats, "no_of_uniquely_mapped_reads"),
+                        self._total_mapping_stat_numbers(mapping_stats, "no_of_mapped_reads"))]
+        ]
+        for ref_id in ref_ids:
+            table.append(
+                ["%s - No. of mapped reads" % ref_id] +
+                self._mapping_number_per_ref_seq(
+                    mapping_stats, ref_id, "no_of_mapped_reads"))
+            table.append(
+                ["%s - No. of uniquely mapped reads" % ref_id] +
+                self._mapping_number_per_ref_seq(
+                    mapping_stats, ref_id, "no_of_uniquely_mapped_reads"))
+            table.append(
+                ["%s - No. of mapping" % ref_id] +
+                self._mapping_number_per_ref_seq(
+                    mapping_stats, ref_id, "no_of_mappings"))
+        table_fh = open(self.paths.read_mapping_stats_table_path, "w")
+        table_fh.write("\n".join(["\t".join([str(cell) for cell in row]) for row in table]))
+        table_fh.close()
+
+    def _mapping_number_per_ref_seq(self, mapping_stats, ref_id, attribute):
+        return([mapping_stats[read_file]["countings_per_reference"][
+            ref_id]["no_of_mapped_reads"] for read_file in self.read_file_names])
+
+    def _total_mapping_stat_numbers(self, mapping_stats, attribute):
+        return([mapping_stats[read_file]["countings_total"][attribute]
+                for read_file in self.read_file_names])
+
+    def _get_read_process_numbers(
+            self, read_processing_stats, attribute):
+        return([read_processing_stats[read_file][attribute]
+                for read_file in self.read_file_names])
 
     def _ref_ids_to_file_name(self, genome_file_paths):
         ref_ids_to_file_name = {}

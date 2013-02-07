@@ -49,7 +49,9 @@ class Paths(object):
     def _set_static_file_names(self):
         """Set name of common files."""
         self.config_file = "%s/rapl.config" % self.base_path
-        self.read_processing_stats = "%s/read_processing.json" % (
+        self.read_processing_stats_path = "%s/read_processing.json" % (
+            self.raw_stat_data_folder)
+        self.read_mapping_stats_path = "%s/read_mapping.json" % (
             self.raw_stat_data_folder)
         self.read_file_stats = "%s/read_file_stats.txt" % (
             self.report_folder)
@@ -57,7 +59,7 @@ class Paths(object):
             self.report_folder)
         self.annotation_file_stats = "%s/annotation_file_stats.txt" % (
             self.report_folder)
-        self.read_mapping_stat_file = "%s/read_mapping_stats.csv" % (
+        self.read_mapping_stats_table_path = "%s/read_mapping_stats.csv" % (
             self.report_folder)
         self.report_tex_file = "%s/report.tex" % (
             self.report_folder)

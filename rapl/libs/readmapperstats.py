@@ -10,154 +10,83 @@ class ReadMapperStats(object):
     def __init__(self):
         self.fasta_parser = FastaParser()
 
-    def count_raw_reads(self, read_file_names, read_file_paths):
-        self.raw_read_countings = {}
-        self._count_fasta_entry_set(
-            read_file_names, read_file_paths, self.raw_read_countings)
+    def count(self, read_mapping_result_bam_path, unmapped_reads_path):
+        self._stats = {}
+        self._count_mapped_reads_and_mappings(read_mapping_result_bam_path)
+        self._count_unmapped_reads(unmapped_reads_path)
+        return(self._stats)
 
-    def count_too_small_clipped_reads(self, read_file_names, read_file_paths):
-        self.too_small_clipped_reads = {}
-        self._count_fasta_entry_set(
-            read_file_names, read_file_paths, self.too_small_clipped_reads)
+    def _count_unmapped_reads(self, unmapped_read_paths):
+        fasta_fh = open(unmapped_read_paths)
+        self._stats["no_of_unmapped_reads"] = self._count_fasta_entries(
+            fasta_fh)
+        fasta_fh.close()
 
-    def count_long_enough_clipped_reads(
-        self, read_file_names, read_file_paths):
-        self.long_enough_clipped_reads = {}
-        self._count_fasta_entry_set(
-            read_file_names, read_file_paths, self.long_enough_clipped_reads)
+    def _count_fasta_entries(self, fasta_fh):
+        return(reduce(lambda x, y: x + 1,
+                      self.fasta_parser.entries(fasta_fh), 0))
 
-    def _count_fasta_entry_set(self, file_names, file_paths, saving_dict):
-        for file_name, file_path in zip(file_names, file_paths):
-            saving_dict[file_name] = self._count_fasta_entries(file_path)
-
-    def _count_fasta_entries(self, fasta_path):
-        return(self._count_fasta_fh_entries(open(fasta_path)))
-
-    def count_mappings(self, read_file_names, read_mapping_result_bam_paths):
-        # self.no_of_mappings, self.no_of_mapped_reads and
-        # self.no_of_uniquely_mapped_reads are dictionaries of
-        # dictionaries: Read file name -> Reference seq -> counting
-        self.no_of_mappings = {}
-        self.no_of_mapped_reads = {}
-        self.no_of_uniquely_mapped_reads = {}
-        for read_file_name, read_mapping_result_bam_path in zip(
-            read_file_names, read_mapping_result_bam_paths):
-            (self.no_of_mappings[read_file_name],
-             self.no_of_mapped_reads[read_file_name],
-             self.no_of_uniquely_mapped_reads[read_file_name]) = (
-                self._mapping_countings(read_mapping_result_bam_path))
-
-    def _mapping_countings(self, bam_path):
-        bam = pysam.Samfile(bam_path)
-        ref_seqs_and_mappings = {}
-        ref_seqs_and_mapped_reads = {}
-        ref_seqs_and_uniquely_mapped_reads = {}
-        for ref_seq in bam.references:
-            ref_seqs_and_mappings[ref_seq] = 0
-            ref_seqs_and_mapped_reads[ref_seq] = 0
-            ref_seqs_and_uniquely_mapped_reads[ref_seq] = 0
+    def _count_mapped_reads_and_mappings(self, read_mapping_result_bam_path):
+        bam = pysam.Samfile(read_mapping_result_bam_path)
+        stats_per_ref = {}
+        no_of_hits_per_read_freq = {}
+        for ref_id in bam.references:
+            self._init_counting_dict(stats_per_ref, ref_id)
         for entry in bam.fetch():
             ref_id = bam.getrname(entry.tid)
             try:
-                ref_seqs_and_mappings[ref_id] += 1
-                number_of_hits = dict(entry.tags)["NH"]
-                ref_seqs_and_mapped_reads[
-                    ref_id] += 1.0/float(number_of_hits)
-                if number_of_hits == 1:
-                    ref_seqs_and_uniquely_mapped_reads[ref_id] += 1
+                self._count_mapping(
+                    entry, ref_id, stats_per_ref, no_of_hits_per_read_freq)
             except KeyError:
                 sys.stderr.write(
                     "SAM entry with unspecified reference found! Stoping\n")
                 sys.exit(2)
-        return(ref_seqs_and_mappings, ref_seqs_and_mapped_reads,
-               ref_seqs_and_uniquely_mapped_reads)
 
-    def count_unmapped_reads(self, read_file_names, unmapped_read_paths):
-        self.no_of_unmapped_reads = {}
-        self._count_fasta_entry_set(
-            read_file_names, unmapped_read_paths, self.no_of_unmapped_reads)
+        self._stats["countings_per_reference"] = stats_per_ref
+        self._stats["countings_total"] = self._sum_countings(stats_per_ref)
+        self._stats["no_of_hits_per_read_and_freq"] = self._calc_down_to_read(
+            no_of_hits_per_read_freq)
 
-    def _count_fasta_fh_entries(self, fasta_fh):
-        # A memory saving approach to sum the number of entries
-        return(reduce(lambda x, y: x+1,
-                      self.fasta_parser.entries(fasta_fh), 0))
+    def _sum_countings(self, stats_per_ref):
+        total_stats = {}
+        for ref_id, stats in stats_per_ref.items():
+            for attribute, value in stats.items():
+                total_stats.setdefault(attribute, 0)
+                total_stats[attribute] += value
+        return(total_stats)
 
-    def write_stats_to_file(
-        self, read_file_names, ref_ids_to_file_name, output_file_path):
-        self._write_stats_to_fh(
-            read_file_names, ref_ids_to_file_name, open(output_file_path, "w"))
+    def _calc_down_to_read(self, no_of_hits_per_read_freq):
+        """As the frequencies were determined via the mappings we need
+        to normalized each frequency value down to the read by
+        dividing the frequencig by the number of hits per read.
+        """
+        return(dict((no_of_hits_per_read, freq/no_of_hits_per_read)
+                    for no_of_hits_per_read, freq in
+                    no_of_hits_per_read_freq.items()))
 
-    def _write_stats_to_fh(
-        self, read_file_names, ref_ids_to_file_name, output_fh):
-        output_fh.write(self._head_line(read_file_names) + "\n")
-        for description, value_dict in [
-            ("Number of raw reads", self.raw_read_countings),
-            ("Reads long enough after clipping",
-             self.long_enough_clipped_reads),
-            ("Reads too short after clipping",
-             self.too_small_clipped_reads)]:
-            output_fh.write(self._value_line(
-                    description, value_dict, read_file_names) + "\n")
-        for description, value_dict_of_dicts in [
-            ("Total number of mapped reads", self.no_of_mapped_reads),
-            ("Total number of uniquely mapped reads",
-             self.no_of_uniquely_mapped_reads),
-            ("Total number of mappings", self.no_of_mappings)]:
-            output_fh.write(self._dict_value_sum_line(
-                    description, value_dict_of_dicts, read_file_names) + "\n")
-        output_fh.write(self._value_line(
-                "Number of unmappped reads",
-                self.no_of_unmapped_reads, read_file_names) + "\n")
-        ref_seq_headers = sorted(
-            list(self.no_of_mapped_reads.items())[0][1].keys())
-        for ref_seq_header in ref_seq_headers:
-            output_fh.write(
-                self._dict_value_per_ref_genome_line(
-                    "Number of mapped reads in %s" %
-                    ref_ids_to_file_name[ref_seq_header],
-                    self.no_of_mapped_reads, read_file_names, ref_seq_header)
-                + "\n")
-        for ref_seq_header in ref_seq_headers:
-            output_fh.write(
-                self._dict_value_per_ref_genome_line(
-                    "Number of uniquely mapped reads in %s" %
-                    ref_ids_to_file_name[ref_seq_header],
-                    self.no_of_uniquely_mapped_reads, read_file_names,
-                    ref_seq_header) + "\n")
-        for ref_seq_header in ref_seq_headers:
-            output_fh.write(
-                self._dict_value_per_ref_genome_line(
-                    "Number of mapping in %s" %
-                    ref_ids_to_file_name[ref_seq_header],
-                    self.no_of_mappings, read_file_names, ref_seq_header)
-                + "\n")
+    def _init_counting_dict(self, stats_per_ref, ref_id):
+        stats_per_ref[ref_id] = {}
+        stats_per_ref[ref_id]["no_of_mappings"] = 0
+        stats_per_ref[ref_id]["no_of_mapped_reads"] = 0
+        stats_per_ref[ref_id]["no_of_uniquely_mapped_reads"] = 0
 
-    def _head_line(self, read_file_names):
-        return("\t" + "\t".join(read_file_names))
-
-    def _value_line(self, description, value_dict, read_file_names):
-        return(description + "\t" + "\t".join(
-                [str(value_dict[read_file_name])
-                 for read_file_name in read_file_names]))
-
-    def _dict_value_sum_line(
-        self, description, value_dict_of_dicts, read_file_names):
-        return(description + "\t" + "\t".join(
-                [str(sum(value_dict_of_dicts[read_file_name].values()))
-                 for read_file_name in read_file_names]))
-
-    def _dict_value_per_ref_genome_line(
-        self, description, value_dict_of_dicts, read_file_names, ref_seq_header):
-        return(description + "\t" + "\t".join(
-                [str(value_dict_of_dicts[read_file_name][ref_seq_header])
-                 for read_file_name in read_file_names]))
+    def _count_mapping(
+            self, entry, ref_id, stats_per_ref, no_of_hits_per_read_freq):
+        no_of_hits = dict(entry.tags)["NH"]
+        no_of_hits_per_read_freq.setdefault(no_of_hits, 0)
+        no_of_hits_per_read_freq[no_of_hits] += 1
+        stats_per_ref[ref_id]["no_of_mappings"] += 1
+        stats_per_ref[
+            ref_id]["no_of_mapped_reads"] += 1.0/float(no_of_hits)
+        if no_of_hits == 1:
+            stats_per_ref[ref_id]["no_of_uniquely_mapped_reads"] += 1
 
 class ReadMapperStatsReader(object):
 
-    def read_stat_file(self, stat_file_path):
+    def read_mapping_stat_file(self, stat_file_path):
         return(self._read_stat_file(open(stat_file_path)))
 
-    def _read_stat_file(self, stat_fh):
+    def _read_mapping_stat_file(self, stat_fh):
         stats = {}
         libs = stat_fh.readline()[:-1].split("\t")[1:]
         total_num_of_mapped_read = None

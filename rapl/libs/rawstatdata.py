@@ -16,3 +16,14 @@ class RawStatDataWriter(object):
         else:
             indent = None
         output_fh.write(json.dumps(input_object, indent=indent))
+
+class RawStatDataReader(object):
+
+    def read(self, input_file):
+        input_fh = open(input_file)
+        data = self._read(input_fh)
+        input_fh.close()
+        return(data)
+
+    def _read(self, input_fh):
+        return(json.loads(input_fh.read()))
