@@ -7,12 +7,13 @@ from libs.coveragecreator import CoverageCreator
 from libs.parameterlog import ParameterLogger
 from libs.paths import Paths
 from libs.projectcreator import ProjectCreator
-from libs.readclipper import ReadClipper
+from libs.readprocessor import ReadProcessor
 from libs.readmapper import ReadMapper
 from libs.readmapperstats import ReadMapperStats, ReadMapperStatsReader
 from libs.seqsizefilter import SeqSizeFilter
 from libs.sambamconverter import SamToBamConverter
 from libs.genewisequanti import GeneWiseQuantification, GeneWiseOverview
+from libs.rawstatdata import RawStatDataWriter
 
 class Controller(object):
 
@@ -35,32 +36,35 @@ class Controller(object):
 
     def map_reads(self):
         """Perform the mapping of the reads."""
-        read_file_names = self.paths._get_read_file_names()
+        self.read_file_names = self.paths._get_read_file_names()
         genome_file_names = self.paths._get_genome_file_names()
-        self.paths.set_read_files_dep_file_lists(read_file_names)
+        self.paths.set_read_files_dep_file_lists(self.read_file_names)
         self.paths.set_genome_paths(genome_file_names)
         self._prepare_reads()
         self._map_reads()
         self._sam_to_bam()
-        self._generate_read_mapping_stats(read_file_names)
+        #self._generate_read_mapping_stats(read_file_names)
 
     def _prepare_reads(self):
-        read_clipper = ReadClipper()
-        read_clipper.clip(
-            self.paths.read_file_paths, self.paths.clipped_read_file_paths)
-        seq_size_filter = SeqSizeFilter()
-        seq_size_filter.filter(
-            self.paths.clipped_read_file_paths,
-            self.paths.clipped_read_file_long_enough_paths,
-            self.paths.clipped_read_file_too_short_paths,
-            self.args.min_read_length)
+        raw_stat_data_writer = RawStatDataWriter(pretty=True)
+        combined_stats = {}
+        read_processor = ReadProcessor(min_read_length=self.args.min_read_length)
+        for read_file, read_file_path, processed_read_file_path in zip(
+                self.read_file_names,
+                self.paths.read_file_paths,
+                self.paths.processed_read_file_paths):
+            processing_stats = read_processor.process(
+                read_file_path, processed_read_file_path)
+            combined_stats[read_file] = processing_stats
+        raw_stat_data_writer.write(
+            combined_stats, self.paths.read_processing_stats)
 
     def _map_reads(self):
         read_mapper = ReadMapper(segemehl_bin=self.args.segemehl_bin)
         read_mapper.build_index(
             self.paths.genome_file_paths, self.paths.index_file_path)
         read_mapper.run_mappings(
-            self.paths.clipped_read_file_long_enough_paths,
+            self.paths.processed_read_file_paths,
             self.paths.genome_file_paths, self.paths.index_file_path,
             self.paths.read_mapping_result_sam_paths,
             self.paths.unmapped_reads_paths,

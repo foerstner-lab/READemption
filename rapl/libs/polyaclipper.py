@@ -2,7 +2,7 @@ class PolyAClipper(object):
     """Uses very simple heuristics to detect and remove polyA tails."""
 
 
-    def clip_before_long_poly_a_strech(self, sequence):
+    def clip_poly_a_strech(self, sequence):
         """Search for a longer block of As and clip before it.
 
         Search for a block of four As. If the seven nucleotides after
