@@ -12,6 +12,7 @@ class Paths(object):
         self.input_folder = "%s/input" % (self.base_path)
         self.output_folder = "%s/output" % (self.base_path)
         self.report_folder = "%s/reports_and_stats" % (self.output_folder)
+        self.raw_stat_data_folder = "%s/stats_data_json" % (self.output_folder)
         self._set_input_folder_names()
         self._set_read_mapping_folder_names()
         self._set_coverage_folder_names()
@@ -27,7 +28,7 @@ class Paths(object):
             self.output_folder)
         self.read_mappings_folder = "%s/read_mappings-mappings" % (
             self.output_folder)
-        self.clipped_reads_folder = "%s/read_mappings-clipped_reads" % (
+        self.processed_reads_folder = "%s/read_mappings-processed_reads" % (
             self.output_folder)
         self.unmapped_reads_folder = "%s/read_mappings-unmapped_reads" % (
             self.output_folder)
@@ -48,6 +49,8 @@ class Paths(object):
     def _set_static_file_names(self):
         """Set name of common files."""
         self.config_file = "%s/rapl.config" % self.base_path
+        self.read_processing_stats = "%s/read_processing.json" % (
+            self.raw_stat_data_folder)
         self.read_file_stats = "%s/read_file_stats.txt" % (
             self.report_folder)
         self.genome_file_stats = "%s/genome_file_stats.txt" % (
@@ -92,14 +95,15 @@ class Paths(object):
                self._required_gene_quanti_folder())
 
     def _required_base_folders(self):
-        return([self.input_folder, self.output_folder, self.report_folder])
+        return([self.input_folder, self.output_folder, self.report_folder,
+                self.raw_stat_data_folder])
 
     def _required_input_folders(self):
         return([self.read_fasta_folder, self.genome_folder,
                 self.annotation_folder])
 
     def _required_read_mapping_folders(self):
-        return([self.read_mappings_folder, self.clipped_reads_folder,
+        return([self.read_mappings_folder, self.processed_reads_folder,
                 self.unmapped_reads_folder, self.read_mapping_index_folder])
 
     def _required_coverage_folders(self):
@@ -111,14 +115,8 @@ class Paths(object):
 
     def set_read_files_dep_file_lists(self, read_files):
         self.read_file_paths = self._path_list(self.read_fasta_folder, read_files)
-        self.clipped_read_file_paths = self._path_list(
-            self.clipped_reads_folder, read_files, appendix="_clipped.fa")
-        self.clipped_read_file_long_enough_paths = self._path_list(
-            self.clipped_reads_folder, read_files,
-            appendix="_clipped_with_sufficent_length.fa")
-        self.clipped_read_file_too_short_paths = self._path_list(
-            self.clipped_reads_folder, read_files,
-            appendix="_clipped_too_sort.fa")
+        self.processed_read_file_paths = self._path_list(
+            self.processed_reads_folder, read_files, appendix="_processed.fa")
         self.read_mapping_result_sam_paths = self._path_list(
             self.read_mappings_folder, read_files, appendix="_mappings.sam")
         # samtool appends ".bam" so only the prefix is required
