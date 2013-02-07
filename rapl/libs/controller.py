@@ -9,7 +9,7 @@ from libs.paths import Paths
 from libs.projectcreator import ProjectCreator
 from libs.readprocessor import ReadProcessor
 from libs.readmapper import ReadMapper
-from libs.readmapperstats import ReadMapperStats, ReadMapperStatsReader
+from libs.readmapperstats import ReadMapperStats
 from libs.seqsizefilter import SeqSizeFilter
 from libs.sambamconverter import SamToBamConverter
 from libs.genewisequanti import GeneWiseQuantification, GeneWiseOverview
@@ -187,14 +187,19 @@ class Controller(object):
         return(ref_ids_to_file_name)
 
     def create_coverage_files(self):
-        """Create coverage files based on the Segemehl mappings."""
+        """Create coverage files based on the read mappings."""
         read_file_names = self.paths._get_read_file_names()
         self.paths.set_read_files_dep_file_lists(read_file_names)
-        read_mapper_stat_reader = ReadMapperStatsReader()
-        read_mapping_stats = read_mapper_stat_reader.read_stat_file(
-            self.paths.read_mapping_stat_file)
-        min_read_mapping_counting = read_mapper_stat_reader.min_read_countings(
-            self.paths.read_mapping_stat_file)
+        raw_stat_data_reader = RawStatDataReader()
+        mapping_stats = [
+            raw_stat_data_reader.read(
+            self.paths.read_mapping_stats_path)]
+        read_files_and_no_of_mapped_reads = dict([
+            (read_file,
+             round(attributes["countings_total"]["no_of_mapped_reads"]))
+             for read_file, attributes in mapping_stats[0].items()])
+        min_read_mapping_counting = min(
+            read_files_and_no_of_mapped_reads.values())
         # Run the generation of coverage in parallel
         jobs = []
         with concurrent.futures.ProcessPoolExecutor(
@@ -203,7 +208,8 @@ class Controller(object):
                 read_file_names, self.paths.read_mapping_result_bam_paths):
                 jobs.append(executor.submit(
                         self._create_coverage_files_for_lib,
-                        read_file_name, bam_file_path, read_mapping_stats,
+                        read_file_name, bam_file_path,
+                        read_files_and_no_of_mapped_reads,
                         min_read_mapping_counting))
         # Evaluate thread outcome
         self._check_job_completeness(jobs)
@@ -224,8 +230,7 @@ class Controller(object):
         coverage_creator.write_to_files(
             "%s/%s" % (self.paths.coverage_folder, read_file_name),
             read_file_name)
-        total_number_of_mapped_reads = read_mapping_stats[read_file_name][
-            "total_number_of_mapped_reads"]
+        total_number_of_mapped_reads = read_mapping_stats[read_file_name]
         # Read normalized countings - multiplied by min read counting
         factor = (min_read_mapping_counting / total_number_of_mapped_reads)
         coverage_creator.write_to_files(

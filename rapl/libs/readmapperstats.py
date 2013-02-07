@@ -80,26 +80,3 @@ class ReadMapperStats(object):
             ref_id]["no_of_mapped_reads"] += 1.0/float(no_of_hits)
         if no_of_hits == 1:
             stats_per_ref[ref_id]["no_of_uniquely_mapped_reads"] += 1
-
-class ReadMapperStatsReader(object):
-
-    def read_mapping_stat_file(self, stat_file_path):
-        return(self._read_stat_file(open(stat_file_path)))
-
-    def _read_mapping_stat_file(self, stat_fh):
-        stats = {}
-        libs = stat_fh.readline()[:-1].split("\t")[1:]
-        total_num_of_mapped_read = None
-        for row in csv.reader(stat_fh, delimiter="\t"):
-            if row[0].startswith("Total number of mapped reads"):
-                total_num_of_mapped_read = [float(count) for count in row[1:]]
-                break
-
-        for lib, counting in zip(libs, total_num_of_mapped_read):
-            stats[lib] = {"total_number_of_mapped_reads" : counting}
-        return(stats)
-
-    def min_read_countings(self, stat_file_path):
-        read_mapping_stats = self.read_stat_file(stat_file_path)
-        return(min([lib_features["total_number_of_mapped_reads"]
-                    for lib_features in read_mapping_stats.values()]))
