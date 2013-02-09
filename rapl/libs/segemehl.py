@@ -12,7 +12,7 @@ class Segemehl(object):
         call([self.segemehl_bin, "--database"] + fasta_files + [
              "--generate", index_file])
 
-    def map_reads(self, read_file, index_file, fasta_files, output_file,
+    def align_reads(self, read_file, index_file, fasta_files, output_file,
                   hit_strategy=1, accuracy=95, evalue=5.0, threads=1,
                   segemehl_format=False, order=False, nonmatch_file=None,
                   other_parameters=None):

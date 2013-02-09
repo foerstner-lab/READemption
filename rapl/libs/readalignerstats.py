@@ -5,20 +5,20 @@ sys.path.append(".")
 from libs.fasta import FastaParser
 import pysam
 
-class ReadMapperStats(object):
+class ReadAlignerStats(object):
 
     def __init__(self):
         self.fasta_parser = FastaParser()
 
-    def count(self, read_mapping_result_bam_path, unmapped_reads_path):
+    def count(self, read_alignment_result_bam_path, unaligned_reads_path):
         self._stats = {}
-        self._count_mapped_reads_and_mappings(read_mapping_result_bam_path)
-        self._count_unmapped_reads(unmapped_reads_path)
+        self._count_aligned_reads_and_alignments(read_alignment_result_bam_path)
+        self._count_unaligned_reads(unaligned_reads_path)
         return(self._stats)
 
-    def _count_unmapped_reads(self, unmapped_read_paths):
-        fasta_fh = open(unmapped_read_paths)
-        self._stats["no_of_unmapped_reads"] = self._count_fasta_entries(
+    def _count_unaligned_reads(self, unaligned_read_paths):
+        fasta_fh = open(unaligned_read_paths)
+        self._stats["no_of_unaligned_reads"] = self._count_fasta_entries(
             fasta_fh)
         fasta_fh.close()
 
@@ -26,8 +26,8 @@ class ReadMapperStats(object):
         return(reduce(lambda x, y: x + 1,
                       self.fasta_parser.entries(fasta_fh), 0))
 
-    def _count_mapped_reads_and_mappings(self, read_mapping_result_bam_path):
-        bam = pysam.Samfile(read_mapping_result_bam_path)
+    def _count_aligned_reads_and_alignments(self, read_alignment_result_bam_path):
+        bam = pysam.Samfile(read_alignment_result_bam_path)
         stats_per_ref = {}
         no_of_hits_per_read_freq = {}
         for ref_id in bam.references:
@@ -35,7 +35,7 @@ class ReadMapperStats(object):
         for entry in bam.fetch():
             ref_id = bam.getrname(entry.tid)
             try:
-                self._count_mapping(
+                self._count_alignment(
                     entry, ref_id, stats_per_ref, no_of_hits_per_read_freq)
             except KeyError:
                 sys.stderr.write(
@@ -56,7 +56,7 @@ class ReadMapperStats(object):
         return(total_stats)
 
     def _calc_down_to_read(self, no_of_hits_per_read_freq):
-        """As the frequencies were determined via the mappings we need
+        """As the frequencies were determined via the alignments we need
         to normalized each frequency value down to the read by
         dividing the frequencig by the number of hits per read.
         """
@@ -66,17 +66,17 @@ class ReadMapperStats(object):
 
     def _init_counting_dict(self, stats_per_ref, ref_id):
         stats_per_ref[ref_id] = {}
-        stats_per_ref[ref_id]["no_of_mappings"] = 0
-        stats_per_ref[ref_id]["no_of_mapped_reads"] = 0
-        stats_per_ref[ref_id]["no_of_uniquely_mapped_reads"] = 0
+        stats_per_ref[ref_id]["no_of_alignments"] = 0
+        stats_per_ref[ref_id]["no_of_aligned_reads"] = 0
+        stats_per_ref[ref_id]["no_of_uniquely_aligned_reads"] = 0
 
-    def _count_mapping(
+    def _count_alignment(
             self, entry, ref_id, stats_per_ref, no_of_hits_per_read_freq):
         no_of_hits = dict(entry.tags)["NH"]
         no_of_hits_per_read_freq.setdefault(no_of_hits, 0)
         no_of_hits_per_read_freq[no_of_hits] += 1
-        stats_per_ref[ref_id]["no_of_mappings"] += 1
+        stats_per_ref[ref_id]["no_of_alignments"] += 1
         stats_per_ref[
-            ref_id]["no_of_mapped_reads"] += 1.0/float(no_of_hits)
+            ref_id]["no_of_aligned_reads"] += 1.0/float(no_of_hits)
         if no_of_hits == 1:
-            stats_per_ref[ref_id]["no_of_uniquely_mapped_reads"] += 1
+            stats_per_ref[ref_id]["no_of_uniquely_aligned_reads"] += 1

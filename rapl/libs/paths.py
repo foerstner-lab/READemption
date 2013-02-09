@@ -14,7 +14,7 @@ class Paths(object):
         self.report_folder = "%s/reports_and_stats" % (self.output_folder)
         self.raw_stat_data_folder = "%s/stats_data_json" % (self.output_folder)
         self._set_input_folder_names()
-        self._set_read_mapping_folder_names()
+        self._set_read_alignment_folder_names()
         self._set_coverage_folder_names()
         self._set_gene_quanti_folder_names()
 
@@ -23,14 +23,14 @@ class Paths(object):
         self.genome_folder = "%s/genomes" % self.input_folder
         self.annotation_folder = "%s/annotation_files" % self.input_folder
 
-    def _set_read_mapping_folder_names(self):
-        self.read_mapping_index_folder = "%s/read_mappings-index" % (
+    def _set_read_alignment_folder_names(self):
+        self.read_alignment_index_folder = "%s/read_alignments-index" % (
             self.output_folder)
-        self.read_mappings_folder = "%s/read_mappings-mappings" % (
+        self.read_alignments_folder = "%s/read_alignments-alignments" % (
             self.output_folder)
-        self.processed_reads_folder = "%s/read_mappings-processed_reads" % (
+        self.processed_reads_folder = "%s/read_alignments-processed_reads" % (
             self.output_folder)
-        self.unmapped_reads_folder = "%s/read_mappings-unmapped_reads" % (
+        self.unaligned_reads_folder = "%s/read_alignments-unaligned_reads" % (
             self.output_folder)
 
     def _set_coverage_folder_names(self):
@@ -51,7 +51,7 @@ class Paths(object):
         self.config_file = "%s/rapl.config" % self.base_path
         self.read_processing_stats_path = "%s/read_processing.json" % (
             self.raw_stat_data_folder)
-        self.read_mapping_stats_path = "%s/read_mapping.json" % (
+        self.read_aligner_stats_path = "%s/read_alignment.json" % (
             self.raw_stat_data_folder)
         self.read_file_stats = "%s/read_file_stats.txt" % (
             self.report_folder)
@@ -59,18 +59,18 @@ class Paths(object):
             self.report_folder)
         self.annotation_file_stats = "%s/annotation_file_stats.txt" % (
             self.report_folder)
-        self.read_mapping_stats_table_path = "%s/read_mapping_stats.csv" % (
+        self.read_alignment_stats_table_path = "%s/read_alignment_stats.csv" % (
             self.report_folder)
         self.report_tex_file = "%s/report.tex" % (
             self.report_folder)
-        self.lib_genome_read_mapping_summary = (
-            "%s/mapping_and_mapped_read_coutings_per_genome_file.csv" % (
+        self.lib_genome_read_alignment_summary = (
+            "%s/alignment_and_aligned_read_coutings_per_genome_file.csv" % (
                 self.report_folder))
-        self.mapping_length_hist_r_file = (
-            "%s/mapping_length_distributions.R" % self.report_folder)
-        self.mapping_length_hist_pdf_file = (
-            "%s/mapping_length_distributions.pdf" % self.report_folder)
-        self.index_file_path = "%s/index.idx" % self.read_mapping_index_folder
+        self.alignment_length_hist_r_file = (
+            "%s/alignment_length_distributions.R" % self.report_folder)
+        self.alignment_length_hist_pdf_file = (
+            "%s/alignment_length_distributions.pdf" % self.report_folder)
+        self.index_file_path = "%s/index.idx" % self.read_alignment_index_folder
 
     def _get_sorted_folder_content(self, folder):
         """Return the sorted file list of a folder"""
@@ -92,7 +92,7 @@ class Paths(object):
     def required_folders(self):
         return(self._required_base_folders() +
                self._required_input_folders() +
-               self._required_read_mapping_folders() +
+               self._required_read_alignment_folders() +
                self._required_coverage_folders() +
                self._required_gene_quanti_folder())
 
@@ -104,9 +104,9 @@ class Paths(object):
         return([self.read_fasta_folder, self.genome_folder,
                 self.annotation_folder])
 
-    def _required_read_mapping_folders(self):
-        return([self.read_mappings_folder, self.processed_reads_folder,
-                self.unmapped_reads_folder, self.read_mapping_index_folder])
+    def _required_read_alignment_folders(self):
+        return([self.read_alignments_folder, self.processed_reads_folder,
+                self.unaligned_reads_folder, self.read_alignment_index_folder])
 
     def _required_coverage_folders(self):
         return([self.coverage_folder, self.coverage_folder_norm_reads,
@@ -119,15 +119,15 @@ class Paths(object):
         self.read_file_paths = self._path_list(self.read_fasta_folder, read_files)
         self.processed_read_file_paths = self._path_list(
             self.processed_reads_folder, read_files, appendix="_processed.fa")
-        self.read_mapping_result_sam_paths = self._path_list(
-            self.read_mappings_folder, read_files, appendix="_mappings.sam")
+        self.read_alignment_result_sam_paths = self._path_list(
+            self.read_alignments_folder, read_files, appendix="_alignments.sam")
         # samtool appends ".bam" so only the prefix is required
-        self.read_mapping_result_bam_prefixes_paths = self._path_list(
-            self.read_mappings_folder, read_files, appendix="_mappings")
-        self.read_mapping_result_bam_paths = self._path_list(
-            self.read_mappings_folder, read_files, appendix="_mappings.bam")
-        self.unmapped_reads_paths = self._path_list(
-            self.unmapped_reads_folder, read_files, appendix="_unmapped.fa")
+        self.read_alignment_result_bam_prefixes_paths = self._path_list(
+            self.read_alignments_folder, read_files, appendix="_alignments")
+        self.read_alignment_result_bam_paths = self._path_list(
+            self.read_alignments_folder, read_files, appendix="_alignments.bam")
+        self.unaligned_reads_paths = self._path_list(
+            self.unaligned_reads_folder, read_files, appendix="_unaligned.fa")
 
     def set_genome_paths(self, genome_files):
         self.genome_file_paths = self._path_list(

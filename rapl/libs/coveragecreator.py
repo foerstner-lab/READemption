@@ -19,22 +19,22 @@ class CoverageCreator(object):
         bam_fh.close()
 
     def count_coverage(self, bam_file, read_count_splitting=True,
-                       uniqueley_mapped_only=False, first_base_only=False):
+                       uniqueley_aligned_only=False, first_base_only=False):
         bam = pysam.Samfile(bam_file)
         if first_base_only is False:
-            coverage_add_function = self._add_whole_mapping_coverage
+            coverage_add_function = self._add_whole_alignment_coverage
         else:
             coverage_add_function = self._add_first_base_coverage
         for entry in bam.fetch():
             number_of_hits = dict(entry.tags)["NH"]
-            if uniqueley_mapped_only is True and number_of_hits != 1:
+            if uniqueley_aligned_only is True and number_of_hits != 1:
                 continue
             # Note: No translation from SAMParsers coordinates to python
             # list coorindates is needed.
             start = entry.pos
             end = entry.aend
             ref_id = bam.getrname(entry.tid)
-            # Normalize coverage increment by number of read mappings
+            # Normalize coverage increment by number of read alignments
             # per read
             if read_count_splitting is True:
                 increment = 1.0 / float(number_of_hits)
@@ -42,7 +42,7 @@ class CoverageCreator(object):
                 increment = 1.0
             coverage_add_function(entry, increment, ref_id, start, end)
 
-    def _add_whole_mapping_coverage(self, entry, increment, ref_id, start, end):
+    def _add_whole_alignment_coverage(self, entry, increment, ref_id, start, end):
         if entry.is_reverse is False:
             self.replicons_and_coverages["forward"][ref_id][start:end] = [
                 coverage + increment for coverage in
