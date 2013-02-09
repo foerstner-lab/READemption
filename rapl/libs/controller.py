@@ -10,7 +10,6 @@ from libs.projectcreator import ProjectCreator
 from libs.readprocessor import ReadProcessor
 from libs.readaligner import ReadAligner
 from libs.readalignerstats import ReadAlignerStats
-from libs.seqsizefilter import SeqSizeFilter
 from libs.sambamconverter import SamToBamConverter
 from libs.genewisequanti import GeneWiseQuantification, GeneWiseOverview
 from libs.rawstatdata import RawStatDataWriter, RawStatDataReader
