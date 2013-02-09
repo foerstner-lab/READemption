@@ -21,7 +21,7 @@ class Controller(object):
         self.args = args
         self.paths = Paths(args.project_path)
 
-    def start_project(self):
+    def create_project(self):
         """Create a new project."""
         project_creator = ProjectCreator()
         project_creator.create_root_folder(self.args.project_path)

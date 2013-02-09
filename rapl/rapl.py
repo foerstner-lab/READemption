@@ -10,11 +10,11 @@ def main():
     subparsers = parser.add_subparsers(help="commands")
 
     # Arguments for project creation
-    start_project_parser = subparsers.add_parser(
-        "start", help="Start a project")
-    start_project_parser.add_argument(
+    create_project_parser = subparsers.add_parser(
+        "create", help="Create a project")
+    create_project_parser.add_argument(
         "project_path", default=".", help="Name/path of the project.")
-    start_project_parser.set_defaults(func=start_project)
+    create_project_parser.set_defaults(func=create_project)
 
     # Parameters for read alignment
     read_aligning_parser = subparsers.add_parser(
@@ -97,8 +97,8 @@ def main():
     controller = Controller(args)
     args.func(controller)
 
-def start_project(controller):
-    controller.start_project()
+def create_project(controller):
+    controller.create_project()
 
 def align_reads(controller):
     controller.align_reads()
