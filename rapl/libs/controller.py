@@ -48,17 +48,26 @@ class Controller(object):
 
     def _prepare_reads(self):
         raw_stat_data_writer = RawStatDataWriter(pretty=True)
-        combined_stats = {}
-        read_processor = ReadProcessor(min_read_length=self.args.min_read_length)
-        for read_file, read_file_path, processed_read_file_path in zip(
-                self.read_file_names,
-                self.paths.read_file_paths,
-                self.paths.processed_read_file_paths):
-            processing_stats = read_processor.process(
-                read_file_path, processed_read_file_path)
-            combined_stats[read_file] = processing_stats
+        read_files_and_jobs = {}
+        with concurrent.futures.ProcessPoolExecutor(
+            max_workers=self.args.threads) as executor:
+            for read_file, read_file_path, processed_read_file_path in zip(
+                    self.read_file_names, self.paths.read_file_paths,
+                    self.paths.processed_read_file_paths):
+                read_processor = ReadProcessor(
+                    min_read_length=self.args.min_read_length)
+                read_files_and_jobs[read_file]  = executor.submit(
+                    read_processor.process, read_file_path,
+                    processed_read_file_path)
+        # Evaluate thread outcome
+        self._check_job_completeness(read_files_and_jobs.values())
+        # Create a dict of the read file names and the processing
+        # counting results
+        read_files_and_stats = dict(
+            [(read_file, job.result()) for read_file, job in
+             read_files_and_jobs.items()])
         raw_stat_data_writer.write(
-            combined_stats, self.paths.read_processing_stats_path)
+            read_files_and_stats, self.paths.read_processing_stats_path)
 
     def _map_reads(self):
         read_mapper = ReadMapper(segemehl_bin=self.args.segemehl_bin)
