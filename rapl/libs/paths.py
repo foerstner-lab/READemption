@@ -48,7 +48,6 @@ class Paths(object):
 
     def _set_static_file_names(self):
         """Set name of common files."""
-        self.config_file = "%s/rapl.config" % self.base_path
         self.read_processing_stats_path = "%s/read_processing.json" % (
             self.raw_stat_data_folder)
         self.read_aligner_stats_path = "%s/read_alignment.json" % (
@@ -61,15 +60,9 @@ class Paths(object):
             self.report_folder)
         self.read_alignment_stats_table_path = "%s/read_alignment_stats.csv" % (
             self.report_folder)
-        self.report_tex_file = "%s/report.tex" % (
-            self.report_folder)
         self.lib_genome_read_alignment_summary = (
             "%s/alignment_and_aligned_read_coutings_per_genome_file.csv" % (
                 self.report_folder))
-        self.alignment_length_hist_r_file = (
-            "%s/alignment_length_distributions.R" % self.report_folder)
-        self.alignment_length_hist_pdf_file = (
-            "%s/alignment_length_distributions.pdf" % self.report_folder)
         self.index_file_path = "%s/index.idx" % self.read_alignment_index_folder
 
     def _get_sorted_folder_content(self, folder):

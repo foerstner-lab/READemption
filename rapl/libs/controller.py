@@ -26,7 +26,6 @@ class Controller(object):
         project_creator = ProjectCreator()
         project_creator.create_root_folder(self.args.project_path)
         project_creator.create_subfolders(self.paths.required_folders())
-        project_creator.create_config_file(self.paths.config_file)
         sys.stdout.write("Created folder \"%s\" and required subfolders.\n" % (
                 self.args.project_path))
         sys.stdout.write("Please copy read files into folder \"%s\" and "
@@ -49,7 +48,7 @@ class Controller(object):
         raw_stat_data_writer = RawStatDataWriter(pretty=True)
         read_files_and_jobs = {}
         with concurrent.futures.ProcessPoolExecutor(
-            max_workers=self.args.threads) as executor:
+            max_workers=self.args.processes) as executor:
             for read_file, read_file_path, processed_read_file_path in zip(
                     self.read_file_names, self.paths.read_file_paths,
                     self.paths.processed_read_file_paths):
@@ -77,7 +76,7 @@ class Controller(object):
             self.paths.genome_file_paths, self.paths.index_file_path,
             self.paths.read_alignment_result_sam_paths,
             self.paths.unaligned_reads_paths,
-            int(self.args.threads),
+            int(self.args.processes),
             int(self.args.segemehl_accuracy),
             int(self.args.segemehl_evalue))
 
@@ -211,7 +210,7 @@ class Controller(object):
         # Run the generation of coverage in parallel
         jobs = []
         with concurrent.futures.ProcessPoolExecutor(
-            max_workers=self.args.threads) as executor:
+            max_workers=self.args.processes) as executor:
             for read_file_name, bam_file_path in zip(
                 read_file_names, self.paths.read_alignment_result_bam_paths):
                 jobs.append(executor.submit(
