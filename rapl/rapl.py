@@ -27,8 +27,8 @@ def main():
         "--min_read_length", "-l", default=12, type=int,
         help="Minimal read length after clipping")
     read_aligning_parser.add_argument(
-        "--threads", "-t", default=1, type=int,
-        help="Number of threads that should be used.")
+        "--processes", "-p", default=1, type=int,
+        help="Number of processes that should be used.")
     # read_aligning_parser.add_argument(
     #     "--force", "-f", default=False, action="store_true",
     #     help="Overwrite existing files.")
@@ -58,8 +58,8 @@ def main():
     #     help="Overwrite existing files.")
     coverage_creation_parser.set_defaults(func=create_coverage_files)
     coverage_creation_parser.add_argument(
-        "--threads", "-t", default=1, type=int,
-        help="Number of threads that should be used.")
+        "--processes", "-p", default=1, type=int,
+        help="Number of processes that should be used.")
     coverage_creation_parser.add_argument(
         "--skip_read_count_splitting", "-s", default=False,
         action="store_true", help="Do not split the read counting between "
@@ -83,6 +83,9 @@ def main():
         "--skip_norm_by_alignment_freq", default=False)
     gene_wise_quanti_parser.add_argument(
         "--skip_norm_by_overlap_freq", default=False)
+    gene_wise_quanti_parser.add_argument(
+        "--processes", "-p", default=1, type=int,
+        help="Number of processes that should be used.")    
     gene_wise_quanti_parser.set_defaults(func=run_gene_wise_quantification)
     # - uniquely only
     # - skip antisense
