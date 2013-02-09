@@ -133,14 +133,14 @@ class Controller(object):
                 mapping_stats, "no_of_uniquely_mapped_reads"),
             ["Total no. of mappings"] + self._total_mapping_stat_numbers(
                 mapping_stats, "no_of_mappings"),
-            ["Percentag of mapped reads (compared to total input reads)"]  + [
+            ["Percentage of mapped reads (compared to total input reads)"]  + [
                 round(float(mapped_reads)/float(total_reads) * 100, 2)
                 for mapped_reads, total_reads in
                 zip(self._total_mapping_stat_numbers(
                     mapping_stats, "no_of_mapped_reads"),
                     self._get_read_process_numbers(
                         read_processing_stats, "total_no_of_reads"))],
-            ["Percentag of uniquely mapped reads (in relation to all mapped reads)"]  + [
+            ["Percentage of uniquely mapped reads (in relation to all mapped reads)"]  + [
                 round(float(uniquely_mapped_reads)/float(mapped_reads) * 100, 2)
                 for uniquely_mapped_reads, mapped_reads  in zip(
                         self._total_mapping_stat_numbers(mapping_stats, "no_of_uniquely_mapped_reads"),
