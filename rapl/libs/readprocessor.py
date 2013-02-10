@@ -16,7 +16,9 @@ class ReadProcessor(object):
             "single_a_removed" : 0,
             "unmodified" : 0,
             "too_short" : 0,
-            "long_enough" : 0}
+            "long_enough" : 0,
+            "read_length_before_processing_and_freq" : {},
+            "read_length_after_processing_and_freq" : {}}
         output_fh = open(output_path, "w")
         self._process(open(input_path), output_fh)
         output_fh.close()
@@ -36,8 +38,18 @@ class ReadProcessor(object):
                 self._stats["polya_removed"] += 1
             else:
                 self._stats["unmodified"] += 1
-            if len(clipped_seq) < self._min_read_length:
+            clipped_seq_len = len(clipped_seq)
+            if clipped_seq_len < self._min_read_length:
                 self._stats["too_short"] += 1
                 continue
             self._stats["long_enough"] += 1
+            raw_seq_len = len(seq)
+            self._stats["read_length_before_processing_and_freq"].setdefault(
+                raw_seq_len, 0)
+            self._stats["read_length_before_processing_and_freq"][
+                raw_seq_len] += 1
+            self._stats["read_length_after_processing_and_freq"].setdefault(
+                clipped_seq_len, 0)
+            self._stats["read_length_after_processing_and_freq"][
+                clipped_seq_len] += 1
             output_fh.write(">%s\n%s\n" % (header, clipped_seq))
