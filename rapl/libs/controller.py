@@ -89,18 +89,25 @@ class Controller(object):
 
     def _generate_read_alignment_stats(self):
         raw_stat_data_writer = RawStatDataWriter(pretty=True)
-        combined_stats = {}
-        for (read_file_name, read_alignment_result_bam_path,
-             unaligned_reads_path) in zip(
-                self.read_file_names,
-                self.paths.read_alignment_result_bam_paths,
-                self.paths.unaligned_reads_paths):
-            read_aligner_stats = ReadAlignerStats()
-            combined_stats[read_file_name] = read_aligner_stats.count(
-                read_alignment_result_bam_path,
-                unaligned_reads_path)
+        read_files_and_jobs = {}
+        with concurrent.futures.ProcessPoolExecutor(
+            max_workers=self.args.processes) as executor:
+            for (read_file, read_alignment_result_bam_path,
+                 unaligned_reads_path) in zip(
+                     self.read_file_names,
+                     self.paths.read_alignment_result_bam_paths,
+                     self.paths.unaligned_reads_paths):
+                read_aligner_stats = ReadAlignerStats()
+                read_files_and_jobs[read_file]  = executor.submit(
+                    read_aligner_stats.count, read_alignment_result_bam_path,
+                    unaligned_reads_path)
+        # Evaluate thread outcome
+        self._check_job_completeness(read_files_and_jobs.values())
+        read_files_and_stats = dict(
+            [(read_file, job.result()) for read_file, job in
+             read_files_and_jobs.items()])
         raw_stat_data_writer.write(
-            combined_stats, self.paths.read_aligner_stats_path)
+            read_files_and_stats, self.paths.read_aligner_stats_path)
 
     def _write_alignment_stat_table(self):
         raw_stat_data_reader = RawStatDataReader()
