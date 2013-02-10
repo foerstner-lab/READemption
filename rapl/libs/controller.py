@@ -143,7 +143,7 @@ class Controller(object):
             ["No. of reads - Long enough and used for alignment"] +
             self._get_read_process_numbers(
                 read_processing_stats, "long_enough"),
-            ["Total no. of aligned read"] + [
+            ["Total no. of aligned reads"] + [
                 round(num) for num in self._total_alignment_stat_numbers(
                 alignment_stats, "no_of_aligned_reads")],
             ["Total no. of unaligned reads"] + [str(alignment_stats[read_file][
@@ -154,14 +154,14 @@ class Controller(object):
             ["Total no. of alignments"] + self._total_alignment_stat_numbers(
                 alignment_stats, "no_of_alignments"),
             ["Percentage of aligned reads (compared to total input reads)"]  + [
-                round(float(aligned_reads)/float(total_reads) * 100, 2)
+                round(self._calc_percentage(aligned_reads, total_reads), 2)
                 for aligned_reads, total_reads in
                 zip(self._total_alignment_stat_numbers(
                     alignment_stats, "no_of_aligned_reads"),
                     self._get_read_process_numbers(
                         read_processing_stats, "total_no_of_reads"))],
             ["Percentage of uniquely aligned reads (in relation to all aligned reads)"]  + [
-                round(float(uniquely_aligned_reads)/float(aligned_reads) * 100, 2)
+                round(self._calc_percentage(uniquely_aligned_reads, aligned_reads), 2)
                 for uniquely_aligned_reads, aligned_reads  in zip(
                         self._total_alignment_stat_numbers(alignment_stats, "no_of_uniquely_aligned_reads"),
                         self._total_alignment_stat_numbers(alignment_stats, "no_of_aligned_reads"))]
@@ -182,6 +182,12 @@ class Controller(object):
         table_fh = open(self.paths.read_alignment_stats_table_path, "w")
         table_fh.write("\n".join(["\t".join([str(cell) for cell in row]) for row in table]))
         table_fh.close()
+
+    def _calc_percentage(self, mult, div):
+        try:
+            return(float(mult)/float(div)*100)
+        except ZeroDivisionError:
+            return(0.0)
 
     def _alignment_number_per_ref_seq(self, alignment_stats, ref_id, attribute):
         return([alignment_stats[read_file]["countings_per_reference"][
