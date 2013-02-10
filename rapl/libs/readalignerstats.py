@@ -41,7 +41,6 @@ class ReadAlignerStats(object):
                 sys.stderr.write(
                     "SAM entry with unspecified reference found! Stoping\n")
                 sys.exit(2)
-
         self._stats["countings_per_reference"] = stats_per_ref
         self._stats["countings_total"] = self._sum_countings(stats_per_ref)
         self._stats["no_of_hits_per_read_and_freq"] = self._calc_down_to_read(
@@ -51,8 +50,14 @@ class ReadAlignerStats(object):
         total_stats = {}
         for ref_id, stats in stats_per_ref.items():
             for attribute, value in stats.items():
-                total_stats.setdefault(attribute, 0)
-                total_stats[attribute] += value
+                if type(value) is int:
+                    total_stats.setdefault(attribute, 0)
+                    total_stats[attribute] += value
+                elif type(value) is dict:
+                    total_stats.setdefault(attribute, {})
+                    for value_int, freq in value.items():
+                        total_stats[attribute].setdefault(value_int, 0)
+                        total_stats[attribute][value_int] += freq
         return(total_stats)
 
     def _calc_down_to_read(self, no_of_hits_per_read_freq):
@@ -69,6 +74,7 @@ class ReadAlignerStats(object):
         stats_per_ref[ref_id]["no_of_alignments"] = 0
         stats_per_ref[ref_id]["no_of_aligned_reads"] = 0
         stats_per_ref[ref_id]["no_of_uniquely_aligned_reads"] = 0
+        stats_per_ref[ref_id]["alignment_length_and_frequencies"] = {}
 
     def _count_alignment(
             self, entry, ref_id, stats_per_ref, no_of_hits_per_read_freq):
@@ -80,3 +86,7 @@ class ReadAlignerStats(object):
             ref_id]["no_of_aligned_reads"] += 1.0/float(no_of_hits)
         if no_of_hits == 1:
             stats_per_ref[ref_id]["no_of_uniquely_aligned_reads"] += 1
+        stats_per_ref[ref_id][
+            "alignment_length_and_frequencies"].setdefault(entry.alen, 0)
+        stats_per_ref[ref_id][
+            "alignment_length_and_frequencies"][entry.alen] += 1
