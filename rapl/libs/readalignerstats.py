@@ -50,7 +50,7 @@ class ReadAlignerStats(object):
         total_stats = {}
         for ref_id, stats in stats_per_ref.items():
             for attribute, value in stats.items():
-                if type(value) is int:
+                if type(value) is int or type(value) is float:
                     total_stats.setdefault(attribute, 0)
                     total_stats[attribute] += value
                 elif type(value) is dict:
