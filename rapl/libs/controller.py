@@ -82,10 +82,16 @@ class Controller(object):
 
     def _sam_to_bam(self):
         sam_to_bam_converter = SamToBamConverter()
-        for sam_path, bam_prefix_path in zip(
-            self.paths.read_alignment_result_sam_paths,
-            self.paths.read_alignment_result_bam_prefixes_paths):
-            sam_to_bam_converter.sam_to_bam(sam_path, bam_prefix_path)
+        jobs = []
+        with concurrent.futures.ProcessPoolExecutor(
+            max_workers=self.args.processes) as executor:
+            for sam_path, bam_prefix_path in zip(
+                    self.paths.read_alignment_result_sam_paths,
+                    self.paths.read_alignment_result_bam_prefixes_paths):
+                jobs.append(executor.submit(
+                    sam_to_bam_converter.sam_to_bam, sam_path, bam_prefix_path))
+        # Evaluate thread outcome
+        self._check_job_completeness(jobs)
 
     def _generate_read_alignment_stats(self):
         raw_stat_data_writer = RawStatDataWriter(pretty=True)
