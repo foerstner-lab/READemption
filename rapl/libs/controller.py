@@ -163,7 +163,7 @@ class Controller(object):
                 self._alignment_number_per_ref_seq(
                     alignment_stats, ref_id, "no_of_uniquely_aligned_reads"))
             table.append(
-                ["%s - No. of alignment" % ref_id] +
+                ["%s - No. of alignments" % ref_id] +
                 self._alignment_number_per_ref_seq(
                     alignment_stats, ref_id, "no_of_alignments"))
         table_fh = open(self.paths.read_alignment_stats_table_path, "w")
@@ -172,7 +172,7 @@ class Controller(object):
 
     def _alignment_number_per_ref_seq(self, alignment_stats, ref_id, attribute):
         return([alignment_stats[read_file]["countings_per_reference"][
-            ref_id]["no_of_aligned_reads"] for read_file in self.read_file_names])
+            ref_id][attribute] for read_file in self.read_file_names])
 
     def _total_alignment_stat_numbers(self, alignment_stats, attribute):
         return([alignment_stats[read_file]["countings_total"][attribute]
