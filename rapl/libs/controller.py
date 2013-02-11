@@ -34,8 +34,8 @@ class Controller(object):
 
     def align_reads(self):
         """Perform the alignment of the reads."""
-        self.read_files = self.paths._get_read_files()
-        ref_seq_files = self.paths._get_ref_seq_files()
+        self.read_files = self.paths.get_read_files()
+        ref_seq_files = self.paths.get_ref_seq_files()
         self.paths.set_read_files_dep_file_lists(self.read_files)
         self.paths.set_ref_seq_paths(ref_seq_files)
         self._prepare_reads()
@@ -55,8 +55,7 @@ class Controller(object):
                 read_processor = ReadProcessor(
                     min_read_length=self.args.min_read_length)
                 read_files_and_jobs[read_file]  = executor.submit(
-                    read_processor.process, read_path,
-                    processed_read_path)
+                    read_processor.process, read_path, processed_read_path)
         # Evaluate thread outcome
         self._check_job_completeness(read_files_and_jobs.values())
         # Create a dict of the read file names and the processing
@@ -160,11 +159,15 @@ class Controller(object):
                     alignment_stats, "no_of_aligned_reads"),
                     self._get_read_process_numbers(
                         read_processing_stats, "total_no_of_reads"))],
-            ["Percentage of uniquely aligned reads (in relation to all aligned reads)"]  + [
-                round(self._calc_percentage(uniquely_aligned_reads, aligned_reads), 2)
+            ["Percentage of uniquely aligned reads (in relation to all " +
+                "aligned reads)"]  + [
+                round(self._calc_percentage(uniquely_aligned_reads,
+                                            aligned_reads), 2)
                 for uniquely_aligned_reads, aligned_reads  in zip(
-                        self._total_alignment_stat_numbers(alignment_stats, "no_of_uniquely_aligned_reads"),
-                        self._total_alignment_stat_numbers(alignment_stats, "no_of_aligned_reads"))]
+                        self._total_alignment_stat_numbers(
+                            alignment_stats, "no_of_uniquely_aligned_reads"),
+                        self._total_alignment_stat_numbers(
+                            alignment_stats, "no_of_aligned_reads"))]
         ]
         for ref_id in ref_ids:
             table.append(
@@ -180,7 +183,8 @@ class Controller(object):
                 self._alignment_number_per_ref_seq(
                     alignment_stats, ref_id, "no_of_alignments"))
         table_fh = open(self.paths.read_alignment_stats_table_path, "w")
-        table_fh.write("\n".join(["\t".join([str(cell) for cell in row]) for row in table]))
+        table_fh.write("\n".join(["\t".join([str(cell) for cell in row])
+                                  for row in table]))
         table_fh.close()
 
     def _calc_percentage(self, mult, div):
@@ -214,18 +218,18 @@ class Controller(object):
 
     def create_coverage_files(self):
         """Create coverage files based on the read alignments."""
-        read_files = self.paths._get_read_files()
+        read_files = self.paths.get_read_files()
         self.paths.set_read_files_dep_file_lists(read_files)
         raw_stat_data_reader = RawStatDataReader()
         alignment_stats = [
             raw_stat_data_reader.read(
             self.paths.read_aligner_stats_path)]
-        read_files_and_no_of_aligned_reads = dict([
+        read_files_aligned_read_freq = dict([
             (read_file,
              round(attributes["countings_total"]["no_of_aligned_reads"]))
              for read_file, attributes in alignment_stats[0].items()])
         min_read_alignment_counting = min(
-            read_files_and_no_of_aligned_reads.values())
+            read_files_aligned_read_freq.values())
         # Run the generation of coverage in parallel
         jobs = []
         with concurrent.futures.ProcessPoolExecutor(
@@ -235,7 +239,7 @@ class Controller(object):
                 jobs.append(executor.submit(
                         self._create_coverage_files_for_lib,
                         read_file, bam_path,
-                        read_files_and_no_of_aligned_reads,
+                        read_files_aligned_read_freq,
                         min_read_alignment_counting))
         # Evaluate thread outcome
         self._check_job_completeness(jobs)
@@ -284,8 +288,8 @@ class Controller(object):
             norm_by_alignment_freq = False
         if self.args.skip_norm_by_overlap_freq:
             norm_by_overlap_freq = False
-        read_files = self.paths._get_read_files()
-        annotation_files = self.paths._get_annotation_files()
+        read_files = self.paths.get_read_files()
+        annotation_files = self.paths.get_annotation_files()
         self.paths.set_annotation_paths(annotation_files)
         self.paths.set_read_files_dep_file_lists(read_files)
         for read_file, read_alignment_path in zip(
@@ -300,8 +304,7 @@ class Controller(object):
                     annotation_files, self.paths.annotation_paths):
                 gene_wise_quantification.quantify(
                     read_alignment_path, annotation_path,
-                    self.paths.gene_quanti_path(
-                        read_file, annotation_file))
+                    self.paths.gene_quanti_path(read_file, annotation_file))
         self._gene_quanti_create_overview(
             annotation_files, self.paths.annotation_paths, read_files)
 
