@@ -62,23 +62,23 @@ class CoverageCreator(object):
                 "reverse"][ref_id][end-1] = self.replicons_and_coverages[
                     "reverse"][ref_id][end-1] - increment
 
-    def write_to_files(self, output_file_prefix, read_file_name, factor=1.0,
+    def write_to_files(self, output_file_prefix, read_file, factor=1.0,
                       output_format="wiggle"):
         if output_format == "wiggle":
             self._write_to_wiggle_files(
-                output_file_prefix, read_file_name, factor=factor)
+                output_file_prefix, read_file, factor=factor)
 
     def _write_to_wiggle_files(
-            self, output_file_prefix, read_file_name, factor):
+            self, output_file_prefix, read_file, factor):
         for strand in ["forward", "reverse"]:
             output_fh = open("%s_%s.wig" % (output_file_prefix, strand), "w")
             self._write_to_wiggle_file(
-                output_fh, read_file_name, factor, strand)
+                output_fh, read_file, factor, strand)
             output_fh.close()
 
-    def _write_to_wiggle_file(self, output_fh, read_file_name, factor, strand):
+    def _write_to_wiggle_file(self, output_fh, read_file, factor, strand):
         output_fh.write("track type=wiggle_0 name=\"%s_%s\"\n" % (
-            read_file_name, strand))
+            read_file, strand))
         for replicon in sorted(self.replicons_and_coverages[strand].keys()):
             output_fh.write("variableStep chrom=%s span=1\n" % (replicon))
             # Filter values of 0 and multiply other the remaining

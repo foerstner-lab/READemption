@@ -34,10 +34,10 @@ class Controller(object):
 
     def align_reads(self):
         """Perform the alignment of the reads."""
-        self.read_file_names = self.paths._get_read_file_names()
-        ref_seq_file_names = self.paths._get_ref_seq_file_names()
-        self.paths.set_read_files_dep_file_lists(self.read_file_names)
-        self.paths.set_ref_seq_paths(ref_seq_file_names)
+        self.read_files = self.paths._get_read_files()
+        ref_seq_files = self.paths._get_ref_seq_files()
+        self.paths.set_read_files_dep_file_lists(self.read_files)
+        self.paths.set_ref_seq_paths(ref_seq_files)
         self._prepare_reads()
         self._align_reads()
         self._sam_to_bam()
@@ -50,7 +50,7 @@ class Controller(object):
         with concurrent.futures.ProcessPoolExecutor(
             max_workers=self.args.processes) as executor:
             for read_file, read_path, processed_read_path in zip(
-                    self.read_file_names, self.paths.read_paths,
+                    self.read_files, self.paths.read_paths,
                     self.paths.processed_read_paths):
                 read_processor = ReadProcessor(
                     min_read_length=self.args.min_read_length)
@@ -100,7 +100,7 @@ class Controller(object):
             max_workers=self.args.processes) as executor:
             for (read_file, read_alignment_result_bam_path,
                  unaligned_reads_path) in zip(
-                     self.read_file_names,
+                     self.read_files,
                      self.paths.read_alignment_result_bam_paths,
                      self.paths.unaligned_reads_paths):
                 read_aligner_stats = ReadAlignerStats()
@@ -122,11 +122,11 @@ class Controller(object):
         alignment_stats = raw_stat_data_reader.read(
             self.paths.read_aligner_stats_path)
         table = []
-        table.append(["Lib"] + self.read_file_names)
+        table.append(["Lib"] + self.read_files)
         ref_ids = sorted(list(list(alignment_stats.values())[0][
             "countings_per_reference"].keys()))
         table = [
-            ["Library read file"] + self.read_file_names,
+            ["Library read file"] + self.read_files,
             ["No. of input reads"] +
             self._get_read_process_numbers(
                 read_processing_stats, "total_no_of_reads"),
@@ -147,7 +147,7 @@ class Controller(object):
                 round(num) for num in self._total_alignment_stat_numbers(
                 alignment_stats, "no_of_aligned_reads")],
             ["Total no. of unaligned reads"] + [str(alignment_stats[read_file][
-                "no_of_unaligned_reads"]) for read_file in self.read_file_names],
+                "no_of_unaligned_reads"]) for read_file in self.read_files],
             ["Total no. of uniquely aligned reads"] +
             self._total_alignment_stat_numbers(
                 alignment_stats, "no_of_uniquely_aligned_reads"),
@@ -191,31 +191,31 @@ class Controller(object):
 
     def _alignment_number_per_ref_seq(self, alignment_stats, ref_id, attribute):
         return([alignment_stats[read_file]["countings_per_reference"][
-            ref_id][attribute] for read_file in self.read_file_names])
+            ref_id][attribute] for read_file in self.read_files])
 
     def _total_alignment_stat_numbers(self, alignment_stats, attribute):
         return([alignment_stats[read_file]["countings_total"][attribute]
-                for read_file in self.read_file_names])
+                for read_file in self.read_files])
 
     def _get_read_process_numbers(
             self, read_processing_stats, attribute):
         return([read_processing_stats[read_file][attribute]
-                for read_file in self.read_file_names])
+                for read_file in self.read_files])
 
-    def _ref_ids_to_file_name(self, ref_seq_paths):
-        ref_ids_to_file_name = {}
+    def _ref_ids_to_file(self, ref_seq_paths):
+        ref_ids_to_file = {}
         fasta_parser = FastaParser()
         for ref_seq_path in ref_seq_paths:
             ref_seq_file = os.path.basename(ref_seq_path)
             ref_seq_id = fasta_parser.header_id(
                 fasta_parser.single_entry_file_header(open(ref_seq_path)))
-            ref_ids_to_file_name[ref_seq_id] = ref_seq_file
-        return(ref_ids_to_file_name)
+            ref_ids_to_file[ref_seq_id] = ref_seq_file
+        return(ref_ids_to_file)
 
     def create_coverage_files(self):
         """Create coverage files based on the read alignments."""
-        read_file_names = self.paths._get_read_file_names()
-        self.paths.set_read_files_dep_file_lists(read_file_names)
+        read_files = self.paths._get_read_files()
+        self.paths.set_read_files_dep_file_lists(read_files)
         raw_stat_data_reader = RawStatDataReader()
         alignment_stats = [
             raw_stat_data_reader.read(
@@ -230,18 +230,18 @@ class Controller(object):
         jobs = []
         with concurrent.futures.ProcessPoolExecutor(
             max_workers=self.args.processes) as executor:
-            for read_file_name, bam_path in zip(
-                read_file_names, self.paths.read_alignment_result_bam_paths):
+            for read_file, bam_path in zip(
+                read_files, self.paths.read_alignment_result_bam_paths):
                 jobs.append(executor.submit(
                         self._create_coverage_files_for_lib,
-                        read_file_name, bam_path,
+                        read_file, bam_path,
                         read_files_and_no_of_aligned_reads,
                         min_read_alignment_counting))
         # Evaluate thread outcome
         self._check_job_completeness(jobs)
 
     def _create_coverage_files_for_lib(
-        self, read_file_name, bam_path, read_alignment_stats,
+        self, read_file, bam_path, read_alignment_stats,
         min_read_alignment_counting):
         coverage_creator = CoverageCreator()
         read_count_splitting = True
@@ -254,22 +254,22 @@ class Controller(object):
             first_base_only=self.args.first_base_only)
         # Raw countings
         coverage_creator.write_to_files(
-            "%s/%s" % (self.paths.coverage_folder, read_file_name),
-            read_file_name)
-        total_number_of_aligned_reads = read_alignment_stats[read_file_name]
+            "%s/%s" % (self.paths.coverage_folder, read_file),
+            read_file)
+        total_number_of_aligned_reads = read_alignment_stats[read_file]
         # Read normalized countings - multiplied by min read counting
         factor = (min_read_alignment_counting / total_number_of_aligned_reads)
         coverage_creator.write_to_files(
             "%s/%s-div_by_%.1f_multi_by_%.1f" % (
-                self.paths.coverage_folder_norm_reads, read_file_name,
+                self.paths.coverage_folder_norm_reads, read_file,
                 total_number_of_aligned_reads, min_read_alignment_counting),
-            read_file_name, factor=factor)
+            read_file, factor=factor)
         # Read normalized countings - multiplied by 1M
         factor = (1000000 / total_number_of_aligned_reads)
         coverage_creator.write_to_files(
             "%s/%s-div_by_%.1f_multi_by_1M" % (
-                self.paths.coverage_folder_norm_reads_mil, read_file_name,
-                total_number_of_aligned_reads), read_file_name, factor=factor)
+                self.paths.coverage_folder_norm_reads_mil, read_file,
+                total_number_of_aligned_reads), read_file, factor=factor)
 
     def _check_job_completeness(self, jobs):
         """Check the completness of each job in a list"""
@@ -284,12 +284,12 @@ class Controller(object):
             norm_by_alignment_freq = False
         if self.args.skip_norm_by_overlap_freq:
             norm_by_overlap_freq = False
-        read_file_names = self.paths._get_read_file_names()
-        annotation_files = self.paths._get_annotation_file_names()
+        read_files = self.paths._get_read_files()
+        annotation_files = self.paths._get_annotation_files()
         self.paths.set_annotation_paths(annotation_files)
-        self.paths.set_read_files_dep_file_lists(read_file_names)
-        for read_file_name, read_alignment_path in zip(
-                read_file_names, self.paths.read_alignment_result_bam_paths):
+        self.paths.set_read_files_dep_file_lists(read_files)
+        for read_file, read_alignment_path in zip(
+                read_files, self.paths.read_alignment_result_bam_paths):
             gene_wise_quantification = GeneWiseQuantification(
                 min_overlap=self.args.min_overlap,
                 norm_by_alignment_freq=norm_by_alignment_freq,
@@ -301,21 +301,21 @@ class Controller(object):
                 gene_wise_quantification.quantify(
                     read_alignment_path, annotation_path,
                     self.paths.gene_quanti_path(
-                        read_file_name, annotation_file))
+                        read_file, annotation_file))
         self._gene_quanti_create_overview(
-            annotation_files, self.paths.annotation_paths, read_file_names)
+            annotation_files, self.paths.annotation_paths, read_files)
 
     def _gene_quanti_create_overview(
-            self, annotation_files, annotation_paths, read_file_names):
+            self, annotation_files, annotation_paths, read_files):
         gene_wise_overview = GeneWiseOverview()
         path_and_name_combos = {}
         for annotation_file, annotation_path in zip(
                 annotation_files, annotation_paths):
             path_and_name_combos[annotation_path] = []
-            for read_file_name in read_file_names:
+            for read_file in read_files:
                 path_and_name_combos[annotation_path].append(
-                    [read_file_name, self.paths.gene_quanti_path(
-                        read_file_name, annotation_file)])
+                    [read_file, self.paths.gene_quanti_path(
+                        read_file, annotation_file)])
         gene_wise_overview.create_overview(
-            path_and_name_combos, read_file_names,
+            path_and_name_combos, read_files,
             self.paths.gene_wise_quanti_combined_path)

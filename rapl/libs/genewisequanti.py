@@ -110,10 +110,10 @@ class GeneWiseQuantification(object):
 class GeneWiseOverview(object):
 
     def create_overview(
-            self, path_and_name_combos, read_file_names, overview_path):
+            self, path_and_name_combos, read_files, overview_path):
         output_fh = open(overview_path, "w")
         # Write header
-        output_fh.write("\t".join([""] * 10 + read_file_names) + "\n")
+        output_fh.write("\t".join([""] * 10 + read_files) + "\n")
         self._add_to_overview(path_and_name_combos, "sense", 9, output_fh)
         self._add_to_overview(path_and_name_combos, "anti-sense", 10, output_fh)
 

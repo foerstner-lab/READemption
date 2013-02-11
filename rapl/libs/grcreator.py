@@ -4,45 +4,45 @@ from libs.sam import SamParser
 
 class GRCreator(object):
 
-    def create_gr_files(self, read_file_names, read_mapping_result_paths, 
-                        ref_ids_to_file_name, gr_folder):
-        for read_file_name, read_mapping_result_path in zip(
-            read_file_names, read_mapping_result_paths):
-             for ref_seq_id, ref_seq_file_name in ref_ids_to_file_name.items():
+    def create_gr_files(self, read_files, read_mapping_result_paths, 
+                        ref_ids_to_file, gr_folder):
+        for read_file, read_mapping_result_path in zip(
+            read_files, read_mapping_result_paths):
+             for ref_seq_id, ref_seq_file in ref_ids_to_file.items():
                 plus_strand_output_file = self._output_path(
-                    gr_folder, read_file_name, ref_seq_file_name, "+")
+                    gr_folder, read_file, ref_seq_file, "+")
                 minus_strand_output_file = self._output_path(
-                    gr_folder, read_file_name, ref_seq_file_name, "-")
+                    gr_folder, read_file, ref_seq_file, "-")
                 gr_file_builder = GRFileBuilder(
                     read_mapping_result_path, ref_seq_id, 
                     plus_strand_output_file, minus_strand_output_file)
                 gr_file_builder.build_gr_files()
 
     def create_read_normalized_gr_files(
-        self, read_file_names, read_mapping_result_paths, 
-        ref_ids_to_file_name, gr_read_normalized_folder):
-        read_file_names_and_mapped_reads = {}
+        self, read_files, read_mapping_result_paths, 
+        ref_ids_to_file, gr_read_normalized_folder):
+        read_files_and_mapped_reads = {}
         sam_parser = SamParser()
-        for read_file_name, read_mapping_result_path in zip(
-            read_file_names, read_mapping_result_paths):
+        for read_file, read_mapping_result_path in zip(
+            read_files, read_mapping_result_paths):
             (ref_seqs_and_mappings, ref_seqs_and_mapped_reads, 
              ref_seqs_and_uniquely_mapped_reads) = (
                 sam_parser.mapping_countings(open(read_mapping_result_path)))
             # Sum the number of mapped reads for all reference sequences
-            read_file_names_and_mapped_reads[read_file_name] = sum(
+            read_files_and_mapped_reads[read_file] = sum(
                 ref_seqs_and_mapped_reads.values())
-        min_no_of_reads = min(read_file_names_and_mapped_reads.values())
+        min_no_of_reads = min(read_files_and_mapped_reads.values())
 
-        for read_file_name, read_mapping_result_path in zip(
-            read_file_names, read_mapping_result_paths):
-            norm_value = read_file_names_and_mapped_reads[read_file_name]
-            for ref_seq_id, ref_seq_file_name in ref_ids_to_file_name.items():
+        for read_file, read_mapping_result_path in zip(
+            read_files, read_mapping_result_paths):
+            norm_value = read_files_and_mapped_reads[read_file]
+            for ref_seq_id, ref_seq_file in ref_ids_to_file.items():
                 plus_strand_output_file = self._read_normalized_path(
-                    gr_read_normalized_folder, read_file_name, 
-                    ref_seq_file_name, "+", norm_value, min_no_of_reads)
+                    gr_read_normalized_folder, read_file, 
+                    ref_seq_file, "+", norm_value, min_no_of_reads)
                 minus_strand_output_file = self._read_normalized_path(
-                    gr_read_normalized_folder, read_file_name, 
-                    ref_seq_file_name, "-", norm_value, min_no_of_reads)
+                    gr_read_normalized_folder, read_file, 
+                    ref_seq_file, "-", norm_value, min_no_of_reads)
                 gr_file_builder = GRFileBuilder(
                     read_mapping_result_path, ref_seq_id, 
                     plus_strand_output_file, minus_strand_output_file,
@@ -51,19 +51,19 @@ class GRCreator(object):
                 gr_file_builder.build_gr_files()    
         
     def _output_path(self, folder_path, 
-                          read_file_name, ref_seq_file_name, strand):
+                          read_file, ref_seq_file, strand):
         strand_string = {"-" : "minus", "+" : "plus"}[strand]
         return("%s/%s_in_%s.%s_strand.gr" % (
-                folder_path, read_file_name, ref_seq_file_name, strand_string))
+                folder_path, read_file, ref_seq_file, strand_string))
 
     def _read_normalized_path(
-        self, folder_path, read_file_name, ref_seq_file_name, strand, 
+        self, folder_path, read_file, ref_seq_file, strand, 
         normalization_value, multiplier):
         strand_string = {"-" : "minus", "+" : "plus"}[strand]
         normalization_value = round(normalization_value, 2)
         multiplier = round(multiplier, 2)
         return("%s/%s_in_%s_norm_by_%s_mult_by_%s.%s_strand.gr" % (
-                folder_path, read_file_name, ref_seq_file_name, 
+                folder_path, read_file, ref_seq_file, 
                 normalization_value, multiplier, strand_string))
 
 class GRFileBuilder(object):

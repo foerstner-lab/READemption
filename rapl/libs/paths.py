@@ -5,7 +5,7 @@ class Paths(object):
     def __init__(self, base_path="."):
         self.base_path = base_path
         self._set_folder_names()
-        self._set_static_file_names()
+        self._set_static_files()
 
     def _set_folder_names(self):
         """Set the name of folders used in a project."""
@@ -46,7 +46,7 @@ class Paths(object):
         self.gene_wise_quanti_combined_path = (
             "%s/Gene_wise_quantifications_combined.csv" % self.output_folder)
 
-    def _set_static_file_names(self):
+    def _set_static_files(self):
         """Set name of common files."""
         self.read_processing_stats_path = "%s/read_processing.json" % (
             self.raw_stat_data_folder)
@@ -64,18 +64,18 @@ class Paths(object):
 
     def _get_sorted_folder_content(self, folder):
         """Return the sorted file list of a folder"""
-        return(list(filter(lambda file_name: not file_name.endswith("~"),
+        return(list(filter(lambda file: not file.endswith("~"),
                       sorted(os.listdir(folder)))))
 
-    def _get_read_file_names(self):
+    def _get_read_files(self):
         """Read the names of the read files."""
         return(self._get_sorted_folder_content(self.read_fasta_folder))
 
-    def _get_ref_seq_file_names(self):
+    def _get_ref_seq_files(self):
         """Read the names of reference sequence files."""
         return(self._get_sorted_folder_content(self.ref_seq_folder))
 
-    def _get_annotation_file_names(self):
+    def _get_annotation_files(self):
         """Read the names of annotation files."""
         return(self._get_sorted_folder_content(self.annotation_folder))
 
@@ -130,6 +130,6 @@ class Paths(object):
     def _path_list(self, folder, files, appendix=""):
         return(["%s/%s%s" % (folder, file, appendix) for file in files])
 
-    def gene_quanti_path(self, read_file_name, annotation_file):
+    def gene_quanti_path(self, read_file, annotation_file):
         return("%s/%s_to_%s.csv" % (
-            self.gene_quanti_folder, read_file_name, annotation_file))
+            self.gene_quanti_folder, read_file, annotation_file))
