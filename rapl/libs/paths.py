@@ -67,15 +67,15 @@ class Paths(object):
         return(list(filter(lambda file: not file.endswith("~"),
                       sorted(os.listdir(folder)))))
 
-    def _get_read_files(self):
+    def get_read_files(self):
         """Read the names of the read files."""
         return(self._get_sorted_folder_content(self.read_fasta_folder))
 
-    def _get_ref_seq_files(self):
+    def get_ref_seq_files(self):
         """Read the names of reference sequence files."""
         return(self._get_sorted_folder_content(self.ref_seq_folder))
 
-    def _get_annotation_files(self):
+    def get_annotation_files(self):
         """Read the names of annotation files."""
         return(self._get_sorted_folder_content(self.annotation_folder))
 
@@ -120,8 +120,7 @@ class Paths(object):
             self.unaligned_reads_folder, read_files, appendix="_unaligned.fa")
 
     def set_ref_seq_paths(self, ref_seq_files):
-        self.ref_seq_paths = self._path_list(
-            self.ref_seq_folder, ref_seq_files)
+        self.ref_seq_paths = self._path_list(self.ref_seq_folder, ref_seq_files)
 
     def set_annotation_paths(self, annotation_files):
         self.annotation_paths = self._path_list(
