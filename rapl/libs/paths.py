@@ -60,7 +60,7 @@ class Paths(object):
             self.report_folder)
         self.read_alignment_stats_table_path = "%s/read_alignment_stats.csv" % (
             self.report_folder)
-        self.index_file_path = "%s/index.idx" % self.read_alignment_index_folder
+        self.index_path = "%s/index.idx" % self.read_alignment_index_folder
 
     def _get_sorted_folder_content(self, folder):
         """Return the sorted file list of a folder"""
@@ -106,8 +106,8 @@ class Paths(object):
         return([self.gene_quanti_folder])
 
     def set_read_files_dep_file_lists(self, read_files):
-        self.read_file_paths = self._path_list(self.read_fasta_folder, read_files)
-        self.processed_read_file_paths = self._path_list(
+        self.read_paths = self._path_list(self.read_fasta_folder, read_files)
+        self.processed_read_paths = self._path_list(
             self.processed_reads_folder, read_files, appendix="_processed.fa")
         self.read_alignment_result_sam_paths = self._path_list(
             self.read_alignments_folder, read_files, appendix="_alignments.sam")
@@ -120,11 +120,11 @@ class Paths(object):
             self.unaligned_reads_folder, read_files, appendix="_unaligned.fa")
 
     def set_ref_seq_paths(self, ref_seq_files):
-        self.ref_seq_file_paths = self._path_list(
+        self.ref_seq_paths = self._path_list(
             self.ref_seq_folder, ref_seq_files)
 
     def set_annotation_paths(self, annotation_files):
-        self.annotation_file_paths = self._path_list(
+        self.annotation_paths = self._path_list(
             self.annotation_folder, annotation_files)
 
     def _path_list(self, folder, files, appendix=""):

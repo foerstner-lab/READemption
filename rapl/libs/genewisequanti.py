@@ -19,32 +19,32 @@ class GeneWiseQuantification(object):
         self._norm_by_overlap_freq = norm_by_overlap_freq
 
     def calc_overlaps_per_alignment(self, read_alignment_path,
-                                  annotation_file_paths):
+                                  annotation_paths):
         """Calculate for each alignment the number of genes it
         overlaps. This has to be done globally i.e. for all annotation
         files combined in one dictionary.
         """
         gff3_parser = Gff3Parser()
         self.alignments_and_no_of_overlaps = {}
-        for annotation_file_path in annotation_file_paths:
+        for annotation_path in annotation_paths:
             sam = pysam.Samfile(read_alignment_path)
-            for entry in gff3_parser.entries(open(annotation_file_path)):
+            for entry in gff3_parser.entries(open(annotation_path)):
                 for alignment in self._overlapping_alignments(sam, entry):
                     alignment_id = self._alignment_id(alignment)
                     self.alignments_and_no_of_overlaps.setdefault(alignment_id, 0)
                     self.alignments_and_no_of_overlaps[alignment_id] += 1
 
-    def quantify(self, read_alignment_path, annotation_file_path, output_path):
-        self._quantify(read_alignment_path, annotation_file_path, output_path,
+    def quantify(self, read_alignment_path, annotation_path, output_path):
+        self._quantify(read_alignment_path, annotation_path, output_path,
                       self._fraction_calc_method())
 
-    def _quantify(self, read_alignment_path, annotation_file_path, output_path,
+    def _quantify(self, read_alignment_path, annotation_path, output_path,
                   fraction_calc_method):
         sam = pysam.Samfile(read_alignment_path)
         gff3_parser = Gff3Parser()
         output_fh = open(output_path, "w")
         output_fh.write("#" + "\t".join([""] * 9) + "sense\tantisense\n")
-        for entry in gff3_parser.entries(open(annotation_file_path)):
+        for entry in gff3_parser.entries(open(annotation_path)):
             sum_sense = 0
             sum_antisense = 0
             for alignment in self._overlapping_alignments(sam, entry):
@@ -120,14 +120,14 @@ class GeneWiseOverview(object):
     def _add_to_overview(self, path_and_name_combos, direction, column,
                          output_fh):
         gff3_parser = Gff3Parser()
-        for annotation_file_path in sorted(path_and_name_combos.keys()):
+        for annotation_path in sorted(path_and_name_combos.keys()):
             table_columns = []
             entries = []
-            for entry in gff3_parser.entries(open(annotation_file_path)):
+            for entry in gff3_parser.entries(open(annotation_path)):
                 entries.append(direction + "\t" + str(entry))
             table_columns.append(entries)
             for read_file, gene_quanti_path in path_and_name_combos[
-                    annotation_file_path]:
+                    annotation_path]:
                 reader = csv.reader(open(gene_quanti_path), delimiter="\t")
                 next(reader) # skip first line
                 table_columns.append([row[column] for row in reader])

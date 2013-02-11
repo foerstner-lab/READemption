@@ -9,9 +9,9 @@ class GRCreator(object):
         for read_file_name, read_mapping_result_path in zip(
             read_file_names, read_mapping_result_paths):
              for ref_seq_id, ref_seq_file_name in ref_ids_to_file_name.items():
-                plus_strand_output_file = self._output_file_path(
+                plus_strand_output_file = self._output_path(
                     gr_folder, read_file_name, ref_seq_file_name, "+")
-                minus_strand_output_file = self._output_file_path(
+                minus_strand_output_file = self._output_path(
                     gr_folder, read_file_name, ref_seq_file_name, "-")
                 gr_file_builder = GRFileBuilder(
                     read_mapping_result_path, ref_seq_id, 
@@ -37,10 +37,10 @@ class GRCreator(object):
             read_file_names, read_mapping_result_paths):
             norm_value = read_file_names_and_mapped_reads[read_file_name]
             for ref_seq_id, ref_seq_file_name in ref_ids_to_file_name.items():
-                plus_strand_output_file = self._read_normalized_file_path(
+                plus_strand_output_file = self._read_normalized_path(
                     gr_read_normalized_folder, read_file_name, 
                     ref_seq_file_name, "+", norm_value, min_no_of_reads)
-                minus_strand_output_file = self._read_normalized_file_path(
+                minus_strand_output_file = self._read_normalized_path(
                     gr_read_normalized_folder, read_file_name, 
                     ref_seq_file_name, "-", norm_value, min_no_of_reads)
                 gr_file_builder = GRFileBuilder(
@@ -50,13 +50,13 @@ class GRCreator(object):
                     multiplier=min_no_of_reads)
                 gr_file_builder.build_gr_files()    
         
-    def _output_file_path(self, folder_path, 
+    def _output_path(self, folder_path, 
                           read_file_name, ref_seq_file_name, strand):
         strand_string = {"-" : "minus", "+" : "plus"}[strand]
         return("%s/%s_in_%s.%s_strand.gr" % (
                 folder_path, read_file_name, ref_seq_file_name, strand_string))
 
-    def _read_normalized_file_path(
+    def _read_normalized_path(
         self, folder_path, read_file_name, ref_seq_file_name, strand, 
         normalization_value, multiplier):
         strand_string = {"-" : "minus", "+" : "plus"}[strand]
