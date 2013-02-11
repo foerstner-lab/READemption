@@ -18,15 +18,16 @@ class ReadAlignerStats(object):
 
     def _count_unaligned_reads(self, unaligned_read_paths):
         fasta_fh = open(unaligned_read_paths)
-        self._stats["no_of_unaligned_reads"] = self._count_fasta_entries(
-            fasta_fh)
+        self._stats["stats_total"][
+            "no_of_unaligned_reads"] = self._count_fasta_entries(fasta_fh)
         fasta_fh.close()
 
     def _count_fasta_entries(self, fasta_fh):
         return(reduce(lambda x, y: x + 1,
                       self.fasta_parser.entries(fasta_fh), 0))
 
-    def _count_aligned_reads_and_alignments(self, read_alignment_result_bam_path):
+    def _count_aligned_reads_and_alignments(
+            self, read_alignment_result_bam_path):
         bam = pysam.Samfile(read_alignment_result_bam_path)
         stats_per_ref = {}
         no_of_hits_per_read_freq = {}
@@ -41,10 +42,13 @@ class ReadAlignerStats(object):
                 sys.stderr.write(
                     "SAM entry with unspecified reference found! Stoping\n")
                 sys.exit(2)
-        self._stats["countings_per_reference"] = stats_per_ref
-        self._stats["countings_total"] = self._sum_countings(stats_per_ref)
-        self._stats["no_of_hits_per_read_and_freq"] = self._calc_down_to_read(
-            no_of_hits_per_read_freq)
+        self._stats["stats_per_reference"] = stats_per_ref
+        for ref_id, stats in stats_per_ref.items():
+            stats_per_ref[ref_id][
+                "no_of_hits_per_read_and_freqs"] = self._calc_down_to_read(
+                    stats_per_ref[ref_id]["no_of_hits_per_read_and_freqs"])
+        self._stats["stats_total"] = self._sum_countings(stats_per_ref)
+
 
     def _sum_countings(self, stats_per_ref):
         total_stats = {}
@@ -74,19 +78,22 @@ class ReadAlignerStats(object):
         stats_per_ref[ref_id]["no_of_alignments"] = 0
         stats_per_ref[ref_id]["no_of_aligned_reads"] = 0
         stats_per_ref[ref_id]["no_of_uniquely_aligned_reads"] = 0
-        stats_per_ref[ref_id]["alignment_length_and_frequencies"] = {}
+        stats_per_ref[ref_id]["alignment_length_and_freqs"] = {}
+        stats_per_ref[ref_id]["no_of_hits_per_read_and_freqs"] = {}
 
-    def _count_alignment(
-            self, entry, ref_id, stats_per_ref, no_of_hits_per_read_freq):
+    def _count_alignment(self, entry, ref_id, stats_per_ref,
+                         no_of_hits_per_read_freq):
         no_of_hits = dict(entry.tags)["NH"]
-        no_of_hits_per_read_freq.setdefault(no_of_hits, 0)
-        no_of_hits_per_read_freq[no_of_hits] += 1
+        stats_per_ref[ref_id]["no_of_hits_per_read_and_freqs"].setdefault(
+            no_of_hits, 0)
+        stats_per_ref[ref_id]["no_of_hits_per_read_and_freqs"][
+            no_of_hits] += 1
         stats_per_ref[ref_id]["no_of_alignments"] += 1
         stats_per_ref[
             ref_id]["no_of_aligned_reads"] += 1.0/float(no_of_hits)
         if no_of_hits == 1:
             stats_per_ref[ref_id]["no_of_uniquely_aligned_reads"] += 1
         stats_per_ref[ref_id][
-            "alignment_length_and_frequencies"].setdefault(entry.alen, 0)
+            "alignment_length_and_freqs"].setdefault(entry.alen, 0)
         stats_per_ref[ref_id][
-            "alignment_length_and_frequencies"][entry.alen] += 1
+            "alignment_length_and_freqs"][entry.alen] += 1

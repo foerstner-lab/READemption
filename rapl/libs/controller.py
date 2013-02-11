@@ -123,7 +123,7 @@ class Controller(object):
         table = []
         table.append(["Lib"] + self.read_files)
         ref_ids = sorted(list(list(alignment_stats.values())[0][
-            "countings_per_reference"].keys()))
+            "stats_per_reference"].keys()))
         table = [
             ["Library read file"] + self.read_files,
             ["No. of input reads"] +
@@ -145,8 +145,9 @@ class Controller(object):
             ["Total no. of aligned reads"] + [
                 round(num) for num in self._total_alignment_stat_numbers(
                 alignment_stats, "no_of_aligned_reads")],
-            ["Total no. of unaligned reads"] + [str(alignment_stats[read_file][
-                "no_of_unaligned_reads"]) for read_file in self.read_files],
+            ["Total no. of unaligned reads"] + [
+                round(num) for num in self._total_alignment_stat_numbers(
+                alignment_stats, "no_of_unaligned_reads")],
             ["Total no. of uniquely aligned reads"] +
             self._total_alignment_stat_numbers(
                 alignment_stats, "no_of_uniquely_aligned_reads"),
@@ -194,11 +195,11 @@ class Controller(object):
             return(0.0)
 
     def _alignment_number_per_ref_seq(self, alignment_stats, ref_id, attribute):
-        return([alignment_stats[read_file]["countings_per_reference"][
+        return([alignment_stats[read_file]["stats_per_reference"][
             ref_id][attribute] for read_file in self.read_files])
 
     def _total_alignment_stat_numbers(self, alignment_stats, attribute):
-        return([alignment_stats[read_file]["countings_total"][attribute]
+        return([alignment_stats[read_file]["stats_total"][attribute]
                 for read_file in self.read_files])
 
     def _get_read_process_numbers(
