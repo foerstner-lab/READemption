@@ -79,8 +79,8 @@ class CoverageCreator(object):
     def _write_to_wiggle_file(self, output_fh, read_file_name, factor, strand):
         output_fh.write("track type=wiggle_0 name=\"%s_%s\"\n" % (
             read_file_name, strand))
-        for element in sorted(self.replicons_and_coverages[strand].keys()):
-            output_fh.write("variableStep chrom=%s span=1\n" % (element))
+        for replicon in sorted(self.replicons_and_coverages[strand].keys()):
+            output_fh.write("variableStep chrom=%s span=1\n" % (replicon))
             # Filter values of 0 and multiply other the remaining
             # ones by the given factor. pos is increased by 1 as a
             # translation from a 0-based sysem (Python list) to a
@@ -91,4 +91,4 @@ class CoverageCreator(object):
                      for pos, coverage in
                      filter(lambda pos_and_cov: pos_and_cov[1] != 0.0,
                             enumerate(self.replicons_and_coverages[
-                                strand][element]))]) + "\n")
+                                strand][replicon]))]) + "\n")
