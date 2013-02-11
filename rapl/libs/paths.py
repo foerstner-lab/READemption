@@ -20,7 +20,7 @@ class Paths(object):
 
     def _set_input_folder_names(self):
         self.read_fasta_folder = "%s/reads" % self.input_folder
-        self.genome_folder = "%s/genomes" % self.input_folder
+        self.ref_seq_folder = "%s/reference_sequences" % self.input_folder
         self.annotation_folder = "%s/annotation_files" % self.input_folder
 
     def _set_read_alignment_folder_names(self):
@@ -52,17 +52,14 @@ class Paths(object):
             self.raw_stat_data_folder)
         self.read_aligner_stats_path = "%s/read_alignment.json" % (
             self.raw_stat_data_folder)
-        self.read_file_stats = "%s/read_file_stats.txt" % (
+        self.read_file_stats = "%s/input_read_stats.txt" % (
             self.report_folder)
-        self.genome_file_stats = "%s/genome_file_stats.txt" % (
+        self.ref_seq_file_stats = "%s/reference_sequences_stats.txt" % (
             self.report_folder)
         self.annotation_file_stats = "%s/annotation_file_stats.txt" % (
             self.report_folder)
         self.read_alignment_stats_table_path = "%s/read_alignment_stats.csv" % (
             self.report_folder)
-        self.lib_genome_read_alignment_summary = (
-            "%s/alignment_and_aligned_read_coutings_per_genome_file.csv" % (
-                self.report_folder))
         self.index_file_path = "%s/index.idx" % self.read_alignment_index_folder
 
     def _get_sorted_folder_content(self, folder):
@@ -74,9 +71,9 @@ class Paths(object):
         """Read the names of the read files."""
         return(self._get_sorted_folder_content(self.read_fasta_folder))
 
-    def _get_genome_file_names(self):
-        """Read the names of genome files."""
-        return(self._get_sorted_folder_content(self.genome_folder))
+    def _get_ref_seq_file_names(self):
+        """Read the names of reference sequence files."""
+        return(self._get_sorted_folder_content(self.ref_seq_folder))
 
     def _get_annotation_file_names(self):
         """Read the names of annotation files."""
@@ -94,7 +91,7 @@ class Paths(object):
                 self.raw_stat_data_folder])
 
     def _required_input_folders(self):
-        return([self.read_fasta_folder, self.genome_folder,
+        return([self.read_fasta_folder, self.ref_seq_folder,
                 self.annotation_folder])
 
     def _required_read_alignment_folders(self):
@@ -122,9 +119,9 @@ class Paths(object):
         self.unaligned_reads_paths = self._path_list(
             self.unaligned_reads_folder, read_files, appendix="_unaligned.fa")
 
-    def set_genome_paths(self, genome_files):
-        self.genome_file_paths = self._path_list(
-            self.genome_folder, genome_files)
+    def set_ref_seq_paths(self, ref_seq_files):
+        self.ref_seq_file_paths = self._path_list(
+            self.ref_seq_folder, ref_seq_files)
 
     def set_annotation_paths(self, annotation_files):
         self.annotation_file_paths = self._path_list(

@@ -29,15 +29,15 @@ class Controller(object):
         sys.stdout.write("Created folder \"%s\" and required subfolders.\n" % (
                 self.args.project_path))
         sys.stdout.write("Please copy read files into folder \"%s\" and "
-                         "genome files into folder \"%s\".\n" % (
-                self.paths.read_fasta_folder, self.paths.genome_folder))
+                         "reference sequences files into folder \"%s\".\n" % (
+                self.paths.read_fasta_folder, self.paths.ref_seq_folder))
 
     def align_reads(self):
         """Perform the alignment of the reads."""
         self.read_file_names = self.paths._get_read_file_names()
-        genome_file_names = self.paths._get_genome_file_names()
+        ref_seq_file_names = self.paths._get_ref_seq_file_names()
         self.paths.set_read_files_dep_file_lists(self.read_file_names)
-        self.paths.set_genome_paths(genome_file_names)
+        self.paths.set_ref_seq_paths(ref_seq_file_names)
         self._prepare_reads()
         self._align_reads()
         self._sam_to_bam()
@@ -70,10 +70,10 @@ class Controller(object):
     def _align_reads(self):
         read_aligner = ReadAligner(segemehl_bin=self.args.segemehl_bin)
         read_aligner.build_index(
-            self.paths.genome_file_paths, self.paths.index_file_path)
+            self.paths.ref_seq_file_paths, self.paths.index_file_path)
         read_aligner.run_alignment(
             self.paths.processed_read_file_paths,
-            self.paths.genome_file_paths, self.paths.index_file_path,
+            self.paths.ref_seq_file_paths, self.paths.index_file_path,
             self.paths.read_alignment_result_sam_paths,
             self.paths.unaligned_reads_paths,
             int(self.args.processes),
@@ -202,14 +202,14 @@ class Controller(object):
         return([read_processing_stats[read_file][attribute]
                 for read_file in self.read_file_names])
 
-    def _ref_ids_to_file_name(self, genome_file_paths):
+    def _ref_ids_to_file_name(self, ref_seq_file_paths):
         ref_ids_to_file_name = {}
         fasta_parser = FastaParser()
-        for genome_file_path in genome_file_paths:
-            genome_file = os.path.basename(genome_file_path)
+        for ref_seq_file_path in ref_seq_file_paths:
+            ref_seq_file = os.path.basename(ref_seq_file_path)
             ref_seq_id = fasta_parser.header_id(
-                fasta_parser.single_entry_file_header(open(genome_file_path)))
-            ref_ids_to_file_name[ref_seq_id] = genome_file
+                fasta_parser.single_entry_file_header(open(ref_seq_file_path)))
+            ref_ids_to_file_name[ref_seq_id] = ref_seq_file
         return(ref_ids_to_file_name)
 
     def create_coverage_files(self):
