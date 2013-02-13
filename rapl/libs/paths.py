@@ -34,11 +34,12 @@ class Paths(object):
             self.output_folder)
 
     def _set_coverage_folder_names(self):
-        self.coverage_folder = "%s/coverages" % self.output_folder
-        self.coverage_folder_norm_reads = "%s/coverages-read_normalized" % (
-            self.output_folder)
-        self.coverage_folder_norm_reads_mil = (
-            "%s/coverages-read_normalized_times_million" % self.output_folder)
+        base_name = "%s/coverages" % self.output_folder
+        self.coverage_raw_folder = "%s-raw" % base_name
+        self.coverage_tnoar_min_norm_folder = "%s-tnoar_min_normalized" % (
+            base_name)
+        self.coverage_tnoar_mil_norm_folder = "%s-tnoar_mil_normalized" % (
+            base_name)
 
     def _set_gene_quanti_folder_names(self):
         self.gene_quanti_folder = (
@@ -99,8 +100,8 @@ class Paths(object):
                 self.unaligned_reads_folder, self.read_alignment_index_folder])
 
     def _required_coverage_folders(self):
-        return([self.coverage_folder, self.coverage_folder_norm_reads,
-                self.coverage_folder_norm_reads_mil])
+        return([self.coverage_raw_folder, self.coverage_tnoar_min_norm_folder,
+                self.coverage_tnoar_mil_norm_folder])
 
     def _required_gene_quanti_folder(self):
         return([self.gene_quanti_folder])
@@ -132,3 +133,27 @@ class Paths(object):
     def gene_quanti_path(self, read_file, annotation_file):
         return("%s/%s_to_%s.csv" % (
             self.gene_quanti_folder, read_file, annotation_file))
+
+    def wiggle_file_raw_path(self, read_file, strand, multi=None, div=None):
+        return(self._wiggle_file_path(
+            self.coverage_raw_folder, read_file, strand, multi=None, div=None))
+
+    def wiggle_file_tnoar_norm_min_path(
+            self, read_file, strand, multi=None, div=None):
+        return(self._wiggle_file_path(
+            self.coverage_tnoar_min_norm_folder, read_file, strand, multi, div))
+
+    def wiggle_file_tnoar_norm_mil_path(
+            self, read_file, strand, multi=None, div=None):
+        return(self._wiggle_file_path(
+            self.coverage_tnoar_mil_norm_folder, read_file, strand, multi, div))
+
+    def _wiggle_file_path(
+            self, folder, read_file, strand, multi=None, div=None):
+        path = "%s/%s" % (folder, read_file)
+        if not div is None:
+            path += "_div_by_%.1f" % (div)
+        if not multi is None:
+            path += "_multi_by_%.1f" % (multi)
+        path += "_%s.wig" % strand
+        return(path)

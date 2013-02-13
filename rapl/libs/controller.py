@@ -2,17 +2,18 @@ import concurrent.futures
 import os
 import sys
 sys.path.append(".")
+from libs.coveragecalculator import CoverageCalculator
 from libs.fasta import FastaParser
-from libs.coveragecreator import CoverageCreator
+from libs.genewisequanti import GeneWiseQuantification, GeneWiseOverview
 from libs.parameterlog import ParameterLogger
 from libs.paths import Paths
 from libs.projectcreator import ProjectCreator
-from libs.readprocessor import ReadProcessor
+from libs.rawstatdata import RawStatDataWriter, RawStatDataReader
 from libs.readaligner import ReadAligner
 from libs.readalignerstats import ReadAlignerStats
+from libs.readprocessor import ReadProcessor
 from libs.sambamconverter import SamToBamConverter
-from libs.genewisequanti import GeneWiseQuantification, GeneWiseOverview
-from libs.rawstatdata import RawStatDataWriter, RawStatDataReader
+from libs.wiggle import WiggleWriter
 
 class Controller(object):
 
@@ -218,7 +219,14 @@ class Controller(object):
         return(ref_ids_to_file)
 
     def create_coverage_files(self):
-        """Create coverage files based on the read alignments."""
+        """Create coverage files based on the read alignments.
+
+        The coverages are calculated per replicon and the results are
+        written to the output file. This might be slower but if all
+        coveragers are detmined at once the data structure will become
+        too large when working with large reference sequences.
+
+        """
         read_files = self.paths.get_read_files()
         self.paths.set_read_files_dep_file_lists(read_files)
         raw_stat_data_reader = RawStatDataReader()
@@ -227,54 +235,72 @@ class Controller(object):
             self.paths.read_aligner_stats_path)]
         read_files_aligned_read_freq = dict([
             (read_file,
-             round(attributes["countings_total"]["no_of_aligned_reads"]))
+             round(attributes["stats_total"]["no_of_aligned_reads"]))
              for read_file, attributes in alignment_stats[0].items()])
-        min_read_alignment_counting = min(
-            read_files_aligned_read_freq.values())
+        min_no_of_aligned_reads = float(min(
+            read_files_aligned_read_freq.values()))
         # Run the generation of coverage in parallel
         jobs = []
         with concurrent.futures.ProcessPoolExecutor(
             max_workers=self.args.processes) as executor:
             for read_file, bam_path in zip(
                 read_files, self.paths.read_alignment_result_bam_paths):
+                no_of_aligned_reads = float(
+                    read_files_aligned_read_freq[read_file])
                 jobs.append(executor.submit(
                         self._create_coverage_files_for_lib,
-                        read_file, bam_path,
-                        read_files_aligned_read_freq,
-                        min_read_alignment_counting))
+                        read_file, bam_path, no_of_aligned_reads,
+                        min_no_of_aligned_reads))
         # Evaluate thread outcome
         self._check_job_completeness(jobs)
 
     def _create_coverage_files_for_lib(
-        self, read_file, bam_path, read_alignment_stats,
-        min_read_alignment_counting):
-        coverage_creator = CoverageCreator()
-        read_count_splitting = True
-        if self.args.skip_read_count_splitting is True:
-            read_count_splitting = False
-        coverage_creator.init_coverage_lists(bam_path)
-        coverage_creator.count_coverage(
-            bam_path, read_count_splitting=read_count_splitting,
-            uniqueley_aligned_only=self.args.unique_only,
-            first_base_only=self.args.first_base_only)
-        # Raw countings
-        coverage_creator.write_to_files(
-            "%s/%s" % (self.paths.coverage_folder, read_file),
-            read_file)
-        total_number_of_aligned_reads = read_alignment_stats[read_file]
-        # Read normalized countings - multiplied by min read counting
-        factor = (min_read_alignment_counting / total_number_of_aligned_reads)
-        coverage_creator.write_to_files(
-            "%s/%s-div_by_%.1f_multi_by_%.1f" % (
-                self.paths.coverage_folder_norm_reads, read_file,
-                total_number_of_aligned_reads, min_read_alignment_counting),
-            read_file, factor=factor)
-        # Read normalized countings - multiplied by 1M
-        factor = (1000000 / total_number_of_aligned_reads)
-        coverage_creator.write_to_files(
-            "%s/%s-div_by_%.1f_multi_by_1M" % (
-                self.paths.coverage_folder_norm_reads_mil, read_file,
-                total_number_of_aligned_reads), read_file, factor=factor)
+            self, read_file, bam_path, no_of_aligned_reads,
+            min_no_of_aligned_reads):
+        strands = ["forward", "reverse"]
+        coverage_calculator = CoverageCalculator()
+        (coverage_writers_raw, coverage_writers_tnoar_min_norm,
+         coverage_writers_tnoar_mil_norm) = self._wiggle_writers(
+             read_file, strands, no_of_aligned_reads, min_no_of_aligned_reads)
+        for ref_seq, coverages in coverage_calculator.ref_seq_and_coverages(
+                bam_path):
+            for strand in strands:
+                coverage_writers_raw[strand].write_replicons_coverages(
+                 ref_seq, coverages[strand])
+                coverage_writers_tnoar_min_norm[
+                    strand].write_replicons_coverages(
+                    ref_seq, coverages[strand],
+                    factor=min_no_of_aligned_reads/no_of_aligned_reads)
+                coverage_writers_tnoar_mil_norm[
+                    strand].write_replicons_coverages(
+                    ref_seq, coverages[strand],
+                    factor=1000000/no_of_aligned_reads)
+        for strand in strands:
+           coverage_writers_raw[strand].close_file()
+
+    def _wiggle_writers(self, read_file, strands, no_of_aligned_reads,
+                        min_no_of_aligned_reads):
+        coverage_writers_raw = dict([(
+            strand, WiggleWriter(
+                "%s_%s" % (read_file, strand),
+                open(self.paths.wiggle_file_raw_path(read_file, strand), "w")))
+                for strand in strands])
+        coverage_writers_tnoar_min_norm = dict([(
+            strand, WiggleWriter(
+                "%s_%s" % (read_file, strand),
+                open(self.paths.wiggle_file_tnoar_norm_min_path(
+                    read_file, strand, multi=min_no_of_aligned_reads,
+                    div=no_of_aligned_reads), "w")))
+                for strand in strands])
+        coverage_writers_tnoar_mil_norm = dict([(
+            strand, WiggleWriter(
+                "%s_%s" % (read_file, strand),
+                open(self.paths.wiggle_file_tnoar_norm_mil_path(
+                    read_file, strand, multi=1000000,
+                    div=no_of_aligned_reads), "w")))
+                for strand in strands])
+        return(coverage_writers_raw, coverage_writers_tnoar_min_norm,
+               coverage_writers_tnoar_mil_norm)
 
     def _check_job_completeness(self, jobs):
         """Check the completness of each job in a list"""
