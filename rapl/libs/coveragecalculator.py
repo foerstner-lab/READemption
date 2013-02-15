@@ -7,16 +7,19 @@ class CoverageCalculator(object):
         self._read_count_splitting = read_count_splitting
         self._uniqueley_aligned_only = uniqueley_aligned_only
         self._first_base_only = first_base_only
+        self._coverage_add_function = self._select_coverage_add_function()
+        self._coverages = {}
 
     def ref_seq_and_coverages(self, bam_path):
         bam = self._open_bam_file(bam_path)
-        self._coverage_add_function = self._select_coverage_add_function()
-        self._coverages = {}
         for ref_seq, length in zip(bam.references, bam.lengths):
-            for strand in ["forward", "reverse"]:
-                self._coverages[strand] = [0.0] * length
+            self._init_coverage_list(length)
             self._calc_coverage(ref_seq, bam)
             yield(ref_seq, self._coverages)
+
+    def _init_coverage_list(self, length):
+        for strand in ["forward", "reverse"]:
+            self._coverages[strand] = [0.0] * length
 
     def _calc_coverage(self, ref_seq, bam):
         for entry in bam.fetch(ref_seq):
@@ -59,11 +62,9 @@ class CoverageCalculator(object):
 
     def _add_first_base_coverage(self, entry, increment, start, end):
         if entry.is_reverse is False:
-            self.replicons_and_coverages[
-                "forward"][ref_id][start] = self.replicons_and_coverages[
-                    "forward"][ref_id][start] + increment
+            self._coverages["forward"][start] = self._coverages[
+                "forward"][start] + increment
         else:
-            self.replicons_and_coverages[
-                "reverse"][ref_id][end-1] = self.replicons_and_coverages[
-                    "reverse"][ref_id][end-1] - increment
-    
+            self._coverages["reverse"][end-1] = self._coverages[
+                    "reverse"][end-1] - increment
+
