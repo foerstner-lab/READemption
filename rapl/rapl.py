@@ -8,7 +8,7 @@ from libs.controller import Controller
 def main():
     parser = argparse.ArgumentParser()
     subparsers = parser.add_subparsers(help="commands")
-
+    
     # Arguments for project creation
     create_project_parser = subparsers.add_parser(
         "create", help="Create a project")
@@ -85,7 +85,7 @@ def main():
         "--skip_norm_by_overlap_freq", default=False)
     gene_wise_quanti_parser.add_argument(
         "--processes", "-p", default=1, type=int,
-        help="Number of processes that should be used.")    
+        help="Number of processes that should be used.")
     gene_wise_quanti_parser.set_defaults(func=run_gene_wise_quantification)
     # - uniquely only
     # - skip antisense
@@ -95,6 +95,19 @@ def main():
     # - use only given features (gene, exon, region)
     # - discard feature in certain lenght range (can help
     #   indirectly remove "region")
+
+    # Parameters for gene wise quantification
+    deseq_parser = subparsers.add_parser(
+        "deseq", help="Compare expression pairwise using DESeq")
+    deseq_parser.add_argument(
+        "project_path", default=".", nargs="?",
+        help="Path of the project folder. If none is given the current "
+        "directory is used.")
+    deseq_parser.add_argument(
+        "--libs", "-l", required=True)
+    deseq_parser.add_argument(
+        "--conditions", "-c", required=True)
+    deseq_parser.set_defaults(func=run_deseq)
 
     args = parser.parse_args()
     controller = Controller(args)
@@ -120,5 +133,8 @@ def generate_report(controller):
 
 def run_gene_wise_quantification(controller):
     controller.quantify_gene_wise()
+
+def run_deseq(controller):
+    controller.compare_with_deseq
 
 main()

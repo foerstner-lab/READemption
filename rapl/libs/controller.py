@@ -355,3 +355,6 @@ class Controller(object):
         gene_wise_overview.create_overview(
             path_and_name_combos, read_files,
             self.paths.gene_wise_quanti_combined_path)
+
+    def compare_with_deseq(self):
+        pass
