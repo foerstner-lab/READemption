@@ -62,6 +62,7 @@ class Paths(object):
         self.read_alignment_stats_table_path = "%s/read_alignment_stats.csv" % (
             self.report_folder)
         self.index_path = "%s/index.idx" % self.read_alignment_index_folder
+        self.deseq_file = "%s/deseq.R" % self.output_folder
 
     def _get_sorted_folder_content(self, folder):
         """Return the sorted file list of a folder"""

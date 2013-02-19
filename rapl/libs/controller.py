@@ -3,6 +3,7 @@ import os
 import sys
 sys.path.append(".")
 from libs.coveragecalculator import CoverageCalculator
+from libs.deseq import DESeqRunner
 from libs.fasta import FastaParser
 from libs.genewisequanti import GeneWiseQuantification, GeneWiseOverview
 from libs.parameterlog import ParameterLogger
@@ -360,6 +361,10 @@ class Controller(object):
         libs = self.args.libs.split(",")
         conditions = self.args.conditions.split(",")
         self._check_deseq_args(libs, conditions)
+        deseq_runner = DESeqRunner(
+            libs, conditions, self.paths.deseq_file,
+            self.paths.gene_wise_quanti_combined_path)
+        deseq_runner.create_deseq_file()
 
     def _check_deseq_args(self, libs, conditions):
         if len(libs) != len(conditions):
@@ -384,4 +389,3 @@ class Controller(object):
     def _write_err_msg_and_quit(self, msg):
         sys.stderr.write(msg)
         sys.exit(1)
-
