@@ -357,4 +357,31 @@ class Controller(object):
             self.paths.gene_wise_quanti_combined_path)
 
     def compare_with_deseq(self):
-        pass
+        libs = self.args.libs.split(",")
+        conditions = self.args.conditions.split(",")
+        self._check_deseq_args(libs, conditions)
+
+    def _check_deseq_args(self, libs, conditions):
+        if len(libs) != len(conditions):
+            self._write_err_msg_and_quit(
+                "Error - The read library file list and condition list must "
+                "have the same number of elements. You entered \n%s "
+                "(= %s elements)\nand \n%s (= %s elements).\n" % (
+                    self.args.libs, len(libs), self.args.conditions, len(conditions)))
+        read_files = self.paths.get_read_files()
+        if len(libs) != len(read_files):
+            self._write_err_msg_and_quit(
+                "The number of read libraries is lower or higher than "
+                "expected. The following read libs are available: %s\nThe "
+                "following read list string is suggested: \"%s\"\n" % (
+                    ", ".join(read_files), ",".join(read_files)))
+        for read_file in read_files:
+            if read_file not in libs:
+                self._write_err_msg_and_quit(
+                    "There library \"%s\" is not given in your list of "
+                    "libraries. Please add it.\n" % (read_file))
+
+    def _write_err_msg_and_quit(self, msg):
+        sys.stderr.write(msg)
+        sys.exit(1)
+
