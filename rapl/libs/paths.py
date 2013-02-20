@@ -17,6 +17,7 @@ class Paths(object):
         self._set_read_alignment_folder_names()
         self._set_coverage_folder_names()
         self._set_gene_quanti_folder_names()
+        self._set_deseq_folder_names()
 
     def _set_input_folder_names(self):
         self.read_fasta_folder = "%s/reads" % self.input_folder
@@ -45,7 +46,10 @@ class Paths(object):
         self.gene_quanti_folder = (
             "%s/gene_wise_quantifications" % self.output_folder)
         self.gene_wise_quanti_combined_path = (
-            "%s/Gene_wise_quantifications_combined.csv" % self.output_folder)
+            "%s/gene_wise_quantifications_combined.csv" % self.output_folder)
+
+    def _set_deseq_folder_names(self):
+        self.deseq_folder = ("%s/deseq_comparisions" % self.output_folder)
 
     def _set_static_files(self):
         """Set name of common files."""
@@ -86,7 +90,8 @@ class Paths(object):
                self._required_input_folders() +
                self._required_read_alignment_folders() +
                self._required_coverage_folders() +
-               self._required_gene_quanti_folder())
+               self._required_gene_quanti_folder() +
+               self._required_deseq_folder())
 
     def _required_base_folders(self):
         return([self.input_folder, self.output_folder, self.report_folder,
@@ -106,6 +111,9 @@ class Paths(object):
 
     def _required_gene_quanti_folder(self):
         return([self.gene_quanti_folder])
+
+    def _required_deseq_folder(self):
+        return([self.deseq_folder])
 
     def set_read_files_dep_file_lists(self, read_files):
         self.read_paths = self._path_list(self.read_fasta_folder, read_files)
