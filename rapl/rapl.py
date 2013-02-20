@@ -109,7 +109,7 @@ def main():
         "--conditions", "-c", required=True)
     deseq_parser.set_defaults(func=run_deseq)
     deseq_parser.add_argument(
-        "--no_replicates", "-r", required=True)
+        "--no_replicates", "-r", default=False, action="store_true")
     deseq_parser.set_defaults(func=run_deseq)
 
     args = parser.parse_args()

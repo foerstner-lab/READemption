@@ -362,9 +362,13 @@ class Controller(object):
         conditions = self.args.conditions.split(",")
         self._check_deseq_args(libs, conditions)
         deseq_runner = DESeqRunner(
-            libs, conditions, self.paths.deseq_file,
-            self.paths.gene_wise_quanti_combined_path)
-        deseq_runner.create_deseq_file()
+            libs, conditions, self.paths.deseq_folder,
+            self.paths.deseq_script_path,
+            self.paths.gene_wise_quanti_combined_path,
+            no_replicates=self.args.no_replicates)
+        deseq_runner.create_deseq_script_file()
+        deseq_runner.run_deseq()
+        deseq_runner.merge_counting_files_with_results()
 
     def _check_deseq_args(self, libs, conditions):
         if len(libs) != len(conditions):
