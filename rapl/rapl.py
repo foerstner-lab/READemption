@@ -80,9 +80,9 @@ def main():
         "--min_overlap", "-o", default=1, type=int,
         help="Minimal read-annotation-overlap (in nt) (default 1)")
     gene_wise_quanti_parser.add_argument(
-        "--skip_norm_by_alignment_freq", default=False)
+        "--skip_norm_by_alignment_freq", default=False, action="store_true")
     gene_wise_quanti_parser.add_argument(
-        "--skip_norm_by_overlap_freq", default=False)
+        "--skip_norm_by_overlap_freq", default=False, action="store_true")
     gene_wise_quanti_parser.add_argument(
         "--processes", "-p", default=1, type=int,
         help="Number of processes that should be used.")
