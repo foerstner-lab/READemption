@@ -8,7 +8,7 @@ from libs.controller import Controller
 def main():
     parser = argparse.ArgumentParser()
     subparsers = parser.add_subparsers(help="commands")
-    
+
     # Arguments for project creation
     create_project_parser = subparsers.add_parser(
         "create", help="Create a project")
@@ -52,7 +52,7 @@ def main():
         "directory is used.")
     coverage_creation_parser.add_argument(
         "--unique_only", "-u", default=False, action="store_true",
-        help="Use uniquely alignped reads only.")
+        help="Use uniquely aligned reads only.")
     # coverage_creation_parser.add_argument(
     #     "--force", "-f", default=False, action="store_true",
     #     help="Overwrite existing files.")
@@ -96,7 +96,7 @@ def main():
     # - discard feature in certain lenght range (can help
     #   indirectly remove "region")
 
-    # Parameters for gene wise quantification
+    # Parameters for DESeq calling
     deseq_parser = subparsers.add_parser(
         "deseq", help="Compare expression pairwise using DESeq")
     deseq_parser.add_argument(
@@ -107,6 +107,9 @@ def main():
         "--libs", "-l", required=True)
     deseq_parser.add_argument(
         "--conditions", "-c", required=True)
+    deseq_parser.set_defaults(func=run_deseq)
+    deseq_parser.add_argument(
+        "--no_replicates", "-r", required=True)
     deseq_parser.set_defaults(func=run_deseq)
 
     args = parser.parse_args()
@@ -135,6 +138,6 @@ def run_gene_wise_quantification(controller):
     controller.quantify_gene_wise()
 
 def run_deseq(controller):
-    controller.compare_with_deseq
+    controller.compare_with_deseq()
 
 main()
