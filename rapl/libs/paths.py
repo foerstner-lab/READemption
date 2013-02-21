@@ -49,7 +49,7 @@ class Paths(object):
             "%s/gene_wise_quantifications_combined.csv" % self.output_folder)
 
     def _set_deseq_folder_names(self):
-        self.deseq_folder = ("%s/deseq_comparisions" % self.output_folder)
+        self.deseq_folder = ("%s/deseq_comparisons" % self.output_folder)
 
     def _set_static_files(self):
         """Set name of common files."""
