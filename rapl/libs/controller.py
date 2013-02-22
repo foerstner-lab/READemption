@@ -353,9 +353,20 @@ class Controller(object):
                 path_and_name_combos[annotation_path].append(
                     [read_file, self.paths.gene_quanti_path(
                         read_file, annotation_file)])
-        gene_wise_overview.create_overview(
+        gene_wise_overview.create_overview_raw_countings(
             path_and_name_combos, read_files,
             self.paths.gene_wise_quanti_combined_path)
+        gene_wise_overview.create_overview_rpkm(
+            path_and_name_combos, read_files,
+            self.paths.gene_wise_quanti_combined_rpkm_path,
+            self._libs_and_total_number_of_mapped_reads())
+
+    def _libs_and_total_number_of_mapped_reads(self):
+        import json
+        read_aligner_stats = json.loads(
+            open(self.paths.read_aligner_stats_path).read())
+        return(dict([(lib, values["stats_total"]["no_of_aligned_reads"])
+                     for lib, values in read_aligner_stats.items()]))
 
     def compare_with_deseq(self):
         libs = self.args.libs.split(",")
