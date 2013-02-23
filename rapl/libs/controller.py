@@ -360,6 +360,10 @@ class Controller(object):
             path_and_name_combos, read_files,
             self.paths.gene_wise_quanti_combined_rpkm_path,
             self._libs_and_total_number_of_mapped_reads())
+        gene_wise_overview.create_overview_norm_by_tnoar(
+            path_and_name_combos, read_files,
+            self.paths.gene_wise_quanti_combined_tnoar_path,
+            self._libs_and_total_number_of_mapped_reads())        
 
     def _libs_and_total_number_of_mapped_reads(self):
         import json

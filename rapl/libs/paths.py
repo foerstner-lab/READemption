@@ -49,6 +49,8 @@ class Paths(object):
             "%s/gene_wise_quantifications_combined.csv" % self.output_folder)
         self.gene_wise_quanti_combined_rpkm_path = (
             "%s/gene_wise_quantifications_combined_rpkm.csv" % self.output_folder)
+        self.gene_wise_quanti_combined_tnoar_path = (
+            "%s/gene_wise_quantifications_combined_tnoar.csv" % self.output_folder)        
 
     def _set_deseq_folder_names(self):
         self.deseq_folder = ("%s/deseq_comparisons" % self.output_folder)

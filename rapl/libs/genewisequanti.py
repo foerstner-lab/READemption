@@ -118,6 +118,11 @@ class GeneWiseOverview(object):
         self._create_overview(path_and_name_combos, read_files, overview_path,
                               normalization="RPKM", libs_and_tnoar=libs_and_tnoar)
 
+    def create_overview_norm_by_tnoar(
+            self, path_and_name_combos, read_files, overview_path, libs_and_tnoar):
+        self._create_overview(path_and_name_combos, read_files, overview_path,
+                              normalization="TNOAR", libs_and_tnoar=libs_and_tnoar)
+
     def _create_overview(self, path_and_name_combos, read_files, overview_path,
                          normalization=None, libs_and_tnoar=None):
         output_fh = open(overview_path, "w")
@@ -148,6 +153,10 @@ class GeneWiseOverview(object):
                     table_columns.append([
                         self._rpkm(row[column], length, libs_and_tnoar[read_file])
                         for row, length in zip(reader, seq_lengths)])
+                elif normalization == "TNOAR":
+                    table_columns.append([
+                        self._norm_by_tnoar(row[column], libs_and_tnoar[read_file])
+                        for row, length in zip(reader, seq_lengths)])
                 else:
                     table_columns.append([row[column] for row in reader])
             # Generate a table by rotating the column list
@@ -157,8 +166,11 @@ class GeneWiseOverview(object):
 
     def _rpkm(self, counting, length, total_no_of_aligned_reads):
         """
-        Formula in Supplemenatary Material S1 of 
+        Formula in Supplemenatary Material S1 of
         http://www.nature.com/nmeth/journal/v5/n7/full/nmeth.1226.html
         """
         return(str(float(counting)*float(10**9) /
                    (float(total_no_of_aligned_reads)*float(length))))
+
+    def _norm_by_tnoar(self, counting, total_no_of_aligned_reads):
+        return(str(float(counting)/float(total_no_of_aligned_reads)))
