@@ -5,8 +5,17 @@
 import argparse
 from libs.controller import Controller
 
+__author__ = "Konrad Foerstner <konrad@foerstner.org>"
+__copyright__ = "2011-2013 by Konrad Foerstner <konrad@foerstner.org>"
+__license__ = "ISC license"
+__email__ = "konrad@foerstner.org"
+__version__ = "0.0"
+
 def main():
     parser = argparse.ArgumentParser()
+    parser.add_argument(
+        "--version", "-v", default=False, action="store_true",
+        help="show version")
     subparsers = parser.add_subparsers(help="commands")
 
     # Arguments for project creation
@@ -124,7 +133,10 @@ def main():
     try:
         controller = Controller(args)
     except AttributeError:
-        parser.print_help()
+        if args.version is True:
+            print("RAPL version " + __version__)
+        else:
+            parser.print_help()
 
 def create_project(controller):
     controller.create_project()
