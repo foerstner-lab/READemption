@@ -331,7 +331,8 @@ class Controller(object):
             gene_wise_quantification = GeneWiseQuantification(
                 min_overlap=self.args.min_overlap,
                 norm_by_alignment_freq=norm_by_alignment_freq,
-                norm_by_overlap_freq=norm_by_overlap_freq)
+                norm_by_overlap_freq=norm_by_overlap_freq,
+                allowed_features_str=self.args.allowed_features)
             gene_wise_quantification.calc_overlaps_per_alignment(
                 read_alignment_path, self.paths.annotation_paths)
             for  annotation_file, annotation_path in zip(
@@ -344,7 +345,8 @@ class Controller(object):
 
     def _gene_quanti_create_overview(
             self, annotation_files, annotation_paths, read_files):
-        gene_wise_overview = GeneWiseOverview()
+        gene_wise_overview = GeneWiseOverview(
+            allowed_features_str=self.args.allowed_features)
         path_and_name_combos = {}
         for annotation_file, annotation_path in zip(
                 annotation_files, annotation_paths):
@@ -363,7 +365,7 @@ class Controller(object):
         gene_wise_overview.create_overview_norm_by_tnoar(
             path_and_name_combos, read_files,
             self.paths.gene_wise_quanti_combined_tnoar_path,
-            self._libs_and_total_number_of_mapped_reads())        
+            self._libs_and_total_number_of_mapped_reads())
 
     def _libs_and_total_number_of_mapped_reads(self):
         import json

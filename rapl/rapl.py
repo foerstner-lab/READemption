@@ -86,14 +86,18 @@ def main():
     gene_wise_quanti_parser.add_argument(
         "--processes", "-p", default=1, type=int,
         help="Number of processes that should be used.")
+    gene_wise_quanti_parser.add_argument(
+        "--features", "-t", dest="allowed_features", default=None, 
+        help="Comma separated list of features that should be considered "
+        "(e.g. gene, cds, region, exon). Other feature will be skipped. If "
+        "not specified all features will be considered.")
     gene_wise_quanti_parser.set_defaults(func=run_gene_wise_quantification)
     # - uniquely only
     # - skip antisense
-    # - use gene overlap normalizatoin
+    # - use gene overlap normalization
     # - use aligning normalization
     # - --force (see above)
-    # - use only given features (gene, exon, region)
-    # - discard feature in certain lenght range (can help
+    # - discard feature in certain length range (can help
     #   indirectly remove "region")
 
     # Parameters for DESeq calling

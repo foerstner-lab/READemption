@@ -6,7 +6,7 @@ import pysam
 class GeneWiseQuantification(object):
 
     def __init__(self, min_overlap=1, norm_by_alignment_freq=True,
-                 norm_by_overlap_freq=True):
+                 norm_by_overlap_freq=True, allowed_features_str=None):
         """
         - normalize_by_alignment: consider that some reads are aligned at
           more than one location and only count fractions
@@ -17,6 +17,7 @@ class GeneWiseQuantification(object):
         self._min_overlap = min_overlap
         self._norm_by_alignment_freq = norm_by_alignment_freq
         self._norm_by_overlap_freq = norm_by_overlap_freq
+        self._allowed_features = _allowed_features(allowed_features_str)
 
     def calc_overlaps_per_alignment(self, read_alignment_path,
                                   annotation_paths):
@@ -29,6 +30,8 @@ class GeneWiseQuantification(object):
         for annotation_path in annotation_paths:
             sam = pysam.Samfile(read_alignment_path)
             for entry in gff3_parser.entries(open(annotation_path)):
+                if _entry_to_use(entry, self._allowed_features) is False:
+                    continue
                 for alignment in self._overlapping_alignments(sam, entry):
                     alignment_id = self._alignment_id(alignment)
                     self.alignments_and_no_of_overlaps.setdefault(alignment_id, 0)
@@ -45,6 +48,8 @@ class GeneWiseQuantification(object):
         output_fh = open(output_path, "w")
         output_fh.write("#" + "\t".join([""] * 9) + "sense\tantisense\n")
         for entry in gff3_parser.entries(open(annotation_path)):
+            if _entry_to_use(entry, self._allowed_features) is False:
+                continue
             sum_sense = 0
             sum_antisense = 0
             for alignment in self._overlapping_alignments(sam, entry):
@@ -109,6 +114,9 @@ class GeneWiseQuantification(object):
 
 class GeneWiseOverview(object):
 
+    def __init__(self, allowed_features_str=None):
+        self._allowed_features = _allowed_features(allowed_features_str)
+
     def create_overview_raw_countings(
             self, path_and_name_combos, read_files, overview_path):
         self._create_overview(path_and_name_combos, read_files, overview_path)
@@ -142,6 +150,8 @@ class GeneWiseOverview(object):
             entries = []
             seq_lengths = []
             for entry in gff3_parser.entries(open(annotation_path)):
+                if _entry_to_use(entry, self._allowed_features) is False:
+                    continue
                 entries.append(direction + "\t" + str(entry))
                 seq_lengths.append(entry.end - entry.start)
             table_columns.append(entries)
@@ -174,3 +184,18 @@ class GeneWiseOverview(object):
 
     def _norm_by_tnoar(self, counting, total_no_of_aligned_reads):
         return(str(float(counting)/float(total_no_of_aligned_reads)))
+
+
+def _entry_to_use(entry, allowed_features):
+    if allowed_features is None:
+        return(True)
+    if entry.feature in allowed_features:
+        return(True)
+    return(False)
+
+def _allowed_features(allowed_features_str):
+    if allowed_features_str is None:
+        return(None)
+    else:
+        return([
+        feature.strip() for feature in allowed_features_str.split(",")])
