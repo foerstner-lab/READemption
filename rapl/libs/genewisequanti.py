@@ -6,7 +6,8 @@ import pysam
 class GeneWiseQuantification(object):
 
     def __init__(self, min_overlap=1, norm_by_alignment_freq=True,
-                 norm_by_overlap_freq=True, allowed_features_str=None):
+                 norm_by_overlap_freq=True, allowed_features_str=None,
+                 skip_antisense=False):
         """
         - normalize_by_alignment: consider that some reads are aligned at
           more than one location and only count fractions
@@ -18,6 +19,7 @@ class GeneWiseQuantification(object):
         self._norm_by_alignment_freq = norm_by_alignment_freq
         self._norm_by_overlap_freq = norm_by_overlap_freq
         self._allowed_features = _allowed_features(allowed_features_str)
+        self._skip_antisense = skip_antisense
 
     def calc_overlaps_per_alignment(self, read_alignment_path,
                                   annotation_paths):
@@ -102,7 +104,16 @@ class GeneWiseQuantification(object):
                 reference=entry.seq_id, start=entry.start-1, end=entry.end):
             if alignment.overlap(entry.start-1, entry.end) < self._min_overlap:
                 continue
+            if self._skip_antisense:
+                if self._is_antisense(alignment, entry):
+                    continue
             yield(alignment)
+
+    def _is_antisense(self, alignment, entry):
+        if ((alignment.is_reverse is False and entry == "-") or
+            (alignment.is_reverse is True and entry == "+")):
+            return(True)
+        return(False)
 
     def _alignment_id(self, alignment):
         return(":".join([str(alignment.tid), alignment.qname, str(alignment.flag),
@@ -114,8 +125,9 @@ class GeneWiseQuantification(object):
 
 class GeneWiseOverview(object):
 
-    def __init__(self, allowed_features_str=None):
+    def __init__(self, allowed_features_str=None, skip_antisense=False):
         self._allowed_features = _allowed_features(allowed_features_str)
+        self._skip_antisense = skip_antisense
 
     def create_overview_raw_countings(
             self, path_and_name_combos, read_files, overview_path):
@@ -137,9 +149,12 @@ class GeneWiseOverview(object):
         # Write header
         output_fh.write("\t".join([""] * 10 + read_files) + "\n")
         self._add_to_overview(
-            path_and_name_combos, "sense", 9, output_fh, normalization, libs_and_tnoar)
-        self._add_to_overview(
-            path_and_name_combos, "anti-sense", 10, output_fh, normalization, libs_and_tnoar)
+            path_and_name_combos, "sense", 9, output_fh, normalization,
+            libs_and_tnoar)
+        if self._skip_antisense is False:
+            self._add_to_overview(
+                path_and_name_combos, "anti-sense", 10, output_fh,
+                normalization, libs_and_tnoar)
 
     def _add_to_overview(
             self, path_and_name_combos, direction, column, output_fh,
