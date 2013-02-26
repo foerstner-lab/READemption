@@ -29,9 +29,6 @@ def main():
     read_aligning_parser.add_argument(
         "--processes", "-p", default=1, type=int,
         help="Number of processes that should be used.")
-    # read_aligning_parser.add_argument(
-    #     "--force", "-f", default=False, action="store_true",
-    #     help="Overwrite existing files.")
     read_aligning_parser.add_argument(
         "--segemehl_accuracy", "-a", default=95.0, type=float,
         help="Segemehl's minimal accuracy (in %%) (default 95).")
@@ -41,6 +38,9 @@ def main():
     read_aligning_parser.add_argument(
         "--segemehl_bin", "-s", default="segemehl",
         help="segemehl's binary path.")
+    # read_aligning_parser.add_argument(
+    #     "--force", "-f", default=False, action="store_true",
+    #     help="Overwrite existing files.")
     read_aligning_parser.set_defaults(func=align_reads)
 
     # Parameters for coverage file building
@@ -53,10 +53,6 @@ def main():
     coverage_creation_parser.add_argument(
         "--unique_only", "-u", default=False, action="store_true",
         help="Use uniquely aligned reads only.")
-    # coverage_creation_parser.add_argument(
-    #     "--force", "-f", default=False, action="store_true",
-    #     help="Overwrite existing files.")
-    coverage_creation_parser.set_defaults(func=create_coverage_files)
     coverage_creation_parser.add_argument(
         "--processes", "-p", default=1, type=int,
         help="Number of processes that should be used.")
@@ -68,6 +64,10 @@ def main():
         "--first_base_only", "-b", default=False,
         action="store_true", help="Only the first bases 5' base of each read "
         "aligning is taken into account.")
+    # coverage_creation_parser.add_argument(
+    #     "--force", "-f", default=False, action="store_true",
+    #     help="Overwrite existing files.")
+    coverage_creation_parser.set_defaults(func=create_coverage_files)    
 
     # Parameters for gene wise quantification
     gene_wise_quanti_parser = subparsers.add_parser(
@@ -95,13 +95,11 @@ def main():
         "not specified all features will be considered.")
     gene_wise_quanti_parser.add_argument(
         "--unique_only", "-u", default=False, action="store_true",
-        help="Use uniquely aligned reads only.")    
+        help="Use uniquely aligned reads only.")
+    # coverage_creation_parser.add_argument(
+    #     "--force", "-f", default=False, action="store_true",
+    #     help="Overwrite existing files.")
     gene_wise_quanti_parser.set_defaults(func=run_gene_wise_quantification)
-    # - use gene overlap normalization
-    # - use aligning normalization
-    # - --force (see above)
-    # - discard feature in certain length range (can help
-    #   indirectly remove "region")
 
     # Parameters for DESeq calling
     deseq_parser = subparsers.add_parser(
