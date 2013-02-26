@@ -7,7 +7,7 @@ class GeneWiseQuantification(object):
 
     def __init__(self, min_overlap=1, norm_by_alignment_freq=True,
                  norm_by_overlap_freq=True, allowed_features_str=None,
-                 skip_antisense=False):
+                 skip_antisense=False, unique_only=False):
         """
         - normalize_by_alignment: consider that some reads are aligned at
           more than one location and only count fractions
@@ -20,6 +20,7 @@ class GeneWiseQuantification(object):
         self._norm_by_overlap_freq = norm_by_overlap_freq
         self._allowed_features = _allowed_features(allowed_features_str)
         self._skip_antisense = skip_antisense
+        self._unique_only = unique_only
 
     def calc_overlaps_per_alignment(self, read_alignment_path,
                                   annotation_paths):
@@ -106,6 +107,9 @@ class GeneWiseQuantification(object):
                 continue
             if self._skip_antisense:
                 if self._is_antisense(alignment, entry):
+                    continue
+            if self._unique_only:
+                if dict(alignment.tags)["NH"] != 1:
                     continue
             yield(alignment)
 

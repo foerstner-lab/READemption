@@ -84,7 +84,7 @@ def main():
     gene_wise_quanti_parser.add_argument(
         "--skip_norm_by_overlap_freq", default=False, action="store_true")
     gene_wise_quanti_parser.add_argument(
-        "--skip_antisense", "-a", default=False, action="store_true")    
+        "--skip_antisense", "-a", default=False, action="store_true")
     gene_wise_quanti_parser.add_argument(
         "--processes", "-p", default=1, type=int,
         help="Number of processes that should be used.")
@@ -93,8 +93,10 @@ def main():
         help="Comma separated list of features that should be considered "
         "(e.g. gene, cds, region, exon). Other feature will be skipped. If "
         "not specified all features will be considered.")
+    gene_wise_quanti_parser.add_argument(
+        "--unique_only", "-u", default=False, action="store_true",
+        help="Use uniquely aligned reads only.")    
     gene_wise_quanti_parser.set_defaults(func=run_gene_wise_quantification)
-    # - uniquely only
     # - use gene overlap normalization
     # - use aligning normalization
     # - --force (see above)

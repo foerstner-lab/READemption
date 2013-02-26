@@ -333,7 +333,8 @@ class Controller(object):
                 norm_by_alignment_freq=norm_by_alignment_freq,
                 norm_by_overlap_freq=norm_by_overlap_freq,
                 allowed_features_str=self.args.allowed_features,
-                skip_antisense=self.args.skip_antisense)
+                skip_antisense=self.args.skip_antisense,
+                unique_only=self.args.unique_only)
             gene_wise_quantification.calc_overlaps_per_alignment(
                 read_alignment_path, self.paths.annotation_paths)
             for  annotation_file, annotation_path in zip(
