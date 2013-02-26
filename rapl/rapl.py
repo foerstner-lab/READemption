@@ -132,6 +132,7 @@ def main():
     args = parser.parse_args()
     try:
         controller = Controller(args)
+        args.func(controller)
     except AttributeError:
         if args.version is True:
             print("RAPL version " + __version__)
