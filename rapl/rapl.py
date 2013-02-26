@@ -67,7 +67,7 @@ def main():
     # coverage_creation_parser.add_argument(
     #     "--force", "-f", default=False, action="store_true",
     #     help="Overwrite existing files.")
-    coverage_creation_parser.set_defaults(func=create_coverage_files)    
+    coverage_creation_parser.set_defaults(func=create_coverage_files)
 
     # Parameters for gene wise quantification
     gene_wise_quanti_parser = subparsers.add_parser(
@@ -121,8 +121,10 @@ def main():
     deseq_parser.set_defaults(func=run_deseq)
 
     args = parser.parse_args()
-    controller = Controller(args)
-    args.func(controller)
+    try:
+        controller = Controller(args)
+    except AttributeError:
+        parser.print_help()
 
 def create_project(controller):
     controller.create_project()
