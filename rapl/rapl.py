@@ -87,7 +87,7 @@ def main():
         "--processes", "-p", default=1, type=int,
         help="Number of processes that should be used.")
     gene_wise_quanti_parser.add_argument(
-        "--features", "-t", dest="allowed_features", default=None, 
+        "--features", "-t", dest="allowed_features", default=None,
         help="Comma separated list of features that should be considered "
         "(e.g. gene, cds, region, exon). Other feature will be skipped. If "
         "not specified all features will be considered.")
@@ -108,9 +108,12 @@ def main():
         help="Path of the project folder. If none is given the current "
         "directory is used.")
     deseq_parser.add_argument(
-        "--libs", "-l", required=True)
+        "--libs", "-l", required=True,
+        help="Comma separated list of libraries.")
     deseq_parser.add_argument(
-        "--conditions", "-c", required=True)
+        "--conditions", "-c", required=True,
+        help="Comma separated list of condition in the same order as "
+        "their corresponding libraries.")
     deseq_parser.set_defaults(func=run_deseq)
     deseq_parser.add_argument(
         "--no_replicates", "-r", default=False, action="store_true")
