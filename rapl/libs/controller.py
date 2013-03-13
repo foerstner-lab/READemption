@@ -341,7 +341,8 @@ class Controller(object):
                     annotation_files, self.paths.annotation_paths):
                 gene_wise_quantification.quantify(
                     read_alignment_path, annotation_path,
-                    self.paths.gene_quanti_path(read_file, annotation_file))
+                    self.paths.gene_quanti_path(read_file, annotation_file),
+                    sys.argv.pseudocounts)
         self._gene_quanti_create_overview(
             annotation_files, self.paths.annotation_paths, read_files)
 

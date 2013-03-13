@@ -40,12 +40,13 @@ class GeneWiseQuantification(object):
                     self.alignments_and_no_of_overlaps.setdefault(alignment_id, 0)
                     self.alignments_and_no_of_overlaps[alignment_id] += 1
 
-    def quantify(self, read_alignment_path, annotation_path, output_path):
+    def quantify(self, read_alignment_path, annotation_path, output_path,
+                 pseudocounts=False):
         self._quantify(read_alignment_path, annotation_path, output_path,
-                      self._fraction_calc_method())
+                      self._fraction_calc_method(), pseudocount)
 
     def _quantify(self, read_alignment_path, annotation_path, output_path,
-                  fraction_calc_method):
+                  fraction_calc_method, pseudocounts=False):
         sam = pysam.Samfile(read_alignment_path)
         gff3_parser = Gff3Parser()
         output_fh = open(output_path, "w")
@@ -53,8 +54,12 @@ class GeneWiseQuantification(object):
         for entry in gff3_parser.entries(open(annotation_path)):
             if _entry_to_use(entry, self._allowed_features) is False:
                 continue
-            sum_sense = 0
-            sum_antisense = 0
+            if pseudocounts is False:
+                sum_sense = 0
+                sum_antisense = 0
+            else:
+                sum_sense = 1
+                sum_antisense = 1
             for alignment in self._overlapping_alignments(sam, entry):
                 alignment_id = self._alignment_id(alignment)
                 fraction = fraction_calc_method(alignment)
