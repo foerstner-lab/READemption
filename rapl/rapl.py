@@ -133,14 +133,13 @@ def main():
     deseq_parser.set_defaults(func=run_deseq)
 
     args = parser.parse_args()
-    try:
+    if args.version is True:
+        print("RAPL version " + __version__)
+    elif "func" in dir(args):
         controller = Controller(args)
         args.func(controller)
-    except AttributeError:
-        if args.version is True:
-            print("RAPL version " + __version__)
-        else:
-            parser.print_help()
+    else:
+        parser.print_help()
 
 def create_project(controller):
     controller.create_project()
