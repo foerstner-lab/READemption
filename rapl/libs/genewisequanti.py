@@ -177,7 +177,7 @@ class GeneWiseOverview(object):
                 if _entry_to_use(entry, self._allowed_features) is False:
                     continue
                 entries.append(direction + "\t" + str(entry))
-                seq_lengths.append(entry.end - entry.start)
+                seq_lengths.append(entry.end - entry.start + 1)
             table_columns.append(entries)
             for read_file, gene_quanti_path in path_and_name_combos[
                     annotation_path]:
