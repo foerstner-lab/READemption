@@ -43,7 +43,7 @@ class GeneWiseQuantification(object):
     def quantify(self, read_alignment_path, annotation_path, output_path,
                  pseudocounts=False):
         self._quantify(read_alignment_path, annotation_path, output_path,
-                      self._fraction_calc_method(), pseudocount)
+                      self._fraction_calc_method(), pseudocounts)
 
     def _quantify(self, read_alignment_path, annotation_path, output_path,
                   fraction_calc_method, pseudocounts=False):
