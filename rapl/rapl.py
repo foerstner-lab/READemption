@@ -105,6 +105,9 @@ def main():
     gene_wise_quanti_parser.add_argument(
         "--unique_only", "-u", default=False, action="store_true",
         help="Use uniquely aligned reads only.")
+    gene_wise_quanti_parser.add_argument(
+        "--pseudocounts", "-c", default=False, action="store_true",
+        help="Add a pseudocount of 1 to each gene.")
     # coverage_creation_parser.add_argument(
     #     "--force", "-f", default=False, action="store_true",
     #     help="Overwrite existing files.")
