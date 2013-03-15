@@ -50,7 +50,7 @@ class GeneWiseQuantification(object):
         sam = pysam.Samfile(read_alignment_path)
         gff3_parser = Gff3Parser()
         output_fh = open(output_path, "w")
-        output_fh.write("#" + "\t".join([""] * 9) + "sense\tantisense\n")
+        output_fh.write("#" + "\t".join([""] * 10) + "sense\tantisense\n")
         for entry in gff3_parser.entries(open(annotation_path)):
             if _entry_to_use(entry, self._allowed_features) is False:
                 continue
