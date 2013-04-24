@@ -22,7 +22,7 @@ class PolyAClipper(object):
                     sequence = sequence[:start_pos]
                     break
         return(sequence)
-    
+
     def _aaaa_starting_substrings(self, sequence, length):
         """Find all AAAA starting substring of the given length"""
 
@@ -36,7 +36,7 @@ class PolyAClipper(object):
             else:
                 cur_start_pos = start_pos
                 start_pos = start_pos + 1
-                yield([sequence[cur_start_pos:cur_start_pos+length], 
+                yield([sequence[cur_start_pos:cur_start_pos+length],
                        cur_start_pos])
 
     def remove_3_prime_a(self, sequence):
