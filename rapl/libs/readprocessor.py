@@ -1,3 +1,4 @@
+import gzip
 from libs.fasta import FastaParser
 from libs.polyaclipper import PolyAClipper
 
@@ -19,7 +20,7 @@ class ReadProcessor(object):
             "long_enough" : 0,
             "read_length_before_processing_and_freq" : {},
             "read_length_after_processing_and_freq" : {}}
-        output_fh = open(output_path, "w")
+        output_fh = gzip.open(output_path, "wb")
         self._process(open(input_path), output_fh)
         output_fh.close()
         return(self._stats)
@@ -52,4 +53,5 @@ class ReadProcessor(object):
                 clipped_seq_len, 0)
             self._stats["read_length_after_processing_and_freq"][
                 clipped_seq_len] += 1
-            output_fh.write(">%s\n%s\n" % (header, clipped_seq))
+            # Encoding to bytes is necessary due to saving via gzip
+            output_fh.write(str.encode(">%s\n%s\n" % (header, clipped_seq)))

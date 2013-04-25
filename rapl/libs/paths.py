@@ -122,7 +122,7 @@ class Paths(object):
     def set_read_files_dep_file_lists(self, read_files):
         self.read_paths = self._path_list(self.read_fasta_folder, read_files)
         self.processed_read_paths = self._path_list(
-            self.processed_reads_folder, read_files, appendix="_processed.fa")
+            self.processed_reads_folder, read_files, appendix="_processed.fa.gz")
         self.read_alignment_result_sam_paths = self._path_list(
             self.read_alignments_folder, read_files, appendix="_alignments.sam")
         # samtool appends ".bam" so only the prefix is required
