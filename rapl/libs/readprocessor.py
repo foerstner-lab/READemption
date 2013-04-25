@@ -1,4 +1,5 @@
 import gzip
+import bz2
 from libs.fasta import FastaParser
 from libs.polyaclipper import PolyAClipper
 
@@ -21,9 +22,27 @@ class ReadProcessor(object):
             "read_length_before_processing_and_freq" : {},
             "read_length_after_processing_and_freq" : {}}
         output_fh = gzip.open(output_path, "wb")
-        self._process(open(input_path), output_fh)
+        input_fh = self._input_fh(input_path)
+        self._process(input_fh, output_fh)
         output_fh.close()
         return(self._stats)
+
+    def _input_fh(self, input_path):
+        """Return a file hande 
+
+        Can deal with plain fasta files, gzipped fasta or bzipped2 fasta.
+        """
+        if input_path.endswith(".gz"):
+            return(self._line_interator(input_path, gzip.open))
+        elif input_path.endswith(".bz2"):
+            return(self._line_interator(input_path, bz2.open))
+        return(open(input_path))
+
+    def _line_interator(self, input_path, open_func):
+        """Return a line iterator that decodes the bytes"""
+        with open_func(input_path, "rb") as fh:
+            for line in fh:
+                yield(line.decode())
 
     def _process(self, input_fh, output_fh):
         for header, seq in self.fasta_parser.entries(input_fh):
