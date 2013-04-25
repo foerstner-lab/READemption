@@ -142,7 +142,7 @@ def main():
         parser.print_help()
 
 def create_project(controller):
-    controller.create_project()
+    controller.create_project(__version__)
 
 def align_reads(controller):
     controller.align_reads()

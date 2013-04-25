@@ -71,6 +71,7 @@ class Paths(object):
             self.report_folder)
         self.index_path = "%s/index.idx" % self.read_alignment_index_folder
         self.deseq_script_path = "%s/deseq.R" % self.deseq_folder
+        self.version_path = "%s/rapl_version.txt" % (self.report_folder)
 
     def _get_sorted_folder_content(self, folder):
         """Return the sorted file list of a folder"""

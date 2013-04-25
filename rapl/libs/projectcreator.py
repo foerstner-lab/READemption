@@ -29,12 +29,6 @@ class ProjectCreator(object):
             if not os.path.exists(folder):
                 os.mkdir(folder)
     
-    def create_config_file(self, config_path):
-        """Create a JSON config file.
-        
-        Arguments:
-        - `project_name`: Name of the project root folder
-        """
-        config_fh = open(config_path, "w")
-        config_fh.write(json.dumps({"annotation_and_genomes_files" : {}}))
-        config_fh.close()
+    def create_version_file(self, version_file_path, version):
+        with open(version_file_path, "w") as fh:
+            fh.write("RAPL version %s" % version)

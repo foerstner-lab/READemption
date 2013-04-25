@@ -23,11 +23,12 @@ class Controller(object):
         self.args = args
         self.paths = Paths(args.project_path)
 
-    def create_project(self):
+    def create_project(self, version):
         """Create a new project."""
         project_creator = ProjectCreator()
         project_creator.create_root_folder(self.args.project_path)
         project_creator.create_subfolders(self.paths.required_folders())
+        project_creator.create_version_file(self.paths.version_path, version)
         sys.stdout.write("Created folder \"%s\" and required subfolders.\n" % (
                 self.args.project_path))
         sys.stdout.write("Please copy read files into folder \"%s\" and "
