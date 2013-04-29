@@ -56,6 +56,7 @@ class Controller(object):
                     self.read_files, self.paths.read_paths,
                     self.paths.processed_read_paths):
                 read_processor = ReadProcessor(
+                    poly_a_clipping=self.args.poly_a_clipping,
                     min_read_length=self.args.min_read_length)
                 read_files_and_jobs[read_file]  = executor.submit(
                     read_processor.process, read_path, processed_read_path)
