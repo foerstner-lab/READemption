@@ -5,8 +5,8 @@ from libs.polyaclipper import PolyAClipper
 
 class ReadProcessor(object):
 
-    def __init__(self, poly_clipping=True,  min_read_length=12):
-        self.poly_clipping = poly_clipping
+    def __init__(self, poly_a_clipping=False,  min_read_length=12):
+        self._poly_a_clipping = poly_a_clipping
         self._min_read_length = min_read_length
         self.fasta_parser = FastaParser()
         self.poly_a_clipper = PolyAClipper()
@@ -47,7 +47,7 @@ class ReadProcessor(object):
     def _process(self, input_fh, output_fh):
         for header, seq in self.fasta_parser.entries(input_fh):
             self._stats["total_no_of_reads"] += 1
-            if self.poly_clipping:
+            if self._poly_a_clipping:
                 clipped_seq = self.poly_a_clipper.clip_poly_a_strech(seq)
                 clipped_seq = self.poly_a_clipper.remove_3_prime_a(clipped_seq)
             else:

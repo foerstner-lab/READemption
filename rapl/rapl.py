@@ -47,6 +47,9 @@ def main():
     read_aligning_parser.add_argument(
         "--segemehl_bin", "-s", default="segemehl",
         help="segemehl's binary path.")
+    read_aligning_parser.add_argument(
+        "--poly_a_clipping", "-c", default=False,
+        action="store_true", help="Perform polyA tail clipping")
     # read_aligning_parser.add_argument(
     #     "--force", "-f", default=False, action="store_true",
     #     help="Overwrite existing files.")
