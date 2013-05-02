@@ -8,7 +8,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Welcome to RAPL’s documentation! &mdash; RAPL 0.1 documentation</title>
+    <title>RAPL - The RNA-Seq Analysis PipeLine &mdash; RAPL 0.1 documentation</title>
     
     <link rel="stylesheet" href="_static/sphinxdoc.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -41,10 +41,41 @@
         <div class="sphinxsidebarwrapper">
   <h3><a href="#">Table Of Contents</a></h3>
   <ul>
-<li><a class="reference internal" href="#">Welcome to RAPL&#8217;s documentation!</a><ul>
+<li><a class="reference internal" href="#">RAPL - The RNA-Seq Analysis PipeLine</a><ul>
 </ul>
 </li>
-<li><a class="reference internal" href="#indices-and-tables">Indices and tables</a></li>
+<li><a class="reference internal" href="#what-is-rapl">What is RAPL?</a></li>
+<li><a class="reference internal" href="#ralp-s-subcommands">RALP&#8217;s subcommands</a><ul>
+<li><a class="reference internal" href="#align">align</a></li>
+<li><a class="reference internal" href="#coverage">coverage</a></li>
+<li><a class="reference internal" href="#gene-quanti">gene_quanti</a></li>
+<li><a class="reference internal" href="#deseq">deseq</a></li>
+<li><a class="reference internal" href="#viz-align">viz_align</a></li>
+<li><a class="reference internal" href="#viz-gene-quanti">viz_gene_quanti</a></li>
+<li><a class="reference internal" href="#viz-deseq">viz_deseq</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#installation">Installation</a><ul>
+<li><a class="reference internal" href="#requirements">Requirements</a></li>
+<li><a class="reference internal" href="#installing-in-a-fresh-ubuntu-environment">Installing in a fresh Ubuntu environment</a></li>
+<li><a class="reference internal" href="#global-installation">Global installation</a></li>
+<li><a class="reference internal" href="#installation-in-the-home-directory-of-the-user">Installation in the home directory of the user</a></li>
+<li><a class="reference internal" href="#installation-in-a-venv">Installation in a venv</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#performing-a-standard-analysis">Performing a standard analysis</a><ul>
+<li><a class="reference internal" href="#generating-a-project">Generating a project</a></li>
+<li><a class="reference internal" href="#retrieving-the-input-data">Retrieving the input data</a></li>
+<li><a class="reference internal" href="#aligning-the-reads-to-the-reference-genome">Aligning the reads to the reference genome</a></li>
+<li><a class="reference internal" href="#generating-coverage-files">Generating coverage files</a></li>
+<li><a class="reference internal" href="#performing-gene-wise-quantification">Performing gene wise quantification</a></li>
+<li><a class="reference internal" href="#performing-differential-gene-expression-analysis">Performing differential gene expression analysis</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#cite">Cite</a></li>
+<li><a class="reference internal" href="#source-code">Source code</a></li>
+<li><a class="reference internal" href="#license">License</a></li>
+<li><a class="reference internal" href="#versions-change-log">Versions/Change log</a></li>
 </ul>
 
   <h3>This Page</h3>
@@ -73,21 +104,170 @@
         <div class="bodywrapper">
           <div class="body">
             
-  <div class="section" id="welcome-to-rapl-s-documentation">
-<h1>Welcome to RAPL&#8217;s documentation!<a class="headerlink" href="#welcome-to-rapl-s-documentation" title="Permalink to this headline">¶</a></h1>
-<p>Contents:</p>
+  <div class="section" id="rapl-the-rna-seq-analysis-pipeline">
+<h1>RAPL - The RNA-Seq Analysis PipeLine<a class="headerlink" href="#rapl-the-rna-seq-analysis-pipeline" title="Permalink to this headline">¶</a></h1>
 <div class="toctree-wrapper compound">
 <ul class="simple">
 </ul>
 </div>
 </div>
-<div class="section" id="indices-and-tables">
-<h1>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Permalink to this headline">¶</a></h1>
-<ul class="simple">
-<li><a class="reference internal" href="genindex.html"><em>Index</em></a></li>
-<li><a class="reference internal" href="py-modindex.html"><em>Module Index</em></a></li>
-<li><a class="reference internal" href="search.html"><em>Search Page</em></a></li>
-</ul>
+<div class="section" id="what-is-rapl">
+<h1>What is RAPL?<a class="headerlink" href="#what-is-rapl" title="Permalink to this headline">¶</a></h1>
+<p><em>RNA-Seq Analysis PipeLine</em> (<em>RAPL</em>) is - as the name implies - a pipeline
+for the computational analysis of RNA-Seq data. It was originally
+developed to process dRNA-Seq reads (see Sharma <em>et al.</em>, Nature,
+2010) originating from bacterial samples. Meanwhile is was extended to
+process data generated in different experimental setups and
+originating from all domain of life. It was applied to analyze
+numerous data sets.</p>
+<p>RAPL follows the principal of <em>convention over configuration</em></p>
+</div>
+<div class="section" id="ralp-s-subcommands">
+<h1>RALP&#8217;s subcommands<a class="headerlink" href="#ralp-s-subcommands" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="align">
+<h2>align<a class="headerlink" href="#align" title="Permalink to this headline">¶</a></h2>
+<p><cite>align</cite> includes the clipping and size filtering of the read, as well
+as the actual aligning to the reference sequences.  It also generates
+statistic about the steps (e.g. number of aligned reads, number of
+mappings). The result of this steps are used by the other subcommands
+so it has to be run before any other.</p>
+</div>
+<div class="section" id="coverage">
+<h2>coverage<a class="headerlink" href="#coverage" title="Permalink to this headline">¶</a></h2>
+<p><cite>coverage</cite> generates strand specific coverage files in wiggle format
+based on the read alignments. The wiggle files can be viewed in common
+genome browser like the <a class="reference external" href="http://bioviz.org/">Integrated genome browser (IGB)</a> or the <a class="reference external" href="https://www.broadinstitute.org/software/igv/">Integrative genome viewer (IGV)</a>.</p>
+</div>
+<div class="section" id="gene-quanti">
+<h2>gene_quanti<a class="headerlink" href="#gene-quanti" title="Permalink to this headline">¶</a></h2>
+<p>With <cite>gene_quanti</cite> the number of reads to each gene is counted and the
+results are combined in tables.</p>
+</div>
+<div class="section" id="deseq">
+<h2>deseq<a class="headerlink" href="#deseq" title="Permalink to this headline">¶</a></h2>
+<p>Differential gene expression can be performed using <cite>deseq</cite> which will
+run a <a class="reference external" href="http://www-huber.embl.de/users/anders/DESeq/">DESeq</a> analyses for all possible combinations.</p>
+</div>
+<div class="section" id="viz-align">
+<h2>viz_align<a class="headerlink" href="#viz-align" title="Permalink to this headline">¶</a></h2>
+<p><cite>viz_align</cite> generates plots that visualize selected features from the
+alignment results.</p>
+</div>
+<div class="section" id="viz-gene-quanti">
+<h2>viz_gene_quanti<a class="headerlink" href="#viz-gene-quanti" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="viz-deseq">
+<h2>viz_deseq<a class="headerlink" href="#viz-deseq" title="Permalink to this headline">¶</a></h2>
+</div>
+</div>
+<div class="section" id="installation">
+<h1>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="requirements">
+<h2>Requirements<a class="headerlink" href="#requirements" title="Permalink to this headline">¶</a></h2>
+<p>RAPL was developed using Python 3.3 and for best performance the user
+is advised to use this version, too. Any other Python 3 version should
+work as well. Also Python 2.7 can be used if the library XXX is
+installed. In any case, the third party module <a class="reference external" href="https://code.google.com/p/pysam">pysam</a> is required. The short read mapper</p>
+<p><a class="reference external" href="http://www.bioinf.uni-leipzig.de/Software/segemehl/">segemehl</a></p>
+<p>Matplotlib for <cite>viz_align</cite>, <cite>viz_gene_quanti</cite>, <cite>viz_deseq</cite></p>
+<p>R and DESeq for differential gene expression analysis</p>
+</div>
+<div class="section" id="installing-in-a-fresh-ubuntu-environment">
+<h2>Installing in a fresh Ubuntu environment<a class="headerlink" href="#installing-in-a-fresh-ubuntu-environment" title="Permalink to this headline">¶</a></h2>
+<p>Amazon AWS, Ubuntu live system</p>
+</div>
+<div class="section" id="global-installation">
+<h2>Global installation<a class="headerlink" href="#global-installation" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="installation-in-the-home-directory-of-the-user">
+<h2>Installation in the home directory of the user<a class="headerlink" href="#installation-in-the-home-directory-of-the-user" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="installation-in-a-venv">
+<h2>Installation in a venv<a class="headerlink" href="#installation-in-a-venv" title="Permalink to this headline">¶</a></h2>
+</div>
+</div>
+<div class="section" id="performing-a-standard-analysis">
+<h1>Performing a standard analysis<a class="headerlink" href="#performing-a-standard-analysis" title="Permalink to this headline">¶</a></h1>
+<p>In the following we will run a small example analysis using a publicly
+available RNA-Seq data set.</p>
+<div class="section" id="generating-a-project">
+<h2>Generating a project<a class="headerlink" href="#generating-a-project" title="Permalink to this headline">¶</a></h2>
+<p>Creating a new project:</p>
+<div class="highlight-python"><pre>$ python3.3 rapl/rapl.py create my_rna_seq_analysis
+Created folder "my_rna_seq_analysis" and required subfolders.
+Please copy read files into folder "my_rna_seq_analysis/input/reads" and reference sequences files into folder "my_rna_seq_analysis/input/reference_sequences".
+
+
+$ ls my_rna_seq_analysis/*
+my_rna_seq_analysis/input:
+annotation_files  reads  reference_sequences
+
+my_rna_seq_analysis/output:
+coverages-raw                   deseq_comparisons           read_alignments-index            reports_and_stats
+coverages-tnoar_mil_normalized  gene_wise_quantifications   read_alignments-processed_reads  stats_data_json
+coverages-tnoar_min_normalized  read_alignments-alignments  read_alignments-unaligned_reads</pre>
+</div>
+</div>
+<div class="section" id="retrieving-the-input-data">
+<h2>Retrieving the input data<a class="headerlink" href="#retrieving-the-input-data" title="Permalink to this headline">¶</a></h2>
+<p>Store the URL of source FTP folder in an environment variable.</p>
+<div class="highlight-python"><pre>$ FTP_SOURCE=ftp://ftp.ncbi.nih.gov/genomes/Bacteria/Salmonella_enterica_serovar_Typhimurium_SL1344_uid86645</pre>
+</div>
+<p>Download the reference sequence (the chromosome and three plasmids) in Fasta format.</p>
+<div class="highlight-python"><pre>$ wget -cP my_rna_seq_analysis/input/reference_sequences ${FTP_SOURCE}/NC_016810.fna ...</pre>
+</div>
+<p>Download the annotation for in GFF format.</p>
+<div class="highlight-python"><pre>$ wget -cP ${FTP_SOURCE}/NC_016810.gff ...</pre>
+</div>
+<p>Download the reads in FASTA format</p>
+<div class="highlight-python"><pre>$ wget ${FTP_SOURCE}/NC_016810.fna ...</pre>
+</div>
+</div>
+<div class="section" id="aligning-the-reads-to-the-reference-genome">
+<h2>Aligning the reads to the reference genome<a class="headerlink" href="#aligning-the-reads-to-the-reference-genome" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="generating-coverage-files">
+<h2>Generating coverage files<a class="headerlink" href="#generating-coverage-files" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference external" href="http://bioviz.org/">Integrated genome browser (IGB)</a>
+<a class="reference external" href="https://www.broadinstitute.org/software/igv/">Integrative genome viewer (IGV)</a></p>
+</div>
+<div class="section" id="performing-gene-wise-quantification">
+<h2>Performing gene wise quantification<a class="headerlink" href="#performing-gene-wise-quantification" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="performing-differential-gene-expression-analysis">
+<h2>Performing differential gene expression analysis<a class="headerlink" href="#performing-differential-gene-expression-analysis" title="Permalink to this headline">¶</a></h2>
+</div>
+</div>
+<div class="section" id="cite">
+<h1>Cite<a class="headerlink" href="#cite" title="Permalink to this headline">¶</a></h1>
+<p>If you use RALP for your research please cite the following reference:
+<a href="#id4"><span class="problematic" id="id5">*</span></a>RNA-Seq Analysis PipeLine (RAPL) – A tool for the computational
+analysis of deep-sequencing based transcriptome data;
+Konrad U. Förstner, Jörg Vogel, Cynthia M. Sharma; (in preparation)</p>
+</div>
+<div class="section" id="source-code">
+<h1>Source code<a class="headerlink" href="#source-code" title="Permalink to this headline">¶</a></h1>
+<p>The source code of RAPL can be found at <a class="reference external" href="https://github.com/konrad/rapl">https://github.com/konrad/rapl</a>.</p>
+</div>
+<div class="section" id="license">
+<h1>License<a class="headerlink" href="#license" title="Permalink to this headline">¶</a></h1>
+<p>RAPL is open source software and available under the ISC license.</p>
+<p>Copyright (c) 2013, Konrad Förstner &lt;<a class="reference external" href="mailto:konrad&#46;foerstner&#37;&#52;&#48;uni-wuerzburg&#46;de">konrad<span>&#46;</span>foerstner<span>&#64;</span>uni-wuerzburg<span>&#46;</span>de</a>&gt;</p>
+<p>Permission to use, copy, modify, and/or distribute this software for
+any purpose with or without fee is hereby granted, provided that the
+above copyright notice and this permission notice appear in all
+copies.</p>
+<p>THE SOFTWARE IS PROVIDED &#8220;AS IS&#8221; AND THE AUTHOR DISCLAIMS ALL
+WARRANTIES WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED
+WARRANTIES OF MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE
+AUTHOR BE LIABLE FOR ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL
+DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR
+PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER
+TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
+PERFORMANCE OF THIS SOFTWARE.</p>
+</div>
+<div class="section" id="versions-change-log">
+<h1>Versions/Change log<a class="headerlink" href="#versions-change-log" title="Permalink to this headline">¶</a></h1>
 </div>
 
 
