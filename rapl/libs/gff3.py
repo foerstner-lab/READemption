@@ -43,6 +43,8 @@ class Gff3Entry(object):
     
     def _attributes(self, attributes_string):
         """Translate the attribute string to dictionary"""
+        if attributes_string.endswith(";"):
+            attributes_string = attributes_string[:-1]
         return(dict(
                 [key_value_pair.split("=") 
                  for key_value_pair in attributes_string.split(";")]))
