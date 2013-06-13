@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-"""RAPL - A RNA-seq Analysing PipeLine"""
+"""RAPL - A RNA-seq Analysis PipeLine"""
 
 import argparse
 from libs.controller import Controller
