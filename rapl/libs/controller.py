@@ -81,7 +81,8 @@ class Controller(object):
             self.paths.unaligned_reads_paths,
             int(self.args.processes),
             int(self.args.segemehl_accuracy),
-            int(self.args.segemehl_evalue))
+            float(self.args.segemehl_evalue),
+            self.args.split)
 
     def _sam_to_bam(self):
         sam_to_bam_converter = SamToBamConverter()

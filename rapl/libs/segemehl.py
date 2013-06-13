@@ -12,10 +12,11 @@ class Segemehl(object):
         call([self.segemehl_bin, "--database"] + fasta_files + [
              "--generate", index_file])
 
-    def align_reads(self, read_file, index_file, fasta_files, output_file,
-                  hit_strategy=1, accuracy=95, evalue=5.0, threads=1,
-                  segemehl_format=False, order=False, nonmatch_file=None,
-                  other_parameters=None):
+    def align_reads(
+        self, read_file, index_file, fasta_files, output_file,
+        hit_strategy=1, accuracy=95, evalue=5.0, threads=1, split=False, 
+        segemehl_format=False, order=False, nonmatch_file=None,
+        other_parameters=None):
         segemehl_call = [
             self.segemehl_bin, "--query", read_file,
             "--index", index_file,
@@ -29,6 +30,8 @@ class Segemehl(object):
             segemehl_call.append("--SEGEMEHL")
         if order:
             segemehl_call.append("--order")
+        if split:
+            segemehl_call.append("--splits")
         if nonmatch_file:
             segemehl_call += ["--nomatchfilename", nonmatch_file]
         if other_parameters:

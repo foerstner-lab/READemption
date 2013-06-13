@@ -46,7 +46,10 @@ def main():
         help="Segemehl's maximal e-value. (default 5.0)")
     read_aligning_parser.add_argument(
         "--segemehl_bin", "-s", default="segemehl",
-        help="segemehl's binary path.")
+        help="Segemehl's binary path.")
+    read_aligning_parser.add_argument(
+        "--split", "-S", default=False, action="store_true",
+        help="Run segemehl with read splitting")
     read_aligning_parser.add_argument(
         "--poly_a_clipping", "-c", default=False,
         action="store_true", help="Perform polyA tail clipping")
