@@ -47,6 +47,14 @@ class Controller(object):
         self._generate_read_alignment_stats()
         self._write_alignment_stat_table()
 
+    def _file_needs_to_be_created(self, file_path):
+        if self.args.force is True:
+            return True
+        elif os.path.exists(file_path):
+            sys.stderr.write(
+                "File %s exists. Skipping its generation.\n" % file_path)
+            return False
+
     def _prepare_reads(self):
         raw_stat_data_writer = RawStatDataWriter(pretty=True)
         read_files_and_jobs = {}
@@ -55,6 +63,8 @@ class Controller(object):
             for read_file, read_path, processed_read_path in zip(
                     self.read_files, self.paths.read_paths,
                     self.paths.processed_read_paths):
+                if self._file_needs_to_be_created(processed_read_path) is False:
+                    continue
                 read_processor = ReadProcessor(
                     poly_a_clipping=self.args.poly_a_clipping,
                     min_read_length=self.args.min_read_length)
