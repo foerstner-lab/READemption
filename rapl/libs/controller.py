@@ -63,8 +63,6 @@ class Controller(object):
             for read_file, read_path, processed_read_path in zip(
                     self.read_files, self.paths.read_paths,
                     self.paths.processed_read_paths):
-                if self._file_needs_to_be_created(processed_read_path) is False:
-                    continue
                 read_processor = ReadProcessor(
                     poly_a_clipping=self.args.poly_a_clipping,
                     min_read_length=self.args.min_read_length)
@@ -82,26 +80,35 @@ class Controller(object):
 
     def _align_reads(self):
         read_aligner = ReadAligner(segemehl_bin=self.args.segemehl_bin)
-        read_aligner.build_index(
+        if self._file_needs_to_be_created(self.paths.index_path) is True:
+            read_aligner.build_index(
             self.paths.ref_seq_paths, self.paths.index_path)
-        read_aligner.run_alignment(
-            self.paths.processed_read_paths,
-            self.paths.ref_seq_paths, self.paths.index_path,
-            self.paths.read_alignment_result_sam_paths,
-            self.paths.unaligned_reads_paths,
-            int(self.args.processes),
-            int(self.args.segemehl_accuracy),
-            float(self.args.segemehl_evalue),
-            self.args.split)
+        for read_path, output_path, nomatch_path, bam_path in zip(
+            self.paths.processed_read_paths, 
+            self.paths.read_alignment_result_sam_paths, 
+            self.paths.unaligned_reads_paths, 
+            self.paths.read_alignment_result_bam_paths):
+            if self._file_needs_to_be_created(output_path) is False:
+                continue
+            elif self._file_needs_to_be_created(bam_path) is False:
+                continue
+            read_aligner.run_alignment(
+                read_path, self.paths.index_path, self.paths.ref_seq_paths, 
+                output_path, nomatch_path, int(self.args.processes),
+                int(self.args.segemehl_accuracy), 
+                float(self.args.segemehl_evalue), self.args.split)
 
     def _sam_to_bam(self):
         sam_to_bam_converter = SamToBamConverter()
         jobs = []
         with concurrent.futures.ProcessPoolExecutor(
             max_workers=self.args.processes) as executor:
-            for sam_path, bam_prefix_path in zip(
+            for sam_path, bam_prefix_path, bam_path in zip(
                     self.paths.read_alignment_result_sam_paths,
-                    self.paths.read_alignment_result_bam_prefixes_paths):
+                    self.paths.read_alignment_result_bam_prefixes_paths,
+                    self.paths.read_alignment_result_bam_paths):
+                if self._file_needs_to_be_created(bam_path) is False:
+                    continue
                 jobs.append(executor.submit(
                     sam_to_bam_converter.sam_to_bam, sam_path, bam_prefix_path))
         # Evaluate thread outcome
@@ -218,7 +225,7 @@ class Controller(object):
                 for read_file in self.read_files])
 
     def _get_read_process_numbers(
-            self, read_processing_stats, attribute):
+        self, read_processing_stats, attribute):
         return([read_processing_stats[read_file][attribute]
                 for read_file in self.read_files])
 
