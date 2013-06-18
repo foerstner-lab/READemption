@@ -50,10 +50,11 @@ class Controller(object):
     def _file_needs_to_be_created(self, file_path):
         if self.args.force is True:
             return True
-        elif os.path.exists(file_path):
+        if os.path.exists(file_path):
             sys.stderr.write(
                 "File %s exists. Skipping its generation.\n" % file_path)
             return False
+        return True
 
     def _prepare_reads(self):
         raw_stat_data_writer = RawStatDataWriter(pretty=True)
