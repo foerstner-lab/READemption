@@ -82,7 +82,7 @@ class Controller(object):
         read_aligner = ReadAligner(segemehl_bin=self.args.segemehl_bin)
         if self._file_needs_to_be_created(self.paths.index_path) is True:
             read_aligner.build_index(
-            self.paths.ref_seq_paths, self.paths.index_path)
+                self.paths.ref_seq_paths, self.paths.index_path)
         for read_path, output_path, nomatch_path, bam_path in zip(
             self.paths.processed_read_paths, 
             self.paths.read_alignment_result_sam_paths, 
@@ -346,25 +346,38 @@ class Controller(object):
         annotation_files = self.paths.get_annotation_files()
         self.paths.set_annotation_paths(annotation_files)
         self.paths.set_read_files_dep_file_lists(read_files)
-        for read_file, read_alignment_path in zip(
+        jobs = []
+        with concurrent.futures.ProcessPoolExecutor(
+            max_workers=self.args.processes) as executor:
+            for read_file, read_alignment_path in zip(
                 read_files, self.paths.read_alignment_result_bam_paths):
-            gene_wise_quantification = GeneWiseQuantification(
-                min_overlap=self.args.min_overlap,
-                norm_by_alignment_freq=norm_by_alignment_freq,
-                norm_by_overlap_freq=norm_by_overlap_freq,
-                allowed_features_str=self.args.allowed_features,
-                skip_antisense=self.args.skip_antisense,
-                unique_only=self.args.unique_only)
-            gene_wise_quantification.calc_overlaps_per_alignment(
-                read_alignment_path, self.paths.annotation_paths)
-            for  annotation_file, annotation_path in zip(
-                    annotation_files, self.paths.annotation_paths):
-                gene_wise_quantification.quantify(
-                    read_alignment_path, annotation_path,
-                    self.paths.gene_quanti_path(read_file, annotation_file),
-                    self.args.pseudocounts)
+                jobs.append(executor.submit(
+                        self._quantify_gene_wise, read_file, 
+                        read_alignment_path, norm_by_alignment_freq,
+                        norm_by_overlap_freq, annotation_files))
+        # Evaluate thread outcome
+        self._check_job_completeness(jobs)
         self._gene_quanti_create_overview(
             annotation_files, self.paths.annotation_paths, read_files)
+
+    def _quantify_gene_wise(self, read_file, read_alignment_path, 
+                    norm_by_alignment_freq,  norm_by_overlap_freq, 
+                    annotation_files):
+        gene_wise_quantification = GeneWiseQuantification(
+            min_overlap=self.args.min_overlap,
+            norm_by_alignment_freq=norm_by_alignment_freq,
+            norm_by_overlap_freq=norm_by_overlap_freq,
+            allowed_features_str=self.args.allowed_features,
+            skip_antisense=self.args.skip_antisense,
+            unique_only=self.args.unique_only)
+        gene_wise_quantification.calc_overlaps_per_alignment(
+            read_alignment_path, self.paths.annotation_paths)
+        for  annotation_file, annotation_path in zip(
+            annotation_files, self.paths.annotation_paths):
+            gene_wise_quantification.quantify(
+                read_alignment_path, annotation_path,
+                self.paths.gene_quanti_path(read_file, annotation_file),
+                self.args.pseudocounts)
 
     def _gene_quanti_create_overview(
             self, annotation_files, annotation_paths, read_files):
