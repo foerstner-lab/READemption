@@ -89,7 +89,9 @@ class Paths(object):
 
     def _get_sorted_folder_content(self, folder):
         """Return the sorted file list of a folder"""
-        return(list(filter(lambda file: not file.endswith("~"),
+        return(list(filter(lambda file: 
+                           not (file.endswith("~") or 
+                                os.path.basename(file).startswith(".")),
                       sorted(os.listdir(folder)))))
 
     def get_read_files(self):
