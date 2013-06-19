@@ -26,13 +26,13 @@ class Paths(object):
 
     def _set_read_alignment_folder_names(self):
         self.align_base_folder = "%s/align" % self.output_folder
-        self.read_alignment_index_folder = "%s/read_alignments-index" % (
+        self.read_alignment_index_folder = "%s/index" % (
             self.align_base_folder)
-        self.read_alignments_folder = "%s/read_alignments-alignments" % (
+        self.read_alignments_folder = "%s/alignments" % (
             self.align_base_folder)
-        self.processed_reads_folder = "%s/read_alignments-processed_reads" % (
+        self.processed_reads_folder = "%s/processed_reads" % (
             self.align_base_folder)
-        self.unaligned_reads_folder = "%s/read_alignments-unaligned_reads" % (
+        self.unaligned_reads_folder = "%s/unaligned_reads" % (
             self.align_base_folder)
 
     def _set_coverage_folder_names(self):
