@@ -93,8 +93,8 @@ class DESeqRunner(object):
     def _deseq_script_template(self):
         return(
             "library('DESeq')\n"
-            "rawCountTable <- read.table('%s', skip=1, sep='\\t')\n"
-            "names(rawCountTable)\n"
+            "rawCountTable <- read.table('%s', skip=1, sep='\\t', "
+            "quote='', comment.char='')\n"
             "countTable <- round(rawCountTable[,%s:length(names(rawCountTable))])\n"
             "conds <- c(%s)\n"
             "cds <- newCountDataSet(countTable, conds)\n"
