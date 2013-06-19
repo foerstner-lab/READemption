@@ -38,14 +38,16 @@ class Controller(object):
     def align_reads(self):
         """Perform the alignment of the reads."""
         self.read_files = self.paths.get_read_files()
+        self.cleaned_read_files = self.paths.get_cleaned_read_files()
         ref_seq_files = self.paths.get_ref_seq_files()
-        self.paths.set_read_files_dep_file_lists(self.read_files)
+        self.paths.set_read_files_dep_file_lists(
+            self.read_files, self.cleaned_read_files)
         self.paths.set_ref_seq_paths(ref_seq_files)
-        self._prepare_reads()
-        self._align_reads()
-        self._sam_to_bam()
+        #self._prepare_reads()
+        #self._align_reads()
+        #self._sam_to_bam()
         self._generate_read_alignment_stats()
-        self._write_alignment_stat_table()
+        #self._write_alignment_stat_table()
 
     def _file_needs_to_be_created(self, file_path):
         if self.args.force is True:
