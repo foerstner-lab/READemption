@@ -12,7 +12,7 @@ class Paths(object):
         self.input_folder = "%s/input" % (self.base_path)
         self.output_folder = "%s/output" % (self.base_path)
         self.report_folder = "%s/reports_and_stats" % (self.output_folder)
-        self.raw_stat_data_folder = "%s/stats_data_json" % (self.output_folder)
+        self.raw_stat_data_folder = "%s/stats_data_json" % (self.report_folder)
         self._set_input_folder_names()
         self._set_read_alignment_folder_names()
         self._set_coverage_folder_names()
@@ -25,35 +25,46 @@ class Paths(object):
         self.annotation_folder = "%s/annotation_files" % self.input_folder
 
     def _set_read_alignment_folder_names(self):
+        self.align_base_folder = "%s/align" % self.output_folder
         self.read_alignment_index_folder = "%s/read_alignments-index" % (
-            self.output_folder)
+            self.align_base_folder)
         self.read_alignments_folder = "%s/read_alignments-alignments" % (
-            self.output_folder)
+            self.align_base_folder)
         self.processed_reads_folder = "%s/read_alignments-processed_reads" % (
-            self.output_folder)
+            self.align_base_folder)
         self.unaligned_reads_folder = "%s/read_alignments-unaligned_reads" % (
-            self.output_folder)
+            self.align_base_folder)
 
     def _set_coverage_folder_names(self):
-        base_name = "%s/coverages" % self.output_folder
-        self.coverage_raw_folder = "%s-raw" % base_name
-        self.coverage_tnoar_min_norm_folder = "%s-tnoar_min_normalized" % (
-            base_name)
-        self.coverage_tnoar_mil_norm_folder = "%s-tnoar_mil_normalized" % (
-            base_name)
+        self.coverage_base_folder = "%s/coverage" % self.output_folder
+        self.coverage_raw_folder = "%s/coverage-raw" % self.coverage_base_folder
+        self.coverage_tnoar_min_norm_folder = "%s/coverage-tnoar_min_normalized" % (
+            self.coverage_base_folder)
+        self.coverage_tnoar_mil_norm_folder = "%s/coverage-tnoar_mil_normalized" % (
+            self.coverage_base_folder)
 
     def _set_gene_quanti_folder_names(self):
-        self.gene_quanti_folder = (
-            "%s/gene_wise_quantifications" % self.output_folder)
+        self.gene_quanti_base_folder = (
+            "%s/gene_quanti" % self.output_folder)
+        self.gene_quanti_per_lib_folder = "%s/gene_quanti_per_lib" % (
+            self.gene_quanti_base_folder)
+        self.gene_quanti_combined_folder = "%s/gene_quanti_combined" % (
+            self.gene_quanti_base_folder)
         self.gene_wise_quanti_combined_path = (
-            "%s/gene_wise_quantifications_combined.csv" % self.output_folder)
+            "%s/gene_wise_quantifications_combined.csv" % 
+            self.gene_quanti_combined_folder)
         self.gene_wise_quanti_combined_rpkm_path = (
-            "%s/gene_wise_quantifications_combined_rpkm.csv" % self.output_folder)
+            "%s/gene_wise_quantifications_combined_rpkm.csv" % 
+            self.gene_quanti_combined_folder)
         self.gene_wise_quanti_combined_tnoar_path = (
-            "%s/gene_wise_quantifications_combined_tnoar.csv" % self.output_folder)        
+            "%s/gene_wise_quantifications_combined_tnoar.csv" % 
+            self.gene_quanti_combined_folder)
 
     def _set_deseq_folder_names(self):
-        self.deseq_folder = ("%s/deseq_comparisons" % self.output_folder)
+        self.deseq_base_folder = ("%s/deseq" % self.output_folder)
+        self.deseq_raw_folder = ("%s/deseq_raw" % self.deseq_base_folder)
+        self.deseq_extended_folder = (
+            "%s/deseq_with_annotations" % self.deseq_base_folder)
 
     def _set_static_files(self):
         """Set name of common files."""
@@ -70,8 +81,8 @@ class Paths(object):
         self.read_alignment_stats_table_path = "%s/read_alignment_stats.csv" % (
             self.report_folder)
         self.index_path = "%s/index.idx" % self.read_alignment_index_folder
-        self.deseq_script_path = "%s/deseq.R" % self.deseq_folder
-        self.version_path = "%s/rapl_version.txt" % (self.report_folder)
+        self.deseq_script_path = "%s/deseq.R" % self.deseq_raw_folder
+        self.version_path = "%s/used_rapl_version.txt" % (self.report_folder)
 
     def _get_sorted_folder_content(self, folder):
         """Return the sorted file list of a folder"""
@@ -95,8 +106,8 @@ class Paths(object):
                self._required_input_folders() +
                self._required_read_alignment_folders() +
                self._required_coverage_folders() +
-               self._required_gene_quanti_folder() +
-               self._required_deseq_folder())
+               self._required_gene_quanti_folders() +
+               self._required_deseq_folders())
 
     def _required_base_folders(self):
         return([self.input_folder, self.output_folder, self.report_folder,
@@ -107,18 +118,22 @@ class Paths(object):
                 self.annotation_folder])
 
     def _required_read_alignment_folders(self):
-        return([self.read_alignments_folder, self.processed_reads_folder,
-                self.unaligned_reads_folder, self.read_alignment_index_folder])
+        return([self.align_base_folder, self.read_alignments_folder, 
+                self.processed_reads_folder, self.unaligned_reads_folder, 
+                self.read_alignment_index_folder])
 
     def _required_coverage_folders(self):
-        return([self.coverage_raw_folder, self.coverage_tnoar_min_norm_folder,
+        return([self.coverage_base_folder, self.coverage_raw_folder, 
+                self.coverage_tnoar_min_norm_folder, 
                 self.coverage_tnoar_mil_norm_folder])
 
-    def _required_gene_quanti_folder(self):
-        return([self.gene_quanti_folder])
+    def _required_gene_quanti_folders(self):
+        return([self.gene_quanti_base_folder, self.gene_quanti_per_lib_folder, 
+                self.gene_quanti_combined_folder])
 
-    def _required_deseq_folder(self):
-        return([self.deseq_folder])
+    def _required_deseq_folders(self):
+        return([self.deseq_base_folder, self.deseq_raw_folder, 
+                self.deseq_extended_folder])
 
     def set_read_files_dep_file_lists(self, read_files):
         self.read_paths = self._path_list(self.read_fasta_folder, read_files)
@@ -146,7 +161,7 @@ class Paths(object):
 
     def gene_quanti_path(self, read_file, annotation_file):
         return("%s/%s_to_%s.csv" % (
-            self.gene_quanti_folder, read_file, annotation_file))
+            self.gene_quanti_per_lib_folder, read_file, annotation_file))
 
     def wiggle_file_raw_path(self, read_file, strand, multi=None, div=None):
         return(self._wiggle_file_path(

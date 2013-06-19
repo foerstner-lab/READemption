@@ -417,8 +417,8 @@ class Controller(object):
         conditions = self.args.conditions.split(",")
         self._check_deseq_args(libs, conditions)
         deseq_runner = DESeqRunner(
-            libs, conditions, self.paths.deseq_folder,
-            self.paths.deseq_script_path,
+            libs, conditions, self.paths.deseq_raw_folder,
+            self.paths.deseq_extended_folder, self.paths.deseq_script_path,
             self.paths.gene_wise_quanti_combined_path,
             no_replicates=self.args.no_replicates)
         deseq_runner.create_deseq_script_file()

@@ -1,14 +1,17 @@
 import csv
+import sys
 from subprocess import call
 
 class DESeqRunner(object):
 
     def __init__(
-            self, libs, conditions, deseq_folder, deseq_script_path,
-            gene_wise_quanti_combined_path, no_replicates=False):
+            self, libs, conditions, deseq_raw_folder, deseq_extended_folder,
+            deseq_script_path, gene_wise_quanti_combined_path, 
+            no_replicates=False):
         self._libs = libs
         self._conditions = conditions
-        self._deseq_folder = deseq_folder
+        self._deseq_raw_folder = deseq_raw_folder
+        self._deseq_extended_folder = deseq_extended_folder
         self._deseq_script_path = deseq_script_path
         self._gene_wise_quanti_combined_path = gene_wise_quanti_combined_path
         self._no_replicastes = no_replicates
@@ -40,14 +43,21 @@ class DESeqRunner(object):
     def merge_counting_files_with_results(self):
         for comparison_file, combo in self._comparison_files_and_combos:
             output_fh = open("%s/%s" % (
-                self._deseq_folder,
+                self._deseq_extended_folder,
                 comparison_file.replace(
                 ".csv", "_with_annotation_and_countings.csv")), "w")
+            try:
+                deseq_result_fh = open("%s/%s" % (
+                    self._deseq_raw_folder, comparison_file))
+            except:
+                sys.stderr.write("Apparently DESeq did not generate the "
+                                 "file \"%s\". Extension stopped.\n" % 
+                                 comparison_file)
+                continue
             for counting_file_row, comparison_file_row in zip(
                 csv.reader(open(
                     self._gene_wise_quanti_combined_path), delimiter="\t"),
-                csv.reader(open("%s/%s" % (
-                    self._deseq_folder, comparison_file)), delimiter="\t")):
+                csv.reader(deseq_result_fh, delimiter="\t")):
                 if comparison_file_row[0] == "id":
                     comparison_file_row = [""] + comparison_file_row
                     # Add condition name to the headline
@@ -77,7 +87,7 @@ class DESeqRunner(object):
             call_string += (
                 "write.table(comp%s, file='%s/%s', "
                 "quote=FALSE, sep='\\t')\n" % (
-                    index, self._deseq_folder, comparison_file))
+                    index, self._deseq_raw_folder, comparison_file))
         return(call_string)
 
     def _deseq_script_template(self):
