@@ -419,11 +419,13 @@ class Controller(object):
         deseq_runner = DESeqRunner(
             libs, conditions, self.paths.deseq_raw_folder,
             self.paths.deseq_extended_folder, self.paths.deseq_script_path,
-            self.paths.gene_wise_quanti_combined_path,
-            no_replicates=self.args.no_replicates)
+            self.paths.gene_wise_quanti_combined_path, 
+            self.paths.deseq_tmp_session_info_script,
+            self.paths.deseq_session_info, no_replicates=self.args.no_replicates)
         deseq_runner.create_deseq_script_file()
-        deseq_runner.run_deseq()
-        deseq_runner.merge_counting_files_with_results()
+        deseq_runner.write_session_info_file()
+        #deseq_runner.run_deseq()
+        #deseq_runner.merge_counting_files_with_results()
 
     def _check_deseq_args(self, libs, conditions):
         if len(libs) != len(conditions):

@@ -1,5 +1,6 @@
 import csv
 import sys
+import os
 from subprocess import call
 
 class DESeqRunner(object):
@@ -7,6 +8,7 @@ class DESeqRunner(object):
     def __init__(
             self, libs, conditions, deseq_raw_folder, deseq_extended_folder,
             deseq_script_path, gene_wise_quanti_combined_path, 
+            deseq_tmp_session_info_script, deseq_session_info, 
             no_replicates=False):
         self._libs = libs
         self._conditions = conditions
@@ -14,8 +16,19 @@ class DESeqRunner(object):
         self._deseq_extended_folder = deseq_extended_folder
         self._deseq_script_path = deseq_script_path
         self._gene_wise_quanti_combined_path = gene_wise_quanti_combined_path
+        self._deseq_tmp_session_info_script = deseq_tmp_session_info_script
+        self._deseq_session_info = deseq_session_info
         self._no_replicastes = no_replicates
         self._first_data_column = 11
+
+    def write_session_info_file(self):
+        with open(self._deseq_tmp_session_info_script, "w") as tmp_r_script_fh:
+            tmp_r_script_fh.write("library('DESeq')\nsessionInfo()\n")
+        with open(self._deseq_session_info, "w") as session_info_fh:
+            with open(os.devnull, "w") as devnull:
+                call(["Rscript", self._deseq_tmp_session_info_script,], 
+                     stdout=session_info_fh, stderr=devnull)
+        os.remove(self._deseq_tmp_session_info_script)
 
     def create_deseq_script_file(self):
         libs_to_conditions = dict([
