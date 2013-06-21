@@ -43,11 +43,11 @@ class Controller(object):
         self.paths.set_read_files_dep_file_lists(
             self.read_files, self.cleaned_read_files)
         self.paths.set_ref_seq_paths(ref_seq_files)
-        #self._prepare_reads()
-        #self._align_reads()
-        #self._sam_to_bam()
+        self._prepare_reads()
+        self._align_reads()
+        self._sam_to_bam()
         self._generate_read_alignment_stats()
-        #self._write_alignment_stat_table()
+        self._write_alignment_stat_table()
 
     def _file_needs_to_be_created(self, file_path):
         if self.args.force is True:
@@ -122,19 +122,19 @@ class Controller(object):
         read_files_and_jobs = {}
         with concurrent.futures.ProcessPoolExecutor(
             max_workers=self.args.processes) as executor:
-            for (read_file, read_alignment_result_bam_path,
+            for (read_file, cleaned_read_file, read_alignment_result_bam_path,
                  unaligned_reads_path) in zip(
-                     self.read_files,
+                     self.read_files, self.cleaned_read_files,
                      self.paths.read_alignment_result_bam_paths,
                      self.paths.unaligned_reads_paths):
                 read_aligner_stats = ReadAlignerStats()
-                read_files_and_jobs[read_file]  = executor.submit(
+                read_files_and_jobs[cleaned_read_file]  = executor.submit(
                     read_aligner_stats.count, read_alignment_result_bam_path,
                     unaligned_reads_path)
         # Evaluate thread outcome
         self._check_job_completeness(read_files_and_jobs.values())
         read_files_and_stats = dict(
-            [(read_file, job.result()) for read_file, job in
+            [(cleaned_read_file, job.result()) for cleaned_read_file, job in
              read_files_and_jobs.items()])
         raw_stat_data_writer.write(
             read_files_and_stats, self.paths.read_aligner_stats_path)
@@ -146,11 +146,11 @@ class Controller(object):
         alignment_stats = raw_stat_data_reader.read(
             self.paths.read_aligner_stats_path)
         table = []
-        table.append(["Lib"] + self.read_files)
+        table.append(["Lib"] + self.cleaned_read_files)
         ref_ids = sorted(list(list(alignment_stats.values())[0][
             "stats_per_reference"].keys()))
         table = [
-            ["Library read file"] + self.read_files,
+            ["Library read file"] + self.cleaned_read_files,
             ["No. of input reads"] +
             self._get_read_process_numbers(
                 read_processing_stats, "total_no_of_reads"),
@@ -220,12 +220,12 @@ class Controller(object):
             return(0.0)
 
     def _alignment_number_per_ref_seq(self, alignment_stats, ref_id, attribute):
-        return([alignment_stats[read_file]["stats_per_reference"][
-            ref_id][attribute] for read_file in self.read_files])
+        return([alignment_stats[cleaned_read_file]["stats_per_reference"][
+            ref_id][attribute] for cleaned_read_file in self.cleaned_read_files])
 
     def _total_alignment_stat_numbers(self, alignment_stats, attribute):
-        return([alignment_stats[read_file]["stats_total"][attribute]
-                for read_file in self.read_files])
+        return([alignment_stats[cleaned_read_file]["stats_total"][attribute]
+                for cleaned_read_file in self.cleaned_read_files])
 
     def _get_read_process_numbers(
         self, read_processing_stats, attribute):
