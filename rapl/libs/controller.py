@@ -347,19 +347,18 @@ class Controller(object):
             norm_by_alignment_freq = False
         if self.args.skip_norm_by_overlap_freq:
             norm_by_overlap_freq = False
-        read_files = self.paths.get_read_files()
         cleaned_read_files = self.paths.get_cleaned_read_files()
         annotation_files = self.paths.get_annotation_files()
         self.paths.set_annotation_paths(annotation_files)
-        self.paths.set_read_files_dep_file_lists(read_files, cleaned_read_files)
+        self.paths.set_read_files_dep_file_lists(
+            self.paths.get_read_files(), cleaned_read_files)
         jobs = []
         with concurrent.futures.ProcessPoolExecutor(
             max_workers=self.args.processes) as executor:
-            for read_file, cleaned_read_file, read_alignment_path in zip(
-                read_files,  cleaned_read_files, 
-                self.paths.read_alignment_result_bam_paths):
+            for cleaned_read_file, read_alignment_path in zip(
+                cleaned_read_files, self.paths.read_alignment_result_bam_paths):
                 jobs.append(executor.submit(
-                        self._quantify_gene_wise, read_file, cleaned_read_file,
+                        self._quantify_gene_wise, cleaned_read_file,
                         read_alignment_path, norm_by_alignment_freq,
                         norm_by_overlap_freq, annotation_files))
         # Evaluate thread outcome
@@ -367,7 +366,7 @@ class Controller(object):
         self._gene_quanti_create_overview(
             annotation_files, self.paths.annotation_paths, cleaned_read_files)
 
-    def _quantify_gene_wise(self, read_file, cleaned_read_file, read_alignment_path, 
+    def _quantify_gene_wise(self, cleaned_read_file, read_alignment_path, 
                     norm_by_alignment_freq,  norm_by_overlap_freq, 
                     annotation_files):
         gene_wise_quantification = GeneWiseQuantification(
