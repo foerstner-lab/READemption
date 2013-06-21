@@ -251,9 +251,9 @@ class Controller(object):
         too large when working with large reference sequences.
 
         """
-        read_files = self.paths.get_read_files()
         cleaned_read_files = self.paths.get_cleaned_read_files()
-        self.paths.set_read_files_dep_file_lists(read_files, cleaned_read_files)
+        self.paths.set_read_files_dep_file_lists(
+            self.paths.get_read_files(), cleaned_read_files)
         raw_stat_data_reader = RawStatDataReader()
         alignment_stats = [
             raw_stat_data_reader.read(
@@ -268,8 +268,8 @@ class Controller(object):
         jobs = []
         with concurrent.futures.ProcessPoolExecutor(
             max_workers=self.args.processes) as executor:
-            for read_file, cleaned_read_file, bam_path in zip(
-                read_files, cleaned_read_files, 
+            for cleaned_read_file, bam_path in zip(
+                cleaned_read_files, 
                 self.paths.read_alignment_result_bam_paths):
                 no_of_aligned_reads = float(
                     read_files_aligned_read_freq[cleaned_read_file])
