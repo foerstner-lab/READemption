@@ -348,24 +348,26 @@ class Controller(object):
         if self.args.skip_norm_by_overlap_freq:
             norm_by_overlap_freq = False
         read_files = self.paths.get_read_files()
+        cleaned_read_files = self.paths.get_cleaned_read_files()
         annotation_files = self.paths.get_annotation_files()
         self.paths.set_annotation_paths(annotation_files)
-        self.paths.set_read_files_dep_file_lists(read_files)
+        self.paths.set_read_files_dep_file_lists(read_files, cleaned_read_files)
         jobs = []
         with concurrent.futures.ProcessPoolExecutor(
             max_workers=self.args.processes) as executor:
-            for read_file, read_alignment_path in zip(
-                read_files, self.paths.read_alignment_result_bam_paths):
+            for read_file, cleaned_read_file, read_alignment_path in zip(
+                read_files,  cleaned_read_files, 
+                self.paths.read_alignment_result_bam_paths):
                 jobs.append(executor.submit(
-                        self._quantify_gene_wise, read_file, 
+                        self._quantify_gene_wise, read_file, cleaned_read_file,
                         read_alignment_path, norm_by_alignment_freq,
                         norm_by_overlap_freq, annotation_files))
         # Evaluate thread outcome
         self._check_job_completeness(jobs)
         self._gene_quanti_create_overview(
-            annotation_files, self.paths.annotation_paths, read_files)
+            annotation_files, self.paths.annotation_paths, cleaned_read_files)
 
-    def _quantify_gene_wise(self, read_file, read_alignment_path, 
+    def _quantify_gene_wise(self, read_file, cleaned_read_file, read_alignment_path, 
                     norm_by_alignment_freq,  norm_by_overlap_freq, 
                     annotation_files):
         gene_wise_quantification = GeneWiseQuantification(
@@ -381,11 +383,11 @@ class Controller(object):
             annotation_files, self.paths.annotation_paths):
             gene_wise_quantification.quantify(
                 read_alignment_path, annotation_path,
-                self.paths.gene_quanti_path(read_file, annotation_file),
+                self.paths.gene_quanti_path(cleaned_read_file, annotation_file),
                 self.args.pseudocounts)
 
     def _gene_quanti_create_overview(
-            self, annotation_files, annotation_paths, read_files):
+            self, annotation_files, annotation_paths, cleaned_read_files):
         gene_wise_overview = GeneWiseOverview(
             allowed_features_str=self.args.allowed_features,
             skip_antisense=self.args.skip_antisense)
@@ -393,19 +395,19 @@ class Controller(object):
         for annotation_file, annotation_path in zip(
                 annotation_files, annotation_paths):
             path_and_name_combos[annotation_path] = []
-            for read_file in read_files:
+            for read_file in cleaned_read_files:
                 path_and_name_combos[annotation_path].append(
                     [read_file, self.paths.gene_quanti_path(
                         read_file, annotation_file)])
         gene_wise_overview.create_overview_raw_countings(
-            path_and_name_combos, read_files,
+            path_and_name_combos, cleaned_read_files,
             self.paths.gene_wise_quanti_combined_path)
         gene_wise_overview.create_overview_rpkm(
-            path_and_name_combos, read_files,
+            path_and_name_combos, cleaned_read_files,
             self.paths.gene_wise_quanti_combined_rpkm_path,
             self._libs_and_total_number_of_mapped_reads())
         gene_wise_overview.create_overview_norm_by_tnoar(
-            path_and_name_combos, read_files,
+            path_and_name_combos, cleaned_read_files,
             self.paths.gene_wise_quanti_combined_tnoar_path,
             self._libs_and_total_number_of_mapped_reads())
 
