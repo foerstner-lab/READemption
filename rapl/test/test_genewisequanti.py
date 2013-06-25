@@ -94,7 +94,7 @@ class TestGeneWiseQuantification(unittest.TestCase):
             ["myread:01", "myread:02", "myread:03", "myread:04", "myread:05"])
 
     def _mapping_ids(self, mappings):
-        return([mapping.qname for mapping in mappings])
+        return [mapping.qname for mapping in mappings]
 
     def _generate_bam_file(self, sam_content, file_prefix):
         sam_file = "%s.sam" % file_prefix

@@ -74,34 +74,34 @@ class GeneWiseQuantification(object):
         assert entry.strand in ["+", "-"]
         if ((entry.strand == "+" and not alignment.is_reverse) or
             (entry.strand == "-" and alignment.is_reverse)):
-            return(True)
-        return(False)
+            return True
+        return False 
 
     def _fraction_calc_method(self):
         if self._norm_by_alignment_freq and self._norm_by_overlap_freq:
-           return(self._fraction_norm_by_alignment_and_overlap)
+           return self._fraction_norm_by_alignment_and_overlap
         elif self._norm_by_alignment_freq and not self._norm_by_overlap_freq:
-            return(self._fraction_norm_by_alignment)
+            return self._fraction_norm_by_alignment
         elif not self._norm_by_alignment_freq and self._norm_by_overlap_freq:
-            return(self._fraction_norm_by_overlap)
-        return(self._fraction_calc_constant_one)
+            return self._fraction_norm_by_overlap
+        return self._fraction_calc_constant_one
 
     def _fraction_calc_constant_one(self, alignment):
-        return(1.0)
+        return 1.0
 
     def _fraction_norm_by_alignment_and_overlap(self, alignment):
-        return(1.0 /
-               float(self.alignments_and_no_of_overlaps[
-                   self._alignment_id(alignment)]) /
-                   float(dict(alignment.tags)["NH"])) # no. of alignments of read
+        return (1.0 /
+                float(self.alignments_and_no_of_overlaps[
+                    self._alignment_id(alignment)]) /
+                float(dict(alignment.tags)["NH"])) # no. of alignments of read
 
     def _fraction_norm_by_alignment(self, alignment):
-        return(1.0 / float(dict(alignment.tags)["NH"])) # no. of alignments of read
+        return 1.0 / float(dict(alignment.tags)["NH"]) # no. of alignments of read
 
     def _fraction_norm_by_overlap(self, alignment):
-        return(1.0 /
-               float(self.alignments_and_no_of_overlaps[
-                   self._alignment_id(alignment)]))
+        return (1.0 /
+                float(self.alignments_and_no_of_overlaps[
+                    self._alignment_id(alignment)]))
 
     def _overlapping_alignments(self, sam, entry):
         # The substraction of 1 from the start is necessary to perform
@@ -121,15 +121,15 @@ class GeneWiseQuantification(object):
     def _is_antisense(self, alignment, entry):
         if ((alignment.is_reverse is False and entry == "-") or
             (alignment.is_reverse is True and entry == "+")):
-            return(True)
-        return(False)
+            return True
+        return False 
 
     def _alignment_id(self, alignment):
-        return(":".join([str(alignment.tid), alignment.qname, str(alignment.flag),
-                         str(alignment.pos), str(alignment.aend)]))
+        return (":".join([str(alignment.tid), alignment.qname, str(alignment.flag),
+                          str(alignment.pos), str(alignment.aend)]))
 
     def _values_to_gene_key(self, seq_id, feature, start, end, strand):
-        return("|".join(
+        return ("|".join(
                 [str(val) for val in [seq_id, feature, start, end, strand]]))
 
 class GeneWiseOverview(object):
@@ -203,23 +203,23 @@ class GeneWiseOverview(object):
         Formula in Supplemenatary Material S1 of
         http://www.nature.com/nmeth/journal/v5/n7/full/nmeth.1226.html
         """
-        return(str(float(counting)*float(10**9) /
-                   (float(total_no_of_aligned_reads)*float(length))))
+        return str(float(counting)*float(10**9) /
+                   (float(total_no_of_aligned_reads)*float(length)))
 
     def _norm_by_tnoar(self, counting, total_no_of_aligned_reads):
-        return(str(float(counting)/float(total_no_of_aligned_reads)))
+        return str(float(counting)/float(total_no_of_aligned_reads))
 
 
 def _entry_to_use(entry, allowed_features):
     if allowed_features is None:
-        return(True)
+        return True
     if entry.feature in allowed_features:
-        return(True)
-    return(False)
+        return True
+    return False 
 
 def _allowed_features(allowed_features_str):
     if allowed_features_str is None:
-        return(None)
+        return None
     else:
-        return([
-        feature.strip() for feature in allowed_features_str.split(",")])
+        return [
+        feature.strip() for feature in allowed_features_str.split(",")]

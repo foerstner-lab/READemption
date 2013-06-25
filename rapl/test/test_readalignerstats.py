@@ -21,7 +21,7 @@ class TestReadAlignerStats(unittest.TestCase):
             self.read_aligner_stats._count_fasta_entries(fasta_fh_2))
 
 def _mock_count_fasta_entries(file_path):
-    return("the number of entries in %s" % file_path) 
+    return "the number of entries in %s" % file_path
 
 class ExampleData(object):
 

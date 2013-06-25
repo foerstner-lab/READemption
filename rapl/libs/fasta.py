@@ -28,11 +28,11 @@ class FastaParser(object):
         first_line = fasta_fh.readline()
         header = first_line[1:-1]
         fasta_fh.seek(0)
-        return(header)
+        return header
 
     def header_id(self, header):
         """Return only the id of a fasta header
 
         Everything after the first white space is discard.
         """
-        return(header.split()[0])
+        return header.split()[0]

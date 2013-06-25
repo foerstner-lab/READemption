@@ -101,10 +101,10 @@ class DESeqRunner(object):
                 "write.table(comp%s, file='%s/%s', "
                 "quote=FALSE, sep='\\t')\n" % (
                     index, self._deseq_raw_folder, comparison_file))
-        return(call_string)
+        return call_string
 
     def _deseq_script_template(self):
-        return(
+        return (
             "library('DESeq')\n"
             "rawCountTable <- read.table('%s', skip=1, sep='\\t', "
             "quote='', comment.char='')\n"

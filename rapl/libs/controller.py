@@ -215,22 +215,22 @@ class Controller(object):
 
     def _calc_percentage(self, mult, div):
         try:
-            return(float(mult)/float(div)*100)
+            return float(mult)/float(div)*100
         except ZeroDivisionError:
-            return(0.0)
+            return 0.0
 
     def _alignment_number_per_ref_seq(self, alignment_stats, ref_id, attribute):
-        return([alignment_stats[cleaned_read_file]["stats_per_reference"][
-            ref_id][attribute] for cleaned_read_file in self.cleaned_read_files])
+        return [alignment_stats[cleaned_read_file]["stats_per_reference"][
+            ref_id][attribute] for cleaned_read_file in self.cleaned_read_files]
 
     def _total_alignment_stat_numbers(self, alignment_stats, attribute):
-        return([alignment_stats[cleaned_read_file]["stats_total"][attribute]
-                for cleaned_read_file in self.cleaned_read_files])
+        return [alignment_stats[cleaned_read_file]["stats_total"][attribute]
+                for cleaned_read_file in self.cleaned_read_files]
 
     def _get_read_process_numbers(
         self, read_processing_stats, attribute):
-        return([read_processing_stats[read_file][attribute]
-                for read_file in self.read_files])
+        return [read_processing_stats[read_file][attribute]
+                for read_file in self.read_files]
 
     def _ref_ids_to_file(self, ref_seq_paths):
         ref_ids_to_file = {}
@@ -240,7 +240,7 @@ class Controller(object):
             ref_seq_id = fasta_parser.header_id(
                 fasta_parser.single_entry_file_header(open(ref_seq_path)))
             ref_ids_to_file[ref_seq_id] = ref_seq_file
-        return(ref_ids_to_file)
+        return ref_ids_to_file
 
     def create_coverage_files(self):
         """Create coverage files based on the read alignments.
@@ -331,8 +331,8 @@ class Controller(object):
                     read_file, strand, multi=1000000,
                     div=no_of_aligned_reads), "w")))
                 for strand in strands])
-        return(coverage_writers_raw, coverage_writers_tnoar_min_norm,
-               coverage_writers_tnoar_mil_norm)
+        return (coverage_writers_raw, coverage_writers_tnoar_min_norm, 
+                coverage_writers_tnoar_mil_norm)
 
     def _check_job_completeness(self, jobs):
         """Check the completness of each job in a list"""
@@ -414,8 +414,8 @@ class Controller(object):
         import json
         read_aligner_stats = json.loads(
             open(self.paths.read_aligner_stats_path).read())
-        return(dict([(lib, values["stats_total"]["no_of_aligned_reads"])
-                     for lib, values in read_aligner_stats.items()]))
+        return dict([(lib, values["stats_total"]["no_of_aligned_reads"])
+                     for lib, values in read_aligner_stats.items()])
 
     def compare_with_deseq(self):
         libs = self.args.libs.split(",")

@@ -89,67 +89,67 @@ class Paths(object):
 
     def _get_sorted_folder_content(self, folder):
         """Return the sorted file list of a folder"""
-        return(list(filter(lambda file: 
+        return list(filter(lambda file: 
                            not (file.endswith("~") or 
                                 os.path.basename(file).startswith(".")),
-                      sorted(os.listdir(folder)))))
+                      sorted(os.listdir(folder))))
 
     def get_read_files(self):
         """Read the names of the read files."""
-        return(self._get_sorted_folder_content(self.read_fasta_folder))
+        return self._get_sorted_folder_content(self.read_fasta_folder)
 
     def get_cleaned_read_files(self):
-        return([self._clean_file_name(file_name) 
-                for file_name in self.get_read_files()])
+        return [self._clean_file_name(file_name) 
+                for file_name in self.get_read_files()]
 
     def _clean_file_name(self, file_name):
         for suffix in ["bz2", "BZ", "gz", "GZ", "fa", "fasta", "FA", "FASTA"]:
             if file_name.endswith(suffix):
                 suffix = "." + suffix
                 file_name = file_name[:-len(suffix)]
-        return(file_name)
+        return file_name
 
     def get_ref_seq_files(self):
         """Read the names of reference sequence files."""
-        return(self._get_sorted_folder_content(self.ref_seq_folder))
+        return self._get_sorted_folder_content(self.ref_seq_folder)
 
     def get_annotation_files(self):
         """Read the names of annotation files."""
-        return(self._get_sorted_folder_content(self.annotation_folder))
+        return self._get_sorted_folder_content(self.annotation_folder)
 
     def required_folders(self):
-        return(self._required_base_folders() +
-               self._required_input_folders() +
-               self._required_read_alignment_folders() +
-               self._required_coverage_folders() +
-               self._required_gene_quanti_folders() +
-               self._required_deseq_folders())
+        return (self._required_base_folders() +
+                self._required_input_folders() +
+                self._required_read_alignment_folders() +
+                self._required_coverage_folders() +
+                self._required_gene_quanti_folders() +
+                self._required_deseq_folders())
 
     def _required_base_folders(self):
-        return([self.input_folder, self.output_folder, self.report_folder,
-                self.raw_stat_data_folder])
+        return [self.input_folder, self.output_folder, self.report_folder,
+                self.raw_stat_data_folder]
 
     def _required_input_folders(self):
-        return([self.read_fasta_folder, self.ref_seq_folder,
-                self.annotation_folder])
+        return [self.read_fasta_folder, self.ref_seq_folder,
+                self.annotation_folder]
 
     def _required_read_alignment_folders(self):
-        return([self.align_base_folder, self.read_alignments_folder, 
+        return [self.align_base_folder, self.read_alignments_folder, 
                 self.processed_reads_folder, self.unaligned_reads_folder, 
-                self.read_alignment_index_folder])
+                self.read_alignment_index_folder]
 
     def _required_coverage_folders(self):
-        return([self.coverage_base_folder, self.coverage_raw_folder, 
+        return [self.coverage_base_folder, self.coverage_raw_folder, 
                 self.coverage_tnoar_min_norm_folder, 
-                self.coverage_tnoar_mil_norm_folder])
+                self.coverage_tnoar_mil_norm_folder]
 
     def _required_gene_quanti_folders(self):
-        return([self.gene_quanti_base_folder, self.gene_quanti_per_lib_folder, 
-                self.gene_quanti_combined_folder])
+        return [self.gene_quanti_base_folder, self.gene_quanti_per_lib_folder, 
+                self.gene_quanti_combined_folder]
 
     def _required_deseq_folders(self):
-        return([self.deseq_base_folder, self.deseq_raw_folder, 
-                self.deseq_extended_folder])
+        return [self.deseq_base_folder, self.deseq_raw_folder, 
+                self.deseq_extended_folder]
 
     def set_read_files_dep_file_lists(self, read_files, cleaned_read_files):
         self.read_paths = self._path_list(self.read_fasta_folder, read_files)
@@ -178,25 +178,25 @@ class Paths(object):
             self.annotation_folder, annotation_files)
 
     def _path_list(self, folder, files, appendix=""):
-        return(["%s/%s%s" % (folder, file, appendix) for file in files])
+        return ["%s/%s%s" % (folder, file, appendix) for file in files]
 
     def gene_quanti_path(self, read_file, annotation_file):
-        return("%s/%s_to_%s.csv" % (
-            self.gene_quanti_per_lib_folder, read_file, annotation_file))
+        return "%s/%s_to_%s.csv" % (
+            self.gene_quanti_per_lib_folder, read_file, annotation_file)
 
     def wiggle_file_raw_path(self, read_file, strand, multi=None, div=None):
-        return(self._wiggle_file_path(
-            self.coverage_raw_folder, read_file, strand, multi=None, div=None))
+        return self._wiggle_file_path(
+            self.coverage_raw_folder, read_file, strand, multi=None, div=None)
 
     def wiggle_file_tnoar_norm_min_path(
             self, read_file, strand, multi=None, div=None):
-        return(self._wiggle_file_path(
-            self.coverage_tnoar_min_norm_folder, read_file, strand, multi, div))
+        return self._wiggle_file_path(
+            self.coverage_tnoar_min_norm_folder, read_file, strand, multi, div)
 
     def wiggle_file_tnoar_norm_mil_path(
             self, read_file, strand, multi=None, div=None):
-        return(self._wiggle_file_path(
-            self.coverage_tnoar_mil_norm_folder, read_file, strand, multi, div))
+        return self._wiggle_file_path(
+            self.coverage_tnoar_mil_norm_folder, read_file, strand, multi, div)
 
     def _wiggle_file_path(
             self, folder, read_file, strand, multi=None, div=None):
@@ -206,4 +206,4 @@ class Paths(object):
         if not multi is None:
             path += "_multi_by_%.1f" % (multi)
         path += "_%s.wig" % strand
-        return(path)
+        return path

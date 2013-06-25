@@ -25,7 +25,7 @@ class ReadProcessor(object):
         input_fh = self._input_fh(input_path)
         self._process(input_fh, output_fh)
         output_fh.close()
-        return(self._stats)
+        return self._stats
 
     def _input_fh(self, input_path):
         """Return a file hande 
@@ -33,10 +33,10 @@ class ReadProcessor(object):
         Can deal with plain fasta files, gzipped fasta or bzipped2 fasta.
         """
         if input_path.endswith(".gz"):
-            return(self._line_interator(input_path, gzip.open))
+            return self._line_interator(input_path, gzip.open)
         elif input_path.endswith(".bz2"):
-            return(self._line_interator(input_path, bz2.open))
-        return(open(input_path))
+            return self._line_interator(input_path, bz2.open)
+        return open(input_path)
 
     def _line_interator(self, input_path, open_func):
         """Return a line iterator that decodes the bytes"""

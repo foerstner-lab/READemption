@@ -22,7 +22,7 @@ class Gff3Parser(object):
             yield(self._dict_to_entry(entry_dict))
     
     def _dict_to_entry(self, entry_dict):
-        return(Gff3Entry(entry_dict))
+        return Gff3Entry(entry_dict)
 
 class Gff3Entry(object):
 
@@ -45,12 +45,12 @@ class Gff3Entry(object):
         """Translate the attribute string to dictionary"""
         if attributes_string.endswith(";"):
             attributes_string = attributes_string[:-1]
-        return(dict(
+        return dict(
                 [key_value_pair.split("=") 
-                 for key_value_pair in attributes_string.split(";")]))
+                 for key_value_pair in attributes_string.split(";")])
 
     def __str__(self):
-        return("\t".join([str(field) for field in [
+        return "\t".join([str(field) for field in [
                         self.seq_id, self.source, self.feature, self.start,
                         self.end, self.score, self.strand, self.phase, 
-                        self.attribute_string]]))
+                        self.attribute_string]])

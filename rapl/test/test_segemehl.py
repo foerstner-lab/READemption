@@ -25,7 +25,7 @@ class TestSegemehl(unittest.TestCase):
         fh = open(file_path, "rb")
         content = fh.read()
         fh.close()
-        return(hashlib.sha1(content).hexdigest())
+        return hashlib.sha1(content).hexdigest()
 
     def _remove_files(self, *args):
         for file_path in args:
@@ -169,7 +169,7 @@ class TestSegemehlMapping(TestSegemehl):
         result = result_fh.read()
         result_fh.close()
         self._remove_files(self.read_fasta_file_path, self.mapping_result_path)
-        return(result)
+        return result
 
 class ExampleData(object):
 

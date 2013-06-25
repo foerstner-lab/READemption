@@ -40,12 +40,12 @@ class CoverageCalculator(object):
 
     def _select_coverage_add_function(self):
         if self._first_base_only is False:
-            return(self._add_whole_alignment_coverage)
+            return self._add_whole_alignment_coverage
         else:
-            return(self._add_first_base_coverage)
+            return self._add_first_base_coverage
 
     def _open_bam_file(self, bam_file):
-        return(pysam.Samfile(bam_file))
+        return pysam.Samfile(bam_file)
 
     def _close_bam_fh(self, bam_fh):
         bam_fh.close()

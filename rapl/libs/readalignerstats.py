@@ -14,7 +14,7 @@ class ReadAlignerStats(object):
         self._stats = {}
         self._count_aligned_reads_and_alignments(read_alignment_result_bam_path)
         self._count_unaligned_reads(unaligned_reads_path)
-        return(self._stats)
+        return self._stats
 
     def _count_unaligned_reads(self, unaligned_read_paths):
         fasta_fh = open(unaligned_read_paths)
@@ -23,8 +23,8 @@ class ReadAlignerStats(object):
         fasta_fh.close()
 
     def _count_fasta_entries(self, fasta_fh):
-        return(reduce(lambda x, y: x + 1,
-                      self.fasta_parser.entries(fasta_fh), 0))
+        return reduce(lambda x, y: x + 1,
+                      self.fasta_parser.entries(fasta_fh), 0)
 
     def _count_aligned_reads_and_alignments(
             self, read_alignment_result_bam_path):
@@ -62,16 +62,16 @@ class ReadAlignerStats(object):
                     for value_int, freq in value.items():
                         total_stats[attribute].setdefault(value_int, 0)
                         total_stats[attribute][value_int] += freq
-        return(total_stats)
+        return total_stats
 
     def _calc_down_to_read(self, no_of_hits_per_read_freq):
         """As the frequencies were determined via the alignments we need
         to normalized each frequency value down to the read by
         dividing the frequencig by the number of hits per read.
         """
-        return(dict((no_of_hits_per_read, freq/no_of_hits_per_read)
+        return dict((no_of_hits_per_read, freq/no_of_hits_per_read)
                     for no_of_hits_per_read, freq in
-                    no_of_hits_per_read_freq.items()))
+                    no_of_hits_per_read_freq.items())
 
     def _init_counting_dict(self, stats_per_ref, ref_id):
         stats_per_ref[ref_id] = {}
