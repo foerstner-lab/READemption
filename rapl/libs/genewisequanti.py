@@ -86,22 +86,31 @@ class GeneWiseQuantification(object):
             return self._fraction_norm_by_overlap
         return self._fraction_calc_constant_one
 
+    def _alignment_tags(self, alignment):
+        return dict(alignment.tags)
+
     def _fraction_calc_constant_one(self, alignment):
         return 1.0
 
     def _fraction_norm_by_alignment_and_overlap(self, alignment):
+        alignment_tags = self._alignment_tags(alignment)
         return (1.0 /
                 float(self.alignments_and_no_of_overlaps[
                     self._alignment_id(alignment)]) /
-                float(dict(alignment.tags)["NH"])) # no. of alignments of read
+                float(alignment_tags["NH"]) / # no. of alignments of read
+                float(alignment_tags.get("XL", 1))) # no. of splits
 
     def _fraction_norm_by_alignment(self, alignment):
-        return 1.0 / float(dict(alignment.tags)["NH"]) # no. of alignments of read
+        alignment_tags = self._alignment_tags(alignment)
+        return (1.0 / float(alignment_tags["NH"]) / # no. of alignments of read
+                float(alignment_tags.get("XL", 1))) # no. of splits
 
     def _fraction_norm_by_overlap(self, alignment):
+        alignment_tags = self._alignment_tags(alignment)
         return (1.0 /
                 float(self.alignments_and_no_of_overlaps[
-                    self._alignment_id(alignment)]))
+                    self._alignment_id(alignment)]) /
+                float(alignment_tags.get("XL", 1))) # no. of splits
 
     def _overlapping_alignments(self, sam, entry):
         # The substraction of 1 from the start is necessary to perform
