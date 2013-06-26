@@ -221,10 +221,12 @@ class Controller(object):
 
     def _alignment_number_per_ref_seq(self, alignment_stats, ref_id, attribute):
         return [alignment_stats[cleaned_read_file]["stats_per_reference"][
-            ref_id][attribute] for cleaned_read_file in self.cleaned_read_files]
+                ref_id].get(attribute, 0) 
+                for cleaned_read_file in self.cleaned_read_files]
 
     def _total_alignment_stat_numbers(self, alignment_stats, attribute):
-        return [alignment_stats[cleaned_read_file]["stats_total"][attribute]
+        return [alignment_stats[cleaned_read_file]["stats_total"].get(
+                attribute, 0)
                 for cleaned_read_file in self.cleaned_read_files]
 
     def _get_read_process_numbers(

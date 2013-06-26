@@ -1,5 +1,6 @@
 import csv
 import sys
+from collections import defaultdict
 from functools import reduce
 sys.path.append(".")
 from libs.fasta import FastaParser
@@ -29,7 +30,7 @@ class ReadAlignerStats(object):
     def _count_aligned_reads_and_alignments(
             self, read_alignment_result_bam_path):
         bam = pysam.Samfile(read_alignment_result_bam_path)
-        stats_per_ref = {}
+        stats_per_ref = defaultdict(dict)
         no_of_hits_per_read_freq = {}
         for ref_id in bam.references:
             self._init_counting_dict(stats_per_ref, ref_id)
@@ -48,7 +49,6 @@ class ReadAlignerStats(object):
                 "no_of_hits_per_read_and_freqs"] = self._calc_down_to_read(
                     stats_per_ref[ref_id]["no_of_hits_per_read_and_freqs"])
         self._stats["stats_total"] = self._sum_countings(stats_per_ref)
-
 
     def _sum_countings(self, stats_per_ref):
         total_stats = {}
@@ -74,22 +74,18 @@ class ReadAlignerStats(object):
                     no_of_hits_per_read_freq.items())
 
     def _init_counting_dict(self, stats_per_ref, ref_id):
-        stats_per_ref[ref_id] = {}
-        stats_per_ref[ref_id]["no_of_alignments"] = 0
-        stats_per_ref[ref_id]["no_of_aligned_reads"] = 0
-        stats_per_ref[ref_id]["no_of_uniquely_aligned_reads"] = 0
-        stats_per_ref[ref_id]["alignment_length_and_freqs"] = {}
-        stats_per_ref[ref_id]["no_of_hits_per_read_and_freqs"] = {}
+        stats_per_ref[ref_id] = defaultdict(float)
+        stats_per_ref[ref_id][
+            "alignment_length_and_freqs"] = defaultdict(int)
+        stats_per_ref[ref_id][
+            "no_of_hits_per_read_and_freqs"] = defaultdict(int)
 
     def _count_alignment(self, entry, ref_id, stats_per_ref,
                          no_of_hits_per_read_freq):
         entry_tags_dict = dict(entry.tags)
         no_of_hits = entry_tags_dict["NH"]
         # Consider split reads
-        no_of_splits = float(
-            entry_tags_dict["XL"]) if "XL" in entry_tags_dict else 1.0
-        stats_per_ref[ref_id]["no_of_hits_per_read_and_freqs"].setdefault(
-            no_of_hits, 0)
+        no_of_splits = float(entry_tags_dict.get("XL", 1))
         stats_per_ref[ref_id]["no_of_hits_per_read_and_freqs"][
             no_of_hits] += 1
         stats_per_ref[ref_id]["no_of_alignments"] += 1.0/no_of_splits
@@ -99,7 +95,5 @@ class ReadAlignerStats(object):
         if no_of_hits == 1:
             stats_per_ref[ref_id][
                 "no_of_uniquely_aligned_reads"] += 1.0/no_of_splits
-        stats_per_ref[ref_id][
-            "alignment_length_and_freqs"].setdefault(entry.alen, 0)
         stats_per_ref[ref_id][
             "alignment_length_and_freqs"][entry.alen] += 1
