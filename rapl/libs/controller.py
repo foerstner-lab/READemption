@@ -1,6 +1,7 @@
 import concurrent.futures
 import os
 import sys
+import json
 sys.path.append(".")
 from libs.coveragecalculator import CoverageCalculator
 from libs.deseq import DESeqRunner
@@ -413,7 +414,6 @@ class Controller(object):
             self._libs_and_total_number_of_mapped_reads())
 
     def _libs_and_total_number_of_mapped_reads(self):
-        import json
         read_aligner_stats = json.loads(
             open(self.paths.read_aligner_stats_path).read())
         return dict([(lib, values["stats_total"]["no_of_aligned_reads"])
