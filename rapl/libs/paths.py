@@ -11,8 +11,6 @@ class Paths(object):
         """Set the name of folders used in a project."""
         self.input_folder = "%s/input" % (self.base_path)
         self.output_folder = "%s/output" % (self.base_path)
-        self.report_folder = "%s/reports_and_stats" % (self.output_folder)
-        self.raw_stat_data_folder = "%s/stats_data_json" % (self.report_folder)
         self._set_input_folder_names()
         self._set_read_alignment_folder_names()
         self._set_coverage_folder_names()
@@ -34,6 +32,12 @@ class Paths(object):
             self.align_base_folder)
         self.unaligned_reads_folder = "%s/unaligned_reads" % (
             self.align_base_folder)
+        self.align_report_folder = "%s/reports_and_stats" % (
+            self.align_base_folder)
+        self.raw_stat_data_folder = "%s/stats_data_json" % (
+            self.align_report_folder)
+        self.raw_stat_data_folder = "%s/stats_data_json" % (
+            self.align_report_folder)
 
     def _set_coverage_folder_names(self):
         self.coverage_base_folder = "%s/coverage" % self.output_folder
@@ -73,19 +77,19 @@ class Paths(object):
         self.read_aligner_stats_path = "%s/read_alignment.json" % (
             self.raw_stat_data_folder)
         self.read_file_stats = "%s/input_read_stats.txt" % (
-            self.report_folder)
+            self.align_report_folder)
         self.ref_seq_file_stats = "%s/reference_sequences_stats.txt" % (
-            self.report_folder)
-        self.annotation_file_stats = "%s/annotation_file_stats.txt" % (
-            self.report_folder)
+            self.align_report_folder)
+        #self.annotation_file_stats = "%s/annotation_file_stats.txt" % (
+        #    self.report_folder)
         self.read_alignment_stats_table_path = "%s/read_alignment_stats.csv" % (
-            self.report_folder)
+            self.align_report_folder)
         self.index_path = "%s/index.idx" % self.read_alignment_index_folder
         self.deseq_script_path = "%s/deseq.R" % self.deseq_raw_folder
         self.deseq_tmp_session_info_script = "%s/tmp.R" % self.deseq_raw_folder
         self.deseq_session_info = "%s/R_session_info.txt" % (
             self.deseq_raw_folder)
-        self.version_path = "%s/used_rapl_version.txt" % (self.report_folder)
+        self.version_path = "%s/used_rapl_version.txt" % (self.align_report_folder)
 
     def _get_sorted_folder_content(self, folder):
         """Return the sorted file list of a folder"""
@@ -126,8 +130,7 @@ class Paths(object):
                 self._required_deseq_folders())
 
     def _required_base_folders(self):
-        return [self.input_folder, self.output_folder, self.report_folder,
-                self.raw_stat_data_folder]
+        return [self.input_folder, self.output_folder]
 
     def _required_input_folders(self):
         return [self.read_fasta_folder, self.ref_seq_folder,
@@ -136,7 +139,8 @@ class Paths(object):
     def _required_read_alignment_folders(self):
         return [self.align_base_folder, self.read_alignments_folder, 
                 self.processed_reads_folder, self.unaligned_reads_folder, 
-                self.read_alignment_index_folder]
+                self.read_alignment_index_folder, self.align_report_folder,
+                self.raw_stat_data_folder]
 
     def _required_coverage_folders(self):
         return [self.coverage_base_folder, self.coverage_raw_folder, 
