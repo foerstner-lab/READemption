@@ -75,6 +75,10 @@ class ReadAlignerStats(object):
 
     def _init_counting_dict(self, stats_per_ref, ref_id):
         stats_per_ref[ref_id] = defaultdict(float)
+        stats_per_ref[ref_id]["no_of_alignments"]
+        stats_per_ref[ref_id]["no_of_aligned_reads"]
+        stats_per_ref[ref_id]["no_of_split_alignments"]
+        stats_per_ref[ref_id]["no_of_uniquely_aligned_reads"]
         stats_per_ref[ref_id][
             "alignment_length_and_freqs"] = defaultdict(int)
         stats_per_ref[ref_id][
@@ -88,6 +92,8 @@ class ReadAlignerStats(object):
         no_of_splits = float(entry_tags_dict.get("XL", 1))
         stats_per_ref[ref_id]["no_of_hits_per_read_and_freqs"][
             no_of_hits] += 1
+        if "XL" in entry_tags_dict:
+            stats_per_ref[ref_id]["no_of_split_alignments"] = 1.0/no_of_splits
         stats_per_ref[ref_id]["no_of_alignments"] += 1.0/no_of_splits
         stats_per_ref[
             ref_id]["no_of_aligned_reads"] += 1.0/(
