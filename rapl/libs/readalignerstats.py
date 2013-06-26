@@ -83,16 +83,22 @@ class ReadAlignerStats(object):
 
     def _count_alignment(self, entry, ref_id, stats_per_ref,
                          no_of_hits_per_read_freq):
-        no_of_hits = dict(entry.tags)["NH"]
+        entry_tags_dict = dict(entry.tags)
+        no_of_hits = entry_tags_dict["NH"]
+        # Consider split reads
+        no_of_splits = float(
+            entry_tags_dict["XL"]) if "XL" in entry_tags_dict else 1.0
         stats_per_ref[ref_id]["no_of_hits_per_read_and_freqs"].setdefault(
             no_of_hits, 0)
         stats_per_ref[ref_id]["no_of_hits_per_read_and_freqs"][
             no_of_hits] += 1
-        stats_per_ref[ref_id]["no_of_alignments"] += 1
+        stats_per_ref[ref_id]["no_of_alignments"] += 1.0/no_of_splits
         stats_per_ref[
-            ref_id]["no_of_aligned_reads"] += 1.0/float(no_of_hits)
+            ref_id]["no_of_aligned_reads"] += 1.0/(
+            float(no_of_hits) * no_of_splits)
         if no_of_hits == 1:
-            stats_per_ref[ref_id]["no_of_uniquely_aligned_reads"] += 1
+            stats_per_ref[ref_id][
+                "no_of_uniquely_aligned_reads"] += 1.0/no_of_splits
         stats_per_ref[ref_id][
             "alignment_length_and_freqs"].setdefault(entry.alen, 0)
         stats_per_ref[ref_id][
