@@ -1,5 +1,6 @@
 import gzip
 import bz2
+from collections import defaultdict
 from libs.fasta import FastaParser
 from libs.polyaclipper import PolyAClipper
 
@@ -12,15 +13,15 @@ class ReadProcessor(object):
         self.poly_a_clipper = PolyAClipper()
 
     def process(self, input_path, output_path):
-        self._stats = {
-            "total_no_of_reads" : 0,
-            "polya_removed" : 0,
-            "single_a_removed" : 0,
-            "unmodified" : 0,
-            "too_short" : 0,
-            "long_enough" : 0,
-            "read_length_before_processing_and_freq" : {},
-            "read_length_after_processing_and_freq" : {}}
+        self._stats = defaultdict(int)
+        self._stats["total_no_of_reads"]
+        self._stats["polya_removed"]
+        self._stats["single_a_removed"]
+        self._stats["unmodified"]
+        self._stats["too_short"]
+        self._stats["long_enough"]
+        self._stats["read_length_before_processing_and_freq"] = defaultdict(int)
+        self._stats["read_length_after_processing_and_freq"] = defaultdict(int)
         output_fh = gzip.open(output_path, "wb")
         input_fh = self._input_fh(input_path)
         self._process(input_fh, output_fh)
@@ -64,12 +65,8 @@ class ReadProcessor(object):
                 continue
             self._stats["long_enough"] += 1
             raw_seq_len = len(seq)
-            self._stats["read_length_before_processing_and_freq"].setdefault(
-                raw_seq_len, 0)
             self._stats["read_length_before_processing_and_freq"][
                 raw_seq_len] += 1
-            self._stats["read_length_after_processing_and_freq"].setdefault(
-                clipped_seq_len, 0)
             self._stats["read_length_after_processing_and_freq"][
                 clipped_seq_len] += 1
             # Encoding to bytes is necessary due to saving via gzip
