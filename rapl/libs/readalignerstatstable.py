@@ -68,8 +68,8 @@ class ReadAlignerStatsTable(object):
                     self._table.append([title_template % ref_id] + data)
 
     def _alignment_number_per_ref_seq(self, ref_id, attribute):
-        return [self._alignment_stats[lib]["stats_per_reference"][
-                ref_id].get(attribute, 0) for lib in self._libs]
+        return [round(self._alignment_stats[lib]["stats_per_reference"][
+                ref_id].get(attribute, 0)) for lib in self._libs]
 
     def _total_alignment_stat_numbers(self, attribute, round_nums=True):
         countings = [self._alignment_stats[lib]["stats_total"].get(
