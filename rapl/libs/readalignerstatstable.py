@@ -52,22 +52,20 @@ class ReadAlignerStatsTable(object):
         ref_ids = sorted(list(list(self._alignment_stats.values())[0][
                     "stats_per_reference"].keys()))
         for ref_id in ref_ids:
-            self._table.append(
-                ["%s - No. of aligned reads" % ref_id] +
-                self._alignment_number_per_ref_seq(
-                    ref_id, "no_of_aligned_reads"))
-            self._table.append(
-                ["%s - No. of uniquely aligned reads" % ref_id] +
-                self._alignment_number_per_ref_seq(
-                    ref_id, "no_of_uniquely_aligned_reads"))
-            self._table.append(
-                ["%s - No. of alignments" % ref_id] +
-                self._alignment_number_per_ref_seq(
-                    ref_id, "no_of_alignments"))
-            self._table.append(
-                ["%s - No. of split alignments" % ref_id] +
-                self._alignment_number_per_ref_seq(
-                    ref_id, "no_of_split_alignments"))
+            for title_template, data in [
+                ("%s - No. of aligned reads", 
+                 self._alignment_number_per_ref_seq(
+                        ref_id, "no_of_aligned_reads")),
+                ("%s - No. of uniquely aligned reads", 
+                 self._alignment_number_per_ref_seq(
+                        ref_id, "no_of_uniquely_aligned_reads")),
+                ("%s - No. of alignments", 
+                 self._alignment_number_per_ref_seq(
+                        ref_id, "no_of_alignments")),
+                ("%s - No. of split alignments", 
+                 self._alignment_number_per_ref_seq(
+                        ref_id, "no_of_split_alignments"))]:
+                    self._table.append([title_template % ref_id] + data)
 
     def _alignment_number_per_ref_seq(self, ref_id, attribute):
         return [self._alignment_stats[lib]["stats_per_reference"][
