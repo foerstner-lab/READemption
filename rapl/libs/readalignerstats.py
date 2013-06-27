@@ -93,7 +93,7 @@ class ReadAlignerStats(object):
         stats_per_ref[ref_id]["no_of_hits_per_read_and_freqs"][
             no_of_hits] += 1
         if "XL" in entry_tags_dict:
-            stats_per_ref[ref_id]["no_of_split_alignments"] = 1.0/no_of_splits
+            stats_per_ref[ref_id]["no_of_split_alignments"] += 1.0/no_of_splits
         stats_per_ref[ref_id]["no_of_alignments"] += 1.0/no_of_splits
         stats_per_ref[
             ref_id]["no_of_aligned_reads"] += 1.0/(
