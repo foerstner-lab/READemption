@@ -39,6 +39,8 @@ class Controller(object):
 
     def align_reads(self):
         """Perform the alignment of the reads."""
+        self._test_folder_existance(
+            self.paths.required_read_alignment_folders())
         self.read_files = self.paths.get_read_files()
         self.lib_names = self.paths.get_lib_names()
         ref_seq_files = self.paths.get_ref_seq_files()
@@ -50,6 +52,15 @@ class Controller(object):
         self._sam_to_bam()
         self._generate_read_alignment_stats()
         self._write_alignment_stat_table()
+
+    def _test_folder_existance(self, task_specific_folders):
+        for folder in (
+            self.paths.required_base_folders() + task_specific_folders):
+            if not os.path.exists(folder):
+                sys.stderr.write(
+                    "Error! Folder '%s' does not exist! Is the given project "
+                    "folder name correct?\n" % folder)
+                sys.exit(2)
 
     def _file_needs_to_be_created(self, file_path):
         if self.args.force is True:
@@ -171,6 +182,8 @@ class Controller(object):
         too large when working with large reference sequences.
 
         """
+        self._test_folder_existance(
+            self.paths.required_coverage_folders())
         lib_names = self.paths.get_lib_names()
         self.paths.set_read_files_dep_file_lists(
             self.paths.get_read_files(), lib_names)
@@ -260,6 +273,8 @@ class Controller(object):
                 raise(job.exception())
 
     def quantify_gene_wise(self):
+        self._test_folder_existance(
+            self.paths.required_gene_quanti_folders())
         norm_by_alignment_freq = True
         norm_by_overlap_freq = True
         if self.args.skip_norm_by_alignment_freq:
@@ -336,6 +351,8 @@ class Controller(object):
                      for lib, values in read_aligner_stats.items()])
 
     def compare_with_deseq(self):
+        self._test_folder_existance(
+            self.paths.required_deseq_folders())
         libs = self.args.libs.split(",")
         conditions = self.args.conditions.split(",")
         self._check_deseq_args(libs, conditions)

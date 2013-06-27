@@ -122,36 +122,36 @@ class Paths(object):
         return self._get_sorted_folder_content(self.annotation_folder)
 
     def required_folders(self):
-        return (self._required_base_folders() +
-                self._required_input_folders() +
-                self._required_read_alignment_folders() +
-                self._required_coverage_folders() +
-                self._required_gene_quanti_folders() +
-                self._required_deseq_folders())
+        return (self.required_base_folders() +
+                self.required_input_folders() +
+                self.required_read_alignment_folders() +
+                self.required_coverage_folders() +
+                self.required_gene_quanti_folders() +
+                self.required_deseq_folders())
 
-    def _required_base_folders(self):
+    def required_base_folders(self):
         return [self.input_folder, self.output_folder]
 
-    def _required_input_folders(self):
+    def required_input_folders(self):
         return [self.read_fasta_folder, self.ref_seq_folder,
                 self.annotation_folder]
 
-    def _required_read_alignment_folders(self):
+    def required_read_alignment_folders(self):
         return [self.align_base_folder, self.read_alignments_folder, 
                 self.processed_reads_folder, self.unaligned_reads_folder, 
                 self.read_alignment_index_folder, self.align_report_folder,
                 self.raw_stat_data_folder]
 
-    def _required_coverage_folders(self):
+    def required_coverage_folders(self):
         return [self.coverage_base_folder, self.coverage_raw_folder, 
                 self.coverage_tnoar_min_norm_folder, 
                 self.coverage_tnoar_mil_norm_folder]
 
-    def _required_gene_quanti_folders(self):
+    def required_gene_quanti_folders(self):
         return [self.gene_quanti_base_folder, self.gene_quanti_per_lib_folder, 
                 self.gene_quanti_combined_folder]
 
-    def _required_deseq_folders(self):
+    def required_deseq_folders(self):
         return [self.deseq_base_folder, self.deseq_raw_folder, 
                 self.deseq_extended_folder]
 
