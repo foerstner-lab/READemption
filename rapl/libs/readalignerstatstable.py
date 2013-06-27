@@ -40,6 +40,8 @@ class ReadAlignerStatsTable(object):
                     "no_of_uniquely_aligned_reads")),
             ("Total no. of alignments", 
              self._total_alignment_stat_numbers("no_of_alignments")),
+            ("Total no. of split alignments", 
+             self._total_alignment_stat_numbers("no_of_split_alignments")),
             ("Percentage of aligned reads (compared to total input reads)",
              self._perc_aligned_reads()),
             ("Percentage of uniquely aligned reads (in relation to all aligned "
@@ -62,6 +64,10 @@ class ReadAlignerStatsTable(object):
                 ["%s - No. of alignments" % ref_id] +
                 self._alignment_number_per_ref_seq(
                     ref_id, "no_of_alignments"))
+            self._table.append(
+                ["%s - No. of split alignments" % ref_id] +
+                self._alignment_number_per_ref_seq(
+                    ref_id, "no_of_split_alignments"))
 
     def _alignment_number_per_ref_seq(self, ref_id, attribute):
         return [self._alignment_stats[lib]["stats_per_reference"][
