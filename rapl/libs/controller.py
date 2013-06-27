@@ -18,7 +18,6 @@ from libs.readprocessor import ReadProcessor
 from libs.sambamconverter import SamToBamConverter
 from libs.wiggle import WiggleWriter
 
-
 class Controller(object):
 
     def __init__(self, args):
@@ -41,10 +40,10 @@ class Controller(object):
     def align_reads(self):
         """Perform the alignment of the reads."""
         self.read_files = self.paths.get_read_files()
-        self.cleaned_read_files = self.paths.get_cleaned_read_files()
+        self.lib_names = self.paths.get_lib_names()
         ref_seq_files = self.paths.get_ref_seq_files()
         self.paths.set_read_files_dep_file_lists(
-            self.read_files, self.cleaned_read_files)
+            self.read_files, self.lib_names)
         self.paths.set_ref_seq_paths(ref_seq_files)
         self._prepare_reads()
         self._align_reads()
@@ -66,20 +65,20 @@ class Controller(object):
         read_files_and_jobs = {}
         with concurrent.futures.ProcessPoolExecutor(
             max_workers=self.args.processes) as executor:
-            for cleaned_read_file, read_path, processed_read_path in zip(
-                    self.cleaned_read_files, self.paths.read_paths, 
+            for lib_name, read_path, processed_read_path in zip(
+                    self.lib_names, self.paths.read_paths, 
                     self.paths.processed_read_paths):
                 read_processor = ReadProcessor(
                     poly_a_clipping=self.args.poly_a_clipping,
                     min_read_length=self.args.min_read_length)
-                read_files_and_jobs[cleaned_read_file]  = executor.submit(
+                read_files_and_jobs[lib_name]  = executor.submit(
                     read_processor.process, read_path, processed_read_path)
         # Evaluate thread outcome
         self._check_job_completeness(read_files_and_jobs.values())
         # Create a dict of the read file names and the processing
         # counting results
         read_files_and_stats = dict(
-            [(cleaned_read_file, job.result()) for cleaned_read_file, job in
+            [(lib_name, job.result()) for lib_name, job in
              read_files_and_jobs.items()])
         raw_stat_data_writer.write(
             read_files_and_stats, self.paths.read_processing_stats_path)
@@ -125,20 +124,20 @@ class Controller(object):
         read_files_and_jobs = {}
         with concurrent.futures.ProcessPoolExecutor(
             max_workers=self.args.processes) as executor:
-            for (cleaned_read_file, read_alignment_result_bam_path,
+            for (lib_name, read_alignment_result_bam_path,
                  unaligned_reads_path) in zip(
-                     self.cleaned_read_files,
+                     self.lib_names, 
                      self.paths.read_alignment_result_bam_paths,
                      self.paths.unaligned_reads_paths):
                 read_aligner_stats = ReadAlignerStats()
-                read_files_and_jobs[cleaned_read_file]  = executor.submit(
+                read_files_and_jobs[lib_name]  = executor.submit(
                     read_aligner_stats.count, read_alignment_result_bam_path,
                     unaligned_reads_path)
         # Evaluate thread outcome
         self._check_job_completeness(read_files_and_jobs.values())
         read_files_and_stats = dict(
-            [(cleaned_read_file, job.result()) for cleaned_read_file, job in
-             read_files_and_jobs.items()])
+            [(lib_name, job.result()) 
+             for lib_name, job in read_files_and_jobs.items()])
         raw_stat_data_writer.write(
             read_files_and_stats, self.paths.read_aligner_stats_path)
 
@@ -150,8 +149,7 @@ class Controller(object):
             self.paths.read_aligner_stats_path)
         read_aligner_stats_table = ReadAlignerStatsTable(
             read_processing_stats, alignment_stats, 
-            self.cleaned_read_files, 
-            self.paths.read_alignment_stats_table_path)
+            self.lib_names, self.paths.read_alignment_stats_table_path)
         read_aligner_stats_table.write()
 
     def _ref_ids_to_file(self, ref_seq_paths):
@@ -173,9 +171,9 @@ class Controller(object):
         too large when working with large reference sequences.
 
         """
-        cleaned_read_files = self.paths.get_cleaned_read_files()
+        lib_names = self.paths.get_lib_names()
         self.paths.set_read_files_dep_file_lists(
-            self.paths.get_read_files(), cleaned_read_files)
+            self.paths.get_read_files(), lib_names)
         raw_stat_data_reader = RawStatDataReader()
         alignment_stats = [
             raw_stat_data_reader.read(
@@ -190,14 +188,13 @@ class Controller(object):
         jobs = []
         with concurrent.futures.ProcessPoolExecutor(
             max_workers=self.args.processes) as executor:
-            for cleaned_read_file, bam_path in zip(
-                cleaned_read_files, 
-                self.paths.read_alignment_result_bam_paths):
+            for lib_name, bam_path in zip(
+                lib_names, self.paths.read_alignment_result_bam_paths):
                 no_of_aligned_reads = float(
-                    read_files_aligned_read_freq[cleaned_read_file])
+                    read_files_aligned_read_freq[lib_name])
                 jobs.append(executor.submit(
                         self._create_coverage_files_for_lib,
-                        cleaned_read_file, bam_path, no_of_aligned_reads,
+                        lib_name, bam_path, no_of_aligned_reads,
                         min_no_of_aligned_reads))
         # Evaluate thread outcome
         self._check_job_completeness(jobs)
@@ -269,26 +266,26 @@ class Controller(object):
             norm_by_alignment_freq = False
         if self.args.skip_norm_by_overlap_freq:
             norm_by_overlap_freq = False
-        cleaned_read_files = self.paths.get_cleaned_read_files()
+        lib_names = self.paths.get_lib_names()
         annotation_files = self.paths.get_annotation_files()
         self.paths.set_annotation_paths(annotation_files)
         self.paths.set_read_files_dep_file_lists(
-            self.paths.get_read_files(), cleaned_read_files)
+            self.paths.get_read_files(), lib_names)
         jobs = []
         with concurrent.futures.ProcessPoolExecutor(
             max_workers=self.args.processes) as executor:
-            for cleaned_read_file, read_alignment_path in zip(
-                cleaned_read_files, self.paths.read_alignment_result_bam_paths):
+            for lib_name, read_alignment_path in zip(
+                lib_names, self.paths.read_alignment_result_bam_paths):
                 jobs.append(executor.submit(
-                        self._quantify_gene_wise, cleaned_read_file,
+                        self._quantify_gene_wise, lib_name,
                         read_alignment_path, norm_by_alignment_freq,
                         norm_by_overlap_freq, annotation_files))
         # Evaluate thread outcome
         self._check_job_completeness(jobs)
         self._gene_quanti_create_overview(
-            annotation_files, self.paths.annotation_paths, cleaned_read_files)
+            annotation_files, self.paths.annotation_paths, lib_names)
 
-    def _quantify_gene_wise(self, cleaned_read_file, read_alignment_path, 
+    def _quantify_gene_wise(self, lib_name, read_alignment_path, 
                     norm_by_alignment_freq,  norm_by_overlap_freq, 
                     annotation_files):
         gene_wise_quantification = GeneWiseQuantification(
@@ -304,11 +301,11 @@ class Controller(object):
             annotation_files, self.paths.annotation_paths):
             gene_wise_quantification.quantify(
                 read_alignment_path, annotation_path,
-                self.paths.gene_quanti_path(cleaned_read_file, annotation_file),
+                self.paths.gene_quanti_path(lib_name, annotation_file),
                 self.args.pseudocounts)
 
     def _gene_quanti_create_overview(
-            self, annotation_files, annotation_paths, cleaned_read_files):
+            self, annotation_files, annotation_paths, lib_names):
         gene_wise_overview = GeneWiseOverview(
             allowed_features_str=self.args.allowed_features,
             skip_antisense=self.args.skip_antisense)
@@ -316,19 +313,19 @@ class Controller(object):
         for annotation_file, annotation_path in zip(
                 annotation_files, annotation_paths):
             path_and_name_combos[annotation_path] = []
-            for read_file in cleaned_read_files:
+            for read_file in lib_names:
                 path_and_name_combos[annotation_path].append(
                     [read_file, self.paths.gene_quanti_path(
                         read_file, annotation_file)])
         gene_wise_overview.create_overview_raw_countings(
-            path_and_name_combos, cleaned_read_files,
+            path_and_name_combos, lib_names,
             self.paths.gene_wise_quanti_combined_path)
         gene_wise_overview.create_overview_rpkm(
-            path_and_name_combos, cleaned_read_files,
+            path_and_name_combos, lib_names,
             self.paths.gene_wise_quanti_combined_rpkm_path,
             self._libs_and_total_number_of_mapped_reads())
         gene_wise_overview.create_overview_norm_by_tnoar(
-            path_and_name_combos, cleaned_read_files,
+            path_and_name_combos, lib_names,
             self.paths.gene_wise_quanti_combined_tnoar_path,
             self._libs_and_total_number_of_mapped_reads())
 

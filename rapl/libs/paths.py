@@ -102,7 +102,7 @@ class Paths(object):
         """Read the names of the read files."""
         return self._get_sorted_folder_content(self.read_fasta_folder)
 
-    def get_cleaned_read_files(self):
+    def get_lib_names(self):
         return [self._clean_file_name(file_name) 
                 for file_name in self.get_read_files()]
 
@@ -155,23 +155,23 @@ class Paths(object):
         return [self.deseq_base_folder, self.deseq_raw_folder, 
                 self.deseq_extended_folder]
 
-    def set_read_files_dep_file_lists(self, read_files, cleaned_read_files):
+    def set_read_files_dep_file_lists(self, read_files, lib_names):
         self.read_paths = self._path_list(self.read_fasta_folder, read_files)
         self.processed_read_paths = self._path_list(
-            self.processed_reads_folder, cleaned_read_files,
+            self.processed_reads_folder, lib_names,
             appendix="_processed.fa.gz")
         self.read_alignment_result_sam_paths = self._path_list(
-            self.read_alignments_folder, cleaned_read_files,
+            self.read_alignments_folder, lib_names,
             appendix="_alignments.sam")
         # samtool appends ".bam" so only the prefix is required
         self.read_alignment_result_bam_prefixes_paths = self._path_list(
             self.read_alignments_folder, 
-            cleaned_read_files, appendix="_alignments")
+            lib_names, appendix="_alignments")
         self.read_alignment_result_bam_paths = self._path_list(
-            self.read_alignments_folder, cleaned_read_files, 
+            self.read_alignments_folder, lib_names, 
             appendix="_alignments.bam")
         self.unaligned_reads_paths = self._path_list(
-            self.unaligned_reads_folder, cleaned_read_files, 
+            self.unaligned_reads_folder, lib_names, 
             appendix="_unaligned.fa")
 
     def set_ref_seq_paths(self, ref_seq_files):
