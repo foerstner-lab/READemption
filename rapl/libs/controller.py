@@ -43,16 +43,25 @@ class Controller(object):
             self.paths.required_read_alignment_folders())
         self.read_files = self.paths.get_read_files()
         self.lib_names = self.paths.get_lib_names()
-        ref_seq_files = self.paths.get_ref_seq_files()
+        self.ref_seq_files = self.paths.get_ref_seq_files()
+        self._test_align_file_existance()
         self.paths.set_read_files_dep_file_lists(
             self.read_files, self.lib_names)
-        self.paths.set_ref_seq_paths(ref_seq_files)
+        self.paths.set_ref_seq_paths(self.ref_seq_files)
         self._prepare_reads()
         self._align_reads()
         self._sam_to_bam()
         self._generate_read_alignment_stats()
         self._write_alignment_stat_table()
 
+    def _test_align_file_existance(self):
+        if len(self.read_files) == 0:
+            sys.stderr.write("Error! No read libraries given!\n")
+            sys.exit(2)
+        if len(self.ref_seq_files ) == 0:
+            sys.stderr.write("Error! No reference sequence files given!\n")
+            sys.exit(2)
+        
     def _test_folder_existance(self, task_specific_folders):
         for folder in (
             self.paths.required_base_folders() + task_specific_folders):
