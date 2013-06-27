@@ -13,9 +13,11 @@ from libs.projectcreator import ProjectCreator
 from libs.rawstatdata import RawStatDataWriter, RawStatDataReader
 from libs.readaligner import ReadAligner
 from libs.readalignerstats import ReadAlignerStats
+from libs.readalignerstatstable import ReadAlignerStatsTable
 from libs.readprocessor import ReadProcessor
 from libs.sambamconverter import SamToBamConverter
 from libs.wiggle import WiggleWriter
+
 
 class Controller(object):
 
@@ -64,20 +66,20 @@ class Controller(object):
         read_files_and_jobs = {}
         with concurrent.futures.ProcessPoolExecutor(
             max_workers=self.args.processes) as executor:
-            for read_file, read_path, processed_read_path in zip(
-                    self.read_files, self.paths.read_paths,
+            for cleaned_read_file, read_path, processed_read_path in zip(
+                    self.cleaned_read_files, self.paths.read_paths, 
                     self.paths.processed_read_paths):
                 read_processor = ReadProcessor(
                     poly_a_clipping=self.args.poly_a_clipping,
                     min_read_length=self.args.min_read_length)
-                read_files_and_jobs[read_file]  = executor.submit(
+                read_files_and_jobs[cleaned_read_file]  = executor.submit(
                     read_processor.process, read_path, processed_read_path)
         # Evaluate thread outcome
         self._check_job_completeness(read_files_and_jobs.values())
         # Create a dict of the read file names and the processing
         # counting results
         read_files_and_stats = dict(
-            [(read_file, job.result()) for read_file, job in
+            [(cleaned_read_file, job.result()) for cleaned_read_file, job in
              read_files_and_jobs.items()])
         raw_stat_data_writer.write(
             read_files_and_stats, self.paths.read_processing_stats_path)
@@ -123,9 +125,9 @@ class Controller(object):
         read_files_and_jobs = {}
         with concurrent.futures.ProcessPoolExecutor(
             max_workers=self.args.processes) as executor:
-            for (read_file, cleaned_read_file, read_alignment_result_bam_path,
+            for (cleaned_read_file, read_alignment_result_bam_path,
                  unaligned_reads_path) in zip(
-                     self.read_files, self.cleaned_read_files,
+                     self.cleaned_read_files,
                      self.paths.read_alignment_result_bam_paths,
                      self.paths.unaligned_reads_paths):
                 read_aligner_stats = ReadAlignerStats()
@@ -146,94 +148,11 @@ class Controller(object):
             self.paths.read_processing_stats_path)
         alignment_stats = raw_stat_data_reader.read(
             self.paths.read_aligner_stats_path)
-        table = []
-        table.append(["Lib"] + self.cleaned_read_files)
-        ref_ids = sorted(list(list(alignment_stats.values())[0][
-            "stats_per_reference"].keys()))
-        table = [
-            ["Library read file"] + self.cleaned_read_files,
-            ["No. of input reads"] +
-            self._get_read_process_numbers(
-                read_processing_stats, "total_no_of_reads"),
-            [ "No. of reads - PolyA detected and removed"] +
-            self._get_read_process_numbers(
-                read_processing_stats, "polya_removed"),
-            ["No. of reads - Single 3' A removed"] +
-            self._get_read_process_numbers(
-                read_processing_stats, "single_a_removed"),
-            ["No. of reads - Unmodified"] + self._get_read_process_numbers(
-            read_processing_stats, "unmodified"),
-            ["No. of reads - Removed as too short"] +
-            self._get_read_process_numbers(read_processing_stats, "too_short"),
-            ["No. of reads - Long enough and used for alignment"] +
-            self._get_read_process_numbers(
-                read_processing_stats, "long_enough"),
-            ["Total no. of aligned reads"] + [
-                round(num) for num in self._total_alignment_stat_numbers(
-                alignment_stats, "no_of_aligned_reads")],
-            ["Total no. of unaligned reads"] + [
-                round(num) for num in self._total_alignment_stat_numbers(
-                alignment_stats, "no_of_unaligned_reads")],
-            ["Total no. of uniquely aligned reads"] +
-            self._total_alignment_stat_numbers(
-                alignment_stats, "no_of_uniquely_aligned_reads"),
-            ["Total no. of alignments"] + self._total_alignment_stat_numbers(
-                alignment_stats, "no_of_alignments"),
-            ["Percentage of aligned reads (compared to total input reads)"]  + [
-                round(self._calc_percentage(aligned_reads, total_reads), 2)
-                for aligned_reads, total_reads in
-                zip(self._total_alignment_stat_numbers(
-                    alignment_stats, "no_of_aligned_reads"),
-                    self._get_read_process_numbers(
-                        read_processing_stats, "total_no_of_reads"))],
-            ["Percentage of uniquely aligned reads (in relation to all " +
-                "aligned reads)"]  + [
-                round(self._calc_percentage(uniquely_aligned_reads,
-                                            aligned_reads), 2)
-                for uniquely_aligned_reads, aligned_reads  in zip(
-                        self._total_alignment_stat_numbers(
-                            alignment_stats, "no_of_uniquely_aligned_reads"),
-                        self._total_alignment_stat_numbers(
-                            alignment_stats, "no_of_aligned_reads"))]
-        ]
-        for ref_id in ref_ids:
-            table.append(
-                ["%s - No. of aligned reads" % ref_id] +
-                self._alignment_number_per_ref_seq(
-                    alignment_stats, ref_id, "no_of_aligned_reads"))
-            table.append(
-                ["%s - No. of uniquely aligned reads" % ref_id] +
-                self._alignment_number_per_ref_seq(
-                    alignment_stats, ref_id, "no_of_uniquely_aligned_reads"))
-            table.append(
-                ["%s - No. of alignments" % ref_id] +
-                self._alignment_number_per_ref_seq(
-                    alignment_stats, ref_id, "no_of_alignments"))
-        table_fh = open(self.paths.read_alignment_stats_table_path, "w")
-        table_fh.write("\n".join(["\t".join([str(cell) for cell in row])
-                                  for row in table]))
-        table_fh.close()
-
-    def _calc_percentage(self, mult, div):
-        try:
-            return float(mult)/float(div)*100
-        except ZeroDivisionError:
-            return 0.0
-
-    def _alignment_number_per_ref_seq(self, alignment_stats, ref_id, attribute):
-        return [alignment_stats[cleaned_read_file]["stats_per_reference"][
-                ref_id].get(attribute, 0) 
-                for cleaned_read_file in self.cleaned_read_files]
-
-    def _total_alignment_stat_numbers(self, alignment_stats, attribute):
-        return [alignment_stats[cleaned_read_file]["stats_total"].get(
-                attribute, 0)
-                for cleaned_read_file in self.cleaned_read_files]
-
-    def _get_read_process_numbers(
-        self, read_processing_stats, attribute):
-        return [read_processing_stats[read_file][attribute]
-                for read_file in self.read_files]
+        read_aligner_stats_table = ReadAlignerStatsTable(
+            read_processing_stats, alignment_stats, 
+            self.cleaned_read_files, 
+            self.paths.read_alignment_stats_table_path)
+        read_aligner_stats_table.write()
 
     def _ref_ids_to_file(self, ref_seq_paths):
         ref_ids_to_file = {}
