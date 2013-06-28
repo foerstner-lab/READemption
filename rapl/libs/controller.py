@@ -193,9 +193,10 @@ class Controller(object):
         fasta_parser = FastaParser()
         for ref_seq_path in ref_seq_paths:
             ref_seq_file = os.path.basename(ref_seq_path)
-            ref_seq_id = fasta_parser.header_id(
-                fasta_parser.single_entry_file_header(open(ref_seq_path)))
-            ref_ids_to_file[ref_seq_id] = ref_seq_file
+            with open(ref_seq_path) as ref_seq_fh:
+                ref_seq_id = fasta_parser.header_id(
+                    fasta_parser.single_entry_file_header(ref_seq_fh))
+                ref_ids_to_file[ref_seq_id] = ref_seq_file
         return ref_ids_to_file
 
     def create_coverage_files(self):
@@ -295,24 +296,24 @@ class Controller(object):
                         min_no_of_aligned_reads):
         """Write the calculated coverages to wiggle files."""
         coverage_writers_raw = dict([(
-            strand, WiggleWriter(
-                "%s_%s" % (lib_name, strand),
-                open(self._paths.wiggle_file_raw_path(lib_name, strand), "w")))
-                for strand in strands])
+                    strand, WiggleWriter(
+                        "%s_%s" % (lib_name, strand), 
+                        open(self._paths.wiggle_file_raw_path(lib_name, strand), 
+                             "w"))) for strand in strands])
         coverage_writers_tnoar_min_norm = dict([(
-            strand, WiggleWriter(
-                "%s_%s" % (lib_name, strand),
-                open(self._paths.wiggle_file_tnoar_norm_min_path(
-                    lib_name, strand, multi=min_no_of_aligned_reads,
-                    div=no_of_aligned_reads), "w")))
-                for strand in strands])
+                    strand, WiggleWriter(
+                        "%s_%s" % (lib_name, strand),
+                        open(self._paths.wiggle_file_tnoar_norm_min_path(
+                                lib_name, strand, multi=min_no_of_aligned_reads,
+                                div=no_of_aligned_reads), "w")))
+                                                for strand in strands])
         coverage_writers_tnoar_mil_norm = dict([(
-            strand, WiggleWriter(
-                "%s_%s" % (lib_name, strand),
-                open(self._paths.wiggle_file_tnoar_norm_mil_path(
-                    lib_name, strand, multi=1000000,
-                    div=no_of_aligned_reads), "w")))
-                for strand in strands])
+                    strand, WiggleWriter(
+                        "%s_%s" % (lib_name, strand),
+                        open(self._paths.wiggle_file_tnoar_norm_mil_path(
+                                lib_name, strand, multi=1000000,
+                                div=no_of_aligned_reads), "w")))
+                                                for strand in strands])
         return (coverage_writers_raw, coverage_writers_tnoar_min_norm, 
                 coverage_writers_tnoar_mil_norm)
 
@@ -416,8 +417,8 @@ class Controller(object):
 
     def _libs_and_total_num_of_aligned_reads(self):
         """Read the total number of reads per library."""
-        read_aligner_stats = json.loads(
-            open(self._paths.read_aligner_stats_path).read())
+        with open(self._paths.read_aligner_stats_path) as read_aligner_stats_fh:
+            read_aligner_stats = json.loads(read_aligner_stats_fh.read())
         return dict([(lib, values["stats_total"]["no_of_aligned_reads"])
                      for lib, values in read_aligner_stats.items()])
 
