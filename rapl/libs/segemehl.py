@@ -1,16 +1,23 @@
 from subprocess import call
+import os
 
 class Segemehl(object):
 
     """A simple segemehl wrapper."""
 
-    def __init__(self, segemehl_bin="segemehl"):
-        self.segemehl_bin = segemehl_bin
+    def __init__(self, segemehl_bin="segemehl", show_progress=False):
+        self._segemehl_bin = segemehl_bin
+        self._show_progress = show_progress
 
     def build_index(self, fasta_files, index_file):
         """Create an index based on a list of fasta files"""
-        call([self.segemehl_bin, "--database"] + fasta_files + [
-             "--generate", index_file])
+        segemehl_call = [self._segemehl_bin, "--database"] + fasta_files + [
+            "--generate", index_file]
+        if self._show_progress is False:
+            with open(os.devnull, "w") as devnull:
+                call(segemehl_call, stderr=devnull)
+        else:
+            call(segemehl_call)
 
     def align_reads(
         self, read_file, index_file, fasta_files, output_file,
@@ -18,7 +25,7 @@ class Segemehl(object):
         segemehl_format=False, order=False, nonmatch_file=None,
         other_parameters=None):
         segemehl_call = [
-            self.segemehl_bin, "--query", read_file,
+            self._segemehl_bin, "--query", read_file,
             "--index", index_file,
             "--database"] + fasta_files + [
             "--outfile", output_file, 
@@ -28,13 +35,18 @@ class Segemehl(object):
             "--threads", str(threads)]
         if segemehl_format:
             segemehl_call.append("--SEGEMEHL")
-        if order:
+        if order is True:
             segemehl_call.append("--order")
-        if split:
+        if split is True:
             segemehl_call.append("--splits")
         if nonmatch_file:
             segemehl_call += ["--nomatchfilename", nonmatch_file]
+        if self._show_progress is False:
+            segemehl_call += ["--silent"]
         if other_parameters:
             segemehl_call.append(other_parameters)
-        call(segemehl_call)
-
+        if self._show_progress is False:
+            with open(os.devnull, "w") as devnull:
+                call(segemehl_call, stderr=devnull)
+        else:
+            call(segemehl_call)
