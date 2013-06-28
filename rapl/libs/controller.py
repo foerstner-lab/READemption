@@ -118,7 +118,7 @@ class Controller(object):
 
     def _align_reads(self):
         """Manage the alignemnt of reads."""
-        read_aligner = ReadAligner(segemehl_bin=self._args.segemehl_bin)
+        read_aligner = ReadAligner(self._args.segemehl_bin, self._args.progress)
         if self._file_needs_to_be_created(self._paths.index_path) is True:
             read_aligner.build_index(
                 self._paths.ref_seq_paths, self._paths.index_path)

@@ -56,6 +56,9 @@ def main():
     read_aligning_parser.add_argument(
         "--force", "-f", default=False, action="store_true",
         help="Overwrite existing files.")
+    read_aligning_parser.add_argument(
+        "--progress", "-P", default=False, action="store_true",
+        help="Show progress of the segemehl mapping.")
     read_aligning_parser.set_defaults(func=align_reads)
 
     # Parameters for coverage file building

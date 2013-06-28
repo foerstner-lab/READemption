@@ -4,8 +4,8 @@ from libs.segemehl import Segemehl
 
 class ReadAligner(object):
 
-    def __init__(self, segemehl_bin):
-        self.segemehl = Segemehl(segemehl_bin)
+    def __init__(self, segemehl_bin, show_progress):
+        self.segemehl = Segemehl(segemehl_bin, show_progress=show_progress)
     
     def build_index(self, ref_seq_paths, index_path):
         self.segemehl.build_index(ref_seq_paths, index_path)
