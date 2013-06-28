@@ -237,11 +237,34 @@ class Controller(object):
         # Evaluate thread outcome
         self._check_job_completeness(jobs)
 
+    def _all_coverage_file_exist(
+        self, lib_name, strands, no_of_aligned_reads, min_no_of_aligned_reads):
+        """Test the existance of all coverage file of a library"""
+        files = []
+        for strand in strands:
+            files.append(self._paths.wiggle_file_raw_path(lib_name, strand))
+            files.append(self._paths.wiggle_file_tnoar_norm_min_path(
+                    lib_name, strand, multi=min_no_of_aligned_reads,
+                    div=no_of_aligned_reads))
+            files.append(self._paths.wiggle_file_tnoar_norm_mil_path(
+                    lib_name, strand, multi=1000000,
+                    div=no_of_aligned_reads))
+        if any([self._file_needs_to_be_created(file, quiet=True) 
+                    for file in files]) is True:
+            return False
+        sys.stderr.write(
+            "The files %s exists. Skipping their generation.\n" % 
+            ", " .join(files))
+        return True
+
     def _create_coverage_files_for_lib(
             self, lib_name, bam_path, no_of_aligned_reads,
             min_no_of_aligned_reads):
         """Perform the coverage calculation for a given library."""
         strands = ["forward", "reverse"]
+        if self._all_coverage_file_exist(
+            lib_name, strands, no_of_aligned_reads, min_no_of_aligned_reads):
+            return
         read_count_splitting = True
         if self._args.skip_read_count_splitting is True:
             read_count_splitting = False

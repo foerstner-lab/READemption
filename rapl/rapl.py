@@ -82,9 +82,9 @@ def main():
         "--first_base_only", "-b", default=False,
         action="store_true", help="Only the first bases 5' base of each read "
         "aligning is taken into account.")
-    # coverage_creation_parser.add_argument(
-    #     "--force", "-f", default=False, action="store_true",
-    #     help="Overwrite existing files.")
+    coverage_creation_parser.add_argument(
+        "--force", "-f", default=False, action="store_true",
+        help="Overwrite existing files.")
     coverage_creation_parser.set_defaults(func=create_coverage_files)
 
     # Parameters for gene wise quantification
