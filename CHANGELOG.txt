@@ -1,3 +1,12 @@
+v0.1.4 (2013-06-28)
+- Change output folder structure
+- Add parallel processing of gene quantification
+- Add output file existance test for the gene quantification
+- Add consideration for split alignment in gene quantification
+- Add removal of common file suffixes for lib names
+- Store R session info
+- Suppress segemehl output
+- Several minor improvements
 v0.1.3 (2013-06-17)
 - Add output file existance test for the alignment step
 v0.1.2 (2013-06-13)
