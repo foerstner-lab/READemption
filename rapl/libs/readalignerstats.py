@@ -18,10 +18,10 @@ class ReadAlignerStats(object):
         return self._stats
 
     def _count_unaligned_reads(self, unaligned_read_paths):
-        fasta_fh = open(unaligned_read_paths)
-        self._stats["stats_total"][
-            "no_of_unaligned_reads"] = self._count_fasta_entries(fasta_fh)
-        fasta_fh.close()
+        
+        with open(unaligned_read_paths) as fasta_fh:
+            self._stats["stats_total"][
+                "no_of_unaligned_reads"] = self._count_fasta_entries(fasta_fh)
 
     def _count_fasta_entries(self, fasta_fh):
         return reduce(lambda x, y: x + 1,

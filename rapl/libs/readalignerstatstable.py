@@ -11,11 +11,10 @@ class ReadAlignerStatsTable(object):
     def write(self):
         self._add_global_countings()
         self._add_reference_wise_coutings()
-        table_fh = open(self._output_path, "w")
-        table_fh.write("\n".join(["\t".join([str(cell) for cell in row]) 
-                                  for row in self._table]) + "\n")
-        table_fh.close()
-        
+        with open(self._output_path, "w") as table_fh:
+            table_fh.write("\n".join(["\t".join([str(cell) for cell in row])
+                                      for row in self._table]) + "\n")
+
     def _add_global_countings(self):
         for title, data in [
             ("Libraries", self._libs),

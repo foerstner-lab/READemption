@@ -22,10 +22,9 @@ class ReadProcessor(object):
         self._stats["long_enough"]
         self._stats["read_length_before_processing_and_freq"] = defaultdict(int)
         self._stats["read_length_after_processing_and_freq"] = defaultdict(int)
-        output_fh = gzip.open(output_path, "wb")
-        input_fh = self._input_fh(input_path)
-        self._process(input_fh, output_fh)
-        output_fh.close()
+        with gzip.open(output_path, "wb") as output_fh:
+            input_fh = self._input_fh(input_path)
+            self._process(input_fh, output_fh)
         return self._stats
 
     def _input_fh(self, input_path):

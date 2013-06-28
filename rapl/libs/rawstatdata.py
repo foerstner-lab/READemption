@@ -6,9 +6,8 @@ class RawStatDataWriter(object):
         self._pretty = pretty
 
     def write(self, input_object, output_path):
-        output_fh = open(output_path, "w")
-        self._write_json(input_object, output_fh)
-        output_fh.close()
+        with open(output_path, "w") as output_fh:
+            self._write_json(input_object, output_fh)
 
     def _write_json(self, input_object, output_fh):
         if self._pretty is True:
@@ -20,9 +19,9 @@ class RawStatDataWriter(object):
 class RawStatDataReader(object):
 
     def read(self, input_file):
-        input_fh = open(input_file)
-        data = self._read(input_fh)
-        input_fh.close()
+        with  open(input_file) as input_fh:
+            data = self._read(input_fh)
+            input_fh.close()
         return data
 
     def _read(self, input_fh):

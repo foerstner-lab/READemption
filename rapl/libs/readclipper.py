@@ -12,11 +12,9 @@ class ReadClipper(object):
     def clip(self, input_paths, output_pathes):
         for input_path, output_path in zip(
             input_paths, output_pathes):
-            input_fh = open(input_path)
-            output_fh = open(output_path, "w")
-            self._clip_entries_in_file(input_fh, output_fh)
-            input_fh.close()
-            output_fh.close()
+            with (open(input_path) as input_fh, 
+                  open(output_path, "w") as output_fh):
+                self._clip_entries_in_file(input_fh, output_fh)
 
     def _compare_input_paths(self):
         if len(input_paths) != len(output_pathes):
