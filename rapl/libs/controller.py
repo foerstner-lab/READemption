@@ -79,13 +79,14 @@ class Controller(object):
                     "Error! Folder '%s' does not exist! Is the given project "
                     "folder name correct?\n" % folder)
 
-    def _file_needs_to_be_created(self, file_path):
+    def _file_needs_to_be_created(self, file_path, quiet=False):
         """Test if a file exists of need to be created."""
         if self._args.force is True:
             return True
         if os.path.exists(file_path):
-            sys.stderr.write(
-                "File %s exists. Skipping its generation.\n" % file_path)
+            if quiet is False:
+                sys.stderr.write(
+                    "File %s exists. Skipping its generation.\n" % file_path)
             return False
         return True
 
@@ -331,6 +332,17 @@ class Controller(object):
                     norm_by_alignment_freq,  norm_by_overlap_freq, 
                     annotation_files):
         """Perform the gene wise quantification for a given library."""
+        gene_quanti_paths = [
+            self._paths.gene_quanti_path(lib_name, annotation_file)
+            for annotation_file in annotation_files]
+        # Check if all output files for this library exist - if so
+        # skip their creation
+        if all([self._file_needs_to_be_created(gene_quanti_path, quiet=True)
+                for gene_quanti_path in gene_quanti_paths]) is False:
+            sys.stderr.write(
+                "The file(s) %s exist(s). Skipping their/its generation.\n" % 
+                ", " .join(gene_quanti_paths))
+            return
         gene_wise_quantification = GeneWiseQuantification(
             min_overlap=self._args.min_overlap,
             norm_by_alignment_freq=norm_by_alignment_freq,
@@ -340,14 +352,12 @@ class Controller(object):
             unique_only=self._args.unique_only)
         gene_wise_quantification.calc_overlaps_per_alignment(
             read_alignment_path, self._paths.annotation_paths)
-        for  annotation_file, annotation_path in zip(
+        for annotation_file, annotation_path in zip(
             annotation_files, self._paths.annotation_paths):
-            gene_quanti_path = self._paths.gene_quanti_path(
-                lib_name, annotation_file)
-            if self._file_needs_to_be_created(gene_quanti_path) is True:
-                gene_wise_quantification.quantify(
-                    read_alignment_path, annotation_path,
-                    gene_quanti_path, self._args.pseudocounts)
+            gene_wise_quantification.quantify(
+                read_alignment_path, annotation_path,
+                self._paths.gene_quanti_path(
+                    lib_name, annotation_file), self._args.pseudocounts)
 
     def _gene_quanti_create_overview(
             self, annotation_files, annotation_paths, lib_names):
@@ -363,17 +373,23 @@ class Controller(object):
                 path_and_name_combos[annotation_path].append(
                     [read_file, self._paths.gene_quanti_path(
                         read_file, annotation_file)])
-        gene_wise_overview.create_overview_raw_countings(
-            path_and_name_combos, lib_names,
-            self._paths.gene_wise_quanti_combined_path)
-        gene_wise_overview.create_overview_rpkm(
-            path_and_name_combos, lib_names,
-            self._paths.gene_wise_quanti_combined_rpkm_path,
-            self._libs_and_total_num_of_aligned_reads())
-        gene_wise_overview.create_overview_norm_by_tnoar(
-            path_and_name_combos, lib_names,
-            self._paths.gene_wise_quanti_combined_tnoar_path,
-            self._libs_and_total_num_of_aligned_reads())
+        if self._file_needs_to_be_created(
+            self._paths.gene_wise_quanti_combined_path) is True:
+            gene_wise_overview.create_overview_raw_countings(
+                path_and_name_combos, lib_names,
+                self._paths.gene_wise_quanti_combined_path)
+        if self._file_needs_to_be_created(
+            self._paths.gene_wise_quanti_combined_rpkm_path) is True:
+            gene_wise_overview.create_overview_rpkm(
+                path_and_name_combos, lib_names,
+                self._paths.gene_wise_quanti_combined_rpkm_path,
+                self._libs_and_total_num_of_aligned_reads())
+        if self._file_needs_to_be_created(
+            self._paths.gene_wise_quanti_combined_tnoar_path) is True:
+            gene_wise_overview.create_overview_norm_by_tnoar(
+                path_and_name_combos, lib_names,
+                self._paths.gene_wise_quanti_combined_tnoar_path,
+                self._libs_and_total_num_of_aligned_reads())
 
     def _libs_and_total_num_of_aligned_reads(self):
         """Read the total number of reads per library."""
