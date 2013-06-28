@@ -342,10 +342,12 @@ class Controller(object):
             read_alignment_path, self._paths.annotation_paths)
         for  annotation_file, annotation_path in zip(
             annotation_files, self._paths.annotation_paths):
-            gene_wise_quantification.quantify(
-                read_alignment_path, annotation_path,
-                self._paths.gene_quanti_path(lib_name, annotation_file),
-                self._args.pseudocounts)
+            gene_quanti_path = self._paths.gene_quanti_path(
+                lib_name, annotation_file)
+            if self._file_needs_to_be_created(gene_quanti_path) is True:
+                gene_wise_quantification.quantify(
+                    read_alignment_path, annotation_path,
+                    gene_quanti_path, self._args.pseudocounts)
 
     def _gene_quanti_create_overview(
             self, annotation_files, annotation_paths, lib_names):
