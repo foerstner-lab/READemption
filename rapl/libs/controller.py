@@ -250,12 +250,12 @@ class Controller(object):
                     lib_name, strand, multi=1000000,
                     div=no_of_aligned_reads))
         if any([self._file_needs_to_be_created(file, quiet=True) 
-                    for file in files]) is True:
-            return False
-        sys.stderr.write(
-            "The files %s exists. Skipping their generation.\n" % 
-            ", " .join(files))
-        return True
+                    for file in files]) is False:
+            sys.stderr.write(
+                "The files %s exists. Skipping their generation.\n" % 
+                ", " .join(files))
+            return True
+        return False
 
     def _create_coverage_files_for_lib(
             self, lib_name, bam_path, no_of_aligned_reads,
@@ -360,7 +360,7 @@ class Controller(object):
             for annotation_file in annotation_files]
         # Check if all output files for this library exist - if so
         # skip their creation
-        if all([self._file_needs_to_be_created(gene_quanti_path, quiet=True)
+        if any([self._file_needs_to_be_created(gene_quanti_path, quiet=True)
                 for gene_quanti_path in gene_quanti_paths]) is False:
             sys.stderr.write(
                 "The file(s) %s exist(s). Skipping their/its generation.\n" % 
