@@ -66,21 +66,18 @@ class Controller(object):
     def _test_align_file_existance(self):
         """Test if the input file for the the align subcommand exist."""
         if len(self._read_files) == 0:
-            sys.stderr.write("Error! No read libraries given!\n")
-            sys.exit(2)
+            self._write_err_msg_and_quit("Error! No read libraries given!\n")
         if len(self._ref_seq_files ) == 0:
-            sys.stderr.write("Error! No reference sequence files given!\n")
-            sys.exit(2)
+            self._write_err_msg_and_quit("Error! No reference sequence files given!\n")
         
     def _test_folder_existance(self, task_specific_folders):
         """Test the existance of required folders."""
         for folder in (
             self._paths.required_base_folders() + task_specific_folders):
             if not os.path.exists(folder):
-                sys.stderr.write(
+                self._write_err_msg_and_quit(
                     "Error! Folder '%s' does not exist! Is the given project "
                     "folder name correct?\n" % folder)
-                sys.exit(2)
 
     def _file_needs_to_be_created(self, file_path):
         """Test if a file exists of need to be created."""
