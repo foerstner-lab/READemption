@@ -59,6 +59,9 @@ def main():
     read_aligning_parser.add_argument(
         "--progress", "-P", default=False, action="store_true",
         help="Show progress of the segemehl mapping.")
+    read_aligning_parser.add_argument(
+        "--progress", "-P", default=False, action="store_true",
+        help="Show progress of the segemehl mapping.")
     read_aligning_parser.set_defaults(func=align_reads)
 
     # Parameters for coverage file building
@@ -136,7 +139,6 @@ def main():
         "--conditions", "-c", required=True,
         help="Comma separated list of condition in the same order as "
         "their corresponding libraries.")
-    deseq_parser.set_defaults(func=run_deseq)
     deseq_parser.add_argument(
         "--no_replicates", "-r", default=False, action="store_true")
     deseq_parser.set_defaults(func=run_deseq)
