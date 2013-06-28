@@ -238,7 +238,7 @@ class Controller(object):
         self._check_job_completeness(jobs)
 
     def _create_coverage_files_for_lib(
-            self, read_file, bam_path, no_of_aligned_reads,
+            self, lib_name, bam_path, no_of_aligned_reads,
             min_no_of_aligned_reads):
         """Perform the coverage calculation for a given library."""
         strands = ["forward", "reverse"]
@@ -251,7 +251,7 @@ class Controller(object):
             first_base_only=self._args.first_base_only)
         (coverage_writers_raw, coverage_writers_tnoar_min_norm,
          coverage_writers_tnoar_mil_norm) = self._wiggle_writers(
-             read_file, strands, no_of_aligned_reads, min_no_of_aligned_reads)
+             lib_name, strands, no_of_aligned_reads, min_no_of_aligned_reads)
         for ref_seq, coverages in coverage_calculator.ref_seq_and_coverages(
                 bam_path):
             for strand in strands:
@@ -268,26 +268,26 @@ class Controller(object):
         for strand in strands:
             coverage_writers_raw[strand].close_file()
 
-    def _wiggle_writers(self, read_file, strands, no_of_aligned_reads,
+    def _wiggle_writers(self, lib_name, strands, no_of_aligned_reads,
                         min_no_of_aligned_reads):
         """Write the calculated coverages to wiggle files."""
         coverage_writers_raw = dict([(
             strand, WiggleWriter(
-                "%s_%s" % (read_file, strand),
-                open(self._paths.wiggle_file_raw_path(read_file, strand), "w")))
+                "%s_%s" % (lib_name, strand),
+                open(self._paths.wiggle_file_raw_path(lib_name, strand), "w")))
                 for strand in strands])
         coverage_writers_tnoar_min_norm = dict([(
             strand, WiggleWriter(
-                "%s_%s" % (read_file, strand),
+                "%s_%s" % (lib_name, strand),
                 open(self._paths.wiggle_file_tnoar_norm_min_path(
-                    read_file, strand, multi=min_no_of_aligned_reads,
+                    lib_name, strand, multi=min_no_of_aligned_reads,
                     div=no_of_aligned_reads), "w")))
                 for strand in strands])
         coverage_writers_tnoar_mil_norm = dict([(
             strand, WiggleWriter(
-                "%s_%s" % (read_file, strand),
+                "%s_%s" % (lib_name, strand),
                 open(self._paths.wiggle_file_tnoar_norm_mil_path(
-                    read_file, strand, multi=1000000,
+                    lib_name, strand, multi=1000000,
                     div=no_of_aligned_reads), "w")))
                 for strand in strands])
         return (coverage_writers_raw, coverage_writers_tnoar_min_norm, 
