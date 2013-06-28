@@ -7,7 +7,6 @@ from libs.coveragecalculator import CoverageCalculator
 from libs.deseq import DESeqRunner
 from libs.fasta import FastaParser
 from libs.genewisequanti import GeneWiseQuantification, GeneWiseOverview
-from libs.parameterlog import ParameterLogger
 from libs.paths import Paths
 from libs.projectcreator import ProjectCreator
 from libs.rawstatdata import RawStatDataWriter, RawStatDataReader
@@ -20,10 +19,20 @@ from libs.wiggle import WiggleWriter
 
 class Controller(object):
 
+    """Manage the actions of the subcommands.
+
+    The Controller take care of providing the argumentes like path
+    names and the parallel processing of tasks.
+
+    """
+
     def __init__(self, args):
         """Create an instance."""
         self._args = args
         self._paths = Paths(args.project_path)
+        self._read_files = None
+        self._ref_seq_files = None
+        self._lib_names = None
 
     def create_project(self, version):
         """Create a new project."""
@@ -55,6 +64,7 @@ class Controller(object):
         self._write_alignment_stat_table()
 
     def _test_align_file_existance(self):
+        """Test if the input file for the the align subcommand exist."""
         if len(self._read_files) == 0:
             sys.stderr.write("Error! No read libraries given!\n")
             sys.exit(2)
@@ -63,6 +73,7 @@ class Controller(object):
             sys.exit(2)
         
     def _test_folder_existance(self, task_specific_folders):
+        """Test the existance of required folders."""
         for folder in (
             self._paths.required_base_folders() + task_specific_folders):
             if not os.path.exists(folder):
@@ -72,6 +83,7 @@ class Controller(object):
                 sys.exit(2)
 
     def _file_needs_to_be_created(self, file_path):
+        """Test if a file exists of need to be created."""
         if self._args.force is True:
             return True
         if os.path.exists(file_path):
@@ -81,6 +93,7 @@ class Controller(object):
         return True
 
     def _prepare_reads(self):
+        """Manage the prepartion of reads before the actual mappings."""
         raw_stat_data_writer = RawStatDataWriter(pretty=True)
         read_files_and_jobs = {}
         with concurrent.futures.ProcessPoolExecutor(
@@ -104,6 +117,7 @@ class Controller(object):
             read_files_and_stats, self._paths.read_processing_stats_path)
 
     def _align_reads(self):
+        """Manage the alignemnt of reads."""
         read_aligner = ReadAligner(segemehl_bin=self._args.segemehl_bin)
         if self._file_needs_to_be_created(self._paths.index_path) is True:
             read_aligner.build_index(
@@ -124,6 +138,7 @@ class Controller(object):
                 float(self._args.segemehl_evalue), self._args.split)
 
     def _sam_to_bam(self):
+        """Manage the conversion of mapped read from SAM to BAM format."""
         sam_to_bam_converter = SamToBamConverter()
         jobs = []
         with concurrent.futures.ProcessPoolExecutor(
@@ -140,6 +155,7 @@ class Controller(object):
         self._check_job_completeness(jobs)
 
     def _generate_read_alignment_stats(self):
+        """Manage the generation of alingment statistics."""
         raw_stat_data_writer = RawStatDataWriter(pretty=True)
         read_files_and_jobs = {}
         with concurrent.futures.ProcessPoolExecutor(
@@ -162,6 +178,7 @@ class Controller(object):
             read_files_and_stats, self._paths.read_aligner_stats_path)
 
     def _write_alignment_stat_table(self):
+        """Manage the creation of the mapping statistic output table."""
         raw_stat_data_reader = RawStatDataReader()
         read_processing_stats = raw_stat_data_reader.read(
             self._paths.read_processing_stats_path)
@@ -173,6 +190,7 @@ class Controller(object):
         read_aligner_stats_table.write()
 
     def _ref_ids_to_file(self, ref_seq_paths):
+        """Translate the reference ID to file paths."""
         ref_ids_to_file = {}
         fasta_parser = FastaParser()
         for ref_seq_path in ref_seq_paths:
@@ -224,6 +242,7 @@ class Controller(object):
     def _create_coverage_files_for_lib(
             self, read_file, bam_path, no_of_aligned_reads,
             min_no_of_aligned_reads):
+        """Perform the coverage calculation for a given library."""
         strands = ["forward", "reverse"]
         read_count_splitting = True
         if self._args.skip_read_count_splitting is True:
@@ -249,10 +268,11 @@ class Controller(object):
                     ref_seq, coverages[strand],
                     factor=1000000/no_of_aligned_reads)
         for strand in strands:
-           coverage_writers_raw[strand].close_file()
+            coverage_writers_raw[strand].close_file()
 
     def _wiggle_writers(self, read_file, strands, no_of_aligned_reads,
                         min_no_of_aligned_reads):
+        """Write the calculated coverages to wiggle files."""
         coverage_writers_raw = dict([(
             strand, WiggleWriter(
                 "%s_%s" % (read_file, strand),
@@ -282,6 +302,7 @@ class Controller(object):
                 raise(job.exception())
 
     def quantify_gene_wise(self):
+        """Manage the counting of alinged read per gene."""
         self._test_folder_existance(
             self._paths.required_gene_quanti_folders())
         norm_by_alignment_freq = True
@@ -312,6 +333,7 @@ class Controller(object):
     def _quantify_gene_wise(self, lib_name, read_alignment_path, 
                     norm_by_alignment_freq,  norm_by_overlap_freq, 
                     annotation_files):
+        """Perform the gene wise quantification for a given library."""
         gene_wise_quantification = GeneWiseQuantification(
             min_overlap=self._args.min_overlap,
             norm_by_alignment_freq=norm_by_alignment_freq,
@@ -330,6 +352,7 @@ class Controller(object):
 
     def _gene_quanti_create_overview(
             self, annotation_files, annotation_paths, lib_names):
+        """Create na overview table of all gene quantification for all libs."""
         gene_wise_overview = GeneWiseOverview(
             allowed_features_str=self._args.allowed_features,
             skip_antisense=self._args.skip_antisense)
@@ -347,19 +370,21 @@ class Controller(object):
         gene_wise_overview.create_overview_rpkm(
             path_and_name_combos, lib_names,
             self._paths.gene_wise_quanti_combined_rpkm_path,
-            self._libs_and_total_number_of_mapped_reads())
+            self._libs_and_total_num_of_aligned_reads())
         gene_wise_overview.create_overview_norm_by_tnoar(
             path_and_name_combos, lib_names,
             self._paths.gene_wise_quanti_combined_tnoar_path,
-            self._libs_and_total_number_of_mapped_reads())
+            self._libs_and_total_num_of_aligned_reads())
 
-    def _libs_and_total_number_of_mapped_reads(self):
+    def _libs_and_total_num_of_aligned_reads(self):
+        """Read the total number of reads per library."""
         read_aligner_stats = json.loads(
             open(self._paths.read_aligner_stats_path).read())
         return dict([(lib, values["stats_total"]["no_of_aligned_reads"])
                      for lib, values in read_aligner_stats.items()])
 
     def compare_with_deseq(self):
+        """Manage the pairwise expression comparison with DESeq."""
         self._test_folder_existance(
             self._paths.required_deseq_folders())
         libs = self._args.libs.split(",")
@@ -378,6 +403,7 @@ class Controller(object):
         deseq_runner.merge_counting_files_with_results()
 
     def _check_deseq_args(self, libs, conditions):
+        """Test if the given arguments are sufficient."""
         if len(libs) != len(conditions):
             self._write_err_msg_and_quit(
                 "Error - The read library file list and condition list must "
@@ -399,5 +425,6 @@ class Controller(object):
                     "libraries. Please add it.\n" % (read_file))
 
     def _write_err_msg_and_quit(self, msg):
+        """Write error message and close the program gracefully."""
         sys.stderr.write(msg)
         sys.exit(1)
