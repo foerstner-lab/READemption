@@ -99,6 +99,8 @@ class Controller(object):
             for lib_name, read_path, processed_read_path in zip(
                     self._lib_names, self._paths.read_paths, 
                     self._paths.processed_read_paths):
+                if self._file_needs_to_be_created(processed_read_path) is False:
+                    continue
                 read_processor = ReadProcessor(
                     poly_a_clipping=self._args.poly_a_clipping,
                     min_read_length=self._args.min_read_length)
@@ -106,6 +108,10 @@ class Controller(object):
                     read_processor.process, read_path, processed_read_path)
         # Evaluate thread outcome
         self._check_job_completeness(read_files_and_jobs.values())
+
+        if self._file_needs_to_be_created(
+            self._paths.read_processing_stats_path) is False:
+            return
         # Create a dict of the read file names and the processing
         # counting results
         read_files_and_stats = dict(
@@ -156,6 +162,9 @@ class Controller(object):
         """Manage the generation of alingment statistics."""
         raw_stat_data_writer = RawStatDataWriter(pretty=True)
         read_files_and_jobs = {}
+        if self._file_needs_to_be_created(
+            self._paths.read_aligner_stats_path) is False:
+            return
         with concurrent.futures.ProcessPoolExecutor(
             max_workers=self._args.processes) as executor:
             for (lib_name, read_alignment_result_bam_path,
