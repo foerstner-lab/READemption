@@ -16,6 +16,7 @@ from libs.readalignerstatstable import ReadAlignerStatsTable
 from libs.readprocessor import ReadProcessor
 from libs.sambamconverter import SamToBamConverter
 from libs.wiggle import WiggleWriter
+from libs.vizgenequanti import GeneQuantiViz
 
 class Controller(object):
 
@@ -476,3 +477,9 @@ class Controller(object):
         """Write error message and close the program gracefully."""
         sys.stderr.write(msg)
         sys.exit(1)
+
+    def viz_gene_quanti(self):
+        """Generate plot based on the gene-wise read countings"""
+        gene_quanti_viz = GeneQuantiViz(
+            self._paths.gene_wise_quanti_combined_path)
+        gene_quanti_viz.parse_input_table()
