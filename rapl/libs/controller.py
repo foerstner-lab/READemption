@@ -435,11 +435,12 @@ class Controller(object):
         """Manage the pairwise expression comparison with DESeq."""
         self._test_folder_existance(
             self._paths.required_deseq_folders())
-        libs = self._args.libs.split(",")
+        arg_libs = [self._paths._clean_file_name(lib) for lib in 
+                self._args.libs.split(",")]
         conditions = self._args.conditions.split(",")
-        self._check_deseq_args(libs, conditions)
+        self._check_deseq_args(arg_libs, conditions)
         deseq_runner = DESeqRunner(
-            libs, conditions, self._paths.deseq_raw_folder,
+            arg_libs, conditions, self._paths.deseq_raw_folder,
             self._paths.deseq_extended_folder, self._paths.deseq_script_path,
             self._paths.gene_wise_quanti_combined_path, 
             self._paths.deseq_tmp_session_info_script,
@@ -450,27 +451,27 @@ class Controller(object):
         deseq_runner.run_deseq()
         deseq_runner.merge_counting_files_with_results()
 
-    def _check_deseq_args(self, libs, conditions):
+    def _check_deseq_args(self, arg_libs, conditions):
         """Test if the given arguments are sufficient."""
-        if len(libs) != len(conditions):
+        if len(arg_libs) != len(conditions):
             self._write_err_msg_and_quit(
                 "Error - The read library file list and condition list must "
                 "have the same number of elements. You entered \n%s "
                 "(= %s elements)\nand \n%s (= %s elements).\n" % (
-                    self._args.libs, len(libs), self._args.conditions,
+                    self._args.libs, len(arg_libs), self._args.conditions,
                     len(conditions)))
-        read_files = self._paths.get_read_files()
-        if len(libs) != len(read_files):
+        libs = self._paths.get_lib_names()
+        if len(libs) != len(arg_libs):
             self._write_err_msg_and_quit(
                 "The number of read libraries is lower or higher than "
                 "expected. The following read libs are available: %s\nThe "
                 "following read list string is suggested: \"%s\"\n" % (
-                    ", ".join(read_files), ",".join(read_files)))
-        for read_file in read_files:
-            if read_file not in libs:
+                    ", ".join(read_files), ",".join(libs)))
+        for lib in libs:
+            if lib not in arg_libs:
                 self._write_err_msg_and_quit(
                     "There library \"%s\" is not given in your list of "
-                    "libraries. Please add it.\n" % (read_file))
+                    "libraries. Please add it.\n" % (lib))
 
     def _write_err_msg_and_quit(self, msg):
         """Write error message and close the program gracefully."""
