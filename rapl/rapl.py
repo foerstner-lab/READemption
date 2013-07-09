@@ -140,6 +140,16 @@ def main():
         "--no_replicates", "-r", default=False, action="store_true")
     deseq_parser.set_defaults(func=run_deseq)
 
+    # Parameters for viz_gene_quanti
+    viz_gene_quanti_parser = subparsers.add_parser(
+        "viz_gene_quanti", 
+        help="Generate gene wise quantification visualisations.")
+    viz_gene_quanti_parser.add_argument(
+        "project_path", default=".", nargs="?",
+        help="Path of the project folder. If none is given the current "
+        "directory is used.")
+    viz_gene_quanti_parser.set_defaults(func=viz_gene_quanti)
+
     args = parser.parse_args()
     if args.version is True:
         print("RAPL version " + __version__)
@@ -158,19 +168,13 @@ def align_reads(controller):
 def create_coverage_files(controller):
     controller.create_coverage_files()
 
-def search_annotation_overlaps(controller):
-    controller.search_annotation_overlaps()
-
-def create_annotation_overview(controller):
-    controller.create_annotation_overview()
-
-def generate_report(controller):
-    controller.generate_report()
-
 def run_gene_wise_quantification(controller):
     controller.quantify_gene_wise()
 
 def run_deseq(controller):
     controller.compare_with_deseq()
+
+def viz_gene_quanti(controller):
+    controller.viz_gene_quanti()
 
 main()
