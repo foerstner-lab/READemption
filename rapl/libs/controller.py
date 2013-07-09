@@ -481,5 +481,8 @@ class Controller(object):
     def viz_gene_quanti(self):
         """Generate plot based on the gene-wise read countings"""
         gene_quanti_viz = GeneQuantiViz(
-            self._paths.gene_wise_quanti_combined_path)
+            self._paths.gene_wise_quanti_combined_path, 
+            self._paths.get_lib_names(),
+            self._paths.viz_gene_quanti_scatter_plot_path)
         gene_quanti_viz.parse_input_table()
+        gene_quanti_viz.plot_correlations()

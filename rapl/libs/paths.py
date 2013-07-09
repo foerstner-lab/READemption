@@ -16,6 +16,7 @@ class Paths(object):
         self._set_coverage_folder_names()
         self._set_gene_quanti_folder_names()
         self._set_deseq_folder_names()
+        self._set_viz_gene_quanti_folder_names()
 
     def _set_input_folder_names(self):
         self.read_fasta_folder = "%s/reads" % self.input_folder
@@ -69,6 +70,13 @@ class Paths(object):
         self.deseq_raw_folder = ("%s/deseq_raw" % self.deseq_base_folder)
         self.deseq_extended_folder = (
             "%s/deseq_with_annotations" % self.deseq_base_folder)
+
+    def _set_viz_gene_quanti_folder_names(self):
+        self.viz_gene_quanti_base_folder = (
+            "%s/viz_gene_quanti" % self.output_folder)
+        self.viz_gene_quanti_scatter_plot_path = (
+            "%s/expression_scatter_plots.pdf" % 
+            self.viz_gene_quanti_base_folder)
 
     def _set_static_files(self):
         """Set name of common files."""
@@ -127,7 +135,8 @@ class Paths(object):
                 self.required_read_alignment_folders() +
                 self.required_coverage_folders() +
                 self.required_gene_quanti_folders() +
-                self.required_deseq_folders())
+                self.required_deseq_folders() +
+                self.required_viz_gene_quanti_folders())
 
     def required_base_folders(self):
         return [self.input_folder, self.output_folder]
@@ -154,6 +163,9 @@ class Paths(object):
     def required_deseq_folders(self):
         return [self.deseq_base_folder, self.deseq_raw_folder, 
                 self.deseq_extended_folder]
+
+    def required_viz_gene_quanti_folders(self):
+        return [self.viz_gene_quanti_base_folder]
 
     def set_read_files_dep_file_lists(self, read_files, lib_names):
         self.read_paths = self._path_list(self.read_fasta_folder, read_files)
