@@ -8,10 +8,12 @@ from matplotlib.backends.backend_pdf import PdfPages
 class DESeqViz(object):
     
     def __init__(self, deseq_script_path, deseq_path_template,
-                 volcano_plot_file_path, use_antisene=True):
+                 volcano_plot_file_path, viz_deseq_volcano_plot_adj_path,
+                 use_antisene=True):
         self._deseq_script_path = deseq_script_path
         self._deseq_path_template = deseq_path_template
         self._volcano_plot_file_path = volcano_plot_file_path
+        self._viz_deseq_volcano_plot_adj_path = viz_deseq_volcano_plot_adj_path
         self._use_antisene = use_antisene
         self._log_2_fold_chance_column = 6
         self._p_value_column = 7
@@ -20,14 +22,16 @@ class DESeqViz(object):
         self._log_2_fold_chance_limit = 1
 
     def create_volcano_plots(self):
-        self._pp = PdfPages(self._volcano_plot_file_path)
+        self._pp_raw = PdfPages(self._volcano_plot_file_path)
+        self._pp_adj = PdfPages(self._viz_deseq_volcano_plot_adj_path)
         conditions = self._extract_condition_names()
         for condition_1 in conditions:
             for condition_2 in conditions:
                 if condition_1 == condition_2:
                     continue
-                self._create_volcano_plot(condition_1, condition_2)
-        self._pp.close()                
+                self._create_volcano_plots(condition_1, condition_2)
+        self._pp_raw.close()
+        self._pp_adj.close()
 
     def _extract_condition_names(self):
         with open(self._deseq_script_path) as deseq_script_fh:
@@ -37,10 +41,20 @@ class DESeqViz(object):
                         line = line.replace(string, "")
                     return sorted(list(set(line.split())))
         
-    def _create_volcano_plot(self, condition_1, condition_2):
+    def _create_volcano_plots(self, condition_1, condition_2):
         deseq_path = self._deseq_path_template % (condition_1, condition_2)
         log2_fold_changes, p_values, p_adj_values = self._parse_deseq_file(
             deseq_path)
+        self._create_volcano_plot(
+            log2_fold_changes, p_values, condition_1, condition_2, 
+           self._pp_raw)
+        self._create_volcano_plot(
+            log2_fold_changes, p_adj_values, condition_1, condition_2,
+            self._pp_adj, pvalue_string_mod="(adjusted)")
+
+    def _create_volcano_plot(
+        self, log2_fold_changes, p_values, condition_1, condition_2, pp,
+        pvalue_string_mod=""):
         max_log_2_fold_change = max(
             [abs(min(log2_fold_changes)), 
              abs(max(log2_fold_changes))])
@@ -52,7 +66,7 @@ class DESeqViz(object):
         plt.plot(log2_fold_changes, mod_p_values, "k.", alpha=0.3)
         # Add axis labels
         plt.xlabel("log$_2$ fold change")
-        plt.ylabel("- log$_{10}$ p-value")
+        plt.ylabel("- log$_{10}$ p-value %s" % (pvalue_string_mod))
         plt.title("%s vs. %s" % (condition_1, condition_2))
         signifant_p_value = -1*np.log10(self._p_value_significance_limit)
         plt.plot([-1*max_log_2_fold_change, max_log_2_fold_change], 
@@ -67,7 +81,7 @@ class DESeqViz(object):
                   self._log_2_fold_chance_limit], 
                  [0, max_mod_p_values], 
                  linestyle="dotted", color="green", alpha=0.5)
-        self._pp.savefig()
+        pp.savefig()
 
     def _parse_deseq_file(self, deseq_path):
         log_2_fold_changes = []
