@@ -150,6 +150,16 @@ def main():
         "directory is used.")
     viz_gene_quanti_parser.set_defaults(func=viz_gene_quanti)
 
+    # Parameters for viz_deseq
+    viz_deseq_parser = subparsers.add_parser(
+        "viz_deseq", 
+        help="Generate DESeq visualisations.")
+    viz_deseq_parser.add_argument(
+        "project_path", default=".", nargs="?",
+        help="Path of the project folder. If none is given the current "
+        "directory is used.")
+    viz_deseq_parser.set_defaults(func=viz_deseq)
+
     args = parser.parse_args()
     if args.version is True:
         print("RAPL version " + __version__)
@@ -176,5 +186,8 @@ def run_deseq(controller):
 
 def viz_gene_quanti(controller):
     controller.viz_gene_quanti()
+
+def viz_deseq(controller):
+    controller.viz_deseq()
 
 main()

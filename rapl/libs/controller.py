@@ -16,7 +16,6 @@ from libs.readalignerstatstable import ReadAlignerStatsTable
 from libs.readprocessor import ReadProcessor
 from libs.sambamconverter import SamToBamConverter
 from libs.wiggle import WiggleWriter
-from libs.vizgenequanti import GeneQuantiViz
 
 class Controller(object):
 
@@ -481,9 +480,21 @@ class Controller(object):
 
     def viz_gene_quanti(self):
         """Generate plot based on the gene-wise read countings"""
+        from libs.vizgenequanti import GeneQuantiViz
         gene_quanti_viz = GeneQuantiViz(
             self._paths.gene_wise_quanti_combined_path, 
             self._paths.get_lib_names(),
             self._paths.viz_gene_quanti_scatter_plot_path)
         gene_quanti_viz.parse_input_table()
         gene_quanti_viz.plot_correlations()
+
+    def viz_deseq(self):
+        """Generate plot based on the DESeq analysis"""
+        from libs.vizdeseq import DESeqViz
+        deseq_path_template = (
+            self._paths.deseq_raw_folder + "/deseq_comp_%s_vs_%s.csv")
+        deseq_viz = DESeqViz(
+            self._paths.deseq_script_path,
+            deseq_path_template,
+            self._paths.viz_deseq_volcano_plot_path)
+        deseq_viz.create_volcano_plots()
