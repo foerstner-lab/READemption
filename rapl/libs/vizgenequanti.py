@@ -57,10 +57,13 @@ class GeneQuantiViz(object):
         plt.plot([self._axis_min, self._axis_max], 
                  [self._axis_min, self._axis_max], 
                  linestyle="solid", color="green", alpha=0.4)
+        # Calculate the Pearson correlation coefficient
+        corr_coeff = np.corrcoef(self._lib_names_and_countings[lib_1],
+                                 self._lib_names_and_countings[lib_2])[0][1]
         # Set axis ranges
         plt.axis([self._axis_min, self._axis_max, 
                   self._axis_min, self._axis_max])
-        plt.title("%s vs. %s" % (lib_1, lib_2))
+        plt.title("%s vs. %s\n(r = %s)" % (lib_1, lib_2, corr_coeff))
         plt.plot(self._lib_names_and_countings[lib_1], 
                  self._lib_names_and_countings[lib_2], 
                  "k.", alpha=0.2)
