@@ -82,6 +82,9 @@ class Paths(object):
     def _set_viz_deseq_folder_names(self):
         self.viz_deseq_base_folder = (
             "%s/viz_deseq" % self.output_folder)
+        self.viz_deseq_scatter_plot_path = (
+            "%s/base_mean_scatterplots.pdf" % 
+            self.viz_deseq_base_folder)
         self.viz_deseq_volcano_plot_path = (
             "%s/volcano_plots_log2_fold_change_vs_p-value.pdf" % 
             self.viz_deseq_base_folder)

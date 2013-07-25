@@ -496,6 +496,9 @@ class Controller(object):
         deseq_viz = DESeqViz(
             self._paths.deseq_script_path,
             deseq_path_template,
+            self._paths.viz_deseq_scatter_plot_path,
             self._paths.viz_deseq_volcano_plot_path,
             self._paths.viz_deseq_volcano_plot_adj_path)
+        deseq_viz.create_scatter_plots()
         deseq_viz.create_volcano_plots()
+
