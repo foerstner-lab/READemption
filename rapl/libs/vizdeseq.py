@@ -101,6 +101,7 @@ class DESeqViz(object):
     def _create_volcano_plot(
         self, log2_fold_changes, p_values, condition_1, condition_2, pp,
         pvalue_string_mod=""):
+        fig = plt.figure()
         max_log_2_fold_change = max(
             [abs(min(log2_fold_changes)), 
              abs(max(log2_fold_changes))])
