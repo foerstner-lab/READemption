@@ -8,13 +8,13 @@ from matplotlib.backends.backend_pdf import PdfPages
 class DESeqViz(object):
     
     def __init__(self, deseq_script_path, deseq_path_template,
-                 viz_deseq_scatter_plot_path, volcano_plot_file_path, 
+                 viz_deseq_scatter_plot_path, volcano_plot_path, 
                  viz_deseq_volcano_plot_adj_path, use_antisene=True):
         self._deseq_script_path = deseq_script_path
         self._deseq_path_template = deseq_path_template
         self._viz_deseq_scatter_plot_path = viz_deseq_scatter_plot_path
-        self._volcano_plot_file_path = volcano_plot_file_path
-        self._viz_deseq_volcano_plot_adj_path = viz_deseq_volcano_plot_adj_path
+        self._volcano_plot_path = volcano_plot_path
+        self._volcano_plot_adj_path = viz_deseq_volcano_plot_adj_path
         self._use_antisene = use_antisene
         self._basemean_lib_1_column = 3
         self._basemean_lib_2_column = 4
@@ -68,8 +68,8 @@ class DESeqViz(object):
         self._pp_scatterplots.savefig()
 
     def create_volcano_plots(self):
-        self._pp_raw = PdfPages(self._volcano_plot_file_path)
-        self._pp_adj = PdfPages(self._viz_deseq_volcano_plot_adj_path)
+        self._pp_raw = PdfPages(self._volcano_plot_path)
+        self._pp_adj = PdfPages(self._volcano_plot_adj_path)
         conditions = self._extract_condition_names()
         for condition_1 in conditions:
             for condition_2 in conditions:
