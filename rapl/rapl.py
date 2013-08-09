@@ -140,6 +140,16 @@ def main():
         "--no_replicates", "-r", default=False, action="store_true")
     deseq_parser.set_defaults(func=run_deseq)
 
+    # Parameters for viz_align
+    viz_align_parser = subparsers.add_parser(
+        "viz_align", 
+        help="Generate read processing and alignment visualisations.")
+    viz_align_parser.add_argument(
+        "project_path", default=".", nargs="?",
+        help="Path of the project folder. If none is given the current "
+        "directory is used.")
+    viz_align_parser.set_defaults(func=viz_align)
+
     # Parameters for viz_gene_quanti
     viz_gene_quanti_parser = subparsers.add_parser(
         "viz_gene_quanti", 
@@ -183,6 +193,9 @@ def run_gene_wise_quantification(controller):
 
 def run_deseq(controller):
     controller.compare_with_deseq()
+
+def viz_align(controller):
+    controller.viz_align()
 
 def viz_gene_quanti(controller):
     controller.viz_gene_quanti()

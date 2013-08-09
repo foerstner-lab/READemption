@@ -108,7 +108,6 @@ class Controller(object):
                     read_processor.process, read_path, processed_read_path)
         # Evaluate thread outcome
         self._check_job_completeness(read_files_and_jobs.values())
-
         if self._file_needs_to_be_created(
             self._paths.read_processing_stats_path) is False:
             return
@@ -477,6 +476,15 @@ class Controller(object):
         """Write error message and close the program gracefully."""
         sys.stderr.write(msg)
         sys.exit(1)
+
+    def viz_align(self):
+        """Generate plots based on the read processing and mapping"""
+        from libs.vizalign import AlignViz
+        align_viz = AlignViz(
+            self._paths.read_processing_stats_path,
+            self._paths.read_aligner_stats_path)
+        align_viz.plot_input_read_length()
+        align_viz.plot_processed_read_length()
 
     def viz_gene_quanti(self):
         """Generate plot based on the gene-wise read countings"""

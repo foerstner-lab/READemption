@@ -16,6 +16,7 @@ class Paths(object):
         self._set_coverage_folder_names()
         self._set_gene_quanti_folder_names()
         self._set_deseq_folder_names()
+        self._set_viz_align_folder_names()
         self._set_viz_gene_quanti_folder_names()
         self._set_viz_deseq_folder_names()
 
@@ -71,6 +72,16 @@ class Paths(object):
         self.deseq_raw_folder = ("%s/deseq_raw" % self.deseq_base_folder)
         self.deseq_extended_folder = (
             "%s/deseq_with_annotations" % self.deseq_base_folder)
+
+    def _set_viz_align_folder_names(self):
+        self.viz_align_base_folder = (
+            "%s/viz_align" % self.output_folder)
+        self.viz_align_input_read_length_plot_path = (
+            "%s/input_reads_length_distributions.pdf" % 
+            self.viz_align_base_folder)
+        self.viz_align_processed_read_length_plot_path = (
+            "%s/processed_reads_length_distributions.pdf" 
+            % self.viz_align_base_folder)
 
     def _set_viz_gene_quanti_folder_names(self):
         self.viz_gene_quanti_base_folder = (
@@ -150,6 +161,7 @@ class Paths(object):
                 self.required_coverage_folders() +
                 self.required_gene_quanti_folders() +
                 self.required_deseq_folders() +
+                self.required_viz_align_folders() + 
                 self.required_viz_gene_quanti_folders() + 
                 self.required_viz_deseq_folders())
 
@@ -178,6 +190,9 @@ class Paths(object):
     def required_deseq_folders(self):
         return [self.deseq_base_folder, self.deseq_raw_folder, 
                 self.deseq_extended_folder]
+
+    def required_viz_align_folders(self):
+        return [self.viz_align_base_folder]
 
     def required_viz_gene_quanti_folders(self):
         return [self.viz_gene_quanti_base_folder]
