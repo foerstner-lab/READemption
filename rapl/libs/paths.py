@@ -79,7 +79,7 @@ class Paths(object):
         self.viz_align_input_read_length_plot_path = (
             "%s/input_reads_length_distributions.pdf" % 
             self.viz_align_base_folder)
-        self.viz_align_processed_read_length_plot_path = (
+        self.viz_align_processed_reads_length_plot_path = (
             "%s/processed_reads_length_distributions.pdf" 
             % self.viz_align_base_folder)
 

@@ -481,8 +481,12 @@ class Controller(object):
         """Generate plots based on the read processing and mapping"""
         from libs.vizalign import AlignViz
         align_viz = AlignViz(
+            self._paths.get_lib_names(),
             self._paths.read_processing_stats_path,
-            self._paths.read_aligner_stats_path)
+            self._paths.read_aligner_stats_path,
+            self._paths.viz_align_input_read_length_plot_path,
+            self._paths.viz_align_processed_reads_length_plot_path)
+        align_viz.read_stat_files()
         align_viz.plot_input_read_length()
         align_viz.plot_processed_read_length()
 
