@@ -27,7 +27,7 @@ class AlignViz(object):
     def plot_input_read_length(self):
         self._plot_read_lengths(
             "read_length_before_processing_and_freq", 
-            "Length distribution of the input read - %s",
+            "Length distribution of the input reads - %s",
             self._input_read_length_plot_path)
 
     def plot_processed_read_length(self):
