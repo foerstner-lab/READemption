@@ -51,8 +51,11 @@ class AlignViz(object):
         fig = plt.figure()
         ax = fig.add_subplot(111)
         plt.title(title)
-        font = {'size' : 6}
+        plt.xlabel("Read length [nt]")
+        plt.ylabel("Frequency")
+        font = {'size' : 8}
         matplotlib.rc('font', **font)
+        ax.xaxis.set_ticks_position("bottom")
         hist, bins = np.histogram(
             list_of_values,bins=max(list_of_values)-1, 
             range=(0,max(list_of_values)-1))
