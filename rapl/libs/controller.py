@@ -503,16 +503,14 @@ class Controller(object):
             self._paths.viz_gene_quanti_rna_classes_plot_path)
 
     def viz_deseq(self):
-        """Generate plot based on the DESeq analysis"""
+        """Generate plots based on the DESeq analysis"""
         from libs.vizdeseq import DESeqViz
         deseq_path_template = (
             self._paths.deseq_raw_folder + "/deseq_comp_%s_vs_%s.csv")
-        deseq_viz = DESeqViz(
-            self._paths.deseq_script_path,
-            deseq_path_template,
-            self._paths.viz_deseq_scatter_plot_path,
+        deseq_viz = DESeqViz(self._paths.deseq_script_path, deseq_path_template)
+        deseq_viz.create_scatter_plots(
+            self._paths.viz_deseq_scatter_plot_path)
+        deseq_viz.create_volcano_plots(
             self._paths.viz_deseq_volcano_plot_path,
             self._paths.viz_deseq_volcano_plot_adj_path)
-        deseq_viz.create_scatter_plots()
-        deseq_viz.create_volcano_plots()
 
