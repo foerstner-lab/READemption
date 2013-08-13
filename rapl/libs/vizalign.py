@@ -8,13 +8,10 @@ from matplotlib.backends.backend_pdf import PdfPages
 class AlignViz(object):
 
     def __init__(self, lib_names, read_processing_stats_path, 
-                 read_aligner_stats_path, input_read_length_plot_path,
-                 processed_reads_length_plot_path):
+                 read_aligner_stats_path):
         self._lib_names = lib_names
         self._read_processing_stats_path = read_processing_stats_path
         self._read_aligner_stats_path = read_aligner_stats_path
-        self._input_read_length_plot_path = input_read_length_plot_path
-        self._processed_read_length_plot_path = processed_reads_length_plot_path
 
     def read_stat_files(self):
         with open(self._read_processing_stats_path) as read_processing_stats_fh:
@@ -24,17 +21,17 @@ class AlignViz(object):
             self._read_aligner_stats = json.loads(
                 read_aligner_stats_fh.read())
 
-    def plot_input_read_length(self):
+    def plot_input_read_length(self, plot_path):
         self._plot_read_lengths(
             "read_length_before_processing_and_freq", 
             "Length distribution of the input reads - %s",
-            self._input_read_length_plot_path)
+            plot_path)
 
-    def plot_processed_read_length(self):
+    def plot_processed_read_length(self, plot_path):
         self._plot_read_lengths(
             "read_length_after_processing_and_freq", 
             "Length distribution of the processed reads - %s",
-            self._processed_read_length_plot_path)
+            plot_path)
 
     def _plot_read_lengths(self, dict_key, title_template, output_file):
         pp = PdfPages(output_file)
