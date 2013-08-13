@@ -10,11 +10,9 @@ import matplotlib.cm as cm
 class GeneQuantiViz(object):
     
     def __init__(self, gene_wise_quanti_combined_path, lib_names, 
-                 scatter_plot_file_path, use_antisene=True, 
-                 axis_min=None, axis_max=None):
+                 use_antisene=True, axis_min=None, axis_max=None):
         self._gene_wise_quanti_combined_path = gene_wise_quanti_combined_path
         self._lib_names = lib_names
-        self._scatter_plot_file_path = scatter_plot_file_path
         self._use_antisene = use_antisene
         self._axis_min = axis_min
         self._axis_max = axis_max
@@ -35,8 +33,8 @@ class GeneQuantiViz(object):
                 self._lib_names_and_class_quanti[
                     self._lib_names[index]][row[0]][row[3]] += float(cell) 
         
-    def plot_correlations(self):
-        self._prepare_document(self._scatter_plot_file_path)
+    def plot_correlations(self, plot_path):
+        self._prepare_document(plot_path)
         if self._axis_min is None:
             self._axis_min = 0.1
         if self._axis_max is None:
