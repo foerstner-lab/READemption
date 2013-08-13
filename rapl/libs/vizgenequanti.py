@@ -5,6 +5,7 @@ import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_pdf import PdfPages
+import matplotlib.cm as cm
 
 class GeneQuantiViz(object):
     
@@ -20,6 +21,10 @@ class GeneQuantiViz(object):
 
     def parse_input_table(self):
         self._lib_names_and_countings = defaultdict(list)
+        # Dict of dict of dict: lib name -> relative direction (sense/anti-sense) 
+        # -> annotation type (CDS, rRNA ..)
+        self._lib_names_and_class_quanti = defaultdict(
+            lambda: defaultdict(lambda: defaultdict(float)))
         for row in csv.reader(
             open(self._gene_wise_quanti_combined_path), delimiter="\t"):
             if len(row[0]) == 0:
@@ -27,6 +32,8 @@ class GeneQuantiViz(object):
             for index, cell in enumerate(row[10:]):
                 self._lib_names_and_countings[
                     self._lib_names[index]].append(float(cell))
+                self._lib_names_and_class_quanti[
+                    self._lib_names[index]][row[0]][row[3]] += float(cell) 
         
     def plot_correlations(self):
         self._prepare_document(self._scatter_plot_file_path)
@@ -75,3 +82,40 @@ class GeneQuantiViz(object):
         self._axis_max = max(
             [max(counting) 
              for counting in self._lib_names_and_countings.values()])
+
+    def plot_annotation_class_quantification(self, plot_path):
+        all_classes_sorted = set()
+        no_of_libs = len(self._lib_names)
+        for directions in self._lib_names_and_class_quanti.values():
+            for classes_and_counting in directions.values():
+                for anno_class in classes_and_counting.keys():
+                    all_classes_sorted.add(anno_class)
+        all_classes_sorted = sorted(list(all_classes_sorted))
+        bottom = np.array([0] * no_of_libs)
+        fig = plt.figure()
+        ax = plt.subplot(111)
+        font = {'family' : 'sans-serif', 'weight' : 'normal', 'size'   : 8}
+        matplotlib.rc('font', **font)
+        plt.title("Number of reads per RNA classes")
+        color_index = 0
+        for direction in ["sense", "anti-sense"]:
+            for anno_class in all_classes_sorted:
+                countings = [
+                    self._lib_names_and_class_quanti[lib][direction][anno_class]
+                    for lib in self._lib_names]
+                color = cm.Accent(
+                    1.0/(float(len(all_classes_sorted))*2)*color_index)
+                plt.bar(range(no_of_libs), countings, align="center", 
+                        bottom=bottom, linewidth=0, color=color, width=0.5,
+                        label=anno_class+" "+direction)
+                bottom = bottom + countings
+                color_index += 1
+        plt.xticks(np.array(range(no_of_libs)), self._lib_names, rotation=45, 
+                   ha="right")
+        plt.tight_layout()
+        ax.spines['top'].set_visible(False)
+        ax.spines['right'].set_visible(False)
+        ax.spines['left'].set_visible(False)
+        ax.xaxis.set_ticks_position("none")
+        plt.legend(loc="upper right", frameon=False, ncol=4)
+        fig.savefig(plot_path)

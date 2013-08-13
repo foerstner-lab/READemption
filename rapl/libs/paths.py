@@ -89,6 +89,9 @@ class Paths(object):
         self.viz_gene_quanti_scatter_plot_path = (
             "%s/expression_scatter_plots.pdf" % 
             self.viz_gene_quanti_base_folder)
+        self.viz_gene_quanti_rna_classes_plot_path = (
+            "%s/rna_class_sizes.pdf" % 
+            self.viz_gene_quanti_base_folder)
 
     def _set_viz_deseq_folder_names(self):
         self.viz_deseq_base_folder = (
