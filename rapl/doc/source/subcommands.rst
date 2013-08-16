@@ -6,9 +6,9 @@ align
 
 `align` includes the clipping and size filtering of the read, as well
 as the actual aligning to the reference sequences.  It also generates
-statistic about the steps (e.g. number of aligned reads, number of
-mappings). The result of this steps are used by the other subcommands
-so it has to be run before any other.
+statistics about the steps (e.g. number of aligned reads, number of
+mappings). As the result of this steps are used by the other
+subcommands it has to be run before any other.
 
 coverage
 --------
