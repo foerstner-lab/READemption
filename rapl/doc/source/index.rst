@@ -15,9 +15,10 @@ Table of content
 What is RAPL?
 =============
 
-*RNA-Seq Analysis PipeLine* (*RAPL*) is - as the name implies - a pipeline
-for the computational analysis of RNA-Seq data. It was originally
-developed to process dRNA-Seq reads (see Sharma *et al.*, Nature,
+*RNA-Seq Analysis PipeLine* (*RAPL*) is - as the name implies - a
+pipeline for the computational analysis of RNA-Seq data. It was
+originally developed to process dRNA-Seq reads (as introduced by
+Sharma *et al.*, Nature,
 2010) originating from bacterial samples. Meanwhile is was extended to
 process data generated in different experimental setups and
 originating from all domain of life. It was applied to analyze
