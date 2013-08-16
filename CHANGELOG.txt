@@ -1,3 +1,6 @@
+v0.1.5 (2013-08-16)
+- Add serveral visualizations methods
+- Misc small changes
 v0.1.4.1 (2013-07-08)
 -  Fix issue with lib names in deseq	
 v0.1.4 (2013-06-28)
