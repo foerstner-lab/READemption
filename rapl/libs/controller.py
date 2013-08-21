@@ -469,7 +469,7 @@ class Controller(object):
         for lib in libs:
             if lib not in arg_libs:
                 self._write_err_msg_and_quit(
-                    "There library \"%s\" is not given in your list of "
+                    "The library \"%s\" is not present in your list of "
                     "libraries. Please add it.\n" % (lib))
 
     def _write_err_msg_and_quit(self, msg):
