@@ -212,12 +212,11 @@ class Controller(object):
 
         The coverages are calculated per replicon and the results are
         written to the output file. This might be slower but if all
-        coveragers are detmined at once the data structure will become
+        coverages are detmined at once the data structure will become
         too large when working with large reference sequences.
 
         """
-        self._test_folder_existance(
-            self._paths.required_coverage_folders())
+        self._test_folder_existance(self._paths.required_coverage_folders())
         lib_names = self._paths.get_lib_names()
         self._paths.set_read_files_dep_file_lists(
             self._paths.get_read_files(), lib_names)
@@ -267,8 +266,7 @@ class Controller(object):
         return False
 
     def _create_coverage_files_for_lib(
-            self, lib_name, bam_path, no_of_aligned_reads,
-            min_no_of_aligned_reads):
+        self, lib_name, bam_path, no_of_aligned_reads, min_no_of_aligned_reads):
         """Perform the coverage calculation for a given library."""
         strands = ["forward", "reverse"]
         if self._all_coverage_file_exist(
