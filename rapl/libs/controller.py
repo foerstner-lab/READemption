@@ -221,12 +221,16 @@ class Controller(object):
         self._paths.set_read_files_dep_file_lists(
             self._paths.get_read_files(), lib_names)
         raw_stat_data_reader = RawStatDataReader()
-        alignment_stats = [
-            raw_stat_data_reader.read(
-            self._paths.read_aligner_stats_path)]
+        alignment_stats = [raw_stat_data_reader.read(
+                self._paths.read_aligner_stats_path)]
+        # Get number of aligned of number of uniquely aligned reads
+        if self._args.unique_only is False:
+            aligned_counting = "no_of_aligned_reads"
+        else:
+            aligned_counting = "no_of_uniquely_aligned_reads"
         read_files_aligned_read_freq = dict([
             (read_file,
-             round(attributes["stats_total"]["no_of_aligned_reads"]))
+             round(attributes["stats_total"][aligned_counting]))
              for read_file, attributes in alignment_stats[0].items()])
         min_no_of_aligned_reads = float(min(
             read_files_aligned_read_freq.values()))
@@ -426,6 +430,13 @@ class Controller(object):
         with open(self._paths.read_aligner_stats_path) as read_aligner_stats_fh:
             read_aligner_stats = json.loads(read_aligner_stats_fh.read())
         return dict([(lib, values["stats_total"]["no_of_aligned_reads"])
+                     for lib, values in read_aligner_stats.items()])
+
+    def _libs_and_total_num_of_uniquely_aligned_reads(self):
+        """Read the total number of reads per library."""
+        with open(self._paths.read_aligner_stats_path) as read_aligner_stats_fh:
+            read_aligner_stats = json.loads(read_aligner_stats_fh.read())
+        return dict([(lib, values["stats_total"]["no_of_uniquely_aligned_reads"])
                      for lib, values in read_aligner_stats.items()])
 
     def compare_with_deseq(self):
