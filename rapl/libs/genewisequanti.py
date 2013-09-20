@@ -50,7 +50,8 @@ class GeneWiseQuantification(object):
         sam = pysam.Samfile(read_alignment_path)
         gff3_parser = Gff3Parser()
         output_fh = open(output_path, "w")
-        output_fh.write("#" + "\t".join([""] * 10) + "sense\tantisense\n")
+        output_fh.write("#" + "\t".join(_gff_field_descriptions() 
+                                        + ["sense", "antisense"]) + "\n")
         for entry in gff3_parser.entries(open(annotation_path)):
             if _entry_to_use(entry, self._allowed_features) is False:
                 continue
@@ -165,7 +166,10 @@ class GeneWiseOverview(object):
                          normalization=None, libs_and_tnoar=None):
         output_fh = open(overview_path, "w")
         # Write header
-        output_fh.write("\t".join([""] * 10 + read_files) + "\n")
+        output_fh.write("\t".join(
+                ["Orientation of counted reads relative to the strand "
+                 "location of the annotation"] + _gff_field_descriptions() 
+                + read_files) + "\n")
         self._add_to_overview(
             path_and_name_combos, "sense", 9, output_fh, normalization,
             libs_and_tnoar)
@@ -218,7 +222,6 @@ class GeneWiseOverview(object):
     def _norm_by_tnoar(self, counting, total_no_of_aligned_reads):
         return str(float(counting)/float(total_no_of_aligned_reads))
 
-
 def _entry_to_use(entry, allowed_features):
     if allowed_features is None:
         return True
@@ -232,3 +235,7 @@ def _allowed_features(allowed_features_str):
     else:
         return [
         feature.strip() for feature in allowed_features_str.split(",")]
+
+def _gff_field_descriptions():
+    return ["Sequence name", "Source", "Feature", "Start", "End", "Score", 
+            "Strand", "Frame", "Attributes"]
