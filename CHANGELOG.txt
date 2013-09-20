@@ -1,3 +1,6 @@
+v0.1.6 (2013-09-16)
+- Change coverage normalization for the case that only uniquely aligned
+  reads are taken into account
 v0.1.5 (2013-08-16)
 - Add serveral visualizations methods
 - Misc small changes
