@@ -60,6 +60,7 @@ class Controller(object):
             self._paths.set_read_files_dep_file_lists_single_end(
                 self._read_files, self._lib_names)
             self._prepare_reads_single_end()
+            self._align_single_end_reads()
         # Paired end read
         else:
             self._read_file_pairs = self._paths.get_read_file_pairs()
@@ -67,11 +68,10 @@ class Controller(object):
             self._paths.set_read_files_dep_file_lists_paired_end(
                 self._read_file_pairs, self._lib_names)
             self._prepare_reads_paired_end()
-        # TODO
-        # self._align_reads()
-        # self._sam_to_bam()
-        # self._generate_read_alignment_stats()
-        # self._write_alignment_stat_table()
+            self._align_paired_end_reads()
+        self._sam_to_bam()
+        self._generate_read_alignment_stats()
+        self._write_alignment_stat_table()
 
     def _test_align_file_existance(self):
         """Test if the input file for the the align subcommand exist."""
@@ -154,8 +154,8 @@ class Controller(object):
         raw_stat_data_writer.write(
             read_files_and_stats, self._paths.read_processing_stats_path)
 
-    def _align_reads(self):
-        """Manage the alignemnt of reads."""
+    def _align_single_end_reads(self):
+        """Manage the actual alignemnt of single end reads."""
         read_aligner = ReadAligner(self._args.segemehl_bin, self._args.progress)
         if self._file_needs_to_be_created(self._paths.index_path) is True:
             read_aligner.build_index(
@@ -173,7 +173,30 @@ class Controller(object):
                 read_path, self._paths.index_path, self._paths.ref_seq_paths, 
                 output_path, nomatch_path, int(self._args.processes),
                 int(self._args.segemehl_accuracy), 
-                float(self._args.segemehl_evalue), self._args.split)
+                float(self._args.segemehl_evalue), self._args.split, 
+                paired_end=False)
+
+    def _align_paired_end_reads(self):
+        """Manage the actual alignemnt of paired end reads."""
+        read_aligner = ReadAligner(self._args.segemehl_bin, self._args.progress)
+        if self._file_needs_to_be_created(self._paths.index_path) is True:
+            read_aligner.build_index(
+                self._paths.ref_seq_paths, self._paths.index_path)
+        for read_path_pair, output_path, nomatch_path, bam_path in zip(
+            self._paths.processed_read_path_pairs, 
+            self._paths.read_alignment_result_sam_paths, 
+            self._paths.unaligned_reads_paths, 
+            self._paths.read_alignment_result_bam_paths):
+            if self._file_needs_to_be_created(output_path) is False:
+                continue
+            elif self._file_needs_to_be_created(bam_path) is False:
+                continue
+            read_aligner.run_alignment(
+                read_path_pair, self._paths.index_path, 
+                self._paths.ref_seq_paths, output_path, nomatch_path, 
+                int(self._args.processes), int(self._args.segemehl_accuracy),
+                float(self._args.segemehl_evalue), self._args.split, 
+                paired_end=True)
 
     def _sam_to_bam(self):
         """Manage the conversion of mapped read from SAM to BAM format."""

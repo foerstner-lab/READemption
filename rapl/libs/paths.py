@@ -249,9 +249,6 @@ class Paths(object):
         self.processed_read_paths = self._path_list(
             self.processed_reads_folder, lib_names,
             appendix="_processed.fa.gz")
-        self.read_alignment_result_sam_paths = self._path_list(
-            self.read_alignments_folder, lib_names,
-            appendix="_alignments.sam")
         self.unaligned_reads_paths = self._path_list(
             self.unaligned_reads_folder, lib_names, 
             appendix="_unaligned.fa")
@@ -268,12 +265,12 @@ class Paths(object):
                 [self._clean_file_name(read_file) 
                  for read_file in read_file_pair], appendix="_processed.fa.gz")
             for read_file_pair in read_file_pairs]
-        self.unaligned_reads_path_pairs = [
-            self._path_list(
-                self.unaligned_reads_folder,
-                [self._clean_file_name(read_file) 
-                 for read_file in read_file_pair], appendix="_unaligned.fa")
-            for read_file_pair in read_file_pairs]
+        # The read of both files that are not matchend will be dumped
+        # together into on file. Due to this there is only one file
+        # per pair.
+        self.unaligned_reads_paths = self._path_list(
+            self.unaligned_reads_folder, lib_names, 
+            appendix="_unaligned.fa")
         self._set_alignment_result_pathes(lib_names)
 
     def _set_alignment_result_pathes(self, lib_names):
@@ -281,9 +278,12 @@ class Paths(object):
         self.read_alignment_result_bam_prefixes_paths = self._path_list(
             self.read_alignments_folder, 
             lib_names, appendix="_alignments")
+        self.read_alignment_result_sam_paths = self._path_list(
+            self.read_alignments_folder, lib_names,
+            appendix="_alignments.sam")
         self.read_alignment_result_bam_paths = self._path_list(
             self.read_alignments_folder, lib_names, 
-            appendix="_alignments.bam")        
+            appendix="_alignments.bam") 
 
     def set_ref_seq_paths(self, ref_seq_files):
         self.ref_seq_paths = self._path_list(self.ref_seq_folder, ref_seq_files)

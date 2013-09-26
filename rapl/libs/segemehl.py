@@ -20,12 +20,22 @@ class Segemehl(object):
             call(segemehl_call)
 
     def align_reads(
-        self, read_file, index_file, fasta_files, output_file,
+        self, read_file_or_pair, index_file, fasta_files, output_file,
         hit_strategy=1, accuracy=95, evalue=5.0, threads=1, split=False, 
         segemehl_format=False, order=False, nonmatch_file=None,
-        other_parameters=None):
-        segemehl_call = [
-            self._segemehl_bin, "--query", read_file,
+        other_parameters=None, paired_end=False):
+        if paired_end is False:
+            assert type(read_file_or_pair) == str 
+            segemehl_call = [
+                self._segemehl_bin, 
+                "--query", read_file_or_pair]
+        else:
+            assert type(read_file_or_pair) == list 
+            segemehl_call = [
+                self._segemehl_bin, 
+                "--query", read_file_or_pair[0],
+                "--mate", read_file_or_pair[1]]
+        segemehl_call += [
             "--index", index_file,
             "--database"] + fasta_files + [
             "--outfile", output_file, 
@@ -45,8 +55,10 @@ class Segemehl(object):
             segemehl_call += ["--silent"]
         if other_parameters:
             segemehl_call.append(other_parameters)
+        # Discard standard error output
         if self._show_progress is False:
             with open(os.devnull, "w") as devnull:
                 call(segemehl_call, stderr=devnull)
         else:
             call(segemehl_call)
+            
