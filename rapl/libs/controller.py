@@ -117,6 +117,30 @@ class Controller(object):
                 read_files_and_jobs[lib_name]  = executor.submit(
                     read_processor.process_single_end, read_path, 
                     processed_read_path)
+        self._evaluet_job_and_generate_stat_file(lib_name, read_files_and_jobs)
+
+    def _prepare_reads_paired_end(self):
+        read_files_and_jobs = {}
+        with concurrent.futures.ProcessPoolExecutor(
+            max_workers=self._args.processes) as executor:
+            for lib_name, read_path_pair, processed_read_path_pair in zip(
+                self._lib_names, self._paths.read_path_pairs, 
+                self._paths.processed_read_path_pairs):
+                for processed_read_path in processed_read_path_pair:
+                    if self._file_needs_to_be_created(
+                        processed_read_path) is False:
+                        continue
+                    read_processor = ReadProcessor(
+                        poly_a_clipping=False, 
+                        min_read_length=self._args.min_read_length)
+                read_files_and_jobs[lib_name]  = executor.submit(
+                    read_processor.process_paired_end, read_path_pair, 
+                    processed_read_path_pair)
+        self._evaluet_job_and_generate_stat_file(lib_name, read_files_and_jobs)
+
+    def _evaluet_job_and_generate_stat_file(
+        self, lib_name, read_files_and_jobs):
+        raw_stat_data_writer = RawStatDataWriter(pretty=True)
         # Evaluate thread outcome
         self._check_job_completeness(read_files_and_jobs.values())
         if self._file_needs_to_be_created(
@@ -129,20 +153,6 @@ class Controller(object):
              read_files_and_jobs.items()])
         raw_stat_data_writer.write(
             read_files_and_stats, self._paths.read_processing_stats_path)
-
-    def _prepare_reads_paired_end(self):
-        raw_stat_data_writer = RawStatDataWriter(pretty=True)
-        read_files_and_jobs = {}
-        for lib_name, read_path_pair, processed_read_path_pair in zip(
-            self._lib_names, self._paths.read_path_pairs, 
-            self._paths.processed_read_path_pairs):
-            # TODO 
-            # if self._file_needs_to_be_created(processed_read_path) is False:
-            #    continue
-            read_processor = ReadProcessor(
-                poly_a_clipping=False, min_read_length=self._args.min_read_length)
-            read_processor.process_paired_end(
-                read_path_pair, processed_read_path_pair)
 
     def _align_reads(self):
         """Manage the alignemnt of reads."""
