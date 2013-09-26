@@ -52,13 +52,21 @@ def main():
         help="Run segemehl with read splitting")
     read_aligning_parser.add_argument(
         "--poly_a_clipping", "-c", default=False,
-        action="store_true", help="Perform polyA tail clipping")
+        action="store_true", help="Perform polyA tail clipping. This option "
+        "cannot be used for paired-end reads.")
     read_aligning_parser.add_argument(
         "--force", "-f", default=False, action="store_true",
         help="Overwrite existing files.")
     read_aligning_parser.add_argument(
         "--progress", "-P", default=False, action="store_true",
         help="Show progress of the segemehl mapping.")
+    read_aligning_parser.add_argument(
+        "--paired_end", "-r", default=False, action="store_true",
+        help="Reads are origination from a paired-end sequencing run. The "
+        "members of a pair must be marked with '_p1' and '_p2' in front of "
+        "the file type suffixes (e.g. 'my_sample_p1.fa' and 'my_sample_p2.fa' "
+        "or 'my_sample_p1.fa.bz2' and 'my_sample_p2.fa.bz2'). This option "
+        "cannot be use with polyA tail clipping.")
     read_aligning_parser.set_defaults(func=align_reads)
 
     # Parameters for coverage file building

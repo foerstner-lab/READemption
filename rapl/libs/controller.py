@@ -32,7 +32,6 @@ class Controller(object):
         self._paths = Paths(args.project_path)
         self._read_files = None
         self._ref_seq_files = None
-        self._lib_names = None
 
     def create_project(self, version):
         """Create a new project."""
@@ -50,26 +49,37 @@ class Controller(object):
         """Perform the alignment of the reads."""
         self._test_folder_existance(
             self._paths.required_read_alignment_folders())
-        self._read_files = self._paths.get_read_files()
-        self._lib_names = self._paths.get_lib_names()
+        assert self._args.paired_end in [True, False]
         self._ref_seq_files = self._paths.get_ref_seq_files()
-        self._test_align_file_existance()
-        self._paths.set_read_files_dep_file_lists(
-            self._read_files, self._lib_names)
         self._paths.set_ref_seq_paths(self._ref_seq_files)
-        self._prepare_reads()
-        self._align_reads()
-        self._sam_to_bam()
-        self._generate_read_alignment_stats()
-        self._write_alignment_stat_table()
+        self._test_align_file_existance()
+        # Single end read
+        if self._args.paired_end is False:
+            self._read_files = self._paths.get_read_files()
+            self._lib_names = self._paths.get_lib_names_single_end()
+            self._paths.set_read_files_dep_file_lists_single_end(
+                self._read_files, self._lib_names)
+            self._prepare_reads_single_end()
+        # Paired end read
+        else:
+            self._read_file_pairs = self._paths.get_read_file_pairs()
+            self._lib_names = self._paths.get_lib_names_paired_end()
+            self._paths.set_read_files_dep_file_lists_paired_end(
+                self._read_file_pairs, self._lib_names)
+            self._prepare_reads_paired_end()
+        # TODO
+        # self._align_reads()
+        # self._sam_to_bam()
+        # self._generate_read_alignment_stats()
+        # self._write_alignment_stat_table()
 
     def _test_align_file_existance(self):
         """Test if the input file for the the align subcommand exist."""
-        if len(self._read_files) == 0:
+        if len(self._paths.get_read_files()) == 0:
             self._write_err_msg_and_quit("Error! No read libraries given!\n")
         if len(self._ref_seq_files ) == 0:
             self._write_err_msg_and_quit("Error! No reference sequence files given!\n")
-        
+
     def _test_folder_existance(self, task_specific_folders):
         """Test the existance of required folders."""
         for folder in (
@@ -90,7 +100,7 @@ class Controller(object):
             return False
         return True
 
-    def _prepare_reads(self):
+    def _prepare_reads_single_end(self):
         """Manage the prepartion of reads before the actual mappings."""
         raw_stat_data_writer = RawStatDataWriter(pretty=True)
         read_files_and_jobs = {}
@@ -105,7 +115,8 @@ class Controller(object):
                     poly_a_clipping=self._args.poly_a_clipping,
                     min_read_length=self._args.min_read_length)
                 read_files_and_jobs[lib_name]  = executor.submit(
-                    read_processor.process, read_path, processed_read_path)
+                    read_processor.process_single_end, read_path, 
+                    processed_read_path)
         # Evaluate thread outcome
         self._check_job_completeness(read_files_and_jobs.values())
         if self._file_needs_to_be_created(
@@ -118,6 +129,20 @@ class Controller(object):
              read_files_and_jobs.items()])
         raw_stat_data_writer.write(
             read_files_and_stats, self._paths.read_processing_stats_path)
+
+    def _prepare_reads_paired_end(self):
+        raw_stat_data_writer = RawStatDataWriter(pretty=True)
+        read_files_and_jobs = {}
+        for lib_name, read_path_pair, processed_read_path_pair in zip(
+            self._lib_names, self._paths.read_path_pairs, 
+            self._paths.processed_read_path_pairs):
+            # TODO 
+            # if self._file_needs_to_be_created(processed_read_path) is False:
+            #    continue
+            read_processor = ReadProcessor(
+                poly_a_clipping=False, min_read_length=self._args.min_read_length)
+            read_processor.process_paired_end(
+                read_path_pair, processed_read_path_pair)
 
     def _align_reads(self):
         """Manage the alignemnt of reads."""

@@ -1,4 +1,5 @@
 import os
+import sys
 
 class Paths(object):
 
@@ -138,9 +139,49 @@ class Paths(object):
         """Read the names of the read files."""
         return self._get_sorted_folder_content(self.read_fasta_folder)
 
-    def get_lib_names(self):
+    def get_read_file_pairs(self):
+        """Read the names of the read files as paired for paired end reads."""
+        read_files =self._get_sorted_folder_content(self.read_fasta_folder)
+        if len(read_files) % 2 != 0:
+            sys.stderr.write("Error: Number of files is unequal. This cannot be "
+                             "the case for paired end run data.\n")
+            sys.exit(1)
+        for read_file in read_files:
+            if not ("_p1" in read_file or "_p2" in read_file):
+                sys.stderr.write(
+                    "Error: You specified this as paired end run data but the "
+                    "file name '%s' does not contain '_p1' or '_p2'.\n")
+                sys.exit(1)
+        read_file_pairs = list(read_file_pair for read_file_pair in 
+                               zip(read_files[::2], read_files[1::2]))
+        for read_file_pair in read_file_pairs:
+            if read_file_pair[0] != read_file_pair[1].replace("_p2.", "_p1."):
+                sys.stderr.write("Error: Cannot detect pairs of paired end "
+                                 "sequenceing files. Please check that file "
+                                 "names contain '_p1' and '_p2'.\n")
+                sys.exit(1)
+        return read_file_pairs
+
+    def get_lib_names_single_end(self):
+        """Extract the suffux free name of single end libraries"""
         return [self._clean_file_name(file_name) 
                 for file_name in self.get_read_files()]
+
+    def get_lib_names_paired_end(self):
+        """Extract the suffux free name of paired end libraries
+
+        For each pair of read files one library name is returned.
+
+        """
+        p1_names = [self._clean_file_name(file_name) 
+                   for file_name in self.get_read_files()][::2]
+        for p1_name in p1_names:
+            if not p1_name.endswith("_p1"):
+                sys.error.write("Error: File '%s' should end with '_p1' but "
+                                "does not. Please check file name convention "
+                                "for paired end reads.\n" % p1_name)
+                sys.exit(1)
+        return [p1_name[:-3] for p1_name in p1_names]
 
     def _clean_file_name(self, file_name):
         for suffix in ["bz2", "BZ", "gz", "GZ", "fa", "fasta", "FA", "FASTA"]:
@@ -203,7 +244,7 @@ class Paths(object):
     def required_viz_deseq_folders(self):
         return [self.viz_deseq_base_folder]
 
-    def set_read_files_dep_file_lists(self, read_files, lib_names):
+    def set_read_files_dep_file_lists_single_end(self, read_files, lib_names):
         self.read_paths = self._path_list(self.read_fasta_folder, read_files)
         self.processed_read_paths = self._path_list(
             self.processed_reads_folder, lib_names,
@@ -211,16 +252,38 @@ class Paths(object):
         self.read_alignment_result_sam_paths = self._path_list(
             self.read_alignments_folder, lib_names,
             appendix="_alignments.sam")
+        self.unaligned_reads_paths = self._path_list(
+            self.unaligned_reads_folder, lib_names, 
+            appendix="_unaligned.fa")
+        self._set_alignment_result_pathes(lib_names)
+
+    def set_read_files_dep_file_lists_paired_end(
+        self, read_file_pairs, lib_names):
+        self.read_path_pairs = [
+            self._path_list(self.read_fasta_folder, read_file_pair) 
+            for read_file_pair in read_file_pairs]
+        self.processed_read_path_pairs = [
+            self._path_list(
+                self.processed_reads_folder, 
+                [self._clean_file_name(read_file) 
+                 for read_file in read_file_pair], appendix="_processed.fa.gz")
+            for read_file_pair in read_file_pairs]
+        self.unaligned_reads_path_pairs = [
+            self._path_list(
+                self.unaligned_reads_folder,
+                [self._clean_file_name(read_file) 
+                 for read_file in read_file_pair], appendix="_unaligned.fa")
+            for read_file_pair in read_file_pairs]
+        self._set_alignment_result_pathes(lib_names)
+
+    def _set_alignment_result_pathes(self, lib_names):
         # samtool appends ".bam" so only the prefix is required
         self.read_alignment_result_bam_prefixes_paths = self._path_list(
             self.read_alignments_folder, 
             lib_names, appendix="_alignments")
         self.read_alignment_result_bam_paths = self._path_list(
             self.read_alignments_folder, lib_names, 
-            appendix="_alignments.bam")
-        self.unaligned_reads_paths = self._path_list(
-            self.unaligned_reads_folder, lib_names, 
-            appendix="_unaligned.fa")
+            appendix="_alignments.bam")        
 
     def set_ref_seq_paths(self, ref_seq_files):
         self.ref_seq_paths = self._path_list(self.ref_seq_folder, ref_seq_files)
