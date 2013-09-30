@@ -25,7 +25,7 @@ class GeneQuantiViz(object):
             lambda: defaultdict(lambda: defaultdict(float)))
         for row in csv.reader(
             open(self._gene_wise_quanti_combined_path), delimiter="\t"):
-            if len(row[0]) == 0:
+            if row[0].startswith("Orientation"):
                 continue
             for index, cell in enumerate(row[10:]):
                 self._lib_names_and_countings[
