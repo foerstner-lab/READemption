@@ -275,12 +275,17 @@ class Controller(object):
 
         """
         self._test_folder_existance(self._paths.required_coverage_folders())
-        lib_names = self._paths.get_lib_names()
-        self._paths.set_read_files_dep_file_lists(
-            self._paths.get_read_files(), lib_names)
         raw_stat_data_reader = RawStatDataReader()
         alignment_stats = [raw_stat_data_reader.read(
                 self._paths.read_aligner_stats_path)]
+        lib_names = list(alignment_stats[0].keys())
+        was_paired_end_alignment = self._was_paired_end_alignment(lib_names)
+        if was_paired_end_alignment == False:
+            self._paths.set_read_files_dep_file_lists_single_end (
+                self._paths.get_read_files(), lib_names)
+        else: 
+            self._paths.set_read_files_dep_file_lists_paired_end (
+                self._paths.get_read_files(), lib_names)
         # Get number of aligned of number of uniquely aligned reads
         if self._args.unique_only is False:
             aligned_counting = "no_of_aligned_reads"
@@ -419,6 +424,12 @@ class Controller(object):
         self._check_job_completeness(jobs)
         self._gene_quanti_create_overview(
             annotation_files, self._paths.annotation_paths, lib_names)
+
+    def _was_paired_end_alignment(self, lib_names):
+        """Check if the mapping was done in paired- or single-end mode"""
+        if len(lib_names) * 2 == len(self._paths.get_read_files()):
+            return True
+        return False
 
     def _quantify_gene_wise(self, lib_name, read_alignment_path, 
                     norm_by_alignment_freq,  norm_by_overlap_freq, 

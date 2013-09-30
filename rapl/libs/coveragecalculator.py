@@ -51,7 +51,8 @@ class CoverageCalculator(object):
         bam_fh.close()
 
     def _add_whole_alignment_coverage(self, entry, increment, start, end):
-        if entry.is_reverse is False:
+        if ((entry.is_reverse is False and entry.is_read2 == False) or
+            (entry.is_reverse is True and entry.is_read2 == True)):
             self._coverages["forward"][start:end] = [
                 coverage + increment for coverage in
                 self._coverages["forward"][start:end]]
@@ -61,10 +62,10 @@ class CoverageCalculator(object):
                 self._coverages["reverse"][start:end]]
 
     def _add_first_base_coverage(self, entry, increment, start, end):
-        if entry.is_reverse is False:
+        if ((entry.is_reverse is False and entry.is_read2 == False) or
+            (entry.is_reverse is True and entry.is_read2 == True)):
             self._coverages["forward"][start] = self._coverages[
                 "forward"][start] + increment
         else:
             self._coverages["reverse"][end-1] = self._coverages[
                     "reverse"][end-1] - increment
-
