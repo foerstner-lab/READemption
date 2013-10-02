@@ -47,9 +47,6 @@ class CoverageCalculator(object):
     def _open_bam_file(self, bam_file):
         return pysam.Samfile(bam_file)
 
-    def _close_bam_fh(self, bam_fh):
-        bam_fh.close()
-
     def _add_whole_alignment_coverage(self, entry, increment, start, end):
         if ((entry.is_reverse is False and entry.is_read2 == False) or
             (entry.is_reverse is True and entry.is_read2 == True)):
