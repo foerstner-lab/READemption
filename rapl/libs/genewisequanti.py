@@ -73,9 +73,15 @@ class GeneWiseQuantification(object):
 
     def _same_strand(self, entry, alignment):
         assert entry.strand in ["+", "-"]
-        if ((entry.strand == "+" and not alignment.is_reverse) or
-            (entry.strand == "-" and alignment.is_reverse)):
-            return True
+        if alignment.is_read2 == False:
+            if ((entry.strand == "+" and alignment.is_reverse is False) or
+                (entry.strand == "-" and alignment.is_reverse is True)):
+                return True
+        # Mate pair for paired end sequencing
+        elif alignment.is_read2 == True:
+            if ((entry.strand == "+" and alignment.is_reverse is True) or
+                (entry.strand == "-" and alignment.is_reverse is False)):
+                return True
         return False 
 
     def _fraction_calc_method(self):
@@ -121,18 +127,12 @@ class GeneWiseQuantification(object):
             if alignment.overlap(entry.start-1, entry.end) < self._min_overlap:
                 continue
             if self._skip_antisense:
-                if self._is_antisense(alignment, entry):
+                if not self._same_strand(entry, alignment):
                     continue
             if self._unique_only:
                 if dict(alignment.tags)["NH"] != 1:
                     continue
             yield(alignment)
-
-    def _is_antisense(self, alignment, entry):
-        if ((alignment.is_reverse is False and entry == "-") or
-            (alignment.is_reverse is True and entry == "+")):
-            return True
-        return False 
 
     def _alignment_id(self, alignment):
         return (":".join([str(alignment.tid), alignment.qname, str(alignment.flag),

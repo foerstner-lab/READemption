@@ -397,7 +397,7 @@ class Controller(object):
                 raise(job.exception())
 
     def quantify_gene_wise(self):
-        """Manage the counting of alinged read per gene."""
+        """Manage the counting of aligned reads per gene."""
         self._test_folder_existance(
             self._paths.required_gene_quanti_folders())
         norm_by_alignment_freq = True
@@ -406,11 +406,19 @@ class Controller(object):
             norm_by_alignment_freq = False
         if self._args.skip_norm_by_overlap_freq:
             norm_by_overlap_freq = False
-        lib_names = self._paths.get_lib_names()
+        raw_stat_data_reader = RawStatDataReader()
+        alignment_stats = [raw_stat_data_reader.read(
+                self._paths.read_aligner_stats_path)]
+        lib_names = list(alignment_stats[0].keys())
         annotation_files = self._paths.get_annotation_files()
-        self._paths.set_annotation_paths(annotation_files)
-        self._paths.set_read_files_dep_file_lists(
-            self._paths.get_read_files(), lib_names)
+        self._paths.set_annotation_paths(annotation_files)        
+        was_paired_end_alignment = self._was_paired_end_alignment(lib_names)
+        if was_paired_end_alignment == False:
+            self._paths.set_read_files_dep_file_lists_single_end(
+                self._paths.get_read_files(), lib_names)
+        else: 
+            self._paths.set_read_files_dep_file_lists_paired_end(
+                self._paths.get_read_files(), lib_names)
         jobs = []
         with concurrent.futures.ProcessPoolExecutor(
             max_workers=self._args.processes) as executor:
@@ -464,7 +472,7 @@ class Controller(object):
 
     def _gene_quanti_create_overview(
             self, annotation_files, annotation_paths, lib_names):
-        """Create na overview table of all gene quantification for all libs."""
+        """Create an overview table of all gene quantification for all libs."""
         gene_wise_overview = GeneWiseOverview(
             allowed_features_str=self._args.allowed_features,
             skip_antisense=self._args.skip_antisense)
@@ -513,7 +521,7 @@ class Controller(object):
         self._test_folder_existance(
             self._paths.required_deseq_folders())
         arg_libs = [self._paths._clean_file_name(lib) for lib in 
-                self._args.libs.split(",")]
+                    self._args.libs.split(",")]
         conditions = self._args.conditions.split(",")
         self._check_deseq_args(arg_libs, conditions)
         deseq_runner = DESeqRunner(
@@ -537,14 +545,17 @@ class Controller(object):
                 "(= %s elements)\nand \n%s (= %s elements).\n" % (
                     self._args.libs, len(arg_libs), self._args.conditions,
                     len(conditions)))
-        libs = self._paths.get_lib_names()
-        if len(libs) != len(arg_libs):
+        raw_stat_data_reader = RawStatDataReader()
+        alignment_stats = [raw_stat_data_reader.read(
+                self._paths.read_aligner_stats_path)]
+        lib_names = list(alignment_stats[0].keys())
+        if len(lib_names) != len(arg_libs):
             self._write_err_msg_and_quit(
                 "The number of read libraries is lower or higher than "
                 "expected. The following read libs are available: %s\nThe "
                 "following read list string is suggested: \"%s\"\n" % (
-                    ", ".join(read_files), ",".join(libs)))
-        for lib in libs:
+                    ", ".join(read_files), ",".join(lib_names)))
+        for lib in lib_names:
             if lib not in arg_libs:
                 self._write_err_msg_and_quit(
                     "The library \"%s\" is not present in your list of "
