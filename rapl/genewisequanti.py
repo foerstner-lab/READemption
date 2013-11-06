@@ -1,6 +1,6 @@
 import csv
 import os.path
-from libs.gff3 import Gff3Parser
+from rapllib.gff3 import Gff3Parser
 import pysam
 
 class GeneWiseQuantification(object):

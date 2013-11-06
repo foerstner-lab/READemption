@@ -2,8 +2,7 @@ import csv
 import sys
 from collections import defaultdict
 from functools import reduce
-sys.path.append(".")
-from libs.fasta import FastaParser
+from rapllib.fasta import FastaParser
 import pysam
 
 class ReadAlignerStats(object):

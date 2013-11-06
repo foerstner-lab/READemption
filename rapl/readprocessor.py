@@ -1,8 +1,8 @@
 import gzip
 import bz2
 from collections import defaultdict
-from libs.fasta import FastaParser
-from libs.polyaclipper import PolyAClipper
+from rapllib.fasta import FastaParser
+from rapllib.polyaclipper import PolyAClipper
 
 class ReadProcessor(object):
 

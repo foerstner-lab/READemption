@@ -1,6 +1,5 @@
 import sys
-sys.path.append(".")
-from libs.segemehl import Segemehl
+from rapllib.segemehl import Segemehl
 
 class ReadAligner(object):
     """An abstraction layer for different short read aligners."""

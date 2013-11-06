@@ -1,7 +1,6 @@
 import sys
-sys.path.append(".")
-from libs.fasta import FastaParser
-from libs.polyaclipper import PolyAClipper
+from rapllib.fasta import FastaParser
+from rapllib.polyaclipper import PolyAClipper
 
 class ReadClipper(object):
 
@@ -12,9 +11,9 @@ class ReadClipper(object):
     def clip(self, input_paths, output_pathes):
         for input_path, output_path in zip(
             input_paths, output_pathes):
-            with (open(input_path) as input_fh, 
-                  open(output_path, "w") as output_fh):
-                self._clip_entries_in_file(input_fh, output_fh)
+            with open(input_path) as input_fh:
+                  with open(output_path, "w") as output_fh:
+                      self._clip_entries_in_file(input_fh, output_fh)
 
     def _compare_input_paths(self):
         if len(input_paths) != len(output_pathes):

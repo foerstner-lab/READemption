@@ -3,7 +3,7 @@
 """RAPL - A RNA-seq Analysis PipeLine"""
 
 import argparse
-from libs.controller import Controller
+from rapllib.controller import Controller
 
 __author__ = "Konrad Foerstner <konrad@foerstner.org>"
 __copyright__ = "2011-2013 by Konrad Foerstner <konrad@foerstner.org>"
