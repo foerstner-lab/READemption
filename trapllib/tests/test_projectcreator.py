@@ -3,7 +3,7 @@ import os
 import sys
 import shutil
 sys.path.append(".")
-from libs.projectcreator import ProjectCreator
+from trapllib.projectcreator import ProjectCreator
 
 class TestProjectCreator(unittest.TestCase):
 

@@ -2,7 +2,7 @@ import sys
 from io import StringIO
 import unittest
 sys.path.append(".")
-from libs.readalignerstats import ReadAlignerStats
+from trapllib.readalignerstats import ReadAlignerStats
 
 class TestReadAlignerStats(unittest.TestCase):
 

@@ -2,19 +2,19 @@ import concurrent.futures
 import os
 import sys
 import json
-from rapllib.coveragecalculator import CoverageCalculator
-from rapllib.deseq import DESeqRunner
-from rapllib.fasta import FastaParser
-from rapllib.genewisequanti import GeneWiseQuantification, GeneWiseOverview
-from rapllib.paths import Paths
-from rapllib.projectcreator import ProjectCreator
-from rapllib.rawstatdata import RawStatDataWriter, RawStatDataReader
-from rapllib.readaligner import ReadAligner
-from rapllib.readalignerstats import ReadAlignerStats
-from rapllib.readalignerstatstable import ReadAlignerStatsTable
-from rapllib.readprocessor import ReadProcessor
-from rapllib.sambamconverter import SamToBamConverter
-from rapllib.wiggle import WiggleWriter
+from trapllib.coveragecalculator import CoverageCalculator
+from trapllib.deseq import DESeqRunner
+from trapllib.fasta import FastaParser
+from trapllib.genewisequanti import GeneWiseQuantification, GeneWiseOverview
+from trapllib.paths import Paths
+from trapllib.projectcreator import ProjectCreator
+from trapllib.rawstatdata import RawStatDataWriter, RawStatDataReader
+from trapllib.readaligner import ReadAligner
+from trapllib.readalignerstats import ReadAlignerStats
+from trapllib.readalignerstatstable import ReadAlignerStatsTable
+from trapllib.readprocessor import ReadProcessor
+from trapllib.sambamconverter import SamToBamConverter
+from trapllib.wiggle import WiggleWriter
 
 class Controller(object):
 
@@ -567,7 +567,7 @@ class Controller(object):
 
     def viz_align(self):
         """Generate plots based on the read processing and mapping"""
-        from rapllib.vizalign import AlignViz
+        from trapllib.vizalign import AlignViz
         align_viz = AlignViz(
             self._paths.get_lib_names(),
             self._paths.read_processing_stats_path,
@@ -580,7 +580,7 @@ class Controller(object):
 
     def viz_gene_quanti(self):
         """Generate plots based on the gene-wise read countings"""
-        from rapllib.vizgenequanti import GeneQuantiViz
+        from trapllib.vizgenequanti import GeneQuantiViz
         gene_quanti_viz = GeneQuantiViz(
             self._paths.gene_wise_quanti_combined_path, 
             self._paths.get_lib_names())
@@ -592,7 +592,7 @@ class Controller(object):
 
     def viz_deseq(self):
         """Generate plots based on the DESeq analysis"""
-        from rapllib.vizdeseq import DESeqViz
+        from trapllib.vizdeseq import DESeqViz
         deseq_path_template = (
             self._paths.deseq_raw_folder + "/deseq_comp_%s_vs_%s.csv")
         deseq_viz = DESeqViz(self._paths.deseq_script_path, deseq_path_template)

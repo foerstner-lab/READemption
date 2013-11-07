@@ -3,7 +3,7 @@ import sys
 import unittest
 import shutil
 sys.path.append(".")
-from libs.controller import Controller
+from trapllib.controller import Controller
 
 class ArgMock(object):
     project_path = "a_test_project"

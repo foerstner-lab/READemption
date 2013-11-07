@@ -2,7 +2,7 @@ import unittest
 import sys
 from io import StringIO
 sys.path.append(".")
-from libs.readclipper import ReadClipper
+from trapllib.readclipper import ReadClipper
 
 class TestReadClipper(unittest.TestCase):
 
