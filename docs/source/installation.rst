@@ -4,7 +4,7 @@ Installation
 Requirements
 ------------
 
-RAPL was developed using Python 3.3 and for best performance the user
+TRAPL was developed using Python 3.3 and for best performance the user
 is advised to use this version, too. Any other Python 3 version should
 work as well. Also Python 2.7 can be used if the library XXX is
 installed. In any case, the third party module `pysam

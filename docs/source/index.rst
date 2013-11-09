@@ -1,21 +1,21 @@
-RAPL - The RNA-Seq Analysis PipeLine 
+TRAPL - The RNA-Seq Analysis PipeLine 
 *************************************
 
 Table of content
 ================
 
 .. toctree::
-   :maxdepth: 1
+   :maxdepth: 2
 
    index	      
    subcommands      
    installation
    versions	      
 
-What is RAPL?
-=============
+What is TRAPL?
+==============
 
-*RNA-Seq Analysis PipeLine* (*RAPL*) is - as the name implies - a
+*The RNA-Seq Analysis PipeLine* (*TRAPL*) is - as the name implies - a
 pipeline for the computational analysis of RNA-Seq data. It was
 originally developed to process dRNA-Seq reads (as introduced by
 Sharma *et al.*, Nature,
@@ -24,25 +24,25 @@ process data generated in different experimental setups and
 originating from all domain of life. It was applied to analyze
 numerous data sets.
 
-RAPL follows the principal of *convention over configuration*
+TRAPL follows the principal of *convention over configuration*
 
 Cite
 ====
 
 If you use RALP for your research please cite the following reference:
-*RNA-Seq Analysis PipeLine (RAPL) – A tool for the computational
+*The RNA-Seq Analysis PipeLine (TRAPL) – A tool for the computational
 analysis of deep-sequencing based transcriptome data*.
 Konrad U. Förstner, Jörg Vogel, Cynthia M. Sharma; (in preparation)
 
 Source code
 ===========
 
-The source code of RAPL can be found at https://github.com/konrad/rapl.
+The source code of TRAPL can be found at https://github.com/konrad/rapl.
 
 License
 =======
 
-RAPL is open source software and available under the ISC license.
+TRAPL is open source software and available under the ISC license.
 
 Copyright (c) 2013, Konrad Förstner <konrad.foerstner@uni-wuerzburg.de>
 

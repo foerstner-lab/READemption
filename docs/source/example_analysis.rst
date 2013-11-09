@@ -9,7 +9,7 @@ Generating a project
 
 Creating a new project::
 
-  $ python3.3 rapl/rapl.py create my_rna_seq_analysis
+  $ trapl create my_rna_seq_analysis
   Created folder "my_rna_seq_analysis" and required subfolders.
   Please copy read files into folder "my_rna_seq_analysis/input/reads" and reference sequences files into folder "my_rna_seq_analysis/input/reference_sequences".
 
