@@ -62,8 +62,8 @@ def main():
         help="Show progress of the segemehl mapping.")
     read_aligning_parser.add_argument(
         "--paired_end", "-r", default=False, action="store_true",
-        help="Reads are origination from a paired-end sequencing run. The "
-        "members of a pair must be marked with '_p1' and '_p2' in front of "
+        help="Use this if reads are originating from a paired-end sequencing. "
+        "The members of a pair must be marked with '_p1' and '_p2' in front of "
         "the file type suffixes (e.g. 'my_sample_p1.fa' and 'my_sample_p2.fa' "
         "or 'my_sample_p1.fa.bz2' and 'my_sample_p2.fa.bz2'). This option "
         "cannot be use with polyA tail clipping.")
