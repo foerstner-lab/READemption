@@ -5,3 +5,7 @@ package:
 
 html_doc:
 	cd docs && make html && cd ..
+
+show_html_docs:
+	firefox docs/build/html/index.html &
+
