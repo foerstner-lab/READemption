@@ -24,7 +24,7 @@ class Paths(object):
     def _set_input_folder_names(self):
         self.read_fasta_folder = "%s/reads" % self.input_folder
         self.ref_seq_folder = "%s/reference_sequences" % self.input_folder
-        self.annotation_folder = "%s/annotation_files" % self.input_folder
+        self.annotation_folder = "%s/annotations" % self.input_folder
 
     def _set_read_alignment_folder_names(self):
         self.align_base_folder = "%s/align" % self.output_folder
