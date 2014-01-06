@@ -215,6 +215,13 @@ class GeneWiseOverview(object):
         """
         Formula in Supplemenatary Material S1 of
         http://www.nature.com/nmeth/journal/v5/n7/full/nmeth.1226.html
+
+        R = (10^9 * C) / (N * L)
+
+        with C = is the number of mappable reads that fell onto the gene 
+             N = total number of mappable read
+             L = length of the gene
+        
         """
         return str(float(counting)*float(10**9) /
                    (float(total_no_of_aligned_reads)*float(length)))
