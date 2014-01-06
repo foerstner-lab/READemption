@@ -1,64 +1,63 @@
 TRAPL - The RNA-Seq Analysis PipeLine 
 *************************************
-
 Table of content
 ================
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 1
 
-   index	      
-   subcommands      
+   index
    installation
+   subcommands      
+   example_analysis
+   license
    versions	      
 
-What is TRAPL?
-==============
+TRAPL in a nutshell
+===================
 
 *The RNA-Seq Analysis PipeLine* (*TRAPL*) is - as the name implies - a
-pipeline for the computational analysis of RNA-Seq data. It was
-originally developed to process dRNA-Seq reads (as introduced by
-Sharma *et al.*, Nature,
-2010) originating from bacterial samples. Meanwhile is was extended to
-process data generated in different experimental setups and
-originating from all domain of life. It was applied to analyze
-numerous data sets.
+pipeline for the computational evaluation of RNA-Seq data. It was
+originally developed at the `IMIB/ZINF
+<http://www.imib-wuerzburg.de/>`_ to process dRNA-Seq reads (as
+introduced by Sharma *et al.*, Nature, 2010 (`Pubmed
+<http://www.ncbi.nlm.nih.gov/pubmed/20164839>`_)) originating from
+bacterial samples. Meanwhile is has been extended to process data
+generated in different experimental setups and originating from all
+domains of life and is under `active developtment
+<https://github.com/konrad/trapl>`_. The `subcommands
+<subcommands.html>`_ which are provided by command-line interface
+cover read processing and aligning, coverage plot generation, gene
+expression quantification as well as differential gene expression
+analysis. TRAPL was applied to analyze numerous data sets. In order to
+set up analyses quickly TRAPL follows the principal of *convention
+over configuration*: Once the input files are copied into defined
+folders no further parameters have to be given. Still, TRAPL's
+behavior can be adapted to specific needs of the user. This tools is
+available as open source under the `ICS <https://en.wikipedia.org/wiki/ISC_license>`_
+open source license.
 
-TRAPL follows the principal of *convention over configuration*
+Download
+========
 
-Cite
-====
-
-If you use RALP for your research please cite the following reference:
-*The RNA-Seq Analysis PipeLine (TRAPL) – A tool for the computational
-analysis of deep-sequencing based transcriptome data*.
-Konrad U. Förstner, Jörg Vogel, Cynthia M. Sharma; (in preparation)
+TRAPL can be download from `its PyPI page
+<https://pypi.python.org/pypi/trapl/>`_. Please read the
+`installation instructions <installation.html>`_.
 
 Source code
 ===========
 
-The source code of TRAPL can be found at https://github.com/konrad/rapl.
+The source code of TRAPL can be found at https://github.com/konrad/trapl.
 
-License
-=======
+Cite
+====
 
-TRAPL is open source software and available under the ISC license.
-
-Copyright (c) 2013, Konrad Förstner <konrad.foerstner@uni-wuerzburg.de>
-
-Permission to use, copy, modify, and/or distribute this software for
-any purpose with or without fee is hereby granted, provided that the
-above copyright notice and this permission notice appear in all
-copies.
-
-THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL
-WARRANTIES WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED
-WARRANTIES OF MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE
-AUTHOR BE LIABLE FOR ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL
-DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR
-PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER
-TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
-PERFORMANCE OF THIS SOFTWARE.
+If you apply TRALP in you data analysis please cite the following
+reference: *The RNA-Seq Analysis PipeLine (TRAPL) – A tool for the
+computational analysis of deep-sequencing based transcriptome data*.
+Konrad U. Förstner, Jörg Vogel, Cynthia M. Sharma; (in preparation). A
+`pre-preprint version <http://biorxiv.org/content/early/2014/XXX>`_ of the
+manuscript is hosted at bioRxiv.
 
 Contact
 =======
