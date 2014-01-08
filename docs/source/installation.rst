@@ -35,7 +35,8 @@ Before starting it is a good idea to update the package list::
 
   sudo apt-get update
 
-in Ubuntu 13.10 is already installed. If this is not the case install::
+Ubuntu 13.10 has Python 3.3 already installed. If this is not the case
+install::
 
  sudo apt-get install python3
 
