@@ -37,15 +37,14 @@ class AlignViz(object):
         pp = PdfPages(output_file)
         for lib in self._lib_names:
             lengths_and_freqs = self._read_processing_stats[lib][dict_key]
-            lengths =  []
-            for length, freq in lengths_and_freqs.items():
-                lengths = lengths + ([int(length)] * int(freq))
-            fig = self._generate_histogram(lengths, title_template % lib)
+            fig = self._generate_histogram(lengths_and_freqs, title_template % lib)
             pp.savefig()
         pp.close()
     
-    def _generate_histogram(self, list_of_values, title):
+    def _generate_histogram(self, lengths_and_freqs, title):
         fig = plt.figure()
+        lengths = np.array([int(length) for length in lengths_and_freqs.keys()])
+        freqs = np.array([int(freq) * 1000 for freq in lengths_and_freqs.values()])
         ax = fig.add_subplot(111)
         plt.title(title)
         plt.xlabel("Read length [nt]")
@@ -53,9 +52,6 @@ class AlignViz(object):
         font = {'size' : 8}
         matplotlib.rc('font', **font)
         ax.xaxis.set_ticks_position("bottom")
-        hist, bins = np.histogram(
-            list_of_values,bins=max(list_of_values)-1, 
-            range=(0,max(list_of_values)-1))
-        width = 0.7 * (bins[1]-bins[0])
-        center = (bins[:-1] + bins[1:])/2
-        plt.bar(center, hist, align = 'center', width = width, color="black")
+        plt.xticks(np.arange(0, max(lengths)+1, 10.0))
+        plt.bar(lengths, freqs, align="center", color="black", edgecolor="none")
+        plt.xlim([0,max(lengths)+1])
