@@ -569,7 +569,7 @@ class Controller(object):
         """Generate plots based on the read processing and mapping"""
         from trapllib.vizalign import AlignViz
         align_viz = AlignViz(
-            self._paths.get_lib_names(),
+            self._paths.get_lib_names_single_end(),
             self._paths.read_processing_stats_path,
             self._paths.read_aligner_stats_path)
         align_viz.read_stat_files()
@@ -583,7 +583,7 @@ class Controller(object):
         from trapllib.vizgenequanti import GeneQuantiViz
         gene_quanti_viz = GeneQuantiViz(
             self._paths.gene_wise_quanti_combined_path, 
-            self._paths.get_lib_names())
+            self._paths.get_lib_names_single_end())
         gene_quanti_viz.parse_input_table()
         gene_quanti_viz.plot_correlations(
             self._paths.viz_gene_quanti_scatter_plot_path)
