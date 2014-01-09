@@ -1,3 +1,12 @@
+v0.1.7 (2014-01-09)
+- Package generation for distribution
+- Name change from RAPL to TRAPL due to name clash with other tool
+- Add support for paired end reads
+- Documentation extention and futher comments
+- Several fixes and minor changes
+- Cleaning
+- Add a Makefile for import dev tasks
+
 v0.1.6 (2013-09-16)
 - Change coverage normalization for the case that only uniquely aligned
   reads are taken into account

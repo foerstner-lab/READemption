@@ -5,7 +5,7 @@ except ImportError:
 
 setup(
     name='trapl',
-    version='0.1.6',
+    version='0.1.7',
     packages=['trapllib', 'tests'],
     author='Konrad U. Förstner',
     author_email='konrad@foerstner.org',
