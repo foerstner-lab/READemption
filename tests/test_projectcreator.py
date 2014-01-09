@@ -29,14 +29,5 @@ class TestProjectCreator(unittest.TestCase):
         for subfolder in subfolders:
             assert(os.path.exists(subfolder))
 
-    def test_create_config_file(self):
-        file_name = "%s/test_rapl_file.json" % self.root_folder_name
-        self.projectcreator.create_root_folder(self.root_folder_name)
-        self.projectcreator.create_config_file(file_name)
-        fh = open(file_name)
-        content = fh.read()
-        fh.close()
-        self.assertEqual(content, '{"annotation_and_genomes_files": {}}')
-
 if __name__ == "__main__":
     unittest.main()
