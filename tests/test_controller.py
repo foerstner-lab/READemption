@@ -12,6 +12,12 @@ class ArgMock(object):
     threads = 1
     segemehl_accuracy = 95
     segemehl_evalue = 5.0
+    paired_end = False
+    processes = 1
+    force = False
+    poly_a_clipping = True
+    progress = False
+    split = False
 
 class TestController(unittest.TestCase):
 
@@ -27,11 +33,11 @@ class TestController(unittest.TestCase):
 
     def _generate_input_fasta_files(self):
         genome_fh = open("%s/%s" % (
-                self.controller.paths.genome_folder, "agenome.fa"), "w")
+                self.controller._paths.ref_seq_folder, "agenome.fa"), "w")
         read_fh_1 = open("%s/%s" % (
-                self.controller.paths.read_fasta_folder, "libfoo.fa"), "w")
+                self.controller._paths.read_fasta_folder, "libfoo.fa"), "w")
         read_fh_2 = open("%s/%s" % (
-                self.controller.paths.read_fasta_folder, "libbar.fa"), "w")
+                self.controller._paths.read_fasta_folder, "libbar.fa"), "w")
         genome_fh.write(self.example_data.genome_fasta)
         genome_fh.close()
         read_fh_1.write(self.example_data.read_fasta_1)
@@ -40,10 +46,8 @@ class TestController(unittest.TestCase):
         read_fh_2.close()
 
     def _generate_mapping_files(self):
-        self.controller.paths.set_read_files_dep_file_lists(
-            ["libfoo.fa", "libbar.fa"], 12)
         for file_path, sam_content in zip(
-            self.controller.paths.read_mapping_result_sam_paths, 
+            self.controller._paths.read_mapping_result_sam_paths, 
             [self.example_data.sam_content_1, 
              self.example_data.sam_content_2]):
             mapping_fh = open(file_path, "w")
@@ -53,8 +57,8 @@ class TestController(unittest.TestCase):
     def _generate_annotation_files(self):
         annotation_fh = open(
             "%s/some_annos.gff" % 
-            self.controller.paths.annotation_folder, "w")
-        print(self.controller.paths.annotation_folder)
+            self.controller._paths.annotation_folder, "w")
+        print(self.controller._paths.annotation_folder)
         annotation_fh.write(self.example_data.gff_content_1)
         annotation_fh.close()
         
@@ -62,76 +66,26 @@ class TestController(unittest.TestCase):
         if os.path.exists(self.test_project_name):
             shutil.rmtree(self.test_project_name)
 
-class TestControllerStartProject(TestController):
+class TestControllerCreateProject(TestController):
 
-    def test_start_project(self):
-        self.controller.start_project()
+    def test_create_project(self):
+        self._version = 0.1
+        self.controller.create_project(self._version)
         self.assertEqual(
-            list(os.listdir(self.test_project_name)), 
-            ['rapl.config', 'input', 'output'])
+            set(list(os.listdir(self.test_project_name))), 
+            set(['input', 'output']))
         self._remove_project_folder()
 
-class TestControllerReadMapping(TestController):
+class TestControllerReadAligning(TestController):
 
-    def test_read_mapping(self):
-        self.controller.start_project()
-        self.controller.paths._set_folder_names()
-        self.controller.paths._set_static_file_names()
+    def test_read_aligning(self):
+        self._version = 0.1
+        self.controller.create_project(self._version)
+        self.controller._paths._set_folder_names()
         self._generate_input_fasta_files()
         # If number of reads is less than the number of threads
         # segemehl stops. So set the number of threads to 1
-        self.controller.parameters.segemehl_number_of_threads = 1
-        self.controller.map_reads()
-        self._remove_project_folder()
-
-class TestControllerGRCreation(TestController):
-
-    def test_create_gr_files(self):
-        self.controller.start_project()
-        self.controller.paths._set_folder_names()
-        self.controller.paths._set_static_file_names()
-        self._generate_input_fasta_files()
-        self._generate_mapping_files()
-        self.controller.create_gr_files()
-        self.assertEqual(
-            sorted(list(os.listdir(self.controller.paths.gr_folder))),
-            ["libbar.fa_in_agenome.fa.minus_strand.gr",
-             "libbar.fa_in_agenome.fa.plus_strand.gr",
-             "libfoo.fa_in_agenome.fa.minus_strand.gr",
-             "libfoo.fa_in_agenome.fa.plus_strand.gr"])
-        self.assertEqual(
-            sorted(list(os.listdir(
-                        self.controller.paths.gr_folder_read_normalized))),
-            ["libbar.fa_in_agenome.fa_norm_by_2.0_mult_by_2.0.minus_strand.gr",
-             "libbar.fa_in_agenome.fa_norm_by_2.0_mult_by_2.0.plus_strand.gr",
-             "libfoo.fa_in_agenome.fa_norm_by_2.0_mult_by_2.0.minus_strand.gr",
-             "libfoo.fa_in_agenome.fa_norm_by_2.0_mult_by_2.0.plus_strand.gr"])
-        self._remove_project_folder()
-
-class TestControllerAnnotationOverlap(TestController):
-    
-    def test_search_annotation_overlaps(self):
-        self.controller.start_project()
-        self.controller.paths._set_folder_names()
-        self.controller.paths._set_static_file_names()
-        self._generate_input_fasta_files()
-        self._generate_mapping_files()
-        self._generate_annotation_files()
-        self.controller.search_annotation_overlaps()
-        self.assertEqual(
-            sorted(list(os.listdir(
-                        self.controller.paths.annotation_hit_folder))),
-            ['libbar.fa_annotation_overlaps.txt', 
-             'libfoo.fa_annotation_overlaps.txt'])
-        print(self.controller.paths.annotation_hit_folder)
-        self.assertEqual(open(
-                self.controller.paths.annotation_hit_folder + 
-                "/" + 'libbar.fa_annotation_overlaps.txt').read(), 
-                         self.example_data.overlap_output_1)
-        self.assertEqual(open(
-                self.controller.paths.annotation_hit_folder + 
-                "/" + 'libfoo.fa_annotation_overlaps.txt').read(),
-                         self.example_data.overlap_output_2)
+        self.controller.align_reads()
         self._remove_project_folder()
     
 class ExampleData(object):
