@@ -28,3 +28,17 @@ ICS - see LICENSE.txt or https://en.wikipedia.org/wiki/ISC_license
 
 - The classes should be path agnostic as far a possible. The controller
   is taking care of that and call them adequately.
+
+- The git braching model is very close to the one proposed here:
+  http://nvie.com/posts/a-successful-git-branching-model/
+
+  There two main branches:
+  - master 
+  - dev(elopment)
+
+  And there are further supporting branches:
+  - feature branches - branched off and back to the dev branch
+  - release branches - branched off from dev and merged back into
+                       dev and master
+  - hotfix branches - branched off from master and merged back into
+                      dev and master
