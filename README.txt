@@ -18,7 +18,7 @@ user.
 
 = License =
 
-ICS - see LICENSE.txt 
+ICS - see LICENSE.txt or https://en.wikipedia.org/wiki/ISC_license
 
 == Development ==
 
