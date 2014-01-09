@@ -1,7 +1,6 @@
 class PolyAClipper(object):
     """Uses very simple heuristics to detect and remove polyA tails."""
 
-
     def clip_poly_a_strech(self, sequence):
         """Search for a longer block of As and clip before it.
 
@@ -25,7 +24,6 @@ class PolyAClipper(object):
 
     def _aaaa_starting_substrings(self, sequence, length):
         """Find all AAAA starting substring of the given length"""
-
         start_pos = 0
         while start_pos != -1:
             start_pos = sequence.find("AAAA", start_pos)
@@ -40,6 +38,7 @@ class PolyAClipper(object):
                        cur_start_pos])
 
     def remove_3_prime_a(self, sequence):
+        """Remove 3' terminal As"""
         if sequence == '':
             return sequence
         elif sequence[-1] == "A":
