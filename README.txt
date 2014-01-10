@@ -6,7 +6,7 @@ originally developed at the IMIB/ZINF to process dRNA-Seq reads (as
 introduced by Sharma et al., Nature, 2010 originating from bacterial
 samples. Meanwhile is has been extended to process data generated in
 different experimental setups and originating from all domains of life
-and is under active developtment. The subcommands which are provided
+and is under active development. The subcommands which are provided
 by command-line interface cover read processing and aligning, coverage
 plot generation, gene expression quantification as well as
 differential gene expression analysis. TRAPL was applied to analyze
