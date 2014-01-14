@@ -48,6 +48,12 @@ def main():
         "--segemehl_bin", "-s", default="segemehl.x",
         help="Segemehl's binary path.")
     read_aligning_parser.add_argument(
+        "--realign", "-R", default="False", action="store_true",
+        help="Perform realignment of unmapped reads using 'lack'.")
+    read_aligning_parser.add_argument(
+        "--lack_bin", "-L", default="lack.x",
+        help="Lack's binary path.")
+    read_aligning_parser.add_argument(
         "--split", "-S", default=False, action="store_true",
         help="Run segemehl with read splitting")
     read_aligning_parser.add_argument(
