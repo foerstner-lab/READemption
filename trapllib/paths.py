@@ -252,6 +252,9 @@ class Paths(object):
         self.unaligned_reads_paths = self._path_list(
             self.unaligned_reads_folder, lib_names, 
             appendix="_unaligned.fa")
+        self.realigned_unaligned_reads_paths = self._path_list(
+            self.unaligned_reads_folder, lib_names, 
+            appendix="_unaligned_after_realignment.fa")
         self._set_alignment_result_pathes(lib_names)
 
     def set_read_files_dep_file_lists_paired_end(
@@ -274,16 +277,32 @@ class Paths(object):
         self._set_alignment_result_pathes(lib_names)
 
     def _set_alignment_result_pathes(self, lib_names):
-        # samtool appends ".bam" so only the prefix is required
-        self.read_alignment_result_bam_prefixes_paths = self._path_list(
-            self.read_alignments_folder, 
-            lib_names, appendix="_alignments")
+        ###
+        # For the mapper
         self.read_alignment_result_sam_paths = self._path_list(
             self.read_alignments_folder, lib_names,
             appendix="_alignments.sam")
         self.read_alignment_result_bam_paths = self._path_list(
             self.read_alignments_folder, lib_names, 
-            appendix="_alignments.bam") 
+            appendix="_alignments.bam")
+        # samtool appends ".bam" so only the prefix is required
+        self.read_alignment_result_bam_prefixes_paths = self._path_list(
+            self.read_alignments_folder, 
+            lib_names, appendix="_alignments")
+        self.read_alignment_tmp_sam_paths = self._path_list(
+            self.read_alignments_folder, lib_names, 
+            appendix="_alignments_tmp_for_realigner.sam")
+        ###
+        # For the remapper
+        self.read_realignment_result_sam_paths = self._path_list(
+            self.read_alignments_folder, lib_names,
+            appendix="_realigned_alignments.sam")
+        self.read_realignment_result_bam_paths = self._path_list(
+            self.read_alignments_folder, lib_names, 
+            appendix="_realigned_alignments.bam")
+        self.read_realignment_result_bam_prefixes_paths = self._path_list(
+            self.read_alignments_folder, 
+            lib_names, appendix="_realigned_alignments")
 
     def set_ref_seq_paths(self, ref_seq_files):
         self.ref_seq_paths = self._path_list(self.ref_seq_folder, ref_seq_files)

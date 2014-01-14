@@ -20,5 +20,8 @@ class SamToBamConverter(object):
         # Remove SAM file
         os.remove(sam_path)
 
+    def bam_to_sam(self, bam_path, sam_path):
+        pysam.view("-ho%s" % sam_path, bam_path)
+
     def _temp_unsorted_bam_path(self, bam_path_prefix):
         return "%s%s.bam" % (bam_path_prefix, self._unsorted_appendix)

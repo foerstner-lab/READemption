@@ -18,6 +18,7 @@ class ArgMock(object):
     poly_a_clipping = True
     progress = False
     split = False
+    realign = False
 
 class TestController(unittest.TestCase):
 

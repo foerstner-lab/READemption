@@ -10,7 +10,9 @@ from trapllib.paths import Paths
 from trapllib.projectcreator import ProjectCreator
 from trapllib.rawstatdata import RawStatDataWriter, RawStatDataReader
 from trapllib.readaligner import ReadAligner
+
 from trapllib.readalignerstats import ReadAlignerStats
+from trapllib.readrealigner import ReadRealigner
 from trapllib.readalignerstatstable import ReadAlignerStatsTable
 from trapllib.readprocessor import ReadProcessor
 from trapllib.sambamconverter import SamToBamConverter
@@ -52,25 +54,48 @@ class Controller(object):
         self._ref_seq_files = self._paths.get_ref_seq_files()
         self._paths.set_ref_seq_paths(self._ref_seq_files)
         self._test_align_file_existance()
-        # Single end read
         if self._args.paired_end is False:
+            # Single end reads
             self._read_files = self._paths.get_read_files()
             self._lib_names = self._paths.get_lib_names_single_end()
             self._paths.set_read_files_dep_file_lists_single_end(
                 self._read_files, self._lib_names)
             self._prepare_reads_single_end()
             self._align_single_end_reads()
-        # Paired end read
         else:
+            # Paired end reads
             self._read_file_pairs = self._paths.get_read_file_pairs()
             self._lib_names = self._paths.get_lib_names_paired_end()
             self._paths.set_read_files_dep_file_lists_paired_end(
                 self._read_file_pairs, self._lib_names)
             self._prepare_reads_paired_end()
             self._align_paired_end_reads()
-        self._sam_to_bam()
-        self._generate_read_alignment_stats()
+        self._sam_to_bam(
+            self._paths.read_alignment_result_sam_paths,
+            self._paths.read_alignment_result_bam_prefixes_paths,
+            self._paths.read_alignment_result_bam_paths)
+        self._generate_read_alignment_stats(
+            self._lib_names, 
+            self._paths.read_alignment_result_bam_paths,
+            self._paths.unaligned_reads_paths, 
+            self._paths.read_aligner_stats_path)
+        if self._args.realign is True:
+            self._run_realigner_and_process_alignments()
         self._write_alignment_stat_table()
+
+    def _run_realigner_and_process_alignments(self):
+        # As the realigner needs a _sorted_ SAM file
+        self._generate_sorted_tmp_sam_file()
+        self._realign_unmapped_reads()
+        self._sam_to_bam(
+            self._paths.read_realignment_result_sam_paths,
+            self._paths.read_realignment_result_bam_prefixes_paths,
+            self._paths.read_realignment_result_bam_paths)
+        self._generate_read_alignment_stats(
+            self._lib_names, 
+            self._paths.read_realignment_result_bam_paths,
+            self._paths.unaligned_reads_paths, 
+            self._paths.read_realigner_stats_path)
 
     def _test_align_file_existance(self):
         """Test if the input file for the the align subcommand exist."""
@@ -154,7 +179,7 @@ class Controller(object):
             read_files_and_stats, self._paths.read_processing_stats_path)
 
     def _align_single_end_reads(self):
-        """Manage the actual alignemnt of single end reads."""
+        """Manage the actual alignement of single end reads."""
         read_aligner = ReadAligner(self._args.segemehl_bin, self._args.progress)
         if self._file_needs_to_be_created(self._paths.index_path) is True:
             read_aligner.build_index(
@@ -197,16 +222,28 @@ class Controller(object):
                 float(self._args.segemehl_evalue), self._args.split, 
                 paired_end=True)
 
-    def _sam_to_bam(self):
+    def _realign_unmapped_reads(self):
+        read_realigner = ReadRealigner(self._args.lack_bin, self._args.progress)
+        for (query_fasta_path, query_sam_path, realignment_sam_path, 
+             unaligned_reads_path) in zip(
+                self._paths.unaligned_reads_paths,
+                self._paths.read_alignment_tmp_sam_paths,
+                self._paths.read_realignment_result_sam_paths,
+                self._paths.realigned_unaligned_reads_paths):
+            read_realigner.run_alignment(
+                query_fasta_path, query_sam_path, self._paths.ref_seq_paths, 
+                realignment_sam_path, unaligned_reads_path,
+                int(self._args.processes), int(self._args.segemehl_accuracy))
+            os.remove(query_sam_path)
+
+    def _sam_to_bam(self, sam_paths, bam_prefixes_paths, bam_paths):
         """Manage the conversion of mapped read from SAM to BAM format."""
         sam_to_bam_converter = SamToBamConverter()
         jobs = []
         with concurrent.futures.ProcessPoolExecutor(
             max_workers=self._args.processes) as executor:
             for sam_path, bam_prefix_path, bam_path in zip(
-                    self._paths.read_alignment_result_sam_paths,
-                    self._paths.read_alignment_result_bam_prefixes_paths,
-                    self._paths.read_alignment_result_bam_paths):
+                    sam_paths, bam_prefixes_paths, bam_paths):
                 if self._file_needs_to_be_created(bam_path) is False:
                     continue
                 jobs.append(executor.submit(
@@ -214,7 +251,22 @@ class Controller(object):
         # Evaluate thread outcome
         self._check_job_completeness(jobs)
 
-    def _generate_read_alignment_stats(self):
+    def _generate_sorted_tmp_sam_file(self):
+        sam_to_bam_converter = SamToBamConverter()
+        jobs = []
+        with concurrent.futures.ProcessPoolExecutor(
+            max_workers=self._args.processes) as executor:
+            for bam_path, sam_path in zip(
+                    self._paths.read_alignment_result_bam_paths, 
+                    self._paths.read_alignment_tmp_sam_paths):
+                jobs.append(executor.submit(
+                    sam_to_bam_converter.bam_to_sam, bam_path, sam_path))
+        # Evaluate thread outcome
+        self._check_job_completeness(jobs)
+
+    def _generate_read_alignment_stats(
+            self, lib_names, result_bam_paths, unaligned_reads_paths,
+            output_stats_path):
         """Manage the generation of alingment statistics."""
         raw_stat_data_writer = RawStatDataWriter(pretty=True)
         read_files_and_jobs = {}
@@ -225,9 +277,7 @@ class Controller(object):
             max_workers=self._args.processes) as executor:
             for (lib_name, read_alignment_result_bam_path,
                  unaligned_reads_path) in zip(
-                     self._lib_names, 
-                     self._paths.read_alignment_result_bam_paths,
-                     self._paths.unaligned_reads_paths):
+                     lib_names, result_bam_paths, unaligned_reads_paths):
                 read_aligner_stats = ReadAlignerStats()
                 read_files_and_jobs[lib_name]  = executor.submit(
                     read_aligner_stats.count, read_alignment_result_bam_path,
@@ -237,8 +287,7 @@ class Controller(object):
         read_files_and_stats = dict(
             [(lib_name, job.result()) 
              for lib_name, job in read_files_and_jobs.items()])
-        raw_stat_data_writer.write(
-            read_files_and_stats, self._paths.read_aligner_stats_path)
+        raw_stat_data_writer.write(read_files_and_stats, output_stats_path)
 
     def _write_alignment_stat_table(self):
         """Manage the creation of the mapping statistic output table."""
@@ -247,8 +296,12 @@ class Controller(object):
             self._paths.read_processing_stats_path)
         alignment_stats = raw_stat_data_reader.read(
             self._paths.read_aligner_stats_path)
+        realignment_stats = None
+        if self._args.realign is True:
+            realignment_stats = raw_stat_data_reader.read(
+            self._paths.read_realigner_stats_path)
         read_aligner_stats_table = ReadAlignerStatsTable(
-            read_processing_stats, alignment_stats, 
+            read_processing_stats, alignment_stats, realignment_stats,
             self._lib_names, self._paths.read_alignment_stats_table_path)
         read_aligner_stats_table.write()
 
