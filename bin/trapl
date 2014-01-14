@@ -45,7 +45,7 @@ def main():
         "--segemehl_evalue", "-e", default=5.0, type=float,
         help="Segemehl's maximal e-value. (default 5.0)")
     read_aligning_parser.add_argument(
-        "--segemehl_bin", "-s", default="segemehl",
+        "--segemehl_bin", "-s", default="segemehl.x",
         help="Segemehl's binary path.")
     read_aligning_parser.add_argument(
         "--split", "-S", default=False, action="store_true",
