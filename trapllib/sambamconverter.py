@@ -46,3 +46,4 @@ class SamToBamConverter(object):
             "%s.bam" % bam_path_prefix, "wb", header=samfile.header)
         bamfile.close()
         samfile.close()
+        pysam.index("%s.bam" % bam_path_prefix)
