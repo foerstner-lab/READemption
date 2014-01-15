@@ -48,15 +48,12 @@ def main():
         "--segemehl_bin", "-s", default="segemehl.x",
         help="Segemehl's binary path (default 'segemehl.x').")
     read_aligning_parser.add_argument(
-        "--realign", "-R", default=False, action="store_true",
-        help="Perform realignment of unmapped reads using 'lack'.")
-    read_aligning_parser.add_argument(
-        "--keep_original_alignments", "-k", default=False, action="store_true",
-        help="Only used with --realign/-R. Keep the alignment file of primary "
-        "mapper and the realigner after merging.")
-    read_aligning_parser.add_argument(
-        "--lack_bin", "-L", default="lack.x",
-        help="Lack's binary path (default 'lack.x').")
+        "--paired_end", "-P", default=False, action="store_true",
+        help="Use this if reads are originating from a paired-end sequencing. "
+        "The members of a pair must be marked with '_p1' and '_p2' in front of "
+        "the file type suffixes (e.g. 'my_sample_p1.fa' and 'my_sample_p2.fa' "
+        "or 'my_sample_p1.fa.bz2' and 'my_sample_p2.fa.bz2'). This option "
+        "cannot be use with polyA tail clipping.")
     read_aligning_parser.add_argument(
         "--split", "-S", default=False, action="store_true",
         help="Run segemehl with read splitting.")
@@ -65,18 +62,24 @@ def main():
         action="store_true", help="Perform polyA tail clipping. This option "
         "cannot be used for paired-end reads.")
     read_aligning_parser.add_argument(
-        "--force", "-f", default=False, action="store_true",
-        help="Overwrite existing files.")
+        "--realign", "-r", default=False, action="store_true",
+        help="Perform realignment of unmapped reads using 'lack'.")
     read_aligning_parser.add_argument(
-        "--progress", "-P", default=False, action="store_true",
+        "--keep_original_alignments", "-k", default=False, action="store_true",
+        help="Only used with --realign/-r. Keep the alignment file of the "
+        "primary mapper (segemehl) and the realigner (lack) after merging.")
+    read_aligning_parser.add_argument(
+        "--lack_bin", "-L", default="lack.x",
+        help="Lack's binary path (default 'lack.x').")
+    read_aligning_parser.add_argument(
+        "--check_for_existing_files", "-f", default=False,
+        action="store_true", help="Check for existing files (e.g. from a "
+        "interrupted previous run) and do not overwrite them if they exits. "
+        "Attention! You have to take care that there are no partially "
+        "generated files left!")
+    read_aligning_parser.add_argument(
+        "--progress", "-g", default=False, action="store_true",
         help="Show progress of the segemehl mapping.")
-    read_aligning_parser.add_argument(
-        "--paired_end", "-r", default=False, action="store_true",
-        help="Use this if reads are originating from a paired-end sequencing. "
-        "The members of a pair must be marked with '_p1' and '_p2' in front of "
-        "the file type suffixes (e.g. 'my_sample_p1.fa' and 'my_sample_p2.fa' "
-        "or 'my_sample_p1.fa.bz2' and 'my_sample_p2.fa.bz2'). This option "
-        "cannot be use with polyA tail clipping.")
     read_aligning_parser.set_defaults(func=align_reads)
 
     # Parameters for coverage file building
@@ -107,13 +110,16 @@ def main():
         action="store_true", help="Only the first bases 5' base of each read "
         "aligning is taken into account.")
     coverage_creation_parser.add_argument(
-        "--force", "-f", default=False, action="store_true",
-        help="Overwrite existing files.")
+        "--check_for_existing_files", "-f", default=False,
+        action="store_true", help="Check for existing files (e.g. from a "
+        "interrupted previous run) and do not overwrite them if they exits. "
+        "Attention! You have to take care that there are no partially "
+        "generated files left!")
     coverage_creation_parser.set_defaults(func=create_coverage_files)
 
     # Parameters for gene wise quantification
     gene_wise_quanti_parser = subparsers.add_parser(
-        "gene_quanti", help="Quantify the expression gene wise")
+        "genequanti", help="Quantify the expression gene wise")
     gene_wise_quanti_parser.add_argument(
         "project_path", default=".", nargs="?",
         help="Path of the project folder. If none is given the current "
@@ -142,8 +148,11 @@ def main():
         "--pseudocounts", "-c", default=False, action="store_true",
         help="Add a pseudocount of 1 to each gene.")
     gene_wise_quanti_parser.add_argument(
-        "--force", "-f", default=False, action="store_true",
-        help="Overwrite existing files.")
+        "--check_for_existing_files", "-f", default=False,
+        action="store_true", help="Check for existing files (e.g. from a "
+        "interrupted previous run) and do not overwrite them if they exits. "
+        "Attention! You have to take care that there are no partially "
+        "generated files left!")
     gene_wise_quanti_parser.set_defaults(func=run_gene_wise_quantification)
 
     # Parameters for DESeq calling
