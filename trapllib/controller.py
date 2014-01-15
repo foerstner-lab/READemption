@@ -157,7 +157,7 @@ class Controller(object):
 
     def _file_needs_to_be_created(self, file_path, quiet=False):
         """Test if a file exists of need to be created."""
-        if self._args.force is True:
+        if self._args.check_for_existing_files is False:
             return True
         if os.path.exists(file_path):
             if quiet is False:
