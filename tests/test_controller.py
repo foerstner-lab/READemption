@@ -84,8 +84,6 @@ class TestControllerReadAligning(TestController):
         self.controller.create_project(self._version)
         self.controller._paths._set_folder_names()
         self._generate_input_fasta_files()
-        # If number of reads is less than the number of threads
-        # segemehl stops. So set the number of threads to 1
         self.controller.align_reads()
         self._remove_project_folder()
     
