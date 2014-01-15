@@ -8,7 +8,7 @@ from trapllib.controller import Controller
 class ArgMock(object):
     project_path = "a_test_project"
     min_read_length = 12
-    segemehl_bin = "segemehl"
+    segemehl_bin = "segemehl.x"
     threads = 1
     segemehl_accuracy = 95
     segemehl_evalue = 5.0
