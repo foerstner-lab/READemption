@@ -48,7 +48,7 @@ def main():
         "--segemehl_bin", "-s", default="segemehl.x",
         help="Segemehl's binary path.")
     read_aligning_parser.add_argument(
-        "--realign", "-R", default="False", action="store_true",
+        "--realign", "-R", default=False, action="store_true",
         help="Perform realignment of unmapped reads using 'lack'.")
     read_aligning_parser.add_argument(
         "--keep_original_alignments", "-k", default=False, action="store_true",
