@@ -34,7 +34,7 @@ def main():
         "directory is used.")
     read_aligning_parser.add_argument(
         "--min_read_length", "-l", default=12, type=int,
-        help="Minimal read length after clipping")
+        help="Minimal read length after clipping.")
     read_aligning_parser.add_argument(
         "--processes", "-p", default=1, type=int,
         help="Number of processes that should be used.")
@@ -43,10 +43,10 @@ def main():
         help="Segemehl's minimal accuracy (in %%) (default 95).")
     read_aligning_parser.add_argument(
         "--segemehl_evalue", "-e", default=5.0, type=float,
-        help="Segemehl's maximal e-value. (default 5.0)")
+        help="Segemehl's maximal e-value (default 5.0).")
     read_aligning_parser.add_argument(
         "--segemehl_bin", "-s", default="segemehl.x",
-        help="Segemehl's binary path.")
+        help="Segemehl's binary path (default 'segemehl.x').")
     read_aligning_parser.add_argument(
         "--realign", "-R", default=False, action="store_true",
         help="Perform realignment of unmapped reads using 'lack'.")
@@ -56,10 +56,10 @@ def main():
         "mapper and the realigner after merging.")
     read_aligning_parser.add_argument(
         "--lack_bin", "-L", default="lack.x",
-        help="Lack's binary path.")
+        help="Lack's binary path (default 'lack.x').")
     read_aligning_parser.add_argument(
         "--split", "-S", default=False, action="store_true",
-        help="Run segemehl with read splitting")
+        help="Run segemehl with read splitting.")
     read_aligning_parser.add_argument(
         "--poly_a_clipping", "-c", default=False,
         action="store_true", help="Perform polyA tail clipping. This option "
@@ -120,7 +120,7 @@ def main():
         "directory is used.")
     gene_wise_quanti_parser.add_argument(
         "--min_overlap", "-o", default=1, type=int,
-        help="Minimal read-annotation-overlap (in nt) (default 1)")
+        help="Minimal read-annotation-overlap (in nt) (default 1).")
     gene_wise_quanti_parser.add_argument(
         "--skip_norm_by_alignment_freq", default=False, action="store_true")
     gene_wise_quanti_parser.add_argument(
