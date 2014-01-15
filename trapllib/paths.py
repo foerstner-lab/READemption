@@ -109,9 +109,12 @@ class Paths(object):
         """Set name of common files."""
         self.read_processing_stats_path = "%s/read_processing.json" % (
             self.raw_stat_data_folder)
-        self.read_aligner_stats_path = "%s/read_alignment.json" % (
+        self.primary_read_aligner_stats_path = (
+            "%s/read_alignments_primary_aligner.json" % (
+                self.raw_stat_data_folder))
+        self.read_realigner_stats_path = "%s/read_alignments_realigner.json" % (
             self.raw_stat_data_folder)
-        self.read_realigner_stats_path = "%s/read_alignment.json" % (
+        self.read_alignments_stats_path = "%s/read_alignments_final.json" % (
             self.raw_stat_data_folder)
         self.read_file_stats = "%s/input_read_stats.txt" % (
             self.align_report_folder)
@@ -253,7 +256,7 @@ class Paths(object):
         self.realigned_unaligned_reads_paths = self._path_list(
             self.unaligned_reads_folder, lib_names, 
             appendix="_unaligned_after_realignment.fa")
-        self._set_alignment_result_pathes(lib_names)
+        self._set_alignment_result_paths(lib_names)
 
     def set_read_files_dep_file_lists_paired_end(
         self, read_file_pairs, lib_names):
@@ -272,9 +275,9 @@ class Paths(object):
         self.unaligned_reads_paths = self._path_list(
             self.unaligned_reads_folder, lib_names, 
             appendix="_unaligned.fa")
-        self._set_alignment_result_pathes(lib_names)
+        self._set_alignment_result_paths(lib_names)
 
-    def _set_alignment_result_pathes(self, lib_names):
+    def _set_alignment_result_paths(self, lib_names):
         ###
         # For the primary mapper
         self.primary_read_aligner_result_sam_paths = self._path_list(

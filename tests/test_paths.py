@@ -32,7 +32,7 @@ class TestPaths(unittest.TestCase):
             self.paths.gene_wise_quanti_combined_path]
         self.static_files = [
             self.paths.read_processing_stats_path,
-            self.paths.read_aligner_stats_path,
+            self.paths.read_alignments_stats_path,
             self.paths.read_file_stats,
             self.paths.read_alignment_stats_table_path,
             self.paths.ref_seq_file_stats,

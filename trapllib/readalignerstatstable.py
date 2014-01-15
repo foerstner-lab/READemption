@@ -1,11 +1,12 @@
 class ReadAlignerStatsTable(object):
 
     def __init__(self, read_processing_stats, alignment_stats, 
-                 realignment_stats, libs, output_path):
+                 primary_read_aligner_stats, realigner_stats, libs, output_path):
         self._table = []
         self._read_processing_stats = read_processing_stats
         self._alignment_stats = alignment_stats
-        self._realignment_stats = realignment_stats
+        self._primary_read_aligner_stats = primary_read_aligner_stats
+        self._realigner_stats = realigner_stats
         self._libs = libs
         self._output_path = output_path
     

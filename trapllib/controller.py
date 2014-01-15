@@ -55,19 +55,14 @@ class Controller(object):
         self._ref_seq_files = self._paths.get_ref_seq_files()
         self._paths.set_ref_seq_paths(self._ref_seq_files)
         self._test_align_file_existance()
-        if self._args.realign is False:
-            # If no remapping is performed the paths of the final bam files
-            # is the paths of the primary mapper
-            self.primary_read_aligner_result_bam_prefix_paths = (
-                self.primary_read_aligner_result_bam_paths)
-            self.read_alignment_result_bam_paths = (
-                self.primary_read_aligner_result_bam_prefix_paths)
         if self._args.paired_end is False:
             # Single end reads
             self._read_files = self._paths.get_read_files()
             self._lib_names = self._paths.get_lib_names_single_end()
             self._paths.set_read_files_dep_file_lists_single_end(
                 self._read_files, self._lib_names)
+            if self._args.realign is False:
+                self._set_primary_aligner_paths_to_final_paths()
             self._prepare_reads_single_end()
             self._align_single_end_reads()
         else:
@@ -76,6 +71,8 @@ class Controller(object):
             self._lib_names = self._paths.get_lib_names_paired_end()
             self._paths.set_read_files_dep_file_lists_paired_end(
                 self._read_file_pairs, self._lib_names)
+            if self._args.realign is False:
+                self._set_primary_aligner_paths_to_final_paths()
             self._prepare_reads_paired_end()
             self._align_paired_end_reads()
         self._sam_to_bam(
@@ -86,13 +83,28 @@ class Controller(object):
             self._lib_names, 
             self._paths.primary_read_aligner_result_bam_paths,
             self._paths.unaligned_reads_paths, 
-            self._paths.read_aligner_stats_path)
+            self._paths.primary_read_aligner_stats_path)
         if self._args.realign is True:
             self._run_realigner_and_process_alignments()
         if self._args.realign is True:
             self._merge_bam_files()
-        # self._write_alignment_stat_table()
-            
+            self._generate_read_alignment_stats(
+                self._lib_names, 
+                self._paths.read_alignment_result_bam_paths,
+                self._paths.realigned_unaligned_reads_paths, 
+                self._paths.read_alignments_stats_path)
+        self._write_alignment_stat_table()
+        
+    def _set_primary_aligner_paths_to_final_paths(self):
+        # If no remapping is performed the paths of the final bam files
+        # is the paths of the primary mapper
+        self._paths.primary_read_aligner_result_bam_prefix_paths = (
+            self._paths.read_alignment_result_bam_prefix_paths)
+        self._paths.primary_read_aligner_result_bam_paths = (
+            self._paths.read_alignment_result_bam_paths)
+        self._paths.primary_read_aligner_stats_path = (
+            self._paths.read_alignments_stats_path)
+
     def _merge_bam_files(self):
         jobs = []
         with concurrent.futures.ProcessPoolExecutor(
@@ -300,8 +312,7 @@ class Controller(object):
         """Manage the generation of alingment statistics."""
         raw_stat_data_writer = RawStatDataWriter(pretty=True)
         read_files_and_jobs = {}
-        if self._file_needs_to_be_created(
-            self._paths.read_aligner_stats_path) is False:
+        if self._file_needs_to_be_created(output_stats_path) is False:
             return
         with concurrent.futures.ProcessPoolExecutor(
             max_workers=self._args.processes) as executor:
@@ -324,15 +335,19 @@ class Controller(object):
         raw_stat_data_reader = RawStatDataReader()
         read_processing_stats = raw_stat_data_reader.read(
             self._paths.read_processing_stats_path)
-        alignment_stats = raw_stat_data_reader.read(
-            self._paths.read_aligner_stats_path)
+        final_alignment_stats = raw_stat_data_reader.read(
+            self._paths.read_alignments_stats_path)
         realignment_stats = None
+        primary_aligner_stats = None
         if self._args.realign is True:
+            primary_aligner_stats = raw_stat_data_reader.read(
+                self._paths.primary_read_aligner_stats_path)
             realignment_stats = raw_stat_data_reader.read(
-            self._paths.read_realigner_stats_path)
+                self._paths.read_realigner_stats_path)
         read_aligner_stats_table = ReadAlignerStatsTable(
-            read_processing_stats, alignment_stats, realignment_stats,
-            self._lib_names, self._paths.read_alignment_stats_table_path)
+            read_processing_stats, final_alignment_stats, primary_aligner_stats, 
+            realignment_stats, self._lib_names, 
+            self._paths.read_alignment_stats_table_path)
         read_aligner_stats_table.write()
 
     def _ref_ids_to_file(self, ref_seq_paths):
