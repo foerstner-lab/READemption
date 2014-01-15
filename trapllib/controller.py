@@ -383,8 +383,8 @@ class Controller(object):
         else: 
             self._paths.set_read_files_dep_file_lists_paired_end (
                 self._paths.get_read_files(), lib_names)
-        # Get number of aligned of number of uniquely aligned reads
-        if self._args.unique_only is False:
+        # Get number of aligned or number of uniquely aligned reads
+        if self._args.normalize_by_uniquely is False:
             aligned_counting = "no_of_aligned_reads"
         else:
             aligned_counting = "no_of_uniquely_aligned_reads"

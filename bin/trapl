@@ -90,6 +90,12 @@ def main():
         "--unique_only", "-u", default=False, action="store_true",
         help="Use uniquely aligned reads only.")
     coverage_creation_parser.add_argument(
+        "--normalize_by_uniquely", "-U", default=False, action="store_true",
+        help="Normalize by the number of uniquely aligned reads. By default "
+        "the normalization is done based on the total number of aligned reads "
+        "even if only uniquely aligned reads are used for the coverage "
+        "calculation.")
+    coverage_creation_parser.add_argument(
         "--processes", "-p", default=1, type=int,
         help="Number of processes that should be used.")
     coverage_creation_parser.add_argument(
