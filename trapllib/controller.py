@@ -2,6 +2,8 @@ import concurrent.futures
 import os
 import sys
 import json
+import pysam
+from trapllib.bammerger import BamMerger
 from trapllib.coveragecalculator import CoverageCalculator
 from trapllib.deseq import DESeqRunner
 from trapllib.fasta import FastaParser
@@ -10,7 +12,6 @@ from trapllib.paths import Paths
 from trapllib.projectcreator import ProjectCreator
 from trapllib.rawstatdata import RawStatDataWriter, RawStatDataReader
 from trapllib.readaligner import ReadAligner
-
 from trapllib.readalignerstats import ReadAlignerStats
 from trapllib.readrealigner import ReadRealigner
 from trapllib.readalignerstatstable import ReadAlignerStatsTable
@@ -54,6 +55,13 @@ class Controller(object):
         self._ref_seq_files = self._paths.get_ref_seq_files()
         self._paths.set_ref_seq_paths(self._ref_seq_files)
         self._test_align_file_existance()
+        if self._args.realign is False:
+            # If no remapping is performed the paths of the final bam files
+            # is the paths of the primary mapper
+            self.primary_read_aligner_result_bam_prefix_paths = (
+                self.primary_read_aligner_result_bam_paths)
+            self.read_alignment_result_bam_paths = (
+                self.primary_read_aligner_result_bam_prefix_paths)
         if self._args.paired_end is False:
             # Single end reads
             self._read_files = self._paths.get_read_files()
@@ -71,30 +79,52 @@ class Controller(object):
             self._prepare_reads_paired_end()
             self._align_paired_end_reads()
         self._sam_to_bam(
-            self._paths.read_alignment_result_sam_paths,
-            self._paths.read_alignment_result_bam_prefixes_paths,
-            self._paths.read_alignment_result_bam_paths)
+            self._paths.primary_read_aligner_result_sam_paths,
+            self._paths.primary_read_aligner_result_bam_prefix_paths,
+            self._paths.primary_read_aligner_result_bam_paths)
         self._generate_read_alignment_stats(
             self._lib_names, 
-            self._paths.read_alignment_result_bam_paths,
+            self._paths.primary_read_aligner_result_bam_paths,
             self._paths.unaligned_reads_paths, 
             self._paths.read_aligner_stats_path)
         if self._args.realign is True:
             self._run_realigner_and_process_alignments()
-        self._write_alignment_stat_table()
+        if self._args.realign is True:
+            self._merge_bam_files()
+        # self._write_alignment_stat_table()
+            
+    def _merge_bam_files(self):
+        jobs = []
+        with concurrent.futures.ProcessPoolExecutor(
+                max_workers=self._args.processes) as executor:
+            for merged_bam, primary_aligner_bam, realigner_bam in zip(
+                    self._paths.read_alignment_result_bam_paths,
+                    self._paths.primary_read_aligner_result_bam_paths,
+                    self._paths.read_realigner_result_bam_paths):
+                bam_merger = BamMerger()
+                jobs.append(executor.submit(bam_merger.merge, merged_bam, 
+                                            primary_aligner_bam, realigner_bam))
+        self._check_job_completeness(jobs)
+        if self._args.keep_original_alignments is False:
+            for bam_file_list in [
+                    self._paths.primary_read_aligner_result_bam_paths, 
+                    self._paths.read_realigner_result_bam_paths]:
+                for bam_file in bam_file_list:
+                    os.remove(bam_file)
+                    os.remove("%s.bai" % bam_file)
 
     def _run_realigner_and_process_alignments(self):
-        # As the realigner needs a _sorted_ SAM file
+        # As the realigner needs a *sorted* SAM file
         self._generate_sorted_tmp_sam_file()
         self._realign_unmapped_reads()
         self._sam_to_bam(
-            self._paths.read_realignment_result_sam_paths,
-            self._paths.read_realignment_result_bam_prefixes_paths,
-            self._paths.read_realignment_result_bam_paths)
+            self._paths.read_realigner_result_sam_paths,
+            self._paths.read_realigner_result_bam_prefixes_paths,
+            self._paths.read_realigner_result_sam_paths)
         self._generate_read_alignment_stats(
             self._lib_names, 
-            self._paths.read_realignment_result_bam_paths,
-            self._paths.unaligned_reads_paths, 
+            self._paths.read_realigner_result_bam_paths,
+            self._paths.realigned_unaligned_reads_paths,
             self._paths.read_realigner_stats_path)
 
     def _test_align_file_existance(self):
@@ -186,7 +216,7 @@ class Controller(object):
                 self._paths.ref_seq_paths, self._paths.index_path)
         for read_path, output_path, nomatch_path, bam_path in zip(
             self._paths.processed_read_paths, 
-            self._paths.read_alignment_result_sam_paths, 
+            self._paths.primary_read_aligner_result_sam_paths, 
             self._paths.unaligned_reads_paths, 
             self._paths.read_alignment_result_bam_paths):
             if self._file_needs_to_be_created(output_path) is False:
@@ -208,9 +238,9 @@ class Controller(object):
                 self._paths.ref_seq_paths, self._paths.index_path)
         for read_path_pair, output_path, nomatch_path, bam_path in zip(
             self._paths.processed_read_path_pairs, 
-            self._paths.read_alignment_result_sam_paths, 
+            self._paths.primary_read_aligner_result_sam_paths, 
             self._paths.unaligned_reads_paths, 
-            self._paths.read_alignment_result_bam_paths):
+            self._paths.primary_read_aligner_result_bam_paths):
             if self._file_needs_to_be_created(output_path) is False:
                 continue
             elif self._file_needs_to_be_created(bam_path) is False:
@@ -227,8 +257,8 @@ class Controller(object):
         for (query_fasta_path, query_sam_path, realignment_sam_path, 
              unaligned_reads_path) in zip(
                 self._paths.unaligned_reads_paths,
-                self._paths.read_alignment_tmp_sam_paths,
-                self._paths.read_realignment_result_sam_paths,
+                self._paths.read_realigner_tmp_sam_paths,
+                self._paths.read_realigner_result_sam_paths,
                 self._paths.realigned_unaligned_reads_paths):
             read_realigner.run_alignment(
                 query_fasta_path, query_sam_path, self._paths.ref_seq_paths, 
@@ -257,8 +287,8 @@ class Controller(object):
         with concurrent.futures.ProcessPoolExecutor(
             max_workers=self._args.processes) as executor:
             for bam_path, sam_path in zip(
-                    self._paths.read_alignment_result_bam_paths, 
-                    self._paths.read_alignment_tmp_sam_paths):
+                    self._paths.primary_read_aligner_result_bam_paths, 
+                    self._paths.read_realigner_tmp_sam_paths):
                 jobs.append(executor.submit(
                     sam_to_bam_converter.bam_to_sam, bam_path, sam_path))
         # Evaluate thread outcome

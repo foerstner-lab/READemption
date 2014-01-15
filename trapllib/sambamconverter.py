@@ -12,6 +12,8 @@ class SamToBamConverter(object):
             # be converted. Due to this an empty bam file with the
             # same header information will be generated from scratch
             self._generate_empty_bam_file(sam_path, bam_path_prefix)
+            # Remove SAM file
+            os.remove(sam_path)
             return
         temp_unsorted_bam_path = self._temp_unsorted_bam_path(
             bam_path_prefix)
