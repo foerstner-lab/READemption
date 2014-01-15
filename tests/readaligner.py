@@ -7,7 +7,7 @@ from trapllib.readmapper import ReadMapper
 class TestReadMapper(unittest.TestCase):
 
     def setUp(self):
-        self.read_mapper = ReadMapper("segemehl")
+        self.read_mapper = ReadMapper("segemehl.x")
 
     @unittest.skip("TODO")
     def test_build_index(self):

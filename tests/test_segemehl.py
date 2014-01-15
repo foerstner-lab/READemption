@@ -12,7 +12,7 @@ class TestSegemehl(unittest.TestCase):
     index_file_path = "/tmp/test.idx"
 
     def setUp(self):
-        self.segemehl = Segemehl(segemehl_bin="segemehl")
+        self.segemehl = Segemehl(segemehl_bin="segemehl.x")
         self.example_data = ExampleData()
         self.maxDiff = None
 
@@ -215,25 +215,25 @@ class LargeOutput(object):
 
     sam_result_aligned_1 = """@HD	VN:1.0
 @SQ	SN:SL1344	LN:960
-@PG	ID:segemehl	VN:0.1.7-$Rev: 403 $ ($Date: 2013-09-12 11:46:53 +0200 (Thu, 12 Sep 2013) $)	CL:segemehl --query /tmp/test_reads.fa --index /tmp/test.idx --database /tmp/test.fa --outfile /tmp/test_aligning_results.sam --hitstrategy 1 --accuracy 95 --evalue 5.0 --threads 1 --silent
+@PG	ID:segemehl	VN:0.1.7-$Rev: 403 $ ($Date: 2013-09-12 11:46:53 +0200 (Thu, 12 Sep 2013) $)	CL:segemehl.x --query /tmp/test_reads.fa --index /tmp/test.idx --database /tmp/test.fa --outfile /tmp/test_aligning_results.sam --hitstrategy 1 --accuracy 95 --evalue 5.0 --threads 1 --silent
 read_01	0	SL1344	181	255	60M	*	0	0	ACAACATCCATGAACCGCATCAGCACCACCACCATTACCACCATCACCATTACCACAGGT	*	NM:i:0	MD:Z:60	NH:i:1	XI:i:0	XA:Z:Q
 """
 
     sam_result_aligned_2 = """@HD	VN:1.0
 @SQ	SN:SL1344	LN:960
-@PG	ID:segemehl	VN:0.1.7-$Rev: 403 $ ($Date: 2013-09-12 11:46:53 +0200 (Thu, 12 Sep 2013) $)	CL:segemehl --query /tmp/test_reads.fa --index /tmp/test.idx --database /tmp/test.fa --outfile /tmp/test_aligning_results.sam --hitstrategy 1 --accuracy 95 --evalue 5.0 --threads 1 --silent
+@PG	ID:segemehl	VN:0.1.7-$Rev: 403 $ ($Date: 2013-09-12 11:46:53 +0200 (Thu, 12 Sep 2013) $)	CL:segemehl.x --query /tmp/test_reads.fa --index /tmp/test.idx --database /tmp/test.fa --outfile /tmp/test_aligning_results.sam --hitstrategy 1 --accuracy 95 --evalue 5.0 --threads 1 --silent
 read_03	0	SL1344	301	255	20M	*	0	0	GCTTTTTTTTCGACCAGACA	*	NM:i:1	MD:Z:18G1	NH:i:1	XI:i:0	XA:Z:Q
 """
 
     sam_result_aligned_3 = """@HD	VN:1.0
 @SQ	SN:SL1344	LN:960
-@PG	ID:segemehl	VN:0.1.7-$Rev: 403 $ ($Date: 2013-09-12 11:46:53 +0200 (Thu, 12 Sep 2013) $)	CL:segemehl --query /tmp/test_reads.fa --index /tmp/test.idx --database /tmp/test.fa --outfile /tmp/test_aligning_results.sam --hitstrategy 1 --accuracy 90 --evalue 5.0 --threads 1 --silent
+@PG	ID:segemehl	VN:0.1.7-$Rev: 403 $ ($Date: 2013-09-12 11:46:53 +0200 (Thu, 12 Sep 2013) $)	CL:segemehl.x --query /tmp/test_reads.fa --index /tmp/test.idx --database /tmp/test.fa --outfile /tmp/test_aligning_results.sam --hitstrategy 1 --accuracy 90 --evalue 5.0 --threads 1 --silent
 read_05	0	SL1344	301	255	20M	*	0	0	GCTTTTTTTTCGACCAGTCA	*	NM:i:2	MD:Z:17A0G1	NH:i:1	XI:i:0	XA:Z:Q
 """
 
     sam_result_no_aligned_1 = """@HD	VN:1.0
 @SQ	SN:SL1344	LN:960
-@PG	ID:segemehl	VN:0.1.7-$Rev: 403 $ ($Date: 2013-09-12 11:46:53 +0200 (Thu, 12 Sep 2013) $)	CL:segemehl --query /tmp/test_reads.fa --index /tmp/test.idx --database /tmp/test.fa --outfile /tmp/test_aligning_results.sam --hitstrategy 1 --accuracy 95 --evalue 5.0 --threads 1 --silent
+@PG	ID:segemehl	VN:0.1.7-$Rev: 403 $ ($Date: 2013-09-12 11:46:53 +0200 (Thu, 12 Sep 2013) $)	CL:segemehl.x --query /tmp/test_reads.fa --index /tmp/test.idx --database /tmp/test.fa --outfile /tmp/test_aligning_results.sam --hitstrategy 1 --accuracy 95 --evalue 5.0 --threads 1 --silent
 """
 
 if __name__ == "__main__":

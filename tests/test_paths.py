@@ -32,7 +32,7 @@ class TestPaths(unittest.TestCase):
             self.paths.gene_wise_quanti_combined_path]
         self.static_files = [
             self.paths.read_processing_stats_path,
-            self.paths.read_aligner_stats_path,
+            self.paths.read_alignments_stats_path,
             self.paths.read_file_stats,
             self.paths.read_alignment_stats_table_path,
             self.paths.ref_seq_file_stats,
@@ -94,7 +94,7 @@ class TestPaths(unittest.TestCase):
             self.test_files, self.test_lib_names)
         for path_list in  [
             self.paths.read_paths, self.paths.processed_read_paths,
-            self.paths.read_alignment_result_sam_paths,
+            self.paths.primary_read_aligner_result_sam_paths,
             self.paths.unaligned_reads_paths]:
             assert(isinstance(path_list, list))
 

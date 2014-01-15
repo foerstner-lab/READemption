@@ -8,7 +8,7 @@ from trapllib.controller import Controller
 class ArgMock(object):
     project_path = "a_test_project"
     min_read_length = 12
-    segemehl_bin = "segemehl"
+    segemehl_bin = "segemehl.x"
     threads = 1
     segemehl_accuracy = 95
     segemehl_evalue = 5.0
@@ -18,6 +18,7 @@ class ArgMock(object):
     poly_a_clipping = True
     progress = False
     split = False
+    realign = False
 
 class TestController(unittest.TestCase):
 
@@ -83,8 +84,6 @@ class TestControllerReadAligning(TestController):
         self.controller.create_project(self._version)
         self.controller._paths._set_folder_names()
         self._generate_input_fasta_files()
-        # If number of reads is less than the number of threads
-        # segemehl stops. So set the number of threads to 1
         self.controller.align_reads()
         self._remove_project_folder()
     
