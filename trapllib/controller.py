@@ -499,9 +499,9 @@ class Controller(object):
             self._paths.required_gene_quanti_folders())
         norm_by_alignment_freq = True
         norm_by_overlap_freq = True
-        if self._args.skip_norm_by_alignment_freq:
+        if self._args.no_count_split_by_alignment_no:
             norm_by_alignment_freq = False
-        if self._args.skip_norm_by_overlap_freq:
+        if self._args.no_count_splitting_by_gene_no:
             norm_by_overlap_freq = False
         raw_stat_data_reader = RawStatDataReader()
         alignment_stats = [raw_stat_data_reader.read(
