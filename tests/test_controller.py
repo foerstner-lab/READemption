@@ -14,7 +14,7 @@ class ArgMock(object):
     segemehl_evalue = 5.0
     paired_end = False
     processes = 1
-    force = False
+    check_for_existing_files = False
     poly_a_clipping = True
     progress = False
     split = False
