@@ -128,12 +128,12 @@ def main():
         "--min_overlap", "-o", default=1, type=int,
         help="Minimal read-annotation-overlap (in nt) (default 1).")
     gene_wise_quanti_parser.add_argument(
-        "--no_count_split_by_alignment_freq", "-n", default=False, 
+        "--no_count_split_by_alignment_no", "-n", default=False, 
         action="store_true", help="Do not split read countings by the number "
         "of alignments a read has. By default this count splitting is "
         "performed.")
     gene_wise_quanti_parser.add_argument(
-        "--no_count_splitting_by_genes", "-l", default=False, 
+        "--no_count_splitting_by_gene_no", "-l", default=False, 
         action="store_true", help="Do not split read countings by the number "
         "of genes it overlaps with. By default this count splitting is "
         "performed.")
