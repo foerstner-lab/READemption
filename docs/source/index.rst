@@ -24,7 +24,7 @@ introduced by Sharma *et al.*, Nature, 2010 (`Pubmed
 <http://www.ncbi.nlm.nih.gov/pubmed/20164839>`_)) originating from
 bacterial samples. Meanwhile is has been extended to process data
 generated in different experimental setups and originating from all
-domains of life and is under `active developtment
+domains of life and is under `active development
 <https://github.com/konrad/trapl>`_. The `subcommands
 <subcommands.html>`_ which are provided by command-line interface
 cover read processing and aligning, coverage plot generation, gene
