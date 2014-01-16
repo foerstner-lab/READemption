@@ -119,7 +119,7 @@ def main():
 
     # Parameters for gene wise quantification
     gene_wise_quanti_parser = subparsers.add_parser(
-        "genequanti", help="Quantify the expression gene wise")
+        "gene_quanti", help="Quantify the expression gene wise")
     gene_wise_quanti_parser.add_argument(
         "project_path", default=".", nargs="?",
         help="Path of the project folder. If none is given the current "
