@@ -44,7 +44,7 @@ class AlignViz(object):
     def _generate_histogram(self, lengths_and_freqs, title):
         fig = plt.figure()
         lengths = np.array([int(length) for length in lengths_and_freqs.keys()])
-        freqs = np.array([int(freq) * 1000 for freq in lengths_and_freqs.values()])
+        freqs = np.array([int(freq) for freq in lengths_and_freqs.values()])
         ax = fig.add_subplot(111)
         plt.title(title)
         plt.xlabel("Read length [nt]")

@@ -9,7 +9,7 @@ __author__ = "Konrad Foerstner <konrad@foerstner.org>"
 __copyright__ = "2011-2013 by Konrad Foerstner <konrad@foerstner.org>"
 __license__ = "ISC license"
 __email__ = "konrad@foerstner.org"
-__version__ = "0.1.7"
+__version__ = "0.1.8"
 
 def main():
     parser = argparse.ArgumentParser()
@@ -34,7 +34,7 @@ def main():
         "directory is used.")
     read_aligning_parser.add_argument(
         "--min_read_length", "-l", default=12, type=int,
-        help="Minimal read length after clipping")
+        help="Minimal read length after clipping.")
     read_aligning_parser.add_argument(
         "--processes", "-p", default=1, type=int,
         help="Number of processes that should be used.")
@@ -43,30 +43,43 @@ def main():
         help="Segemehl's minimal accuracy (in %%) (default 95).")
     read_aligning_parser.add_argument(
         "--segemehl_evalue", "-e", default=5.0, type=float,
-        help="Segemehl's maximal e-value. (default 5.0)")
+        help="Segemehl's maximal e-value (default 5.0).")
     read_aligning_parser.add_argument(
-        "--segemehl_bin", "-s", default="segemehl",
-        help="Segemehl's binary path.")
+        "--segemehl_bin", "-s", default="segemehl.x",
+        help="Segemehl's binary path (default 'segemehl.x').")
     read_aligning_parser.add_argument(
-        "--split", "-S", default=False, action="store_true",
-        help="Run segemehl with read splitting")
-    read_aligning_parser.add_argument(
-        "--poly_a_clipping", "-c", default=False,
-        action="store_true", help="Perform polyA tail clipping. This option "
-        "cannot be used for paired-end reads.")
-    read_aligning_parser.add_argument(
-        "--force", "-f", default=False, action="store_true",
-        help="Overwrite existing files.")
-    read_aligning_parser.add_argument(
-        "--progress", "-P", default=False, action="store_true",
-        help="Show progress of the segemehl mapping.")
-    read_aligning_parser.add_argument(
-        "--paired_end", "-r", default=False, action="store_true",
+        "--paired_end", "-P", default=False, action="store_true",
         help="Use this if reads are originating from a paired-end sequencing. "
         "The members of a pair must be marked with '_p1' and '_p2' in front of "
         "the file type suffixes (e.g. 'my_sample_p1.fa' and 'my_sample_p2.fa' "
         "or 'my_sample_p1.fa.bz2' and 'my_sample_p2.fa.bz2'). This option "
         "cannot be use with polyA tail clipping.")
+    read_aligning_parser.add_argument(
+        "--split", "-S", default=False, action="store_true",
+        help="Run segemehl with read splitting.")
+    read_aligning_parser.add_argument(
+        "--poly_a_clipping", "-c", default=False,
+        action="store_true", help="Perform polyA tail clipping. This option "
+        "cannot be used for paired-end reads.")
+    read_aligning_parser.add_argument(
+        "--realign", "-r", default=False, action="store_true",
+        help="Perform realignment of unmapped reads using 'lack'.")
+    read_aligning_parser.add_argument(
+        "--keep_original_alignments", "-k", default=False, action="store_true",
+        help="Only used with --realign/-r. Keep the alignment file of the "
+        "primary mapper (segemehl) and the realigner (lack) after merging.")
+    read_aligning_parser.add_argument(
+        "--lack_bin", "-L", default="lack.x",
+        help="Lack's binary path (default 'lack.x').")
+    read_aligning_parser.add_argument(
+        "--check_for_existing_files", "-f", default=False,
+        action="store_true", help="Check for existing files (e.g. from a "
+        "interrupted previous run) and do not overwrite them if they exits. "
+        "Attention! You have to take care that there are no partially "
+        "generated files left!")
+    read_aligning_parser.add_argument(
+        "--progress", "-g", default=False, action="store_true",
+        help="Show progress of the segemehl mapping.")
     read_aligning_parser.set_defaults(func=align_reads)
 
     # Parameters for coverage file building
@@ -80,6 +93,12 @@ def main():
         "--unique_only", "-u", default=False, action="store_true",
         help="Use uniquely aligned reads only.")
     coverage_creation_parser.add_argument(
+        "--normalize_by_uniquely", "-U", default=False, action="store_true",
+        help="Normalize by the number of uniquely aligned reads. By default "
+        "the normalization is done based on the total number of aligned reads "
+        "even if only uniquely aligned reads are used for the coverage "
+        "calculation.")
+    coverage_creation_parser.add_argument(
         "--processes", "-p", default=1, type=int,
         help="Number of processes that should be used.")
     coverage_creation_parser.add_argument(
@@ -91,8 +110,11 @@ def main():
         action="store_true", help="Only the first bases 5' base of each read "
         "aligning is taken into account.")
     coverage_creation_parser.add_argument(
-        "--force", "-f", default=False, action="store_true",
-        help="Overwrite existing files.")
+        "--check_for_existing_files", "-f", default=False,
+        action="store_true", help="Check for existing files (e.g. from a "
+        "interrupted previous run) and do not overwrite them if they exits. "
+        "Attention! You have to take care that there are no partially "
+        "generated files left!")
     coverage_creation_parser.set_defaults(func=create_coverage_files)
 
     # Parameters for gene wise quantification
@@ -104,13 +126,21 @@ def main():
         "directory is used.")
     gene_wise_quanti_parser.add_argument(
         "--min_overlap", "-o", default=1, type=int,
-        help="Minimal read-annotation-overlap (in nt) (default 1)")
+        help="Minimal read-annotation-overlap (in nt) (default 1).")
     gene_wise_quanti_parser.add_argument(
-        "--skip_norm_by_alignment_freq", default=False, action="store_true")
+        "--no_count_split_by_alignment_no", "-n", default=False, 
+        action="store_true", help="Do not split read countings by the number "
+        "of alignments a read has. By default this count splitting is "
+        "performed.")
     gene_wise_quanti_parser.add_argument(
-        "--skip_norm_by_overlap_freq", default=False, action="store_true")
+        "--no_count_splitting_by_gene_no", "-l", default=False, 
+        action="store_true", help="Do not split read countings by the number "
+        "of genes it overlaps with. By default this count splitting is "
+        "performed.")
     gene_wise_quanti_parser.add_argument(
-        "--skip_antisense", "-a", default=False, action="store_true")
+        "--skip_antisense", "-a", default=False, action="store_true", 
+        help="Do not count anti-sense read-gene-overlaps. By default sense "
+        "and anti-sense overlaps are counted and separately reported.")
     gene_wise_quanti_parser.add_argument(
         "--processes", "-p", default=1, type=int,
         help="Number of processes that should be used.")
@@ -126,8 +156,11 @@ def main():
         "--pseudocounts", "-c", default=False, action="store_true",
         help="Add a pseudocount of 1 to each gene.")
     gene_wise_quanti_parser.add_argument(
-        "--force", "-f", default=False, action="store_true",
-        help="Overwrite existing files.")
+        "--check_for_existing_files", "-f", default=False,
+        action="store_true", help="Check for existing files (e.g. from a "
+        "interrupted previous run) and do not overwrite them if they exits. "
+        "Attention! You have to take care that there are no partially "
+        "generated files left!")
     gene_wise_quanti_parser.set_defaults(func=run_gene_wise_quantification)
 
     # Parameters for DESeq calling
