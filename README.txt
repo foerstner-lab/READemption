@@ -1,4 +1,5 @@
-= About =
+About
+-----
 
 The RNA-Seq Analysis PipeLine (TRAPL) is - as the name implies - a
 pipeline for the computational evaluation of RNA-Seq data. It was
@@ -16,29 +17,30 @@ are copied into defined folders no further parameters have to be
 given. Still, TRAPL's behavior can be adapted to specific needs of the
 user.
 
-= License =
+License
+-------
 
-ICS - see LICENSE.txt or https://en.wikipedia.org/wiki/ISC_license
+[ICS](https://en.wikipedia.org/wiki/ISC_license) - see LICENSE.txt
 
-== Development ==
+Development
+-----------
 
-- If possible follow the principal of "convention over
+* If possible follow the principal of "convention over
   configuration". This means input file are into a fixed location and
   the result file are placed in fixed location.
 
-- The classes should be path agnostic as far a possible. The controller
+* The classes should be path agnostic as far a possible. The controller
   is taking care of that and call them adequately.
 
-- The git braching model is very close to the one proposed here:
-  http://nvie.com/posts/a-successful-git-branching-model/
-
+* The git braching model is very close to the one 
+  proposed [here](http://nvie.com/posts/a-successful-git-branching-model/).
   There two main branches:
-  - master 
-  - dev(elopment)
+    * master 
+    * dev(elopment)
 
-  And there are further supporting branches:
-  - feature branches - branched off and back to the dev branch
-  - release branches - branched off from dev and merged back into
+    And there are further supporting branches:
+    * feature branches - branched off and back to the dev branch
+    * release branches - branched off from dev and merged back into
                        dev and master
-  - hotfix branches - branched off from master and merged back into
+    * hotfix branches - branched off from master and merged back into
                       dev and master
