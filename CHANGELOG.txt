@@ -1,3 +1,7 @@
+v0.1.8 (2014-01-16)
+- Add realigning of unmapped reads
+- Change of CLI parameters
+- And additionaly parameter for coverage normalisation
 v0.1.7 (2014-01-09)
 - Package generation for distribution
 - Name change from RAPL to TRAPL due to name clash with other tool
@@ -6,7 +10,6 @@ v0.1.7 (2014-01-09)
 - Several fixes and minor changes
 - Cleaning
 - Add a Makefile for import dev tasks
-
 v0.1.6 (2013-09-16)
 - Change coverage normalization for the case that only uniquely aligned
   reads are taken into account
