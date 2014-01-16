@@ -14,3 +14,14 @@ html_doc:
 show_html_docs:
 	firefox docs/build/html/index.html &
 
+readme_txt:
+	pandoc --from=markdown --to=plain README.md -o README.tex
+
+readme_html:
+	pandoc --from=markdown --to=html README.md -o README.html
+
+readme_rst:
+	pandoc --from=markdown --to=rst README.md -o README.rst
+
+readme_clean:
+	rm -f README.tex README.html README.rst
