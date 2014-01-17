@@ -25,3 +25,6 @@ readme_rst:
 
 readme_clean:
 	rm -f README.tex README.html README.rst
+
+pylint:
+	pylint bin/trapl trapllib/* tests/*
