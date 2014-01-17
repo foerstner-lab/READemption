@@ -30,7 +30,7 @@ Development
   the result file are placed in fixed location.
 
 * The classes should be path agnostic as far a possible. The controller
-  is taking care of that and call them adequately.
+  is taking care of that and calls them adequately.
 
 * The git braching model is very close to the one 
   proposed [here](http://nvie.com/posts/a-successful-git-branching-model/).
