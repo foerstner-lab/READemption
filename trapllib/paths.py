@@ -127,7 +127,7 @@ class Paths(object):
         self.deseq_tmp_session_info_script = "%s/tmp.R" % self.deseq_raw_folder
         self.deseq_session_info = "%s/R_session_info.txt" % (
             self.deseq_raw_folder)
-        self.version_path = "%s/used_rapl_version.txt" % (self.align_report_folder)
+        self.version_path = "%s/used_trapl_version.txt" % (self.align_report_folder)
 
     def _get_sorted_folder_content(self, folder):
         """Return the sorted file list of a folder"""
@@ -275,6 +275,9 @@ class Paths(object):
         self.unaligned_reads_paths = self._path_list(
             self.unaligned_reads_folder, lib_names, 
             appendix="_unaligned.fa")
+        self.realigned_unaligned_reads_paths = self._path_list(
+            self.unaligned_reads_folder, lib_names, 
+            appendix="_unaligned_after_realignment.fa")
         self._set_alignment_paths(lib_names)
 
     def _set_alignment_paths(self, lib_names):
