@@ -275,6 +275,9 @@ class Paths(object):
         self.unaligned_reads_paths = self._path_list(
             self.unaligned_reads_folder, lib_names, 
             appendix="_unaligned.fa")
+        self.realigned_unaligned_reads_paths = self._path_list(
+            self.unaligned_reads_folder, lib_names, 
+            appendix="_unaligned_after_realignment.fa")
         self._set_alignment_paths(lib_names)
 
     def _set_alignment_paths(self, lib_names):
