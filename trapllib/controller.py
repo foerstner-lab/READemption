@@ -506,7 +506,7 @@ class Controller(object):
         raw_stat_data_reader = RawStatDataReader()
         alignment_stats = [raw_stat_data_reader.read(
                 self._paths.read_alignments_stats_path)]
-        lib_names = list(alignment_stats[0].keys())
+        lib_names = sorted(list(alignment_stats[0].keys()))
         annotation_files = self._paths.get_annotation_files()
         self._paths.set_annotation_paths(annotation_files)        
         was_paired_end_alignment = self._was_paired_end_alignment(lib_names)
