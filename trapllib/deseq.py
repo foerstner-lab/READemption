@@ -69,13 +69,15 @@ class DESeqRunner(object):
                 csv.reader(open(
                     self._gene_wise_quanti_combined_path), delimiter="\t"),
                 csv.reader(deseq_result_fh, delimiter="\t")):
-                if comparison_file_row[0] == "id":
+                if comparison_file_row[0] == "baseMean":
+                    # Add another column to the header
                     comparison_file_row = [""] + comparison_file_row
-                    # Add condition name to the headline
-                    comparison_file_row[3] += " (%s)" % combo[0]
-                    comparison_file_row[4] += " (%s)" % combo[1]
+                    # Extend column description
+                    counting_file_row[self._first_data_column:] = [
+                        "%s raw countings" % lib_name for lib_name in 
+                        counting_file_row[self._first_data_column:]]
                 output_fh.write("\t".join(
-                    counting_file_row + comparison_file_row[2:]) + "\n")
+                    counting_file_row + comparison_file_row[1:]) + "\n")
             output_fh.close()
 
     def _condition_combos(self, conditions):
