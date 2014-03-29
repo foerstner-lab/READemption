@@ -5,14 +5,14 @@ except ImportError:
 
 setup(
     name='READemption',
-    version='0.1.9',
+    version='0.2.0',
     packages=['reademptionlib', 'tests'],
     author='Konrad U. Förstner',
     author_email='konrad@foerstner.org',
     description='READemption - A RNA-Seq Analysis Pipeline',
     url='',
     install_requires=[
-        "pysam >= 0.7.6"
+        "pysam >= 0.7.7"
     ],
     scripts=['bin/reademption'],
     license='LICENSE.txt',
