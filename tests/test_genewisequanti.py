@@ -2,7 +2,7 @@ import unittest
 import os
 import sys
 sys.path.append(".")
-from trapllib.genewisequanti import GeneWiseQuantification
+from reademptionlib.genewisequanti import GeneWiseQuantification
 import pysam
 
 class Gff3EntryMoc(object):

@@ -1,7 +1,7 @@
 import sys
 import unittest
 sys.path.append(".")
-from trapllib.polyaclipper import PolyAClipper
+from reademptionlib.polyaclipper import PolyAClipper
 
 class TestPolyAClipper(unittest.TestCase):
 

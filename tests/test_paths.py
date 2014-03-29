@@ -3,7 +3,7 @@ import unittest
 import shutil
 import sys
 sys.path.append(".")
-from trapllib.paths import Paths
+from reademptionlib.paths import Paths
 
 class TestPaths(unittest.TestCase):
 

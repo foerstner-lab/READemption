@@ -2,7 +2,7 @@ from io import StringIO
 import unittest
 import sys
 sys.path.append(".")
-from trapllib.fasta import FastaParser
+from reademptionlib.fasta import FastaParser
 
 class TestFastaParser(unittest.TestCase):
 

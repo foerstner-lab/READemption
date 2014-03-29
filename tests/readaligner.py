@@ -2,7 +2,7 @@ import unittest
 import sys
 from io import StringIO
 sys.path.append(".")
-from trapllib.readmapper import ReadMapper
+from reademptionlib.readmapper import ReadMapper
 
 class TestReadMapper(unittest.TestCase):
 

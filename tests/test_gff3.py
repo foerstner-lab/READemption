@@ -2,7 +2,7 @@ from io import StringIO
 import unittest
 import sys
 sys.path.append(".")
-from trapllib.gff3 import Gff3Parser, Gff3Entry
+from reademptionlib.gff3 import Gff3Parser, Gff3Entry
 
 class TestGff3Parser(unittest.TestCase):
 

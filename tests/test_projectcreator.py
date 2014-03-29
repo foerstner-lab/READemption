@@ -3,7 +3,7 @@ import os
 import sys
 import shutil
 sys.path.append(".")
-from trapllib.projectcreator import ProjectCreator
+from reademptionlib.projectcreator import ProjectCreator
 
 class TestProjectCreator(unittest.TestCase):
 
