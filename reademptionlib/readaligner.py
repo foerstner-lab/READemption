@@ -1,5 +1,5 @@
 import sys
-from trapllib.segemehl import Segemehl
+from reademptionlib.segemehl import Segemehl
 
 class ReadAligner(object):
     """An abstraction layer for different short read aligners."""

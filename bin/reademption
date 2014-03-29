@@ -1,9 +1,9 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 """RAPL - A RNA-seq Analysis PipeLine"""
 
 import argparse
-from trapllib.controller import Controller
+from reademptionlib.controller import Controller
 
 __author__ = "Konrad Foerstner <konrad@foerstner.org>"
 __copyright__ = "2011-2013 by Konrad Foerstner <konrad@foerstner.org>"

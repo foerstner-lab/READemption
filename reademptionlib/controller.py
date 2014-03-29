@@ -3,21 +3,21 @@ import os
 import sys
 import json
 import pysam
-from trapllib.bammerger import BamMerger
-from trapllib.coveragecalculator import CoverageCalculator
-from trapllib.deseq import DESeqRunner
-from trapllib.fasta import FastaParser
-from trapllib.genewisequanti import GeneWiseQuantification, GeneWiseOverview
-from trapllib.paths import Paths
-from trapllib.projectcreator import ProjectCreator
-from trapllib.rawstatdata import RawStatDataWriter, RawStatDataReader
-from trapllib.readaligner import ReadAligner
-from trapllib.readalignerstats import ReadAlignerStats
-from trapllib.readrealigner import ReadRealigner
-from trapllib.readalignerstatstable import ReadAlignerStatsTable
-from trapllib.readprocessor import ReadProcessor
-from trapllib.sambamconverter import SamToBamConverter
-from trapllib.wiggle import WiggleWriter
+from reademptionlib.bammerger import BamMerger
+from reademptionlib.coveragecalculator import CoverageCalculator
+from reademptionlib.deseq import DESeqRunner
+from reademptionlib.fasta import FastaParser
+from reademptionlib.genewisequanti import GeneWiseQuantification, GeneWiseOverview
+from reademptionlib.paths import Paths
+from reademptionlib.projectcreator import ProjectCreator
+from reademptionlib.rawstatdata import RawStatDataWriter, RawStatDataReader
+from reademptionlib.readaligner import ReadAligner
+from reademptionlib.readalignerstats import ReadAlignerStats
+from reademptionlib.readrealigner import ReadRealigner
+from reademptionlib.readalignerstatstable import ReadAlignerStatsTable
+from reademptionlib.readprocessor import ReadProcessor
+from reademptionlib.sambamconverter import SamToBamConverter
+from reademptionlib.wiggle import WiggleWriter
 
 class Controller(object):
 
@@ -665,7 +665,7 @@ class Controller(object):
 
     def viz_align(self):
         """Generate plots based on the read processing and mapping"""
-        from trapllib.vizalign import AlignViz
+        from reademptionlib.vizalign import AlignViz
         align_viz = AlignViz(
             self._paths.get_lib_names_single_end(),
             self._paths.read_processing_stats_path,
@@ -678,7 +678,7 @@ class Controller(object):
 
     def viz_gene_quanti(self):
         """Generate plots based on the gene-wise read countings"""
-        from trapllib.vizgenequanti import GeneQuantiViz
+        from reademptionlib.vizgenequanti import GeneQuantiViz
         gene_quanti_viz = GeneQuantiViz(
             self._paths.gene_wise_quanti_combined_path, 
             self._paths.get_lib_names_single_end())
@@ -690,7 +690,7 @@ class Controller(object):
 
     def viz_deseq(self):
         """Generate plots based on the DESeq analysis"""
-        from trapllib.vizdeseq import DESeqViz
+        from reademptionlib.vizdeseq import DESeqViz
         deseq_path_template = (
             self._paths.deseq_raw_folder + "/deseq_comp_%s_vs_%s.csv")
         deseq_viz = DESeqViz(self._paths.deseq_script_path, deseq_path_template)
