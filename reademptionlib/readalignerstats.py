@@ -2,7 +2,7 @@ import csv
 import sys
 from collections import defaultdict
 from functools import reduce
-from trapllib.fasta import FastaParser
+from reademptionlib.fasta import FastaParser
 import pysam
 
 class ReadAlignerStats(object):

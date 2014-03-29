@@ -11,11 +11,10 @@ class DESeqViz(object):
         self._deseq_script_path = deseq_script_path
         self._deseq_path_template = deseq_path_template
         self._use_antisene = use_antisene
-        self._basemean_lib_1_column = 3
-        self._basemean_lib_2_column = 4
-        self._log_2_fold_chance_column = 6
-        self._p_value_column = 7
-        self._p_adj_value_column = 8
+        self._basemean_column = 1
+        self._log_2_fold_chance_column = 2
+        self._p_value_column = 5
+        self._adj_p_value_column = 6
         self._p_value_significance_limit = 0.05
         self._log_fold_change_limit = 2
         self._log_2_fold_chance_limit = 1
@@ -32,34 +31,32 @@ class DESeqViz(object):
 
     def _create_scatter_plots(self, condition_1, condition_2):
         deseq_path = self._deseq_path_template % (condition_1, condition_2)
-        (basemean_lib_1, basemean_lib_2, log2_fold_changes, p_values, 
+        (basemeans, log2_fold_changes, p_values, 
          p_adj_values) = self._parse_deseq_file(deseq_path)
         fig = plt.figure()
         ax = fig.add_subplot(111)
-        ax.set_aspect(1)
-        ax.set_yscale('log')
         ax.set_xscale('log')
-        axis_min = 1
-        axis_max = max(
-            [max(counting) 
-             for counting in [basemean_lib_1, basemean_lib_2]])
-        # Draw lines
-        plt.plot([axis_min, axis_max], [axis_min, axis_max], 
-                 linestyle="solid", color="green", alpha=0.4)
-        plt.plot([axis_min, axis_max], [self._log_fold_change_limit, axis_max*self._log_fold_change_limit], 
-                 linestyle="dashed", color="green", alpha=0.4)
-        plt.plot([axis_min, axis_max], [1/self._log_fold_change_limit, axis_max*1/self._log_fold_change_limit], 
-                 linestyle="dashed", color="green", alpha=0.4)
-        # Calculate the Pearson correlation coefficient
-        corr_coeff = np.corrcoef(basemean_lib_1, basemean_lib_2)[0][1]
+        cleaned_basemeans = []
+        cleaned_log2_fold_changes = []
+        for basemean, log2_fc in zip(basemeans, log2_fold_changes):
+            if log2_fc != "NA" and basemean != "NA":
+                cleaned_basemeans.append(basemean)
+                cleaned_log2_fold_changes.append(log2_fc)
+        y_max = max([abs(log2_fc) for log2_fc in cleaned_log2_fold_changes])
+        y_min = -1*y_max
+        x_min = min(cleaned_basemeans)
+        x_max = max(cleaned_basemeans)
+        # # Draw lines
+        plt.plot([x_min, x_max], [0, 0], color="k", alpha=0.2)
         # Set axis ranges
-        plt.axis([axis_min, axis_max, 
-                  axis_min, axis_max])
-        plt.title("%s vs. %s\n(r = %s)" % (
-                condition_1, condition_2, corr_coeff))
-        plt.plot(basemean_lib_1, basemean_lib_2, "k.", alpha=0.2)
-        plt.xlabel("Expression %s" % condition_1)
-        plt.ylabel("Expression %s" % condition_2)
+        plt.axis([x_min, x_max, y_max, y_min])
+        plt.title("%s vs. %s" % (condition_1, condition_2))
+        sig_basemeans = []
+        sig_log2_fold_changes = []
+        plt.plot(sig_basemeans, sig_log2_fold_changes, "r.", alpha=0.2)
+        plt.plot(cleaned_basemeans, cleaned_log2_fold_changes, "k.", alpha=0.2)
+        plt.xlabel("Mean of normalized counts ")
+        plt.ylabel("Log2 fold change")
         self._pp_scatterplots.savefig()
 
     def create_volcano_plots(self, volcano_plot_path, volcano_plot_adj_path):
@@ -84,14 +81,27 @@ class DESeqViz(object):
         
     def _create_volcano_plots(self, condition_1, condition_2):
         deseq_path = self._deseq_path_template % (condition_1, condition_2)
-        (basemean_lib_1, basemean_lib_2, log2_fold_changes, p_values, 
-         p_adj_values) = self._parse_deseq_file(deseq_path)
+        (basemean, log2_fold_changes, p_values, 
+         adj_p_values) = self._parse_deseq_file(deseq_path)
+        cleaned_p_values = []
+        cleaned_log2_fold_changes = []
+        for p_value, log2_fold_change in zip(p_values, log2_fold_changes):
+            if p_value != "NA" and log2_fold_change != "NA":
+                cleaned_p_values.append(p_value)
+                cleaned_log2_fold_changes.append(log2_fold_change)
         self._create_volcano_plot(
-            log2_fold_changes, p_values, condition_1, condition_2, 
-           self._pp_raw)
+            cleaned_log2_fold_changes, cleaned_p_values, condition_1, 
+            condition_2, self._pp_raw)
+        cleaned_adj_p_values = []
+        cleaned_log2_fold_changes = []
+        for p_value, log2_fold_change in zip(adj_p_values, log2_fold_changes):
+            if p_value != "NA" and log2_fold_change != "NA":
+                cleaned_adj_p_values.append(p_value)
+                cleaned_log2_fold_changes.append(log2_fold_change)
         self._create_volcano_plot(
-            log2_fold_changes, p_adj_values, condition_1, condition_2,
-            self._pp_adj, pvalue_string_mod="(adjusted)")
+            cleaned_log2_fold_changes, cleaned_adj_p_values, 
+            condition_1, condition_2, self._pp_adj, 
+            pvalue_string_mod="(adjusted)")
 
     def _create_volcano_plot(
         self, log2_fold_changes, p_values, condition_1, condition_2, pp,
@@ -126,27 +136,20 @@ class DESeqViz(object):
         pp.savefig()
 
     def _parse_deseq_file(self, deseq_path):
-        basemean_lib_1 = []
-        basemean_lib_2 = []
+        basemeans = []
         log_2_fold_changes = []
-        p_value = []
-        p_adj_value = []
+        p_values = []
+        adj_p_values = []
         for row in csv.reader(open(deseq_path), delimiter="\t"):
-            if row[0].startswith("id"):
+            if row[0].startswith("baseMean"):
                 continue
-            skip = False
-            for column_no in [
-                self._log_2_fold_chance_column, self._p_value_column,
-                self._p_adj_value_column]:
-                if row[column_no] in ["NA", "-Inf", "Inf"]:
-                    skip = True
-                    break
-            if skip is True:
-                continue
-            basemean_lib_1.append(float(row[self._basemean_lib_1_column]))
-            basemean_lib_2.append(float(row[self._basemean_lib_2_column]))
-            log_2_fold_changes.append(float(row[self._log_2_fold_chance_column]))
-            p_value.append(float(row[self._p_value_column]))
-            p_adj_value.append(float(row[self._p_adj_value_column]))
-        return (basemean_lib_1, basemean_lib_2, log_2_fold_changes, p_value, 
-                p_adj_value)
+            basemeans.append(float(row[self._basemean_column]))
+            for value_list, column_no in (
+                    (log_2_fold_changes, self._log_2_fold_chance_column),
+                    (p_values, self._p_value_column),
+                    (adj_p_values, self._adj_p_value_column)):
+                try:
+                    value_list.append(float(row[column_no]))
+                except ValueError:
+                    value_list.append(row[column_no])
+        return basemeans, log_2_fold_changes, p_values, adj_p_values

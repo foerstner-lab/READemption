@@ -1,3 +1,6 @@
+v0.2.0 (2014-03-29)
+- Switch to DESeq
+- Renaming from TRAPL to READemption (yes, another name change)
 v0.1.9 (2014-02-17)
 - Fix isssue with path for paired-end reads
 - Fix lib name sorting for gene quanti overview

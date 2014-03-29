@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-# TRAPL documentation build configuration file, created by
+# READemption documentation build configuration file, created by
 # sphinx-quickstart on Thu May  2 08:33:05 2013.
 #
 # This file is execfile()d with the current directory set to its containing dir.
@@ -40,8 +40,8 @@ source_suffix = '.rst'
 master_doc = 'index'
 
 # General information about the project.
-project = u'TRAPL'
-copyright = u'2013, Konrad U. Förstner'
+project = u'READemption'
+copyright = u'2014, Konrad U. Förstner'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
@@ -164,7 +164,7 @@ html_show_sourcelink = False
 #html_file_suffix = None
 
 # Output file base name for HTML help builder.
-htmlhelp_basename = 'TRAPLdoc'
+htmlhelp_basename = 'READdemptiondoc'
 
 
 # -- Options for LaTeX output --------------------------------------------------
@@ -183,8 +183,8 @@ latex_elements = {
 # Grouping the document tree into LaTeX files. List of tuples
 # (source start file, target name, title, author, documentclass [howto/manual]).
 latex_documents = [
-  ('index', 'TRAPL.tex', u'TRAPL Documentation',
-   u'Konrad Förstner', 'manual'),
+  ('index', 'READemption.tex', u'READemption Documentation',
+   u'Konrad U. Förstner', 'manual'),
 ]
 
 # The name of an image file (relative to this directory) to place at the top of
@@ -213,8 +213,8 @@ latex_documents = [
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    ('index', 'rapl', u'TRAPL Documentation',
-     [u'Konrad Förstner'], 1)
+    ('index', 'rapl', u'READemption Documentation',
+     [u'Konrad U. Förstner'], 1)
 ]
 
 # If true, show URL addresses after external links.
@@ -227,8 +227,8 @@ man_pages = [
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
 texinfo_documents = [
-  ('index', 'TRAPL', u'TRAPL Documentation',
-   u'Konrad Förstner', 'TRAPL', 'One line description of project.',
+  ('index', 'READemption', u'READemption Documentation',
+   u'Konrad U. Förstner', 'READemption', 'One line description of project.',
    'Miscellaneous'),
 ]
 

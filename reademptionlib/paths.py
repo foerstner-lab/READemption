@@ -96,7 +96,7 @@ class Paths(object):
         self.viz_deseq_base_folder = (
             "%s/viz_deseq" % self.output_folder)
         self.viz_deseq_scatter_plot_path = (
-            "%s/base_mean_scatterplots.pdf" % 
+            "%s/MA_plots.pdf" % 
             self.viz_deseq_base_folder)
         self.viz_deseq_volcano_plot_path = (
             "%s/volcano_plots_log2_fold_change_vs_p-value.pdf" % 
@@ -127,7 +127,7 @@ class Paths(object):
         self.deseq_tmp_session_info_script = "%s/tmp.R" % self.deseq_raw_folder
         self.deseq_session_info = "%s/R_session_info.txt" % (
             self.deseq_raw_folder)
-        self.version_path = "%s/used_trapl_version.txt" % (self.align_report_folder)
+        self.version_path = "%s/used_reademption_version.txt" % (self.align_report_folder)
 
     def _get_sorted_folder_content(self, folder):
         """Return the sorted file list of a folder"""

@@ -4,21 +4,21 @@ Installation
 Requirements
 ------------
 
-TRAPL was developed using Python 3.3 and for best performance the user
-is advised to run TRAPL with this version, too. Any other Python 3
-version should work as well. Also Python 2.7 can be used if the
-library `futures <https://pypi.python.org/pypi/futures>`_ is
-installed. In any case, the third party modules `pysam
-<https://code.google.com/p/pysam>`_ as well as `setuptool
-<https://pypi.python.org/pypi/setuptools>`_ and `pip
-<http://www.pip-installer.org>`_ in order to make the installation
-easy by retrieving are required. TRAPL uses the short read mapper
-`segemehl <http://www.bioinf.uni-leipzig.de/Software/segemehl/>`_ for
-the mapping and this software needs to be installed. The subcommand
+READemption was developed using Python 3.3 and for best performance
+the user is advised to run READemptionL with this or a higher versoin,
+too. Also Python 2.7 can be used if the library `futures
+<https://pypi.python.org/pypi/futures>`_ is installed. In any case,
+the third party modules `pysam <https://code.google.com/p/pysam>`_ as
+well as `setuptool <https://pypi.python.org/pypi/setuptools>`_ and
+`pip <http://www.pip-installer.org>`_ in order to make the
+installation easy by retrieving are required. READemption uses the
+short read mapper `segemehl
+<http://www.bioinf.uni-leipzig.de/Software/segemehl/>`_ for the
+mapping and this software needs to be installed. The subcommand
 `viz_align`, `viz_gene_quanti`, `viz_deseq` require the Python library
 `Matplotlib <http://matplotlib.org/>`_. `R
-<http://www.r-project.org/>`_ and the bioconductor package `DESeq
-<http://bioconductor.org/packages/release/bioc/html/DESeq.html>`_ are
+<http://www.r-project.org/>`_ and the bioconductor package `DESeq2
+<http://bioconductor.org/packages/release/bioc/html/DESeq2.html>`_ are
 necessary for the subcommand `deseq` which performs differential gene
 expression analysis. Don't worry - in the following the installation
 of all these requirements will be covered.
@@ -58,10 +58,10 @@ If PIP is not yet install you should get this, too.::
   curl https://raw.github.com/pypa/pip/master/contrib/get-pip.py > get-pip.py
   sudo python3.3 get-pip.py
 
-Now you can use PIP to install pysam and TRAPL::
+Now you can use PIP to install pysam and READemption::
 
   pip-3.3 install pysam
-  pip-3.3 install trapl
+  pip-3.3 install READemption
 
 Install make and ncurses dev library.::
 
@@ -91,9 +91,9 @@ and libxml2 which is required for the installation of some R-packages.::
 
  sudo apt-get install libxml2-dev
 
-Install DESeq in ::
+Install DESeq2 in ::
 
-  echo 'source("http://bioconductor.org/biocLite.R");biocLite("DESeq")' | Rscript -
+  echo 'source("http://bioconductor.org/biocLite.R");biocLite("DESeq2")' | Rscript -
 
 
 ..

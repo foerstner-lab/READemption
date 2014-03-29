@@ -31,4 +31,4 @@ class ProjectCreator(object):
     
     def create_version_file(self, version_file_path, version):
         with open(version_file_path, "w") as fh:
-            fh.write("TRAPL version %s" % version)
+            fh.write("READemption version %s" % version)

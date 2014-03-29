@@ -1,5 +1,5 @@
 import sys
-from trapllib.lack import Lack
+from reademptionlib.lack import Lack
 
 class ReadRealigner(object):
     """An abstraction layer for different short read realigners."""

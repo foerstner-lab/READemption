@@ -2,7 +2,7 @@ import sys
 import os
 import unittest
 sys.path.append(".")
-from trapllib.coveragecalculator import CoverageCalculator
+from reademptionlib.coveragecalculator import CoverageCalculator
 from io import StringIO
 import pysam
 

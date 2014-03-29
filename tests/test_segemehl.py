@@ -3,7 +3,7 @@ import os
 import sys
 import unittest
 sys.path.append(".")
-from trapllib.segemehl import Segemehl
+from reademptionlib.segemehl import Segemehl
 
 class TestSegemehl(unittest.TestCase):
     """Provide general functionalities for tha actuall testing classes."""
