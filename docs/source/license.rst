@@ -1,7 +1,7 @@
 License
 =======
 
-TRAPL is open source software and available under the ISC license.
+READemption is open source software and available under the ISC license.
 
 Copyright (c) 2011-2014, Konrad Förstner <konrad.foerstner@uni-wuerzburg.de>
 
