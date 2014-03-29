@@ -178,7 +178,7 @@ def main():
         help="Comma separated list of condition in the same order as "
         "their corresponding libraries.")
     deseq_parser.add_argument(
-        "--no_replicates", "-r", default=False, action="store_true")
+        "--cooks_cutoff_off", "-k", default=False, action="store_true")
     deseq_parser.set_defaults(func=run_deseq)
 
     # Parameters for viz_align

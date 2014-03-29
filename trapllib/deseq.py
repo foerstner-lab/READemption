@@ -9,7 +9,7 @@ class DESeqRunner(object):
             self, libs, conditions, deseq_raw_folder, deseq_extended_folder,
             deseq_script_path, gene_wise_quanti_combined_path, 
             deseq_tmp_session_info_script, deseq_session_info, 
-            no_replicates=False):
+            cooks_cutoff_off=False):
         self._libs = libs
         self._conditions = conditions
         self._deseq_raw_folder = deseq_raw_folder
@@ -18,12 +18,12 @@ class DESeqRunner(object):
         self._gene_wise_quanti_combined_path = gene_wise_quanti_combined_path
         self._deseq_tmp_session_info_script = deseq_tmp_session_info_script
         self._deseq_session_info = deseq_session_info
-        self._no_replicastes = no_replicates
+        self._cooks_cutoff_off = cooks_cutoff_off
         self._first_data_column = 11
 
     def write_session_info_file(self):
         with open(self._deseq_tmp_session_info_script, "w") as tmp_r_script_fh:
-            tmp_r_script_fh.write("library('DESeq')\nsessionInfo()\n")
+            tmp_r_script_fh.write("library('DESeq2')\nsessionInfo()\n")
         with open(self._deseq_session_info, "w") as session_info_fh:
             with open(os.devnull, "w") as devnull:
                 call(["Rscript", self._deseq_tmp_session_info_script,], 
@@ -37,14 +37,12 @@ class DESeqRunner(object):
         head_row = open(
             self._gene_wise_quanti_combined_path).readline()[:-1].split("\t")
         libs = head_row[self._first_data_column-1:]
+        libs_str = ",".join(["'%s'" % lib for lib in libs])
         conditions = [libs_to_conditions[lib] for lib in libs]
         condition_str = ", ".join(["'%s'" % cond for cond in conditions])
-        dispersion_params = ""
-        if self._no_replicastes is True:
-            dispersion_params = ", method='blind', sharingMode='fit-only'"
         file_content = self._deseq_script_template() % (
             self._gene_wise_quanti_combined_path, self._first_data_column,
-            condition_str, dispersion_params)
+            libs_str, condition_str)
         file_content += self._comparison_call_strings(conditions)
         deseq_fh = open(self._deseq_script_path, "w")
         deseq_fh.write(file_content)
@@ -71,13 +69,15 @@ class DESeqRunner(object):
                 csv.reader(open(
                     self._gene_wise_quanti_combined_path), delimiter="\t"),
                 csv.reader(deseq_result_fh, delimiter="\t")):
-                if comparison_file_row[0] == "id":
+                if comparison_file_row[0] == "baseMean":
+                    # Add another column to the header
                     comparison_file_row = [""] + comparison_file_row
-                    # Add condition name to the headline
-                    comparison_file_row[3] += " (%s)" % combo[0]
-                    comparison_file_row[4] += " (%s)" % combo[1]
+                    # Extend column description
+                    counting_file_row[self._first_data_column:] = [
+                        "%s raw countings" % lib_name for lib_name in 
+                        counting_file_row[self._first_data_column:]]
                 output_fh.write("\t".join(
-                    counting_file_row + comparison_file_row[2:]) + "\n")
+                    counting_file_row + comparison_file_row[1:]) + "\n")
             output_fh.close()
 
     def _condition_combos(self, conditions):
@@ -90,9 +90,14 @@ class DESeqRunner(object):
         call_string = ""
         condition_combos = self._condition_combos(conditions)
         self._comparison_files_and_combos = []
+        cooks_cutoff_str = ""
+        if self._cooks_cutoff_off:
+            cooks_cutoff_str = ", cooksCutoff=FALSE"
         for index, condition_combo in enumerate(condition_combos):
-            call_string += "comp%s <- nbinomTest(cds, '%s', '%s')\n" % (
-                index, condition_combo[0], condition_combo[1])
+            call_string += ("comp%s <- results(dds, contrast="
+                            "c('condition','%s', '%s')%s)\n" % (
+                            index, condition_combo[0], condition_combo[1], 
+                                cooks_cutoff_str))
             comparison_file = "deseq_comp_%s_vs_%s.csv" % (
                 condition_combo[0], condition_combo[1])
             self._comparison_files_and_combos.append(
@@ -105,11 +110,14 @@ class DESeqRunner(object):
 
     def _deseq_script_template(self):
         return (
-            "library('DESeq')\n"
+            "library('DESeq2')\n"
             "rawCountTable <- read.table('%s', skip=1, sep='\\t', "
             "quote='', comment.char='')\n"
-            "countTable <- round(rawCountTable[,%s:length(names(rawCountTable))])\n"
+            "countTable <- round(rawCountTable[,%s:length(names("
+            "rawCountTable))])\n"
+            "libs <- c(%s)\n"
             "conds <- c(%s)\n"
-            "cds <- newCountDataSet(countTable, conds)\n"
-            "cds <- estimateSizeFactors(cds)\n"
-            "cds <- estimateDispersions(cds%s)\n")
+            "samples <- data.frame(row.names=libs, condition=conds)\n"
+            "dds <- DESeqDataSetFromMatrix(countData=countTable, "
+            "colData=samples, design=~condition)\n"
+            "dds <- DESeq(dds)\n")
