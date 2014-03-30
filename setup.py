@@ -20,6 +20,7 @@ setup(
     classifiers=[
         'License :: OSI Approved :: ISC License (ISCL)'
         'Programming Language :: Python :: 3',
-        'Topic :: Scientific/Engineering :: Bio-Informatics'
+        'Topic :: Scientific/Engineering :: Bio-Informatics',
+        'Operating System :: POSIX'
     ]
 )
