@@ -1,3 +1,7 @@
+[![Latest Version](https://pypip.in/version/READemption/badge.png)](https://pypi.python.org/pypi/READemption/)
+[![License](https://pypip.in/license/READemption/badge.png)](https://pypi.python.org/pypi/READemption/)
+[![Downloads](https://pypip.in/d/READemption/badge.png)](https://pypi.python.org/pypi/READemption/)
+
 About
 -----
 
