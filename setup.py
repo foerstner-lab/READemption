@@ -19,8 +19,8 @@ setup(
     long_description=open('README.rst').read(),
     classifiers=[
         'License :: OSI Approved :: ISC License (ISCL)'
+        'Operating System :: POSIX'
         'Programming Language :: Python :: 3',
         'Topic :: Scientific/Engineering :: Bio-Informatics',
-        'Operating System :: POSIX'
     ]
 )
