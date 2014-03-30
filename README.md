@@ -16,6 +16,21 @@ Once the input files are copied into defined folders no further
 parameters have to be given. Still, READemption's behavior can be
 adapted to specific needs of the user.
 
+Documentation
+-------------
+
+Documentation can be found on [here](http://pythonhosted.org/READemption/).
+
+Installation
+------------
+
+Short version (if you have all the requirements installed):
+
+    $ pip install READemption
+
+[Long version](http://pythonhosted.org/READemption/installation.html)
+(what are the requirements and how do you get them)
+
 License
 -------
 
