@@ -7,7 +7,7 @@ About
 
 READemption is a pipeline for the computational evaluation of RNA-Seq
 data. It was originally developed at the IMIB/ZINF to process dRNA-Seq
-reads (as introduced by Sharma et al., Nature, 2010 originating from
+reads (as introduced by Sharma et al., Nature, 2010) originating from
 bacterial samples. Meanwhile is has been extended to process data
 generated in different experimental setups and originating from all
 domains of life and is under active development. The subcommands which
