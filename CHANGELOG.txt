@@ -1,3 +1,7 @@
+v0.2.1 (2014-03-31)
+- Improve documentation
+- Add badges and further info to Readme
+- Extend Makefile
 v0.2.0 (2014-03-29)
 - Switch to DESeq
 - Renaming from TRAPL to READemption (yes, another name change)
