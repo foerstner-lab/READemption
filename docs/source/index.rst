@@ -34,7 +34,7 @@ over configuration*: Once the input files are copied into defined
 folders no further parameters have to be given. Still, READemption's
 behavior can be adapted to specific needs of the user. This tools is
 available as open source under open source license `ICSL
-<https://en.wikipedia.org/wiki/ISC_license>`_ .
+<https://en.wikipedia.org/wiki/ISC_license>`_.
 
 Download
 ========
@@ -51,12 +51,14 @@ The source code of READemption can be found at https://github.com/konrad/READemp
 Cite
 ====
 
-If you apply READemption in you data analysis please cite the
+If you apply READemption in your data analysis please cite the
 following reference: *READemption – A tool for the computational
 analysis of deep-sequencing-based transcriptome data*.
-Konrad U. Förstner, Jörg Vogel, Cynthia M. Sharma; (submitted). A
-`pre-preprint version <http://biorxiv.org/content/early/2014/XXX>`_ of
-the manuscript is hosted at bioRxiv.
+Konrad U. Förstner, Jörg Vogel, Cynthia M. Sharma; (submitted). 
+
+..  A
+.. `pre-preprint version <http://biorxiv.org/content/early/2014/XXX>`_ of
+..  the manuscript is hosted at bioRxiv.
 
 Contact
 =======
