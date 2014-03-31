@@ -5,7 +5,7 @@ except ImportError:
 
 setup(
     name='READemption',
-    version='0.2.1',
+    version='0.2.2',
     packages=['reademptionlib', 'tests'],
     author='Konrad U. Förstner',
     author_email='konrad@foerstner.org',
@@ -18,8 +18,8 @@ setup(
     license='LICENSE.txt',
     long_description=open('README.rst').read(),
     classifiers=[
-        'License :: OSI Approved :: ISC License (ISCL)'
-        'Operating System :: POSIX'
+        'License :: OSI Approved :: ISC License (ISCL)',
+        'Operating System :: POSIX',
         'Programming Language :: Python :: 3',
         'Topic :: Scientific/Engineering :: Bio-Informatics',
     ]
