@@ -1,3 +1,7 @@
+[![Latest Version](https://pypip.in/version/READemption/badge.png)](https://pypi.python.org/pypi/READemption/)
+[![License](https://pypip.in/license/READemption/badge.png)](https://pypi.python.org/pypi/READemption/)
+[![Downloads](https://pypip.in/d/READemption/badge.png)](https://pypi.python.org/pypi/READemption/)
+
 About
 -----
 
@@ -7,7 +11,7 @@ reads (as introduced by Sharma et al., Nature, 2010 originating from
 bacterial samples. Meanwhile is has been extended to process data
 generated in different experimental setups and originating from all
 domains of life and is under active development. The subcommands which
-are provided by command-line interface cover read processing and
+are accessible viaq command-line interface cover read processing and
 aligning, coverage plot generation, gene expression quantification as
 well as differential gene expression analysis. READemption was applied
 to analyze numerous data sets. In order to set up analyses quickly
@@ -15,6 +19,21 @@ READemption follows the principal of "convention over configuration":
 Once the input files are copied into defined folders no further
 parameters have to be given. Still, READemption's behavior can be
 adapted to specific needs of the user.
+
+Documentation
+-------------
+
+Documentation can be found on [here](http://pythonhosted.org/READemption/).
+
+Installation
+------------
+
+Short version (if you have all the requirements installed):
+
+    $ pip install READemption
+
+[Long version](http://pythonhosted.org/READemption/installation.html)
+(what are the requirements and how do you get them)
 
 License
 -------
