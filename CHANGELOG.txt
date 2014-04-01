@@ -1,3 +1,7 @@
+v0.2.2 (2014-04-01)
+- Improve documentation
+- Modify README
+- Extend Makefile
 v0.2.2 (2014-03-31)
 - Fix setup.py
 - Typos fixing

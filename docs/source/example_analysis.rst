@@ -2,18 +2,16 @@ Performing an example analysis
 ==============================
 
 Here you will be guided trough a small example analysis using a
-publicly available RNA-Seq data set. We will use a data set from NCBI
-GEO that was part of a publication by `Kröger et
+publicly available RNA-Seq from NCBI GEO that was part of a
+publication by `Kröger et
 al. <http://www.ncbi.nlm.nih.gov/pubmed/24331466>`_. This is a
 transcriptome analysis of *Salmonella* Typhimurium SL1344 in different
-conditions.
-
-We will generate several output files in different formats. The CSV
-(tabular separated plain text files) files can be opened with any
-spreadsheet program like `LibreOffice <https://www.libreoffice.org/>`_
-or Excel. For inspecting the mappings (in BAM format) and coverage
-files (wiggle format) you can use a genome browser for example `IGB
-<http://bioviz.org/igb/>`_ or `IGV
+conditions. We will generate several output files in different
+formats. The CSV (tabular separated plain text files) files can be
+opened with any spreadsheet program like `LibreOffice
+<https://www.libreoffice.org/>`_ or Excel. For inspecting the mappings
+(in BAM format) and coverage files (wiggle format) you can use a
+genome browser for example `IGB <http://bioviz.org/igb/>`_ or `IGV
 <https://www.broadinstitute.org/igv/home>`_.
 
 Generating a project
@@ -145,10 +143,10 @@ created which can be found in
 ``READemption_analysis/output/align/reports_and_stats/``. It contains
 several mapping statistics for example how many reads are successfully
 aligned in total and how many were aligned to each replicon. We see
-that more than 98 % are mapped for each library. Sorted and indexed
-alignements in BAM format are stored in
+that more than 98 % of the reads are mapped for each library. Sorted
+and indexed alignements in BAM format are stored in
 ``READemption_analysis/output/align/alignments``. We could load them
-in a genome browser but instead we continue with the next step.
+into a genome browser but instead we continue with the next step.
 
 
 Generating coverage files
@@ -162,12 +160,12 @@ normalizations we use the subcommand ``coverage``.
    $ reademption coverage -p 4 READemption_analysis
 
 The sets are stored in subfolder of
-``READemption_analysis/output/coverage/``. The most often set is
-stored in ``coverage-tnoar_min_normalized``. Here the coverages are
-normalized by the total number of aligned reads (TNOAR) of the
-individual library and then multiplied by the lowest TNOAR value of
-all libs. These files could be inspected for differential RNA-Seq
-(dRNA-Seq - comparing libraries with and without Terminator
+``READemption_analysis/output/coverage/``. The most oftenly used set
+is stored in ``coverage-tnoar_min_normalized``. Here the coverage
+values are normalized by the total number of aligned reads (TNOAR) of
+the individual library and then multiplied by the lowest TNOAR value
+of all libraries. These files could be inspected for differential
+RNA-Seq (dRNA-Seq - comparing libraries with and without Terminator
 Exonuclease treatment) data in order to determine transcriptional
 start sites. They can be loaded in common genome browsers like `IGB
 <http://bioviz.org/igb/>`_ or `IGV
@@ -233,7 +231,7 @@ Create plots
 ------------
 
 Finally we generate plots that visualize the results of the different
-steps. ``viz_align`` will create histograms of the read length
+steps. ``viz_align`` creates histograms of the read length
 distribution for the untreated and treated reads (saved in
 ``READemption_analysis/output/viz_align/``).
 
@@ -244,7 +242,7 @@ distribution for the untreated and treated reads (saved in
 ``viz_gene_quanti`` visualizes the gene wise countings. In our example
 you will see that - as expected - the replicates are more similar to
 each other than to the libs of the other condition. It also generates
-bar plot that show the distribution of reads inside the different RNA
+bar plots that show the distribution of reads inside the different RNA
 classes.
 
 ::
