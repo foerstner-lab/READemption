@@ -6,10 +6,10 @@ coverage:
 	coverage3 report
 
 package:
-	python3.3 setup.py sdist
+	python3 setup.py sdist
 
 package_to_pypi:
-	python setup.py sdist upload
+	python3 setup.py sdist upload
 	@echo "Go to https://pypi.python.org/pypi/READemption/"
 
 html_doc:
