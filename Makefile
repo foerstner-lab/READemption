@@ -29,7 +29,9 @@ readme_html:
 	pandoc --from=markdown --to=html README.md -o README.html
 
 readme_rst:
-	pandoc --from=markdown --to=rst README.md -o README.rst
+	grep -v "^\[!" README.md | sed -e "1d" > README.md.tmp
+	pandoc --from=markdown --to=rst README.md.tmp -o README.rst
+	rm README.md.tmp
 
 readme_clean:
 	rm -f README.tex README.html README.rst
