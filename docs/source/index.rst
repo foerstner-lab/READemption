@@ -16,25 +16,21 @@ Table of content
 READemption in a nutshell
 =========================
 
-*READemption* is a pipeline for the computational evaluation of
-RNA-Seq data. It was originally developed at the `IMIB/ZINF
-<http://www.imib-wuerzburg.de/>`_ to process dRNA-Seq reads (as
-introduced by Sharma *et al.*, Nature, 2010 (`Pubmed
+READemption is a pipeline for the computational evaluation of
+RNA-Seq data. It was originally developed to process dRNA-Seq reads
+(as introduced by Sharma et al., Nature, 2010 (`Pubmed
 <http://www.ncbi.nlm.nih.gov/pubmed/20164839>`_)) originating from
 bacterial samples. Meanwhile is has been extended to process data
-generated in different experimental setups and originating from all
-domains of life and is under `active development
-<https://github.com/konrad/READemption>`_. The `subcommands
-<subcommands.html>`_ which are provided by command-line interface
-cover read processing and aligning, coverage plot generation, gene
-expression quantification as well as differential gene expression
-analysis. READemption was applied to analyze numerous data sets. In order to
-set up analyses quickly READemption follows the principal of *convention
-over configuration*: Once the input files are copied into defined
-folders no further parameters have to be given. Still, READemption's
-behavior can be adapted to specific needs of the user. This tools is
-available as open source under open source license `ICSL
-<https://en.wikipedia.org/wiki/ISC_license>`_.
+generated in different experimental setups and from all domains of
+life. The `functions <subcommands.html>`_ which are accessible via a
+command-line interface cover read processing and aligning, coverage
+calculation, gene expression quantification, differential gene
+expression analysis as well as visualization. In order to set up and
+perform analyses quickly READemption follows the principal of
+*convention over configuration*: Once the input files are
+copied/linked into defined folders no further parameters have to be
+given. Still, READemption's behavior can be adapted to specific needs
+of the user by parameters.
 
 Download
 ========
@@ -63,4 +59,5 @@ Konrad U. Förstner, Jörg Vogel, Cynthia M. Sharma; (submitted).
 Contact
 =======
 
-For question and requests feel free to contact Konrad Förstner <konrad.foerstner@uni-wuerzburg.de>
+For question and requests feel free to contact `Konrad Förstner
+<http://konrad.foerstner.org/>`_ <konrad.foerstner@uni-wuerzburg.de>

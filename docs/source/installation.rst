@@ -10,7 +10,7 @@ version. Also Python 2.7 or earlier Python 3 version can be used if
 the backported library `futures
 <https://pypi.python.org/pypi/futures>`_ is installed. In any case,
 the third party packages `pysam <https://code.google.com/p/pysam>`_ as
-well as `setuptool <https://pypi.python.org/pypi/setuptools>`_ and
+well as `setuptools <https://pypi.python.org/pypi/setuptools>`_ and
 `pip <http://www.pip-installer.org>`_ should be available on the
 system in order to make the installation easy. READemption uses the
 short read mapper `segemehl
@@ -60,14 +60,15 @@ Some comments:
   tar xzf segemehl_0_1_7.tar.gz
   cd segemehl_*/segemehl/ && make && cd ../../
 
-Copying it to a location that is part of the ``PATH`` e.g ``/usr/bin/`` ... 
+Copying the executable to a location that is part of the ``PATH`` e.g
+``/usr/bin/`` ...
 
 ::
 
   sudo cp segemehl_0_1_7/segemehl/segemehl.x /usr/bin/segemehl.x
   sudo cp segemehl_0_1_7/segemehl/lack.x /usr/bin/lack.x
 
-... or the bin folder of you home directory::
+... or the bin folder of your home directory::
 
   mkdir ~/bin
   cp segemehl_0_1_7/segemehl/segemehl.x ~/bin
