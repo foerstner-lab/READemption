@@ -43,11 +43,13 @@ pylint:
 new_release:
 	@echo "* Please do this manually:"
 	@echo "* ------------------------"
+	@echo "* Create/checkout a release branch"
 	@echo "* Change bin/reademption"
 	@echo "* Change setup.py"
 	@echo "* Change docs/source/conf.py"
 	@echo "* Change CHANGELOG.txt"
 	@echo "* Commit changes e.g. 'git commit -m 'Set version to 0.2.0'"	
 	@echo "* Tag the commit e.g. 'git tag -a v0.1.9 -m 'version v0.1.9''"
+	@echo "* Merge release into dev and master"
 	@echo "* After pushing generate a new release based on this tag at"
 	@echo "  https://github.com/konrad/READemption/releases/new"
