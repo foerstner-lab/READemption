@@ -168,12 +168,13 @@ positions. To turn off this behavior use
 gene_quanti
 -----------
 
-With ``gene_quanti`` the number of reads to each annotation entry is
-counted and the results are combined in tables. At least one GGF file
-with the annotations have to be placed in ``input/annotations``. The
-sequence ID of the sequenced must be precisely the same as the IDs
-used in the reference sequence FASTA files. To specify the feature
-classes (e.g. CDS, gene, rRNA, tRNA) that should be quantified the
+With ``gene_quanti`` the number of reads overlapping with each of the
+annotation entries is counted and the results are combined in
+tables. At least one GGF3 file with annotations has to be placed in
+``input/annotations``. The sequence ID of the sequenced must be
+precisely the same as the IDs used in the reference sequence FASTA
+files. To specify the feature classes (the third column in the GFF3
+file e.g. CDS, gene, rRNA, tRNA) that should be quantified the
 parameter ``--features`` can be used. Otherwise countings for all
 annotation entries are generated. Per default sense and anti-sense
 overlaps are counted and separately listed.
