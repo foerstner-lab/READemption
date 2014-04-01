@@ -6,7 +6,7 @@ import argparse
 from reademptionlib.controller import Controller
 
 __author__ = "Konrad Foerstner <konrad@foerstner.org>"
-__copyright__ = "2011-2013 by Konrad Foerstner <konrad@foerstner.org>"
+__copyright__ = "2011-2014 by Konrad Foerstner <konrad@foerstner.org>"
 __license__ = "ISC license"
 __email__ = "konrad@foerstner.org"
 __version__ = "0.2.2"
