@@ -1,4 +1,6 @@
-v0.2.2 (2014-04-01)
+v0.2.4 (2014-04-05)
+- Add logo       
+v0.2.3 (2014-04-01)
 - Improve documentation
 - Modify README
 - Extend Makefile
