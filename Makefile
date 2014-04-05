@@ -48,6 +48,7 @@ new_release:
 	@echo "* Change setup.py"
 	@echo "* Change docs/source/conf.py"
 	@echo "* Change CHANGELOG.txt"
+	@echo "* Create new docs"
 	@echo "* Test package creation"
 	@echo "* Test doc creation"
 	@echo "* Commit changes e.g. 'git commit -m 'Set version to 0.2.0'"	
