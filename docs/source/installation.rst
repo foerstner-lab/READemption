@@ -4,16 +4,13 @@ Installation
 Requirements
 ------------
 
-READemption was developed using Python 3.3 and for best performance
-the user is advised to run READemption with this or a higher
-version. Also Python 2.7 or earlier Python 3 version can be used if
-the backported library `futures
-<https://pypi.python.org/pypi/futures>`_ is installed. In any case,
-the third party packages `pysam <https://code.google.com/p/pysam>`_ as
-well as `setuptools <https://pypi.python.org/pypi/setuptools>`_ and
-`pip <http://www.pip-installer.org>`_ should be available on the
-system in order to make the installation easy. READemption uses the
-short read mapper `segemehl
+READemption was developed using Python 3.3 and the user is advised to
+run READemption with this or a higher version. In any case, the third
+party packages `pysam <https://code.google.com/p/pysam>`_ as well as
+`setuptools <https://pypi.python.org/pypi/setuptools>`_ and `pip
+<http://www.pip-installer.org>`_ should be available on the system in
+order to make the installation easy. READemption uses the short read
+mapper `segemehl
 <http://www.bioinf.uni-leipzig.de/Software/segemehl/>`_ for the
 mapping and this software needs to be installed. The subcommands
 ``viz_align``, ``viz_gene_quanti``, ``viz_deseq`` require the Python
