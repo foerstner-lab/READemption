@@ -10,6 +10,7 @@ Table of content
    installation
    subcommands      
    example_analysis
+   troubleshooting
    license
    versions	      
 
