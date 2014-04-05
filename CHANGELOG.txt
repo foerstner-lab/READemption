@@ -1,3 +1,5 @@
+v0.2.5 (2014-04-05)
+- Add troubleshooting page to docs
 v0.2.4 (2014-04-05)
 - Add logo       
 v0.2.3 (2014-04-01)
