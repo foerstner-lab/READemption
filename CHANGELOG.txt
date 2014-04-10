@@ -1,3 +1,6 @@
+v0.2.6 (2014-04-10)
+- Fix error with newer R
+- Add error/solution for older DESeq2 version
 v0.2.5 (2014-04-05)
 - Add troubleshooting page to docs
 v0.2.4 (2014-04-05)
