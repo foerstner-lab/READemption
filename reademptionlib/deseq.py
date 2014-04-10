@@ -41,8 +41,8 @@ class DESeqRunner(object):
         conditions = [libs_to_conditions[lib] for lib in libs]
         condition_str = ", ".join(["'%s'" % cond for cond in conditions])
         file_content = self._deseq_script_template() % (
-            self._gene_wise_quanti_combined_path, self._first_data_column,
-            libs_str, condition_str)
+            self._gene_wise_quanti_combined_path, self._first_data_column-1, 
+            len(libs),self._first_data_column, libs_str, condition_str)
         file_content += self._comparison_call_strings(conditions)
         deseq_fh = open(self._deseq_script_path, "w")
         deseq_fh.write(file_content)
@@ -112,7 +112,7 @@ class DESeqRunner(object):
         return (
             "library('DESeq2')\n"
             "rawCountTable <- read.table('%s', skip=1, sep='\\t', "
-            "quote='', comment.char='')\n"
+            "quote='', comment.char='', colClasses=c(rep('character',%s), rep('numeric',%s)))\n"
             "countTable <- round(rawCountTable[,%s:length(names("
             "rawCountTable))])\n"
             "libs <- c(%s)\n"
