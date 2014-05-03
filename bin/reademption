@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-"""RAPL - A RNA-seq Analysis PipeLine"""
+"""READemption - A RNA-seq Analysis PipeLine"""
 
 import argparse
 from reademptionlib.controller import Controller
@@ -213,7 +213,7 @@ def main():
 
     args = parser.parse_args()
     if args.version is True:
-        print("RAPL version " + __version__)
+        print("READemption version " + __version__)
     elif "func" in dir(args):
         controller = Controller(args)
         args.func(controller)

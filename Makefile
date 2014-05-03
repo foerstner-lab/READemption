@@ -17,7 +17,8 @@ html_doc:
 
 upload_doc:
 	cd docs/build/html/ && zip -r READemption_docs.zip * && cd ../../.. && mv docs/build/html/READemption_docs.zip .
-	@echo "Upload at https://pypi.python.org/pypi?%3Aaction=pkg_edit&name=READemption"
+	@echo ""
+	@echo "Upload READemption_docs.zip at https://pypi.python.org/pypi?%3Aaction=pkg_edit&name=READemption"
 
 show_html_docs:
 	firefox docs/build/html/index.html &
@@ -51,8 +52,10 @@ new_release:
 	@echo "* Create new docs"
 	@echo "* Test package creation"
 	@echo "* Test doc creation"
-	@echo "* Commit changes e.g. 'git commit -m 'Set version to 0.2.X'"	
-	@echo "* Tag the commit e.g. 'git tag -a v0.2.X -m 'version v0.2.X''"
+	@echo "* make package_to_pypi"
+	@echo "* git add CHANGELOG.txt bin/reademption docs/source/conf.py setup.py"
+	@echo "* Commit changes e.g. 'git commit -m \"Set version to 0.2.X\"'"
+	@echo "* Tag the commit e.g. 'git tag -a v0.2.X -m \"version v0.2.X\"'"
 	@echo "* Merge release into dev and master"
 	@echo "* After pushing generate a new release based on this tag at"
 	@echo "  https://github.com/konrad/READemption/releases/new"

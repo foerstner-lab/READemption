@@ -27,7 +27,7 @@ Installing on a fresh Ubuntu installation
 The following installation procedure was tested on a `Amazon AWS
 t1.micro
 <http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/concepts_micro_instances.html>`_
-instance with Ubuntu Server 13.10 image.
+instance with Ubuntu Server 14.04 LTS image.
 
 
 1. Installing all required Debian/Ubuntu packages
@@ -43,7 +43,7 @@ Now you can install the packages::
 
 Some comments:
 
-- Ubuntu 13.10 should have Python 3.3 already installed.
+- Ubuntu 14.04 should have Python 3.4 already installed.
 - ``cython`` is required for ``pysam``
 - ``make``, ``libncurses5-dev`` and ``zlib1g-dev`` are needed for ``segemehl``
 - ``libxml2`` required for the installation of some of the R-packages
