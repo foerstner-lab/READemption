@@ -101,11 +101,11 @@ class Controller(object):
             self._run_realigner_and_process_alignments()
         if self._args.realign is True:
             self._merge_bam_files()
-            self._generate_read_alignment_stats(
-                self._lib_names, 
-                self._paths.read_alignment_bam_paths,
-                self._paths.realigned_unaligned_reads_paths, 
-                self._paths.read_alignments_stats_path)
+        self._generate_read_alignment_stats(
+            self._lib_names, 
+            self._paths.read_alignment_bam_paths,
+            self._paths.realigned_unaligned_reads_paths, 
+            self._paths.read_alignments_stats_path)
         self._write_alignment_stat_table()
         
     def _set_primary_aligner_paths_to_final_paths(self):
