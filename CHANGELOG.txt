@@ -1,4 +1,4 @@
-v0.2.6 (2014-05-03)
+v0.2.7 (2014-05-03)
 - Update docs
 - Improve Makefile
 - Fix bug - no align stat creation if realigning was not acitivated
