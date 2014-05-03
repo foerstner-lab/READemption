@@ -1,3 +1,7 @@
+v0.2.6 (2014-05-03)
+- Update docs
+- Improve Makefile
+- Fix bug - no align stat creation if realigning was not acitivated
 v0.2.6 (2014-04-10)
 - Fix error with newer R
 - Add error/solution for older DESeq2 version
