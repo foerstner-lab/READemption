@@ -80,6 +80,14 @@ def main():
     read_aligning_parser.add_argument(
         "--progress", "-g", default=False, action="store_true",
         help="Show progress of the segemehl mapping.")
+    read_aligning_parser.add_argument(
+        "--crossalign_cleaning", "-x", default=None,
+        dest="crossalign_cleaning_str", metavar="CROSSALIGN_CLEANING_STRING",
+        help="Remove reads that are cross-mapped to replicons of different "
+        "species. To associated species and replicons give a string in the "
+        "following format: '<ORG_NAME_1>:<org_1_repl1>,<org_1_repl2>,..,"
+        "<org_1_repl_n>;<ORG_NAME_2>:<org_2_repl1>,<org_2_repl2>,..,"
+        "<org_2_repl_n>'")
     read_aligning_parser.set_defaults(func=align_reads)
 
     # Parameters for coverage file building
