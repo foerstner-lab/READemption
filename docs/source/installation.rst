@@ -73,9 +73,21 @@ Copying the executable to a location that is part of the ``PATH`` e.g
 3. Install DESeq2
 ~~~~~~~~~~~~~~~~~
 
-::
+Start ``R``::
 
-  echo 'source("http://bioconductor.org/biocLite.R");biocLite("DESeq2")' | sudo Rscript -
+  R
+
+
+and install the DESeq2 package inside of the interactive command line
+interface. You might be asked to confirm the installation path::
+
+  source("http://bioconductor.org/biocLite.R")
+  biocLite("DESeq2").
+
+Leave ``R``::
+
+  quit(save = "no")
+
 
 Install pysam and READemption
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
