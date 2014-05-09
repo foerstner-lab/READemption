@@ -98,16 +98,18 @@ class Controller(object):
             self._paths.primary_read_aligner_bam_paths,
             self._paths.unaligned_reads_paths,
             self._paths.primary_read_aligner_stats_path)
+        final_unaligned_reads_paths = self._paths.unaligned_reads_paths
         if self._args.realign is True:
             self._run_realigner_and_process_alignments()
-        if self._args.realign is True:
             self._merge_bam_files()
+            final_unaligned_reads_paths = (
+                self._paths.realigned_unaligned_reads_paths)
         if not self._args.crossalign_cleaning_str is None:
             self._remove_crossaligned_reads()
         self._generate_read_alignment_stats(
             self._lib_names,
             self._paths.read_alignment_bam_paths,
-            self._paths.realigned_unaligned_reads_paths,
+            final_unaligned_reads_paths,
             self._paths.read_alignments_stats_path)
         self._write_alignment_stat_table()
         
