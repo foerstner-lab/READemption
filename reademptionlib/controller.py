@@ -113,26 +113,39 @@ class Controller(object):
         
     def _remove_crossaligned_reads(self):
         self._string_to_species_and_sequence_ids()
-        for (bam_path, bam_with_crossmappings_path,
-             bam_cleaned_tmp_path, crossmapped_reads_path) in zip(
-                 self._paths.read_alignment_bam_paths,
-                 self._paths.read_alignment_bam_with_crossmappings_paths,
-                 self._paths.read_alignment_bam_cross_cleaned_tmp_paths,
-                 self._paths.crossmapped_reads_paths):
-            # Perform the removal or cross aligned reads
-            cross_align_filter = CrossAlignFilter(
-                bam_path, bam_cleaned_tmp_path, crossmapped_reads_path, 
-                self._species_and_sequence_ids)
-            cross_align_filter.determine_crossmapped_reads()
-            cross_align_filter.write_crossmapping_free_bam()
-            # Rename the original mapping file that potentially
-            # contains cross aligned reads
-            os.rename(bam_path, bam_with_crossmappings_path)
-            os.rename(bam_path + ".bai", bam_with_crossmappings_path + ".bai")
-            # Move the cross aligned filtered file to the final mapping
-            # path
-            os.rename(bam_cleaned_tmp_path, bam_path)
-            os.rename(bam_cleaned_tmp_path + ".bai", bam_path + ".bai")
+        jobs = []
+        with concurrent.futures.ProcessPoolExecutor(
+            max_workers=self._args.processes) as executor:
+            for (bam_path, bam_with_crossmappings_path,
+                 bam_cleaned_tmp_path, crossmapped_reads_path) in zip(
+                     self._paths.read_alignment_bam_paths,
+                     self._paths.read_alignment_bam_with_crossmappings_paths,
+                     self._paths.read_alignment_bam_cross_cleaned_tmp_paths,
+                     self._paths.crossmapped_reads_paths):
+                jobs.append(executor.submit(
+                    self._remove_crossaligned_reads_for_lib, bam_path,
+                    bam_with_crossmappings_path, bam_cleaned_tmp_path,
+                    crossmapped_reads_path))
+        # Evaluate thread outcome
+        self._check_job_completeness(jobs)
+
+    def _remove_crossaligned_reads_for_lib(
+            bam_path, bam_with_crossmappings_path, bam_cleaned_tmp_path,
+            crossmapped_reads_path):
+        # Perform the removal or cross aligned reads
+        cross_align_filter = CrossAlignFilter(
+            bam_path, bam_cleaned_tmp_path, crossmapped_reads_path,
+            self._species_and_sequence_ids)
+        cross_align_filter.determine_crossmapped_reads()
+        cross_align_filter.write_crossmapping_free_bam()
+        # Rename the original mapping file that potentially
+        # contains cross aligned reads
+        os.rename(bam_path, bam_with_crossmappings_path)
+        os.rename(bam_path + ".bai", bam_with_crossmappings_path + ".bai")
+        # Move the cross aligned filtered file to the final mapping
+        # path
+        os.rename(bam_cleaned_tmp_path, bam_path)
+        os.rename(bam_cleaned_tmp_path + ".bai", bam_path + ".bai")
 
     def _string_to_species_and_sequence_ids(self):
         self._species_and_sequence_ids = {}
