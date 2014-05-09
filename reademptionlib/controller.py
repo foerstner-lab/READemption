@@ -5,6 +5,7 @@ import json
 import pysam
 from reademptionlib.bammerger import BamMerger
 from reademptionlib.coveragecalculator import CoverageCalculator
+from reademptionlib.crossalignfilter import CrossAlignFilter
 from reademptionlib.deseq import DESeqRunner
 from reademptionlib.fasta import FastaParser
 from reademptionlib.genewisequanti import GeneWiseQuantification, GeneWiseOverview
@@ -93,21 +94,81 @@ class Controller(object):
             self._paths.primary_read_aligner_bam_prefix_paths,
             self._paths.primary_read_aligner_bam_paths)
         self._generate_read_alignment_stats(
-            self._lib_names, 
+            self._lib_names,
             self._paths.primary_read_aligner_bam_paths,
-            self._paths.unaligned_reads_paths, 
+            self._paths.unaligned_reads_paths,
             self._paths.primary_read_aligner_stats_path)
+        final_unaligned_reads_paths = self._paths.unaligned_reads_paths
         if self._args.realign is True:
             self._run_realigner_and_process_alignments()
-        if self._args.realign is True:
             self._merge_bam_files()
+            final_unaligned_reads_paths = (
+                self._paths.realigned_unaligned_reads_paths)
+        if not self._args.crossalign_cleaning_str is None:
+            self._remove_crossaligned_reads()
         self._generate_read_alignment_stats(
-            self._lib_names, 
+            self._lib_names,
             self._paths.read_alignment_bam_paths,
-            self._paths.realigned_unaligned_reads_paths, 
+            final_unaligned_reads_paths,
             self._paths.read_alignments_stats_path)
         self._write_alignment_stat_table()
         
+    def _remove_crossaligned_reads(self):
+        self._string_to_species_and_sequence_ids()
+        jobs = []
+        with concurrent.futures.ProcessPoolExecutor(
+            max_workers=self._args.processes) as executor:
+            for (bam_path, bam_with_crossmappings_path,
+                 bam_cleaned_tmp_path, crossmapped_reads_path) in zip(
+                     self._paths.read_alignment_bam_paths,
+                     self._paths.read_alignment_bam_with_crossmappings_paths,
+                     self._paths.read_alignment_bam_cross_cleaned_tmp_paths,
+                     self._paths.crossmapped_reads_paths):
+                jobs.append(executor.submit(
+                    self._remove_crossaligned_reads_for_lib, bam_path,
+                    bam_with_crossmappings_path, bam_cleaned_tmp_path,
+                    crossmapped_reads_path))
+        # Evaluate thread outcome
+        self._check_job_completeness(jobs)
+
+    def _remove_crossaligned_reads_for_lib(
+            bam_path, bam_with_crossmappings_path, bam_cleaned_tmp_path,
+            crossmapped_reads_path):
+        # Perform the removal or cross aligned reads
+        cross_align_filter = CrossAlignFilter(
+            bam_path, bam_cleaned_tmp_path, crossmapped_reads_path,
+            self._species_and_sequence_ids)
+        cross_align_filter.determine_crossmapped_reads()
+        cross_align_filter.write_crossmapping_free_bam()
+        # Rename the original mapping file that potentially
+        # contains cross aligned reads
+        os.rename(bam_path, bam_with_crossmappings_path)
+        os.rename(bam_path + ".bai", bam_with_crossmappings_path + ".bai")
+        # Move the cross aligned filtered file to the final mapping
+        # path
+        os.rename(bam_cleaned_tmp_path, bam_path)
+        os.rename(bam_cleaned_tmp_path + ".bai", bam_path + ".bai")
+
+    def _string_to_species_and_sequence_ids(self):
+        self._species_and_sequence_ids = {}
+        orgs_and_seq_ids_strs = self._args.crossalign_cleaning_str.split(";")
+        if len(orgs_and_seq_ids_strs) < 2:
+            self._write_err_msg_and_quit(
+                "Error! Only one organism is defined for the cross align "
+                "removal. This does not make sense.\nYou gave the "
+                "following input:\n%s\n" % self._args.crossalign_cleaning_str)
+        for org_and_seq_ids_str in orgs_and_seq_ids_strs:
+            org, seq_ids_str = org_and_seq_ids_str.strip().split(":")
+            seq_ids = [seq_id.strip() for seq_id in seq_ids_str.split(",")]
+            if "" in seq_ids: seq_ids.remove("")
+            if len(seq_ids) < 1:
+                self._write_err_msg_and_quit(
+                    "Error! No sequence ID was given for the species '%s'. " 
+                    "This does not make sense.\nYou gave the "
+                    "following input:\n%s\n" % (
+                        org, self._args.crossalign_cleaning_str))
+            self._species_and_sequence_ids[org] = seq_ids
+
     def _set_primary_aligner_paths_to_final_paths(self):
         # If no remapping is performed the paths of the final bam files
         # is the paths of the primary mapper

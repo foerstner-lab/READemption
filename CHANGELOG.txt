@@ -1,3 +1,7 @@
+v0.2.8 (2014-05-09)
+- Add removal of crossmapped reads
+- Fix bug in align subcommand (reported by Alexander Mellmann)
+- Adapt description of the DESeq2 installation
 v0.2.7 (2014-05-03)
 - Update docs
 - Improve Makefile

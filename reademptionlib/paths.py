@@ -308,6 +308,17 @@ class Paths(object):
             self.read_alignments_folder, 
             lib_names, appendix="_alignments_realigner")
         ### 
+        # For the cross-aligned cleaned
+        self.read_alignment_bam_cross_cleaned_tmp_paths = self._path_list(
+            self.read_alignments_folder, lib_names, 
+            appendix="_alignments_tmp_crossmapped_cleaned.bam")
+        self.read_alignment_bam_with_crossmappings_paths = self._path_list(
+            self.read_alignments_folder, lib_names, 
+            appendix="_alignments_potententially_with_crossmappings.bam")
+        self.crossmapped_reads_paths = self._path_list(
+            self.read_alignments_folder, lib_names, 
+            appendix="_crossmapped_reads.txt")
+        ###
         # For the final (merged) version
         self.read_alignment_bam_paths = self._path_list(
             self.read_alignments_folder, lib_names, 
