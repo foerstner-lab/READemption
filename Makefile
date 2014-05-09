@@ -1,5 +1,5 @@
 test:
-	python3.3 tests/test_all.py
+	python3 tests/test_all.py
 
 coverage:
 	coverage3 run tests/test_all.py
