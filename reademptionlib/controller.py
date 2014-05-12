@@ -127,7 +127,7 @@ class Controller(object):
         self._check_job_completeness(jobs)
 
     def _remove_crossaligned_reads_for_lib(
-            bam_path, bam_with_crossmappings_path, bam_cleaned_tmp_path,
+            self, bam_path, bam_with_crossmappings_path, bam_cleaned_tmp_path,
             crossmapped_reads_path):
         # Perform the removal or cross aligned reads
         cross_align_filter = CrossAlignFilter(
