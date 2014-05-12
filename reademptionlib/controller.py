@@ -93,11 +93,6 @@ class Controller(object):
             self._paths.primary_read_aligner_sam_paths,
             self._paths.primary_read_aligner_bam_prefix_paths,
             self._paths.primary_read_aligner_bam_paths)
-        self._generate_read_alignment_stats(
-            self._lib_names,
-            self._paths.primary_read_aligner_bam_paths,
-            self._paths.unaligned_reads_paths,
-            self._paths.primary_read_aligner_stats_path)
         final_unaligned_reads_paths = self._paths.unaligned_reads_paths
         if self._args.realign is True:
             self._run_realigner_and_process_alignments()
@@ -132,7 +127,7 @@ class Controller(object):
         self._check_job_completeness(jobs)
 
     def _remove_crossaligned_reads_for_lib(
-            bam_path, bam_with_crossmappings_path, bam_cleaned_tmp_path,
+            self, bam_path, bam_with_crossmappings_path, bam_cleaned_tmp_path,
             crossmapped_reads_path):
         # Perform the removal or cross aligned reads
         cross_align_filter = CrossAlignFilter(
