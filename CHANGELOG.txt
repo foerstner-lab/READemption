@@ -1,3 +1,6 @@
+v0.2.9 (2014-05-12)
+- Remove redundant read mapping stat calling
+- Bug fix for crossmapped read removal
 v0.2.8 (2014-05-09)
 - Add removal of crossmapped reads
 - Fix bug in align subcommand (reported by Alexander Mellmann)
