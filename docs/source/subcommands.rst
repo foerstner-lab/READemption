@@ -97,6 +97,13 @@ the original countings in JSON format.
                           Attention! You have to take care that there are no
                           partially generated files left!
     --progress, -g        Show progress of the segemehl mapping.
+    --crossalign_cleaning CROSSALIGN_CLEANING_STRING, -x CROSSALIGN_CLEANING_STRING
+                          Remove reads that are cross-mapped to replicons of
+                          different species. To associated species and replicons
+                          give a string in the following format: '<ORG_NAME_1>:<
+                          org_1_repl1>,<org_1_repl2>,..,<org_1_repl_n>;<ORG_NAME
+                          _2>:<org_2_repl1>,<org_2_repl2>,..,<org_2_repl_n>'
+
 
 coverage
 --------
