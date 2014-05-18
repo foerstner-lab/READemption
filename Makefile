@@ -57,5 +57,7 @@ new_release:
 	@echo "* Commit changes e.g. 'git commit -m \"Set version to 0.2.X\"'"
 	@echo "* Tag the commit e.g. 'git tag -a v0.2.X -m \"version v0.2.X\"'"
 	@echo "* Merge release into dev and master"
-	@echo "* After pushing generate a new release based on this tag at"
+	@echo "* Push it to github: git push"
+	@echo "* Generate a new release based on this tag at"
 	@echo "  https://github.com/konrad/READemption/releases/new"
+	@echo "* Upload new docs using 'make upload_doc'"
