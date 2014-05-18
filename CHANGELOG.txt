@@ -1,3 +1,7 @@
+v0.3.0 (2014-05-18)
+- Improve Makefile
+- Update docs
+- Add read mapping stats
 v0.2.9 (2014-05-12)
 - Remove redundant read mapping stat calling
 - Bug fix for crossmapped read removal
