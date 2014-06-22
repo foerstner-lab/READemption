@@ -92,7 +92,7 @@ class GeneQuantiViz(object):
         bottom = np.array([0] * no_of_libs)
         fig = plt.figure()
         ax = plt.subplot(111)
-        font = {'family' : 'sans-serif', 'weight' : 'normal', 'size'   : 6}
+        font = {'family' : 'sans-serif', 'weight' : 'normal', 'size' : 6}
         matplotlib.rc('font', **font)
         plt.title("Number of reads per RNA classes")
         color_index = 0
