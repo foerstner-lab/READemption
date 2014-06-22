@@ -54,8 +54,6 @@ class Controller(object):
         project_creator.create_subfolders(self._paths.required_folders())
         project_creator.create_version_file(self._paths.version_path, version)
         sys.stdout.write("Created folder \"%s\" and required subfolders.\n" % (
-            self._args.project_path))
-        sys.stdout.write("Created folder \"%s\" and required subfolders.\n" % (
                 self._args.project_path))
         sys.stdout.write("Please copy read files into folder \"%s\" and "
                          "reference sequences files into folder \"%s\".\n" % (
