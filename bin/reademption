@@ -34,10 +34,11 @@ def main():
         "directory is used.")
     read_aligning_parser.add_argument(
         "--min_read_length", "-l", default=12, type=int,
-        help="Minimal read length after clipping.")
+        help="Minimal read length after clipping (default 12). Should be "
+	"higher for eukaryotic species.")
     read_aligning_parser.add_argument(
         "--processes", "-p", default=1, type=int,
-        help="Number of processes that should be used.")
+        help="Number of processes that should be used (default 1).")
     read_aligning_parser.add_argument(
         "--segemehl_accuracy", "-a", default=95.0, type=float,
         help="Segemehl's minimal accuracy (in %%) (default 95).")
@@ -111,7 +112,7 @@ def main():
         "calculation.")
     coverage_creation_parser.add_argument(
         "--processes", "-p", default=1, type=int,
-        help="Number of processes that should be used.")
+        help="Number of processes that should be used (default 1).")
     coverage_creation_parser.add_argument(
         "--skip_read_count_splitting", "-s", default=False,
         action="store_true", help="Do not split the read counting between "
@@ -154,7 +155,7 @@ def main():
         "and anti-sense overlaps are counted and separately reported.")
     gene_wise_quanti_parser.add_argument(
         "--processes", "-p", default=1, type=int,
-        help="Number of processes that should be used.")
+        help="Number of processes that should be used (default 1).")
     gene_wise_quanti_parser.add_argument(
         "--features", "-t", dest="allowed_features", default=None,
         help="Comma separated list of features that should be considered "
