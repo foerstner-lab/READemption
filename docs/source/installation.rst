@@ -82,7 +82,7 @@ and install the DESeq2 package inside of the interactive command line
 interface. You might be asked to confirm the installation path::
 
   source("http://bioconductor.org/biocLite.R")
-  biocLite("DESeq2").
+  biocLite("DESeq2")
 
 Leave ``R``::
 
