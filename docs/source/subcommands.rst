@@ -31,20 +31,25 @@ annotation files in GFF3 format have to be put into
 align
 -----
 
-``align`` performs the clipping and size filtering of the reads, as well
-as the actual aligning to the reference sequences. It also generates
-statistics about the steps (e.g. number of aligned reads, number of
-mappings). As the result of this steps are needed by the other
-subcommands it has to be run before the others. It requires reads in
-FASTA format (or counterparts compressed with ``gzip`` or ``bzip2``)
-and reference sequences in FASTA format. ``align`` generates the read
-alignments in BAM format (``*.bam``) and also index files for those
-(``*.bam.bai``). Is also stores unmapped reads so that they can be
-inspected e.g. to search for contaminations. The file
+``align`` performs the clipping and size filtering of the reads, as
+well as the actual aligning to the reference sequences. It also
+generates statistics about the steps (e.g. number of aligned reads,
+number of mappings). As the result of this steps are needed by the
+other subcommands it has to be run before the others. It requires
+reads in FASTA or FASTQ format (or counterparts compressed with
+``gzip`` or ``bzip2``) and reference sequences in FASTA
+format. ``align`` generates the read alignments in BAM format
+(``*.bam``) and also index files for those (``*.bam.bai``). Is also
+stores unmapped reads so that they can be inspected e.g. to search for
+contaminations. The file
 ``output/align/reports_and_stats/read_alignment_stats.csv`` lists
 several mapping statistics. The folder
-``output/align/reports_and_stats/stats_data_json/`` contains files with
-the original countings in JSON format.
+``output/align/reports_and_stats/stats_data_json/`` contains files
+with the original countings in JSON format. Please be aware that
+READemption does not perform quality trimming or adapter clipping so
+far. For this purpose use the `FASTX toolkit
+<http://hannonlab.cshl.edu/fastx_toolkit/>`_, `cutadapt
+<https://code.google.com/p/cutadapt/>`_ or other tools.
 
 ::
 
