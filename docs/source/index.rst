@@ -8,6 +8,7 @@ Table of content
 
    index
    installation
+   live_and_installation_image      
    subcommands      
    example_analysis
    troubleshooting

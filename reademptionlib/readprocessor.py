@@ -2,16 +2,17 @@ import gzip
 import bz2
 from collections import defaultdict
 from reademptionlib.fasta import FastaParser
+from reademptionlib.fastq import FastqParser
 from reademptionlib.polyaclipper import PolyAClipper
 
 class ReadProcessor(object):
 
     def __init__(self, poly_a_clipping=False,  min_read_length=12, 
-                 paired_end=False):
+                 paired_end=False, fastq=False):
         self._poly_a_clipping = poly_a_clipping
         self._min_read_length = min_read_length
         self._paired_end = paired_end
-        self._fasta_parser = FastaParser()
+        self._fastq = fastq
         self._poly_a_clipper = PolyAClipper()
 
     def process_single_end(self, input_path, output_path):
@@ -60,7 +61,7 @@ class ReadProcessor(object):
                 yield(line.decode())
 
     def _process_single_end(self, input_fh, output_fh):
-        for header, seq in self._fasta_parser.entries(input_fh):
+        for header, seq in self._seq_parser().entries(input_fh):
             self._stats["total_no_of_reads"] += 1
             if self._poly_a_clipping:
                 clipped_seq = self._poly_a_clipper.clip_poly_a_strech(seq)
@@ -89,8 +90,8 @@ class ReadProcessor(object):
     def _process_paired_end(
         self, input_p1_fh, input_p2_fh, output_p1_fh, output_p2_fh):
         for fasta_entry_p1, fasta_entry_p2 in zip(
-            self._fasta_parser.entries(input_p1_fh), 
-            self._fasta_parser.entries(input_p2_fh)):
+            self._seq_parser().entries(input_p1_fh), 
+            self._seq_parser().entries(input_p2_fh)):
             header_p1 = fasta_entry_p1[0]
             header_p2 = fasta_entry_p2[0]
             seq_p1 = fasta_entry_p1[1]
@@ -115,3 +116,8 @@ class ReadProcessor(object):
             # Encoding to bytes is necessary due to saving via gzip
             output_p1_fh.write(str.encode(">%s\n%s\n" % (header_p1, seq_p1)))
             output_p2_fh.write(str.encode(">%s\n%s\n" % (header_p2, seq_p2)))
+
+    def _seq_parser(self):
+        if self._fastq: return FastqParser()
+        else: return FastaParser()
+

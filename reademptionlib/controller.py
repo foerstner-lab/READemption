@@ -54,8 +54,6 @@ class Controller(object):
         project_creator.create_subfolders(self._paths.required_folders())
         project_creator.create_version_file(self._paths.version_path, version)
         sys.stdout.write("Created folder \"%s\" and required subfolders.\n" % (
-            self._args.project_path))
-        sys.stdout.write("Created folder \"%s\" and required subfolders.\n" % (
                 self._args.project_path))
         sys.stdout.write("Please copy read files into folder \"%s\" and "
                          "reference sequences files into folder \"%s\".\n" % (
@@ -253,8 +251,9 @@ class Controller(object):
                     continue
                 read_processor = ReadProcessor(
                     poly_a_clipping=self._args.poly_a_clipping,
-                    min_read_length=self._args.min_read_length)
-                read_files_and_jobs[lib_name]  = executor.submit(
+                    min_read_length=self._args.min_read_length,
+                    fastq=self._args.fastq)
+                read_files_and_jobs[lib_name] = executor.submit(
                     read_processor.process_single_end, read_path, 
                     processed_read_path)
         self._evaluet_job_and_generate_stat_file(lib_name, read_files_and_jobs)
@@ -272,7 +271,8 @@ class Controller(object):
                         continue
                     read_processor = ReadProcessor(
                         poly_a_clipping=False, 
-                        min_read_length=self._args.min_read_length)
+                        min_read_length=self._args.min_read_length,
+                        fastq=self._args.fastq)
                 read_files_and_jobs[lib_name]  = executor.submit(
                     read_processor.process_paired_end, read_path_pair, 
                     processed_read_path_pair)
@@ -295,7 +295,7 @@ class Controller(object):
             read_files_and_stats, self._paths.read_processing_stats_path)
 
     def _align_single_end_reads(self):
-        """Manage the actual alignement of single end reads."""
+        """Manage the actual alignment of single end reads."""
         read_aligner = ReadAligner(self._args.segemehl_bin, self._args.progress)
         if self._file_needs_to_be_created(self._paths.index_path) is True:
             read_aligner.build_index(
