@@ -4,10 +4,11 @@ Installation and updating
 Requirements
 ------------
 
-READemption was developed using Python 3.3 and the user is advised to
-run READemption with this or a higher version. In any case, the third
-party packages `pysam <https://code.google.com/p/pysam>`_ as well as
-`setuptools <https://pypi.python.org/pypi/setuptools>`_ and `pip
+READemption was started to be developed using Python 3.2 and the user
+is advised to run READemption with this or a higher version. In any
+case, the third party packages `pysam
+<https://code.google.com/p/pysam>`_ as well as `setuptools
+<https://pypi.python.org/pypi/setuptools>`_ and `pip
 <http://www.pip-installer.org>`_ should be available on the system in
 order to make the installation easy. READemption uses the short read
 mapper `segemehl
@@ -53,8 +54,8 @@ Some comments:
 
 ::
 
-  curl http://www.bioinf.uni-leipzig.de/Software/segemehl/segemehl_0_1_7.tar.gz > segemehl_0_1_7.tar.gz
-  tar xzf segemehl_0_1_7.tar.gz
+  curl http://www.bioinf.uni-leipzig.de/Software/segemehl/segemehl_0_1_9.tar.gz > segemehl_0_1_9.tar.gz
+  tar xzf segemehl_0_1_9.tar.gz
   cd segemehl_*/segemehl/ && make && cd ../../
 
 Copying the executable to a location that is part of the ``PATH`` e.g
@@ -62,13 +63,13 @@ Copying the executable to a location that is part of the ``PATH`` e.g
 
 ::
 
-  sudo cp segemehl_0_1_7/segemehl/segemehl.x /usr/bin/segemehl.x
-  sudo cp segemehl_0_1_7/segemehl/lack.x /usr/bin/lack.x
+  sudo cp segemehl_0_1_9/segemehl/segemehl.x /usr/bin/segemehl.x
+  sudo cp segemehl_0_1_9/segemehl/lack.x /usr/bin/lack.x
 
 ... or the bin folder of your home directory::
 
   mkdir ~/bin
-  cp segemehl_0_1_7/segemehl/segemehl.x ~/bin
+  cp segemehl_0_1_9/segemehl/segemehl.x ~/bin
 
 3. Install DESeq2
 ~~~~~~~~~~~~~~~~~
