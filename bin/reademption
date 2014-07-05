@@ -72,6 +72,9 @@ def main():
         "--lack_bin", "-L", default="lack.x",
         help="Lack's binary path (default 'lack.x').")
     read_aligning_parser.add_argument(
+        "--fastq", "-q", default=False, action="store_true",
+        help="Input reads are in FASTQ not FASTA format.")
+    read_aligning_parser.add_argument(
         "--check_for_existing_files", "-f", default=False,
         action="store_true", help="Check for existing files (e.g. from a "
         "interrupted previous run) and do not overwrite them if they exits. "

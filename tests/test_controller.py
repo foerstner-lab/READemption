@@ -20,6 +20,7 @@ class ArgMock(object):
     split = False
     realign = False
     crossalign_cleaning_str = None
+    fastq = False
 
 class TestController(unittest.TestCase):
 

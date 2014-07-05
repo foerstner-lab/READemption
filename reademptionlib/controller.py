@@ -251,8 +251,9 @@ class Controller(object):
                     continue
                 read_processor = ReadProcessor(
                     poly_a_clipping=self._args.poly_a_clipping,
-                    min_read_length=self._args.min_read_length)
-                read_files_and_jobs[lib_name]  = executor.submit(
+                    min_read_length=self._args.min_read_length,
+                    fastq=self._args.fastq)
+                read_files_and_jobs[lib_name] = executor.submit(
                     read_processor.process_single_end, read_path, 
                     processed_read_path)
         self._evaluet_job_and_generate_stat_file(lib_name, read_files_and_jobs)
@@ -270,7 +271,8 @@ class Controller(object):
                         continue
                     read_processor = ReadProcessor(
                         poly_a_clipping=False, 
-                        min_read_length=self._args.min_read_length)
+                        min_read_length=self._args.min_read_length,
+                        fastq=self._args.fastq)
                 read_files_and_jobs[lib_name]  = executor.submit(
                     read_processor.process_paired_end, read_path_pair, 
                     processed_read_path_pair)
