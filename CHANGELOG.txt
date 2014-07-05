@@ -1,3 +1,9 @@
+v0.3.1 (2014-07-05)
+- Add live / installation image (thanks anonymous reviewer #1)
+- Add support for Fastq read files (thanks anonymous reviewer #3)
+- Extend CLI documentation (thanks reviewer Matt MacManes)
+- Fix/extend online documentation (thanks for help re. OS X to Lei Li 
+  and the feedback to Petya Zhelyazkova)
 v0.3.0 (2014-05-18)
 - Improve Makefile
 - Update docs
