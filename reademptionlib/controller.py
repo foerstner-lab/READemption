@@ -293,7 +293,7 @@ class Controller(object):
             read_files_and_stats, self._paths.read_processing_stats_path)
 
     def _align_single_end_reads(self):
-        """Manage the actual alignement of single end reads."""
+        """Manage the actual alignment of single end reads."""
         read_aligner = ReadAligner(self._args.segemehl_bin, self._args.progress)
         if self._file_needs_to_be_created(self._paths.index_path) is True:
             read_aligner.build_index(
