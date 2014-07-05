@@ -1,5 +1,5 @@
-Installation
-============
+Installation and updating
+=========================
 
 Requirements
 ------------
@@ -21,8 +21,8 @@ necessary for the subcommand ``deseq`` which performs differential
 gene expression analysis. Don't worry - in the following the
 installation of all these requirements will be covered.
 
-Installing on a fresh Ubuntu installation
------------------------------------------
+Installing on a fresh Ubuntu system
+-----------------------------------
 
 The following installation procedure was tested on a `Amazon AWS
 t1.micro
@@ -101,12 +101,49 @@ Voilà! You should now be able to call READemption::
 
   reademption -h
 
-..
-.. Global installation
-.. -------------------
-.. 
-.. Installation in the home directory of the user
-.. ----------------------------------------------
-.. 
-.. Installation in a pyvenv
-.. ----------------------
+
+Installing on a Apple OS X
+--------------------------
+
+(Many thanks to Lei Li for contribution this part!)
+
+1. Installing all required software/packages
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+To download and install Python 3 follow the instruction at this
+`download page <https://www.python.org/downloads/>`_.
+
+Download and install `xcode <https://developer.apple.com/xcode/>`_ (`download page <https://developer.apple.com/xcode/downloads/>`_) and R
+(download links are on `the frontpage <http://www.r-project.org/>`_).
+
+To install ``pip`` open a terminal and run
+
+::
+
+  curl -O https://bitbucket.org/pypa/setuptools/raw/bootstrap/ez_setup.py python3 ez_setup.py # download and install pip 
+  curl -O https://raw.github.com/pypa/pip/master/contrib/get-pip.py 
+  python3 get-pip.py
+
+Install ``matplotlib``:
+
+::
+
+  pip3 install python3-matplotlib
+
+
+1. Installing segemehl, DESeq, pysam and READemption
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The remaining installation steps are the same as descibed above. Just
+open a terminal and run the commands.
+
+
+Updating READemption
+--------------------
+
+Once you have installed READemption as described above you can easily
+update it to the newest version by running
+
+::
+
+  pip3 install READemption -U
