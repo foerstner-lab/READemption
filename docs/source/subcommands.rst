@@ -55,19 +55,21 @@ the original countings in JSON format.
                            [--segemehl_bin SEGEMEHL_BIN] [--paired_end]
                            [--split] [--poly_a_clipping] [--realign]
                            [--keep_original_alignments] [--lack_bin LACK_BIN]
-                           [--check_for_existing_files] [--progress]
+                           [--fastq] [--check_for_existing_files] [--progress]
+                           [--crossalign_cleaning CROSSALIGN_CLEANING_STRING]
                            [project_path]
-
+  
   positional arguments:
     project_path          Path of the project folder. If none is given the
                           current directory is used.
-
+  
   optional arguments:
     -h, --help            show this help message and exit
     --min_read_length MIN_READ_LENGTH, -l MIN_READ_LENGTH
-                          Minimal read length after clipping.
+                          Minimal read length after clipping (default 12).
+                          Should be higher for eukaryotic species.
     --processes PROCESSES, -p PROCESSES
-                          Number of processes that should be used.
+                          Number of processes that should be used (default 1).
     --segemehl_accuracy SEGEMEHL_ACCURACY, -a SEGEMEHL_ACCURACY
                           Segemehl's minimal accuracy (in %) (default 95).
     --segemehl_evalue SEGEMEHL_EVALUE, -e SEGEMEHL_EVALUE
@@ -91,6 +93,7 @@ the original countings in JSON format.
                           (lack) after merging.
     --lack_bin LACK_BIN, -L LACK_BIN
                           Lack's binary path (default 'lack.x').
+    --fastq, -q           Input reads are in FASTQ not FASTA format.
     --check_for_existing_files, -f
                           Check for existing files (e.g. from a interrupted
                           previous run) and do not overwrite them if they exits.
@@ -103,7 +106,6 @@ the original countings in JSON format.
                           give a string in the following format: '<ORG_NAME_1>:<
                           org_1_repl1>,<org_1_repl2>,..,<org_1_repl_n>;<ORG_NAME
                           _2>:<org_2_repl1>,<org_2_repl2>,..,<org_2_repl_n>'
-
 
 coverage
 --------
@@ -159,7 +161,7 @@ positions. To turn off this behavior use
                           number of aligned reads even if only uniquely aligned
                           reads are used for the coverage calculation.
     --processes PROCESSES, -p PROCESSES
-                          Number of processes that should be used.
+                          Number of processes that should be used (default 1).
     --skip_read_count_splitting, -s
                           Do not split the read counting between different
                           alignings. Default is to do the splitting.
@@ -216,7 +218,7 @@ overlaps are counted and separately listed.
                           sense and anti-sense overlaps are counted and
                           separately reported.
     --processes PROCESSES, -p PROCESSES
-                          Number of processes that should be used.
+                          Number of processes that should be used (default 1).
     --features ALLOWED_FEATURES, -t ALLOWED_FEATURES
                           Comma separated list of features that should be
                           considered (e.g. gene, cds, region, exon). Other
