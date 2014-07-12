@@ -252,7 +252,9 @@ class Controller(object):
                 read_processor = ReadProcessor(
                     poly_a_clipping=self._args.poly_a_clipping,
                     min_read_length=self._args.min_read_length,
-                    fastq=self._args.fastq)
+                    fastq=self._args.fastq,
+                    min_phred_score=self._args.min_phred_score,
+                    adapter=self._args.adapter)
                 read_files_and_jobs[lib_name] = executor.submit(
                     read_processor.process_single_end, read_path, 
                     processed_read_path)
@@ -272,7 +274,9 @@ class Controller(object):
                     read_processor = ReadProcessor(
                         poly_a_clipping=False, 
                         min_read_length=self._args.min_read_length,
-                        fastq=self._args.fastq)
+                        fastq=self._args.fastq,
+                        min_phred_score=self._args.min_phred_score,
+                        adapter=self._args.adapter)
                 read_files_and_jobs[lib_name]  = executor.submit(
                     read_processor.process_paired_end, read_path_pair, 
                     processed_read_path_pair)
