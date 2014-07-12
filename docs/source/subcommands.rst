@@ -46,10 +46,11 @@ contaminations. The file
 several mapping statistics. The folder
 ``output/align/reports_and_stats/stats_data_json/`` contains files
 with the original countings in JSON format. Please be aware that
-READemption does not perform quality trimming or adapter clipping so
-far. For this purpose use the `FASTX toolkit
+READemption can perform only basic quality trimming and adapter
+clipping. If this is not sufficient you can use the `FASTX toolkit
 <http://hannonlab.cshl.edu/fastx_toolkit/>`_, `cutadapt
-<https://code.google.com/p/cutadapt/>`_ or other tools.
+<https://code.google.com/p/cutadapt/>`_ or other tools for the
+preprocessing.
 
 ::
 
@@ -99,6 +100,14 @@ far. For this purpose use the `FASTX toolkit
     --lack_bin LACK_BIN, -L LACK_BIN
                           Lack's binary path (default 'lack.x').
     --fastq, -q           Input reads are in FASTQ not FASTA format.
+    --min_phred_score MIN_PHRED_SCORE, -Q MIN_PHRED_SCORE
+                          Minimal Phred score. Works only if read are given in
+                          FASTQ format. As soon as a based drop below this value
+                          it and all the nucleotides downstream of it will be
+                          trimmed off.
+    --adapter ADAPTER, -A ADAPTER
+                          Adapter sequence. If it is found in a read it and all
+                          the nucleotides downstream will be trimmed off.
     --check_for_existing_files, -f
                           Check for existing files (e.g. from a interrupted
                           previous run) and do not overwrite them if they exits.

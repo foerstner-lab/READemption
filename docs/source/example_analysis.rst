@@ -103,10 +103,11 @@ Finally, we need the reads of the RNA-Seq libraries. To save some time
 for running this examples we will work with subsampled libraries of 1M
 reads each. This will the limit informative value of the results which
 is acceptable as we just want to understand the workflow of the
-READemption. Please be aware that READemption does not perform quality
-trimming or adapter clipping so far. For this purpose use the `FASTX
-toolkit <http://hannonlab.cshl.edu/fastx_toolkit/>`_, `cutadapt
-<https://code.google.com/p/cutadapt/>`_ or other tools.
+READemption. Please be aware that READemption can perform only basic
+quality trimming and adapter clipping. If this is not sufficient you
+can use the `FASTX toolkit <http://hannonlab.cshl.edu/fastx_toolkit/>`_,
+`cutadapt <https://code.google.com/p/cutadapt/>`_ or other tools for
+the preprocessing.
 
 ::
 

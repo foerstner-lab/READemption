@@ -6,8 +6,8 @@ Requirements
 
 READemption was started to be developed using Python 3.2 and the user
 is advised to run READemption with this or a higher version. In any
-case, the third party packages `pysam
-<https://code.google.com/p/pysam>`_ as well as `setuptools
+case, the third party packages `Biopython <http://biopython.org>`_,
+`pysam <https://code.google.com/p/pysam>`_ as well as `setuptools
 <https://pypi.python.org/pypi/setuptools>`_ and `pip
 <http://www.pip-installer.org>`_ should be available on the system in
 order to make the installation easy. READemption uses the short read
@@ -90,11 +90,12 @@ Leave ``R``::
   quit(save = "no")
 
 
-Install pysam and READemption
+Install Biopython, pysam and READemption
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Now you can use ``pip`` to install ``pysam`` and ``READemption``::
 
+  sudo pip3 install biopython
   sudo pip3 install pysam
   sudo pip3 install READemption
 
