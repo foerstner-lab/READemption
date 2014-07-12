@@ -21,6 +21,8 @@ class ArgMock(object):
     realign = False
     crossalign_cleaning_str = None
     fastq = False
+    min_phred_score = None
+    adapter = None
 
 class TestController(unittest.TestCase):
 
