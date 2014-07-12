@@ -1,7 +1,11 @@
+v0.3.2 (2014-07-12)
+- Add quality trimming and adapter clipping (for reviewer Matt
+  MacManes)
+- Update documentation
 v0.3.1 (2014-07-05)
-- Add live / installation image (thanks anonymous reviewer #1)
-- Add support for Fastq read files (thanks anonymous reviewer #3)
-- Extend CLI documentation (thanks reviewer Matt MacManes)
+- Add live / installation image (for anonymous reviewer #1)
+- Add support for Fastq read files (for anonymous reviewer #3)
+- Extend CLI documentation (for reviewer Matt MacManes)
 - Fix/extend online documentation (thanks for help re. OS X to Lei Li 
   and the feedback to Petya Zhelyazkova)
 v0.3.0 (2014-05-18)
