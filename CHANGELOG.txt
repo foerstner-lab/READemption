@@ -1,3 +1,8 @@
+v0.3.3 (2014-07-20)
+- Fix bug in mapping stats table generation
+- Add further mapping success value (use reads that are long enogh
+  after read processing as reference)
+- Improve Makefile
 v0.3.2 (2014-07-12)
 - Add quality trimming and adapter clipping (for reviewer Matt
   MacManes)
