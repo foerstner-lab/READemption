@@ -45,6 +45,8 @@ new_release:
 	@echo "* Please do this manually:"
 	@echo "* ------------------------"
 	@echo "* Create/checkout a release branch"
+	@echo "  git branch release_v0.3.X"
+	@echo "  git checkout release_v0.3.X"
 	@echo "* Change bin/reademption"
 	@echo "* Change setup.py"
 	@echo "* Change docs/source/conf.py"

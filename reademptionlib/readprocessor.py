@@ -92,6 +92,7 @@ class ReadProcessor(object):
             if clipped_seq_len < self._min_read_length:
                 self._stats["too_short"] += 1
                 continue
+            self._stats["long_enough"] += 1
             self._stats["read_length_before_processing_and_freq"][
                 raw_seq_len] += 1
             self._stats["read_length_after_processing_and_freq"][
