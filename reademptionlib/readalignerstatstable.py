@@ -43,8 +43,10 @@ class ReadAlignerStatsTable(object):
              self._total_alignment_stat_numbers("no_of_alignments")),
             ("Total no. of split alignments", 
              self._total_alignment_stat_numbers("no_of_split_alignments")),
-            ("Percentage of aligned reads (compared to total input reads)",
-             self._perc_aligned_reads()),
+            ("Percentage of aligned reads (compared to no. of input reads)",
+             self._perc_aligned_reads_all_input()),
+            ("Percentage of aligned reads (compared to no. of long enough reads)",
+             self._perc_aligned_reads_all_long_enough()),
             ("Percentage of uniquely aligned reads (in relation to all aligned "
              "reads)", self._perc_uniquely_aligned_reads())]:
             self._table.append([title] + data)
@@ -84,13 +86,21 @@ class ReadAlignerStatsTable(object):
         return [self._read_processing_stats[lib][attribute]
                 for lib in self._libs]
 
-    def _perc_aligned_reads(self):
+    def _perc_aligned_reads_all_input(self):
         return [
             round(self._calc_percentage(aligned_reads, total_reads), 2)
             for aligned_reads, total_reads in
             zip(self._total_alignment_stat_numbers(
                     "no_of_aligned_reads", round_nums=False),
                 self._get_read_process_numbers("total_no_of_reads"))]
+
+    def _perc_aligned_reads_all_long_enough(self):
+        return [
+            round(self._calc_percentage(aligned_reads, total_reads), 2)
+            for aligned_reads, total_reads in
+            zip(self._total_alignment_stat_numbers(
+                    "no_of_aligned_reads", round_nums=False),
+                self._get_read_process_numbers("long_enough"))]
     
     def _perc_uniquely_aligned_reads(self):
         return [
