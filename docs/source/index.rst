@@ -8,8 +8,9 @@ Table of content
 
    index
    installation
-   live_and_installation_image      
-   subcommands      
+   live_and_installation_image
+   docker_image
+   subcommands
    example_analysis
    troubleshooting
    license
