@@ -133,7 +133,7 @@ Install ``matplotlib``:
   pip3 install python3-matplotlib
 
 
-1. Installing segemehl, DESeq, pysam and READemption
+2. Installing segemehl, DESeq, pysam and READemption
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 The remaining installation steps are the same as descibed above. Just
