@@ -185,7 +185,7 @@ class Paths(object):
         return [p1_name[:-3] for p1_name in p1_names]
 
     def _clean_file_name(self, file_name):
-        for suffix in ["bz2", "BZ", "gz", "GZ", "fa", "fasta", "FA", "FASTA"]:
+       for suffix in ["bz2", "BZ", "gz", "GZ", "fa", "fasta", "FA", "FASTA"]:
             if file_name.endswith(suffix):
                 suffix = "." + suffix
                 file_name = file_name[:-len(suffix)]
