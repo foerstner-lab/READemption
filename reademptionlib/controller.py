@@ -425,7 +425,7 @@ class Controller(object):
         read_aligner_stats_table = ReadAlignerStatsTable(
             read_processing_stats, final_alignment_stats, primary_aligner_stats, 
             realignment_stats, self._lib_names, 
-            self._paths.read_alignment_stats_table_path)
+            self._paths.read_alignment_stats_table_path, self._args.paired_end)
         read_aligner_stats_table.write()
 
     def _ref_ids_to_file(self, ref_seq_paths):
