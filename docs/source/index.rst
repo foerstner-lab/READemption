@@ -50,13 +50,13 @@ Cite
 ====
 
 If you apply READemption in your data analysis please cite the
-following reference: *READemption – A tool for the computational
+following publication: *READemption – A tool for the computational
 analysis of deep-sequencing-based transcriptome data*.
-Konrad U. Förstner, Jörg Vogel, Cynthia M. Sharma; (submitted). 
-
-..  A
-.. `pre-preprint version <http://biorxiv.org/content/early/2014/XXX>`_ of
-..  the manuscript is hosted at bioRxiv.
+Konrad U. Förstner, Jörg Vogel, Cynthia M. Sharma. 2014,
+Bioinformatics, Aug 13. `Fulltext
+<http://bioinformatics.oxfordjournals.org/content/early/2014/08/13/bioinformatics.btu533.abstract>`_,
+`Pre-print at bioRxiv
+<http://biorxiv.org/content/early/2014/05/19/003723>`_.
 
 Contact
 =======
