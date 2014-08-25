@@ -1,7 +1,8 @@
 class ReadAlignerStatsTable(object):
 
     def __init__(self, read_processing_stats, alignment_stats, 
-                 primary_read_aligner_stats, realigner_stats, libs, output_path):
+                 primary_read_aligner_stats, realigner_stats, libs, output_path,
+                 paired_end):
         self._table = []
         self._read_processing_stats = read_processing_stats
         self._alignment_stats = alignment_stats
@@ -9,6 +10,7 @@ class ReadAlignerStatsTable(object):
         self._realigner_stats = realigner_stats
         self._libs = libs
         self._output_path = output_path
+        self._paired_end = paired_end
     
     def write(self):
         self._add_global_countings()
@@ -83,7 +85,10 @@ class ReadAlignerStatsTable(object):
             return countings
 
     def _get_read_process_numbers(self, attribute):
-        return [self._read_processing_stats[lib][attribute]
+        factor = 1
+        if self._paired_end:
+            factor = 2
+        return [self._read_processing_stats[lib][attribute] * factor
                 for lib in self._libs]
 
     def _perc_aligned_reads_all_input(self):
