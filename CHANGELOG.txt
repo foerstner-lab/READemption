@@ -1,3 +1,8 @@
+v0.3.4 (2014-08-23)
+- Fix bug with paired-end suffix
+- Fix bug with paired-end mapping stats table
+- Add Docker documentation
+- Update reference
 v0.3.3 (2014-07-20)
 - Fix bug in mapping stats table generation
 - Add further mapping success value (use reads that are long enogh

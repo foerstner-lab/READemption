@@ -178,14 +178,15 @@ class Paths(object):
                    for file_name in self.get_read_files()][::2]
         for p1_name in p1_names:
             if not p1_name.endswith("_p1"):
-                sys.error.write("Error: File '%s' should end with '_p1' but "
+                sys.stderr.write("Error: File '%s' should end with '_p1' but "
                                 "does not. Please check file name convention "
                                 "for paired end reads.\n" % p1_name)
                 sys.exit(1)
         return [p1_name[:-3] for p1_name in p1_names]
 
     def _clean_file_name(self, file_name):
-        for suffix in ["bz2", "BZ", "gz", "GZ", "fa", "fasta", "FA", "FASTA"]:
+        for suffix in ["bz2", "BZ", "gz", "GZ", "fa", "fasta", "FA", "FASTA", 
+                       "fastq", "fq", "FQ", "FASTQ"]:
             if file_name.endswith(suffix):
                 suffix = "." + suffix
                 file_name = file_name[:-len(suffix)]

@@ -42,8 +42,6 @@ pylint:
 	pylint bin/reademption reademptionlib/* tests/*
 
 new_release:
-	@echo "* Please do this manually:"
-	@echo "* ------------------------"
 	@echo "* Create/checkout a release branch"
 	@echo "  git branch release_v0.3.X"
 	@echo "  git checkout release_v0.3.X"
