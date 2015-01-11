@@ -127,6 +127,11 @@ def main():
         action="store_true", help="Do not split the read counting between "
         "different alignings. Default is to do the splitting.")
     coverage_creation_parser.add_argument(
+        "--non_strand_specific", "-d", default=False,
+        action="store_true", help="Do not distict between the coverage of the "
+        "forward and reverse strand but sum them to a single value for each "
+        "base.")
+    coverage_creation_parser.add_argument(
         "--first_base_only", "-b", default=False,
         action="store_true", help="Only the first bases 5' base of each read "
         "aligning is taken into account.")
