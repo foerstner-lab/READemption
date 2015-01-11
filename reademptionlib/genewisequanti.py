@@ -124,7 +124,7 @@ class GeneWiseQuantification(object):
         # this correctly (checked in IGB, IGV and the unit testings).
         for alignment in sam.fetch(
                 reference=entry.seq_id, start=entry.start-1, end=entry.end):
-            if alignment.overlap(entry.start-1, entry.end) < self._min_overlap:
+            if alignment.get_overlap(entry.start-1, entry.end) < self._min_overlap:
                 continue
             if self._skip_antisense:
                 if not self._same_strand(entry, alignment):
