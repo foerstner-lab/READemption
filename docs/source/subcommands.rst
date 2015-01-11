@@ -254,7 +254,7 @@ deseq
 -----
 
 Differential gene expression can be performed using ``deseq`` which
-will run a `DESeq2 <http://www-huber.embl.de/users/anders/DESeq2/>`_
+will run a `DESeq2 <http://www.bioconductor.org/packages/release/bioc/html/DESeq2.html>`_
 analyses for all possible combinations of conditions. To allocated the
 conditions to the libraries use the ``--libs`` and ``--conditions``
 parameters (e.g. ``--libs
