@@ -1,6 +1,8 @@
-import json
 import os
 import sys
+import Bio
+import pysam
+import matplotlib
 
 class ProjectCreator(object):
 

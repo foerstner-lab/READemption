@@ -2,13 +2,12 @@ import concurrent.futures
 import os
 import sys
 import json
-import pysam
 from reademptionlib.bammerger import BamMerger
 from reademptionlib.coveragecalculator import CoverageCalculator
 from reademptionlib.crossalignfilter import CrossAlignFilter
 from reademptionlib.deseq import DESeqRunner
 from reademptionlib.fasta import FastaParser
-from reademptionlib.genewisequanti import GeneWiseQuantification, GeneWiseOverview
+from reademptionlib.genewisequanti import GeneWiseOverview
 from reademptionlib.paths import Paths
 from reademptionlib.projectcreator import ProjectCreator
 from reademptionlib.rawstatdata import RawStatDataWriter, RawStatDataReader
