@@ -3,19 +3,29 @@ import pysam
 class CoverageCalculator(object):
 
     def __init__(self, read_count_splitting=True, uniqueley_aligned_only=False,
-                 first_base_only=False):
+                 first_base_only=False, non_strand_specific=False):
         self._read_count_splitting = read_count_splitting
         self._uniqueley_aligned_only = uniqueley_aligned_only
         self._first_base_only = first_base_only
         self._coverage_add_function = self._select_coverage_add_function()
         self._coverages = {}
+        self._non_strand_specific = non_strand_specific
 
     def ref_seq_and_coverages(self, bam_path):
         bam = self._open_bam_file(bam_path)
         for ref_seq, length in zip(bam.references, bam.lengths):
             self._init_coverage_list(length)
             self._calc_coverage(ref_seq, bam)
+            if self._non_strand_specific:
+                self._sum_strand_coverages()
             yield(ref_seq, self._coverages)
+
+    def _sum_strand_coverages(self):
+        self._coverages["forward_and_reverse"] = [
+            cov_for + abs(cov_rev) for cov_for, cov_rev in
+            zip(self._coverages["forward"], self._coverages["reverse"])]
+        self._coverages.pop("forward")
+        self._coverages.pop("reverse")
 
     def _init_coverage_list(self, length):
         for strand in ["forward", "reverse"]:

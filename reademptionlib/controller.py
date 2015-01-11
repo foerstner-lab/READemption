@@ -510,7 +510,10 @@ class Controller(object):
     def _create_coverage_files_for_lib(
         self, lib_name, bam_path, no_of_aligned_reads, min_no_of_aligned_reads):
         """Perform the coverage calculation for a given library."""
-        strands = ["forward", "reverse"]
+        if not self._args.non_strand_specific:
+            strands = ["forward", "reverse"]
+        else:
+            strands = ["forward_and_reverse"]
         if self._all_coverage_file_exist(
             lib_name, strands, no_of_aligned_reads, min_no_of_aligned_reads):
             return
@@ -520,7 +523,8 @@ class Controller(object):
         coverage_calculator = CoverageCalculator(
             read_count_splitting=read_count_splitting,
             uniqueley_aligned_only=self._args.unique_only,
-            first_base_only=self._args.first_base_only)
+            first_base_only=self._args.first_base_only,
+            non_strand_specific=self._args.non_strand_specific)
         (coverage_writers_raw, coverage_writers_tnoar_min_norm,
          coverage_writers_tnoar_mil_norm) = self._wiggle_writers(
              lib_name, strands, no_of_aligned_reads, min_no_of_aligned_reads)
@@ -777,4 +781,3 @@ class Controller(object):
         deseq_viz.create_volcano_plots(
             self._paths.viz_deseq_volcano_plot_path,
             self._paths.viz_deseq_volcano_plot_adj_path)
-

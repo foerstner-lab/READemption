@@ -179,6 +179,10 @@ positions. To turn off this behavior use
     --skip_read_count_splitting, -s
                           Do not split the read counting between different
                           alignings. Default is to do the splitting.
+    --non_strand_specific, -d
+                          Do not distict between the coverage of the forward and
+                          reverse strand but sum them to a single value for each
+                          base.
     --first_base_only, -b
                           Only the first bases 5' base of each read aligning is
                           taken into account.
