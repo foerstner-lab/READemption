@@ -2,11 +2,14 @@ test:
 	python3 tests/test_all.py
 
 coverage:
-	coverage3 run tests/test_all.py
-	coverage3 report
+	python3-coverage run tests/test_all.py
+	python3-coverage report
 
 package:
 	python3 setup.py sdist
+
+build:
+	python3 setup.py bdist
 
 package_to_pypi:
 	python3 setup.py sdist upload
