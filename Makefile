@@ -7,6 +7,8 @@ coverage:
 
 package:
 	python3 setup.py sdist
+	rm -rf READemption.egg-info
+	ls dist/*
 
 build:
 	python3 setup.py bdist
