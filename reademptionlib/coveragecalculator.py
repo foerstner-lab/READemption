@@ -1,5 +1,6 @@
 import pysam
 
+
 class CoverageCalculator(object):
 
     def __init__(self, read_count_splitting=True, uniqueley_aligned_only=False,
