@@ -1,8 +1,9 @@
 import os
 import sys
 import Bio
-import pysam
 import matplotlib
+import pandas as pd
+import pysam
 
 class ProjectCreator(object):
 
@@ -38,3 +39,4 @@ class ProjectCreator(object):
             fh.write("Biopython version: %s\n" % Bio.__version__)
             fh.write("pysam version: %s\n" % pysam.__version__)
             fh.write("matplotlib version: %s\n" % matplotlib.__version__)
+            fh.write("pandas version: %s\n" % pd.__version__)

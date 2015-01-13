@@ -12,9 +12,10 @@ setup(
     description='A RNA-Seq Analysis Pipeline',
     url='',
     install_requires=[
-        "pysam >= 0.8.1",
         "biopython >= 1.65",
         "matplotlib >= 1.4.2",
+        "pandas >= 0.15.2",
+        "pysam >= 0.8.1"
     ],
     scripts=['bin/reademption'],
     license='ISC License (ISCL)',

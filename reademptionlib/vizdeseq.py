@@ -4,18 +4,19 @@ import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_pdf import PdfPages
+import pandas as pd
+
 
 class DESeqViz(object):
     
-    def __init__(self, deseq_script_path, deseq_path_template, use_antisene=True):
+    def __init__(self, deseq_script_path, deseq_path_template, max_pvalue):
         self._deseq_script_path = deseq_script_path
         self._deseq_path_template = deseq_path_template
-        self._use_antisene = use_antisene
         self._basemean_column = 1
         self._log_2_fold_chance_column = 2
         self._p_value_column = 5
         self._adj_p_value_column = 6
-        self._p_value_significance_limit = 0.05
+        self._p_value_significance_limit = max_pvalue
         self._log_fold_change_limit = 2
         self._log_2_fold_chance_limit = 1
 
@@ -30,33 +31,25 @@ class DESeqViz(object):
         self._pp_scatterplots.close()
 
     def _create_scatter_plots(self, condition_1, condition_2):
-        deseq_path = self._deseq_path_template % (condition_1, condition_2)
-        (basemeans, log2_fold_changes, p_values, 
-         p_adj_values) = self._parse_deseq_file(deseq_path)
+        pd.options.display.mpl_style = 'default'
+        font = {'family': 'sans-serif', 'size': 7}
+        matplotlib.rc('font', **font)
+        deseq_result = pd.read_table(
+            self._deseq_path_template % (condition_1, condition_2))
         fig = plt.figure()
-        ax = fig.add_subplot(111)
-        ax.set_xscale('log')
-        cleaned_basemeans = []
-        cleaned_log2_fold_changes = []
-        for basemean, log2_fc in zip(basemeans, log2_fold_changes):
-            if log2_fc != "NA" and basemean != "NA":
-                cleaned_basemeans.append(basemean)
-                cleaned_log2_fold_changes.append(log2_fc)
-        y_max = max([abs(log2_fc) for log2_fc in cleaned_log2_fold_changes])
-        y_min = -1*y_max
-        x_min = min(cleaned_basemeans)
-        x_max = max(cleaned_basemeans)
-        # # Draw lines
-        plt.plot([x_min, x_max], [0, 0], color="k", alpha=0.2)
-        # Set axis ranges
-        plt.axis([x_min, x_max, y_max, y_min])
-        plt.title("%s vs. %s" % (condition_1, condition_2))
-        sig_basemeans = []
-        sig_log2_fold_changes = []
-        plt.plot(sig_basemeans, sig_log2_fold_changes, "r.", alpha=0.2)
-        plt.plot(cleaned_basemeans, cleaned_log2_fold_changes, "k.", alpha=0.2)
-        plt.xlabel("Mean of normalized counts ")
-        plt.ylabel("Log2 fold change")
+        plt.plot(np.log10(deseq_result.baseMean),
+                 deseq_result.log2FoldChange, ".", alpha=0.3)
+        significant_deseq_result = deseq_result[
+            deseq_result.padj < self._p_value_significance_limit]
+        plt.plot(
+            np.log10(significant_deseq_result.baseMean),
+            significant_deseq_result.log2FoldChange, ".r", alpha=0.5)
+        plt.title("{} vs. {} - MA plot".format(condition_1, condition_2))
+        y_max = max([abs(log2_fc) 
+                     for log2_fc in deseq_result.log2FoldChange])
+        plt.ylim(-1.1 * y_max, 1.1 * y_max)
+        plt.xlabel("log10 base mean")
+        plt.ylabel("log2 fold-change")
         self._pp_scatterplots.savefig()
 
     def create_volcano_plots(self, volcano_plot_path, volcano_plot_adj_path):

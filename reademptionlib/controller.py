@@ -720,6 +720,7 @@ class Controller(object):
         deseq_runner = DESeqRunner(
             arg_libs, conditions, self._paths.deseq_raw_folder,
             self._paths.deseq_extended_folder, self._paths.deseq_script_path,
+            self._paths.deseq_pca_heatmap_path,
             self._paths.gene_wise_quanti_combined_path,
             self._paths.deseq_tmp_session_info_script,
             self._paths.deseq_session_info,
@@ -790,7 +791,8 @@ class Controller(object):
         deseq_path_template = (
             self._paths.deseq_raw_folder + "/deseq_comp_%s_vs_%s.csv")
         deseq_viz = DESeqViz(
-            self._paths.deseq_script_path, deseq_path_template)
+            self._paths.deseq_script_path, deseq_path_template,
+            max_pvalue=self._args.max_pvalue)
         deseq_viz.create_scatter_plots(
             self._paths.viz_deseq_scatter_plot_path)
         deseq_viz.create_volcano_plots(
