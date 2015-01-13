@@ -19,6 +19,7 @@ from reademptionlib.readprocessor import ReadProcessor
 from reademptionlib.sambamconverter import SamToBamConverter
 from reademptionlib.wiggle import WiggleWriter
 
+
 class Controller(object):
 
     """Manage the actions of the subcommands.
@@ -705,7 +706,8 @@ class Controller(object):
         deseq_runner = DESeqRunner(
             arg_libs, conditions, self._paths.deseq_raw_folder,
             self._paths.deseq_extended_folder, self._paths.deseq_script_path,
-            self._paths.gene_wise_quanti_combined_path, 
+            self._paths.deseq_pca_heatmap_path,
+            self._paths.gene_wise_quanti_combined_path,
             self._paths.deseq_tmp_session_info_script,
             self._paths.deseq_session_info,
             self._args.cooks_cutoff_off)
