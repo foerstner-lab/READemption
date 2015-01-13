@@ -240,7 +240,7 @@ def main():
         "--max_pvalue", type=float, default="0.05",
         help="Maximum adjusted p-value for genes considered to be regulated. "
         "Genes with adjusted p-values below will be marked red. "
-        "(default 0.50)")
+        "(default 0.05)")
     viz_deseq_parser.set_defaults(func=viz_deseq)
 
     args = parser.parse_args()
