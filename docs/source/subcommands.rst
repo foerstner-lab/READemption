@@ -336,3 +336,7 @@ vs. p-values / adjusted p-values).
 
   optional arguments:
     -h, --help    show this help message and exit
+  --max_pvalue MAX_PVALUE
+                          Maximum adjusted p-value for genes considered to be
+                          regulated. Genes with adjusted p-values below will be
+                          marked red. (default 0.05)
