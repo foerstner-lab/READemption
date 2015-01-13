@@ -124,10 +124,13 @@ class Paths(object):
             self.align_report_folder)
         self.index_path = "%s/index.idx" % self.read_alignment_index_folder
         self.deseq_script_path = "%s/deseq.R" % self.deseq_raw_folder
+        self.deseq_pca_heatmap_path = "%s/sample_comparison_pca_heatmap.pdf" % (
+            self.deseq_raw_folder)
         self.deseq_tmp_session_info_script = "%s/tmp.R" % self.deseq_raw_folder
         self.deseq_session_info = "%s/R_session_info.txt" % (
             self.deseq_raw_folder)
-        self.version_path = "%s/used_reademption_version.txt" % (self.align_report_folder)
+        self.version_path = "%s/versions_of_used_libraries.txt" % (
+            self.align_report_folder)
 
     def _get_sorted_folder_content(self, folder):
         """Return the sorted file list of a folder"""

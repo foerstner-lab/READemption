@@ -1,6 +1,9 @@
-import json
 import os
 import sys
+import Bio
+import matplotlib
+import pandas as pd
+import pysam
 
 class ProjectCreator(object):
 
@@ -31,4 +34,9 @@ class ProjectCreator(object):
     
     def create_version_file(self, version_file_path, version):
         with open(version_file_path, "w") as fh:
-            fh.write("READemption version %s" % version)
+            fh.write("READemption version: %s\n" % version)
+            fh.write("Python version: %s\n" % sys.version.replace("\n", " "))
+            fh.write("Biopython version: %s\n" % Bio.__version__)
+            fh.write("pysam version: %s\n" % pysam.__version__)
+            fh.write("matplotlib version: %s\n" % matplotlib.__version__)
+            fh.write("pandas version: %s\n" % pd.__version__)

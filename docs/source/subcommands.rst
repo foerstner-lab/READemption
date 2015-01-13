@@ -179,6 +179,10 @@ positions. To turn off this behavior use
     --skip_read_count_splitting, -s
                           Do not split the read counting between different
                           alignings. Default is to do the splitting.
+    --non_strand_specific, -d
+                          Do not distict between the coverage of the forward and
+                          reverse strand but sum them to a single value for each
+                          base.
     --first_base_only, -b
                           Only the first bases 5' base of each read aligning is
                           taken into account.
@@ -250,7 +254,7 @@ deseq
 -----
 
 Differential gene expression can be performed using ``deseq`` which
-will run a `DESeq2 <http://www-huber.embl.de/users/anders/DESeq2/>`_
+will run a `DESeq2 <http://www.bioconductor.org/packages/release/bioc/html/DESeq2.html>`_
 analyses for all possible combinations of conditions. To allocated the
 conditions to the libraries use the ``--libs`` and ``--conditions``
 parameters (e.g. ``--libs
@@ -332,3 +336,7 @@ vs. p-values / adjusted p-values).
 
   optional arguments:
     -h, --help    show this help message and exit
+  --max_pvalue MAX_PVALUE
+                          Maximum adjusted p-value for genes considered to be
+                          regulated. Genes with adjusted p-values below will be
+                          marked red. (default 0.05)

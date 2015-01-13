@@ -2,6 +2,7 @@ import os
 import sys
 import pysam
 
+
 class BamMerger(object):
 
     def merge(self, output_bam, input_bam_1, input_bam_2):

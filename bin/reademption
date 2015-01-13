@@ -9,7 +9,7 @@ __author__ = "Konrad Foerstner <konrad@foerstner.org>"
 __copyright__ = "2011-2014 by Konrad Foerstner <konrad@foerstner.org>"
 __license__ = "ISC license"
 __email__ = "konrad@foerstner.org"
-__version__ = "0.3.4"
+__version__ = "0.3.5"
 
 def main():
     parser = argparse.ArgumentParser()
@@ -127,6 +127,11 @@ def main():
         action="store_true", help="Do not split the read counting between "
         "different alignings. Default is to do the splitting.")
     coverage_creation_parser.add_argument(
+        "--non_strand_specific", "-d", default=False,
+        action="store_true", help="Do not distict between the coverage of the "
+        "forward and reverse strand but sum them to a single value for each "
+        "base.")
+    coverage_creation_parser.add_argument(
         "--first_base_only", "-b", default=False,
         action="store_true", help="Only the first bases 5' base of each read "
         "aligning is taken into account.")
@@ -230,6 +235,12 @@ def main():
         "project_path", default=".", nargs="?",
         help="Path of the project folder. If none is given the current "
         "directory is used.")
+
+    viz_deseq_parser.add_argument(
+        "--max_pvalue", type=float, default="0.05",
+        help="Maximum adjusted p-value for genes considered to be regulated. "
+        "Genes with adjusted p-values below will be marked red. "
+        "(default 0.05)")
     viz_deseq_parser.set_defaults(func=viz_deseq)
 
     args = parser.parse_args()

@@ -2,13 +2,13 @@ import concurrent.futures
 import os
 import sys
 import json
-import pysam
 from reademptionlib.bammerger import BamMerger
 from reademptionlib.coveragecalculator import CoverageCalculator
 from reademptionlib.crossalignfilter import CrossAlignFilter
 from reademptionlib.deseq import DESeqRunner
 from reademptionlib.fasta import FastaParser
-from reademptionlib.genewisequanti import GeneWiseQuantification, GeneWiseOverview
+from reademptionlib.genewisequanti import GeneWiseQuantification
+from reademptionlib.genewisequanti import GeneWiseOverview
 from reademptionlib.paths import Paths
 from reademptionlib.projectcreator import ProjectCreator
 from reademptionlib.rawstatdata import RawStatDataWriter, RawStatDataReader
@@ -19,6 +19,7 @@ from reademptionlib.readalignerstatstable import ReadAlignerStatsTable
 from reademptionlib.readprocessor import ReadProcessor
 from reademptionlib.sambamconverter import SamToBamConverter
 from reademptionlib.wiggle import WiggleWriter
+
 
 class Controller(object):
 
@@ -43,7 +44,7 @@ class Controller(object):
             "  / _ \/ __/ _ | / _ \___ __ _  ___  / /_(_)__  ___\n"
             " / , _/ _// __ |/ // / -_)  ' \/ _ \/ __/ / _ \/ _ \\\n"
             "/_/|_/___/_/ |_/____/\__/_/_/_/ .__/\__/_/\___/_//_/\n"
-            "                             / /\n"                   
+            "                             / /\n"
             "====================================================\n"
             "========================================\n"
             "=======================\n"
@@ -54,10 +55,11 @@ class Controller(object):
         project_creator.create_subfolders(self._paths.required_folders())
         project_creator.create_version_file(self._paths.version_path, version)
         sys.stdout.write("Created folder \"%s\" and required subfolders.\n" % (
-                self._args.project_path))
+            self._args.project_path))
         sys.stdout.write("Please copy read files into folder \"%s\" and "
                          "reference sequences files into folder \"%s\".\n" % (
-                self._paths.read_fasta_folder, self._paths.ref_seq_folder))
+                             self._paths.read_fasta_folder,
+                             self._paths.ref_seq_folder))
 
     def align_reads(self):
         """Perform the alignment of the reads."""
@@ -67,13 +69,13 @@ class Controller(object):
         self._ref_seq_files = self._paths.get_ref_seq_files()
         self._paths.set_ref_seq_paths(self._ref_seq_files)
         self._test_align_file_existance()
-        if self._args.paired_end is False:
+        if not self._args.paired_end:
             # Single end reads
             self._read_files = self._paths.get_read_files()
             self._lib_names = self._paths.get_lib_names_single_end()
             self._paths.set_read_files_dep_file_lists_single_end(
                 self._read_files, self._lib_names)
-            if self._args.realign is False:
+            if not self._args.realign:
                 self._set_primary_aligner_paths_to_final_paths()
             self._prepare_reads_single_end()
             self._align_single_end_reads()
@@ -83,7 +85,7 @@ class Controller(object):
             self._lib_names = self._paths.get_lib_names_paired_end()
             self._paths.set_read_files_dep_file_lists_paired_end(
                 self._read_file_pairs, self._lib_names)
-            if self._args.realign is False:
+            if not self._args.realign:
                 self._set_primary_aligner_paths_to_final_paths()
             self._prepare_reads_paired_end()
             self._align_paired_end_reads()
@@ -97,12 +99,12 @@ class Controller(object):
             self._paths.unaligned_reads_paths,
             self._paths.primary_read_aligner_stats_path)
         final_unaligned_reads_paths = self._paths.unaligned_reads_paths
-        if self._args.realign is True:
+        if self._args.realign:
             self._run_realigner_and_process_alignments()
             self._merge_bam_files()
             final_unaligned_reads_paths = (
                 self._paths.realigned_unaligned_reads_paths)
-        if not self._args.crossalign_cleaning_str is None:
+        if self._args.crossalign_cleaning_str is not None:
             self._remove_crossaligned_reads()
         self._generate_read_alignment_stats(
             self._lib_names,
@@ -110,12 +112,12 @@ class Controller(object):
             final_unaligned_reads_paths,
             self._paths.read_alignments_stats_path)
         self._write_alignment_stat_table()
-        
+
     def _remove_crossaligned_reads(self):
         self._string_to_species_and_sequence_ids()
         jobs = []
         with concurrent.futures.ProcessPoolExecutor(
-            max_workers=self._args.processes) as executor:
+                max_workers=self._args.processes) as executor:
             for (bam_path, bam_with_crossmappings_path,
                  bam_cleaned_tmp_path, crossmapped_reads_path) in zip(
                      self._paths.read_alignment_bam_paths,
@@ -158,10 +160,11 @@ class Controller(object):
         for org_and_seq_ids_str in orgs_and_seq_ids_strs:
             org, seq_ids_str = org_and_seq_ids_str.strip().split(":")
             seq_ids = [seq_id.strip() for seq_id in seq_ids_str.split(",")]
-            if "" in seq_ids: seq_ids.remove("")
+            if "" in seq_ids:
+                seq_ids.remove("")
             if len(seq_ids) < 1:
                 self._write_err_msg_and_quit(
-                    "Error! No sequence ID was given for the species '%s'. " 
+                    "Error! No sequence ID was given for the species '%s'. "
                     "This does not make sense.\nYou gave the "
                     "following input:\n%s\n" % (
                         org, self._args.crossalign_cleaning_str))
@@ -186,12 +189,13 @@ class Controller(object):
                     self._paths.primary_read_aligner_bam_paths,
                     self._paths.read_realigner_bam_paths):
                 bam_merger = BamMerger()
-                jobs.append(executor.submit(bam_merger.merge, merged_bam, 
-                                            primary_aligner_bam, realigner_bam))
+                jobs.append(executor.submit(
+                    bam_merger.merge, merged_bam,
+                    primary_aligner_bam, realigner_bam))
         self._check_job_completeness(jobs)
-        if self._args.keep_original_alignments is False:
+        if not self._args.keep_original_alignments:
             for bam_file_list in [
-                    self._paths.primary_read_aligner_bam_paths, 
+                    self._paths.primary_read_aligner_bam_paths,
                     self._paths.read_realigner_bam_paths]:
                 for bam_file in bam_file_list:
                     os.remove(bam_file)
@@ -206,7 +210,7 @@ class Controller(object):
             self._paths.read_realigner_bam_prefixes_paths,
             self._paths.read_realigner_sam_paths)
         self._generate_read_alignment_stats(
-            self._lib_names, 
+            self._lib_names,
             self._paths.read_realigner_bam_paths,
             self._paths.realigned_unaligned_reads_paths,
             self._paths.read_realigner_stats_path)
@@ -215,13 +219,14 @@ class Controller(object):
         """Test if the input file for the the align subcommand exist."""
         if len(self._paths.get_read_files()) == 0:
             self._write_err_msg_and_quit("Error! No read libraries given!\n")
-        if len(self._ref_seq_files ) == 0:
-            self._write_err_msg_and_quit("Error! No reference sequence files given!\n")
+        if len(self._ref_seq_files) == 0:
+            self._write_err_msg_and_quit(
+                "Error! No reference sequence files given!\n")
 
     def _test_folder_existance(self, task_specific_folders):
         """Test the existance of required folders."""
         for folder in (
-            self._paths.required_base_folders() + task_specific_folders):
+                self._paths.required_base_folders() + task_specific_folders):
             if not os.path.exists(folder):
                 self._write_err_msg_and_quit(
                     "Error! Folder '%s' does not exist! Is the given project "
@@ -229,10 +234,10 @@ class Controller(object):
 
     def _file_needs_to_be_created(self, file_path, quiet=False):
         """Test if a file exists of need to be created."""
-        if self._args.check_for_existing_files is False:
+        if not self._args.check_for_existing_files:
             return True
         if os.path.exists(file_path):
-            if quiet is False:
+            if not quiet:
                 sys.stderr.write(
                     "File %s exists. Skipping its generation.\n" % file_path)
             return False
@@ -240,14 +245,14 @@ class Controller(object):
 
     def _prepare_reads_single_end(self):
         """Manage the prepartion of reads before the actual mappings."""
-        raw_stat_data_writer = RawStatDataWriter(pretty=True)
         read_files_and_jobs = {}
         with concurrent.futures.ProcessPoolExecutor(
-            max_workers=self._args.processes) as executor:
+                max_workers=self._args.processes) as executor:
             for lib_name, read_path, processed_read_path in zip(
-                    self._lib_names, self._paths.read_paths, 
+                    self._lib_names, self._paths.read_paths,
                     self._paths.processed_read_paths):
-                if self._file_needs_to_be_created(processed_read_path) is False:
+                if not self._file_needs_to_be_created(
+                        processed_read_path):
                     continue
                 read_processor = ReadProcessor(
                     poly_a_clipping=self._args.poly_a_clipping,
@@ -256,39 +261,39 @@ class Controller(object):
                     min_phred_score=self._args.min_phred_score,
                     adapter=self._args.adapter)
                 read_files_and_jobs[lib_name] = executor.submit(
-                    read_processor.process_single_end, read_path, 
+                    read_processor.process_single_end, read_path,
                     processed_read_path)
         self._evaluet_job_and_generate_stat_file(lib_name, read_files_and_jobs)
 
     def _prepare_reads_paired_end(self):
         read_files_and_jobs = {}
         with concurrent.futures.ProcessPoolExecutor(
-            max_workers=self._args.processes) as executor:
+                max_workers=self._args.processes) as executor:
             for lib_name, read_path_pair, processed_read_path_pair in zip(
-                self._lib_names, self._paths.read_path_pairs, 
-                self._paths.processed_read_path_pairs):
+                self._lib_names, self._paths.read_path_pairs,
+                    self._paths.processed_read_path_pairs):
                 for processed_read_path in processed_read_path_pair:
-                    if self._file_needs_to_be_created(
-                        processed_read_path) is False:
+                    if not self._file_needs_to_be_created(
+                            processed_read_path):
                         continue
                     read_processor = ReadProcessor(
-                        poly_a_clipping=False, 
+                        poly_a_clipping=False,
                         min_read_length=self._args.min_read_length,
                         fastq=self._args.fastq,
                         min_phred_score=self._args.min_phred_score,
                         adapter=self._args.adapter)
-                read_files_and_jobs[lib_name]  = executor.submit(
-                    read_processor.process_paired_end, read_path_pair, 
+                read_files_and_jobs[lib_name] = executor.submit(
+                    read_processor.process_paired_end, read_path_pair,
                     processed_read_path_pair)
         self._evaluet_job_and_generate_stat_file(lib_name, read_files_and_jobs)
 
     def _evaluet_job_and_generate_stat_file(
-        self, lib_name, read_files_and_jobs):
+            self, lib_name, read_files_and_jobs):
         raw_stat_data_writer = RawStatDataWriter(pretty=True)
         # Evaluate thread outcome
         self._check_job_completeness(read_files_and_jobs.values())
-        if self._file_needs_to_be_created(
-            self._paths.read_processing_stats_path) is False:
+        if not self._file_needs_to_be_created(
+                self._paths.read_processing_stats_path):
             return
         # Create a dict of the read file names and the processing
         # counting results
@@ -300,58 +305,61 @@ class Controller(object):
 
     def _align_single_end_reads(self):
         """Manage the actual alignment of single end reads."""
-        read_aligner = ReadAligner(self._args.segemehl_bin, self._args.progress)
-        if self._file_needs_to_be_created(self._paths.index_path) is True:
+        read_aligner = ReadAligner(
+            self._args.segemehl_bin, self._args.progress)
+        if self._file_needs_to_be_created(self._paths.index_path):
             read_aligner.build_index(
                 self._paths.ref_seq_paths, self._paths.index_path)
         for read_path, output_path, nomatch_path, bam_path in zip(
-            self._paths.processed_read_paths, 
-            self._paths.primary_read_aligner_sam_paths, 
-            self._paths.unaligned_reads_paths, 
-            self._paths.read_alignment_bam_paths):
-            if self._file_needs_to_be_created(output_path) is False:
+            self._paths.processed_read_paths,
+            self._paths.primary_read_aligner_sam_paths,
+            self._paths.unaligned_reads_paths,
+                self._paths.read_alignment_bam_paths):
+            if not self._file_needs_to_be_created(output_path):
                 continue
-            elif self._file_needs_to_be_created(bam_path) is False:
+            elif not self._file_needs_to_be_created(bam_path):
                 continue
             read_aligner.run_alignment(
-                read_path, self._paths.index_path, self._paths.ref_seq_paths, 
+                read_path, self._paths.index_path, self._paths.ref_seq_paths,
                 output_path, nomatch_path, int(self._args.processes),
-                int(self._args.segemehl_accuracy), 
-                float(self._args.segemehl_evalue), self._args.split, 
+                int(self._args.segemehl_accuracy),
+                float(self._args.segemehl_evalue), self._args.split,
                 paired_end=False)
 
     def _align_paired_end_reads(self):
         """Manage the actual alignemnt of paired end reads."""
-        read_aligner = ReadAligner(self._args.segemehl_bin, self._args.progress)
-        if self._file_needs_to_be_created(self._paths.index_path) is True:
+        read_aligner = ReadAligner(
+            self._args.segemehl_bin, self._args.progress)
+        if self._file_needs_to_be_created(self._paths.index_path):
             read_aligner.build_index(
                 self._paths.ref_seq_paths, self._paths.index_path)
         for read_path_pair, output_path, nomatch_path, bam_path in zip(
-            self._paths.processed_read_path_pairs, 
-            self._paths.primary_read_aligner_sam_paths, 
-            self._paths.unaligned_reads_paths, 
-            self._paths.primary_read_aligner_bam_paths):
-            if self._file_needs_to_be_created(output_path) is False:
+            self._paths.processed_read_path_pairs,
+            self._paths.primary_read_aligner_sam_paths,
+            self._paths.unaligned_reads_paths,
+                self._paths.primary_read_aligner_bam_paths):
+            if not self._file_needs_to_be_created(output_path):
                 continue
-            elif self._file_needs_to_be_created(bam_path) is False:
+            elif not self._file_needs_to_be_created(bam_path):
                 continue
             read_aligner.run_alignment(
-                read_path_pair, self._paths.index_path, 
-                self._paths.ref_seq_paths, output_path, nomatch_path, 
+                read_path_pair, self._paths.index_path,
+                self._paths.ref_seq_paths, output_path, nomatch_path,
                 int(self._args.processes), int(self._args.segemehl_accuracy),
-                float(self._args.segemehl_evalue), self._args.split, 
+                float(self._args.segemehl_evalue), self._args.split,
                 paired_end=True)
 
     def _realign_unmapped_reads(self):
-        read_realigner = ReadRealigner(self._args.lack_bin, self._args.progress)
-        for (query_fasta_path, query_sam_path, realignment_sam_path, 
+        read_realigner = ReadRealigner(
+            self._args.lack_bin, self._args.progress)
+        for (query_fasta_path, query_sam_path, realignment_sam_path,
              unaligned_reads_path) in zip(
                 self._paths.unaligned_reads_paths,
                 self._paths.read_realigner_tmp_sam_paths,
                 self._paths.read_realigner_sam_paths,
                 self._paths.realigned_unaligned_reads_paths):
             read_realigner.run_alignment(
-                query_fasta_path, query_sam_path, self._paths.ref_seq_paths, 
+                query_fasta_path, query_sam_path, self._paths.ref_seq_paths,
                 realignment_sam_path, unaligned_reads_path,
                 int(self._args.processes), int(self._args.segemehl_accuracy))
             os.remove(query_sam_path)
@@ -361,13 +369,14 @@ class Controller(object):
         sam_to_bam_converter = SamToBamConverter()
         jobs = []
         with concurrent.futures.ProcessPoolExecutor(
-            max_workers=self._args.processes) as executor:
+                max_workers=self._args.processes) as executor:
             for sam_path, bam_prefix_path, bam_path in zip(
                     sam_paths, bam_prefixes_paths, bam_paths):
-                if self._file_needs_to_be_created(bam_path) is False:
+                if not self._file_needs_to_be_created(bam_path):
                     continue
                 jobs.append(executor.submit(
-                    sam_to_bam_converter.sam_to_bam, sam_path, bam_prefix_path))
+                    sam_to_bam_converter.sam_to_bam,
+                    sam_path, bam_prefix_path))
         # Evaluate thread outcome
         self._check_job_completeness(jobs)
 
@@ -375,9 +384,9 @@ class Controller(object):
         sam_to_bam_converter = SamToBamConverter()
         jobs = []
         with concurrent.futures.ProcessPoolExecutor(
-            max_workers=self._args.processes) as executor:
+                max_workers=self._args.processes) as executor:
             for bam_path, sam_path in zip(
-                    self._paths.primary_read_aligner_bam_paths, 
+                    self._paths.primary_read_aligner_bam_paths,
                     self._paths.read_realigner_tmp_sam_paths):
                 jobs.append(executor.submit(
                     sam_to_bam_converter.bam_to_sam, bam_path, sam_path))
@@ -390,21 +399,21 @@ class Controller(object):
         """Manage the generation of alingment statistics."""
         raw_stat_data_writer = RawStatDataWriter(pretty=True)
         read_files_and_jobs = {}
-        if self._file_needs_to_be_created(output_stats_path) is False:
+        if not self._file_needs_to_be_created(output_stats_path):
             return
         with concurrent.futures.ProcessPoolExecutor(
-            max_workers=self._args.processes) as executor:
+                max_workers=self._args.processes) as executor:
             for (lib_name, read_alignment_bam_path,
                  unaligned_reads_path) in zip(
                      lib_names, result_bam_paths, unaligned_reads_paths):
                 read_aligner_stats = ReadAlignerStats()
-                read_files_and_jobs[lib_name]  = executor.submit(
+                read_files_and_jobs[lib_name] = executor.submit(
                     read_aligner_stats.count, read_alignment_bam_path,
                     unaligned_reads_path)
         # Evaluate thread outcome
         self._check_job_completeness(read_files_and_jobs.values())
         read_files_and_stats = dict(
-            [(lib_name, job.result()) 
+            [(lib_name, job.result())
              for lib_name, job in read_files_and_jobs.items()])
         raw_stat_data_writer.write(read_files_and_stats, output_stats_path)
 
@@ -417,14 +426,15 @@ class Controller(object):
             self._paths.read_alignments_stats_path)
         realignment_stats = None
         primary_aligner_stats = None
-        if self._args.realign is True:
+        if self._args.realign:
             primary_aligner_stats = raw_stat_data_reader.read(
                 self._paths.primary_read_aligner_stats_path)
             realignment_stats = raw_stat_data_reader.read(
                 self._paths.read_realigner_stats_path)
         read_aligner_stats_table = ReadAlignerStatsTable(
-            read_processing_stats, final_alignment_stats, primary_aligner_stats, 
-            realignment_stats, self._lib_names, 
+            read_processing_stats, final_alignment_stats,
+            primary_aligner_stats,
+            realignment_stats, self._lib_names,
             self._paths.read_alignment_stats_table_path, self._args.paired_end)
         read_aligner_stats_table.write()
 
@@ -452,75 +462,82 @@ class Controller(object):
         self._test_folder_existance(self._paths.required_coverage_folders())
         raw_stat_data_reader = RawStatDataReader()
         alignment_stats = [raw_stat_data_reader.read(
-                self._paths.read_alignments_stats_path)]
+            self._paths.read_alignments_stats_path)]
         lib_names = list(alignment_stats[0].keys())
         was_paired_end_alignment = self._was_paired_end_alignment(lib_names)
-        if was_paired_end_alignment == False:
-            self._paths.set_read_files_dep_file_lists_single_end (
+        if not was_paired_end_alignment:
+            self._paths.set_read_files_dep_file_lists_single_end(
                 self._paths.get_read_files(), lib_names)
-        else: 
-            self._paths.set_read_files_dep_file_lists_paired_end (
+        else:
+            self._paths.set_read_files_dep_file_lists_paired_end(
                 self._paths.get_read_files(), lib_names)
         # Get number of aligned or number of uniquely aligned reads
-        if self._args.normalize_by_uniquely is False:
+        if not self._args.normalize_by_uniquely:
             aligned_counting = "no_of_aligned_reads"
         else:
             aligned_counting = "no_of_uniquely_aligned_reads"
         read_files_aligned_read_freq = dict([
             (read_file,
              round(attributes["stats_total"][aligned_counting]))
-             for read_file, attributes in alignment_stats[0].items()])
+            for read_file, attributes in alignment_stats[0].items()])
         min_no_of_aligned_reads = float(min(
             read_files_aligned_read_freq.values()))
         # Run the generation of coverage in parallel
         jobs = []
         with concurrent.futures.ProcessPoolExecutor(
-            max_workers=self._args.processes) as executor:
+                max_workers=self._args.processes) as executor:
             for lib_name, bam_path in zip(
-                lib_names, self._paths.read_alignment_bam_paths):
+                    lib_names, self._paths.read_alignment_bam_paths):
                 no_of_aligned_reads = float(
                     read_files_aligned_read_freq[lib_name])
                 jobs.append(executor.submit(
-                        self._create_coverage_files_for_lib,
-                        lib_name, bam_path, no_of_aligned_reads,
-                        min_no_of_aligned_reads))
+                    self._create_coverage_files_for_lib,
+                    lib_name, bam_path, no_of_aligned_reads,
+                    min_no_of_aligned_reads))
         # Evaluate thread outcome
         self._check_job_completeness(jobs)
 
     def _all_coverage_file_exist(
-        self, lib_name, strands, no_of_aligned_reads, min_no_of_aligned_reads):
+        self, lib_name, strands, no_of_aligned_reads,
+            min_no_of_aligned_reads):
         """Test the existance of all coverage file of a library"""
         files = []
         for strand in strands:
             files.append(self._paths.wiggle_file_raw_path(lib_name, strand))
             files.append(self._paths.wiggle_file_tnoar_norm_min_path(
-                    lib_name, strand, multi=min_no_of_aligned_reads,
-                    div=no_of_aligned_reads))
+                lib_name, strand, multi=min_no_of_aligned_reads,
+                div=no_of_aligned_reads))
             files.append(self._paths.wiggle_file_tnoar_norm_mil_path(
-                    lib_name, strand, multi=1000000,
-                    div=no_of_aligned_reads))
-        if any([self._file_needs_to_be_created(file, quiet=True) 
-                    for file in files]) is False:
+                lib_name, strand, multi=1000000,
+                div=no_of_aligned_reads))
+        if not any([self._file_needs_to_be_created(file, quiet=True)
+                    for file in files]):
             sys.stderr.write(
-                "The files %s exists. Skipping their generation.\n" % 
+                "The files %s exists. Skipping their generation.\n" %
                 ", " .join(files))
             return True
         return False
 
     def _create_coverage_files_for_lib(
-        self, lib_name, bam_path, no_of_aligned_reads, min_no_of_aligned_reads):
+        self, lib_name, bam_path, no_of_aligned_reads,
+            min_no_of_aligned_reads):
         """Perform the coverage calculation for a given library."""
-        strands = ["forward", "reverse"]
+        if not self._args.non_strand_specific:
+            strands = ["forward", "reverse"]
+        else:
+            strands = ["forward_and_reverse"]
         if self._all_coverage_file_exist(
-            lib_name, strands, no_of_aligned_reads, min_no_of_aligned_reads):
+                lib_name, strands, no_of_aligned_reads,
+                min_no_of_aligned_reads):
             return
         read_count_splitting = True
-        if self._args.skip_read_count_splitting is True:
+        if self._args.skip_read_count_splitting:
             read_count_splitting = False
         coverage_calculator = CoverageCalculator(
             read_count_splitting=read_count_splitting,
             uniqueley_aligned_only=self._args.unique_only,
-            first_base_only=self._args.first_base_only)
+            first_base_only=self._args.first_base_only,
+            non_strand_specific=self._args.non_strand_specific)
         (coverage_writers_raw, coverage_writers_tnoar_min_norm,
          coverage_writers_tnoar_mil_norm) = self._wiggle_writers(
              lib_name, strands, no_of_aligned_reads, min_no_of_aligned_reads)
@@ -528,7 +545,7 @@ class Controller(object):
                 bam_path):
             for strand in strands:
                 coverage_writers_raw[strand].write_replicons_coverages(
-                 ref_seq, coverages[strand])
+                    ref_seq, coverages[strand])
                 coverage_writers_tnoar_min_norm[
                     strand].write_replicons_coverages(
                     ref_seq, coverages[strand],
@@ -544,25 +561,23 @@ class Controller(object):
                         min_no_of_aligned_reads):
         """Write the calculated coverages to wiggle files."""
         coverage_writers_raw = dict([(
-                    strand, WiggleWriter(
-                        "%s_%s" % (lib_name, strand), 
-                        open(self._paths.wiggle_file_raw_path(lib_name, strand), 
-                             "w"))) for strand in strands])
+            strand, WiggleWriter(
+                "%s_%s" % (lib_name, strand),
+                open(self._paths.wiggle_file_raw_path(lib_name, strand),
+                     "w"))) for strand in strands])
         coverage_writers_tnoar_min_norm = dict([(
-                    strand, WiggleWriter(
-                        "%s_%s" % (lib_name, strand),
-                        open(self._paths.wiggle_file_tnoar_norm_min_path(
-                                lib_name, strand, multi=min_no_of_aligned_reads,
-                                div=no_of_aligned_reads), "w")))
-                                                for strand in strands])
+            strand, WiggleWriter(
+                "%s_%s" % (lib_name, strand),
+                open(self._paths.wiggle_file_tnoar_norm_min_path(
+                    lib_name, strand, multi=min_no_of_aligned_reads,
+                    div=no_of_aligned_reads), "w"))) for strand in strands])
         coverage_writers_tnoar_mil_norm = dict([(
-                    strand, WiggleWriter(
-                        "%s_%s" % (lib_name, strand),
-                        open(self._paths.wiggle_file_tnoar_norm_mil_path(
-                                lib_name, strand, multi=1000000,
-                                div=no_of_aligned_reads), "w")))
-                                                for strand in strands])
-        return (coverage_writers_raw, coverage_writers_tnoar_min_norm, 
+            strand, WiggleWriter(
+                "%s_%s" % (lib_name, strand),
+                open(self._paths.wiggle_file_tnoar_norm_mil_path(
+                    lib_name, strand, multi=1000000,
+                    div=no_of_aligned_reads), "w"))) for strand in strands])
+        return (coverage_writers_raw, coverage_writers_tnoar_min_norm,
                 coverage_writers_tnoar_mil_norm)
 
     def _check_job_completeness(self, jobs):
@@ -583,26 +598,26 @@ class Controller(object):
             norm_by_overlap_freq = False
         raw_stat_data_reader = RawStatDataReader()
         alignment_stats = [raw_stat_data_reader.read(
-                self._paths.read_alignments_stats_path)]
+            self._paths.read_alignments_stats_path)]
         lib_names = sorted(list(alignment_stats[0].keys()))
         annotation_files = self._paths.get_annotation_files()
-        self._paths.set_annotation_paths(annotation_files)        
+        self._paths.set_annotation_paths(annotation_files)
         was_paired_end_alignment = self._was_paired_end_alignment(lib_names)
-        if was_paired_end_alignment == False:
+        if not was_paired_end_alignment:
             self._paths.set_read_files_dep_file_lists_single_end(
                 self._paths.get_read_files(), lib_names)
-        else: 
+        else:
             self._paths.set_read_files_dep_file_lists_paired_end(
                 self._paths.get_read_files(), lib_names)
         jobs = []
         with concurrent.futures.ProcessPoolExecutor(
-            max_workers=self._args.processes) as executor:
+                max_workers=self._args.processes) as executor:
             for lib_name, read_alignment_path in zip(
-                lib_names, self._paths.read_alignment_bam_paths):
+                    lib_names, self._paths.read_alignment_bam_paths):
                 jobs.append(executor.submit(
-                        self._quantify_gene_wise, lib_name,
-                        read_alignment_path, norm_by_alignment_freq,
-                        norm_by_overlap_freq, annotation_files))
+                    self._quantify_gene_wise, lib_name,
+                    read_alignment_path, norm_by_alignment_freq,
+                    norm_by_overlap_freq, annotation_files))
         # Evaluate thread outcome
         self._check_job_completeness(jobs)
         self._gene_quanti_create_overview(
@@ -614,19 +629,21 @@ class Controller(object):
             return True
         return False
 
-    def _quantify_gene_wise(self, lib_name, read_alignment_path, 
-                    norm_by_alignment_freq,  norm_by_overlap_freq, 
-                    annotation_files):
+    def _quantify_gene_wise(
+            self, lib_name, read_alignment_path,
+            norm_by_alignment_freq,  norm_by_overlap_freq,
+            annotation_files):
         """Perform the gene wise quantification for a given library."""
         gene_quanti_paths = [
             self._paths.gene_quanti_path(lib_name, annotation_file)
             for annotation_file in annotation_files]
         # Check if all output files for this library exist - if so
         # skip their creation
-        if any([self._file_needs_to_be_created(gene_quanti_path, quiet=True)
-                for gene_quanti_path in gene_quanti_paths]) is False:
+        if not any([self._file_needs_to_be_created(
+                gene_quanti_path, quiet=True)
+                for gene_quanti_path in gene_quanti_paths]):
             sys.stderr.write(
-                "The file(s) %s exist(s). Skipping their/its generation.\n" % 
+                "The file(s) %s exist(s). Skipping their/its generation.\n" %
                 ", " .join(gene_quanti_paths))
             return
         gene_wise_quantification = GeneWiseQuantification(
@@ -639,7 +656,7 @@ class Controller(object):
         gene_wise_quantification.calc_overlaps_per_alignment(
             read_alignment_path, self._paths.annotation_paths)
         for annotation_file, annotation_path in zip(
-            annotation_files, self._paths.annotation_paths):
+                annotation_files, self._paths.annotation_paths):
             gene_wise_quantification.quantify(
                 read_alignment_path, annotation_path,
                 self._paths.gene_quanti_path(
@@ -660,18 +677,18 @@ class Controller(object):
                     [read_file, self._paths.gene_quanti_path(
                         read_file, annotation_file)])
         if self._file_needs_to_be_created(
-            self._paths.gene_wise_quanti_combined_path) is True:
+                self._paths.gene_wise_quanti_combined_path):
             gene_wise_overview.create_overview_raw_countings(
                 path_and_name_combos, lib_names,
                 self._paths.gene_wise_quanti_combined_path)
         if self._file_needs_to_be_created(
-            self._paths.gene_wise_quanti_combined_rpkm_path) is True:
+                self._paths.gene_wise_quanti_combined_rpkm_path):
             gene_wise_overview.create_overview_rpkm(
                 path_and_name_combos, lib_names,
                 self._paths.gene_wise_quanti_combined_rpkm_path,
                 self._libs_and_total_num_of_aligned_reads())
         if self._file_needs_to_be_created(
-            self._paths.gene_wise_quanti_combined_tnoar_path) is True:
+                self._paths.gene_wise_quanti_combined_tnoar_path):
             gene_wise_overview.create_overview_norm_by_tnoar(
                 path_and_name_combos, lib_names,
                 self._paths.gene_wise_quanti_combined_tnoar_path,
@@ -688,21 +705,23 @@ class Controller(object):
         """Read the total number of reads per library."""
         with open(self._paths.read_alignments_stats_path) as read_aligner_stats_fh:
             read_aligner_stats = json.loads(read_aligner_stats_fh.read())
-        return dict([(lib, values["stats_total"]["no_of_uniquely_aligned_reads"])
+        return dict([(lib, values[
+            "stats_total"]["no_of_uniquely_aligned_reads"])
                      for lib, values in read_aligner_stats.items()])
 
     def compare_with_deseq(self):
         """Manage the pairwise expression comparison with DESeq."""
         self._test_folder_existance(
             self._paths.required_deseq_folders())
-        arg_libs = [self._paths._clean_file_name(lib) for lib in 
+        arg_libs = [self._paths._clean_file_name(lib) for lib in
                     self._args.libs.split(",")]
         conditions = self._args.conditions.split(",")
         self._check_deseq_args(arg_libs, conditions)
         deseq_runner = DESeqRunner(
             arg_libs, conditions, self._paths.deseq_raw_folder,
             self._paths.deseq_extended_folder, self._paths.deseq_script_path,
-            self._paths.gene_wise_quanti_combined_path, 
+            self._paths.deseq_pca_heatmap_path,
+            self._paths.gene_wise_quanti_combined_path,
             self._paths.deseq_tmp_session_info_script,
             self._paths.deseq_session_info,
             self._args.cooks_cutoff_off)
@@ -722,14 +741,14 @@ class Controller(object):
                     len(conditions)))
         raw_stat_data_reader = RawStatDataReader()
         alignment_stats = [raw_stat_data_reader.read(
-                self._paths.read_alignments_stats_path)]
+            self._paths.read_alignments_stats_path)]
         lib_names = list(alignment_stats[0].keys())
         if len(lib_names) != len(arg_libs):
             self._write_err_msg_and_quit(
                 "The number of read libraries is lower or higher than "
                 "expected. The following read libs are available: %s\nThe "
                 "following read list string is suggested: \"%s\"\n" % (
-                    ", ".join(read_files), ",".join(lib_names)))
+                ", ".join(read_files), ",".join(lib_names)))
         for lib in lib_names:
             if lib not in arg_libs:
                 self._write_err_msg_and_quit(
@@ -758,7 +777,7 @@ class Controller(object):
         """Generate plots based on the gene-wise read countings"""
         from reademptionlib.vizgenequanti import GeneQuantiViz
         gene_quanti_viz = GeneQuantiViz(
-            self._paths.gene_wise_quanti_combined_path, 
+            self._paths.gene_wise_quanti_combined_path,
             self._paths.get_lib_names_single_end())
         gene_quanti_viz.parse_input_table()
         gene_quanti_viz.plot_correlations(
@@ -771,10 +790,11 @@ class Controller(object):
         from reademptionlib.vizdeseq import DESeqViz
         deseq_path_template = (
             self._paths.deseq_raw_folder + "/deseq_comp_%s_vs_%s.csv")
-        deseq_viz = DESeqViz(self._paths.deseq_script_path, deseq_path_template)
+        deseq_viz = DESeqViz(
+            self._paths.deseq_script_path, deseq_path_template,
+            max_pvalue=self._args.max_pvalue)
         deseq_viz.create_scatter_plots(
             self._paths.viz_deseq_scatter_plot_path)
         deseq_viz.create_volcano_plots(
             self._paths.viz_deseq_volcano_plot_path,
             self._paths.viz_deseq_volcano_plot_adj_path)
-

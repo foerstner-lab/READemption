@@ -6,9 +6,9 @@ class ParameterLog(object):
 
 class ParameterLogger(ParameterLog):
 
-    def add_paramter(self, paramter, value):
+    def add_paramter(self, parameter, value):
         log_fh = open(self.log_file, "a")
-        log_fh.write(self.delimiter.join([paramter, value]) + "\n")
+        log_fh.write(self.delimiter.join([parameter, value]) + "\n")
         log_fh.close()
 
 class ParameterLogReader(ParameterLog):
