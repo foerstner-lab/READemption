@@ -8,10 +8,9 @@ import pandas as pd
 
 class DESeqViz(object):
     
-    def __init__(self, deseq_script_path, deseq_path_template, use_antisene=True):
+    def __init__(self, deseq_script_path, deseq_path_template):
         self._deseq_script_path = deseq_script_path
         self._deseq_path_template = deseq_path_template
-        self._use_antisene = use_antisene
         self._basemean_column = 1
         self._log_2_fold_chance_column = 2
         self._p_value_column = 5
