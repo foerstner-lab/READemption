@@ -235,6 +235,12 @@ def main():
         "project_path", default=".", nargs="?",
         help="Path of the project folder. If none is given the current "
         "directory is used.")
+
+    viz_deseq_parser.add_argument(
+        "--max_pvalue", type=float, default="0.05",
+        help="Maximum adjusted p-value for genes considered to be regulated. "
+        "Genes with adjusted p-values below will be marked red. "
+        "(default 0.50)")
     viz_deseq_parser.set_defaults(func=viz_deseq)
 
     args = parser.parse_args()

@@ -6,16 +6,17 @@ import matplotlib.pyplot as plt
 from matplotlib.backends.backend_pdf import PdfPages
 import pandas as pd
 
+
 class DESeqViz(object):
     
-    def __init__(self, deseq_script_path, deseq_path_template):
+    def __init__(self, deseq_script_path, deseq_path_template, max_pvalue):
         self._deseq_script_path = deseq_script_path
         self._deseq_path_template = deseq_path_template
         self._basemean_column = 1
         self._log_2_fold_chance_column = 2
         self._p_value_column = 5
         self._adj_p_value_column = 6
-        self._p_value_significance_limit = 0.05
+        self._p_value_significance_limit = max_pvalue
         self._log_fold_change_limit = 2
         self._log_2_fold_chance_limit = 1
 
