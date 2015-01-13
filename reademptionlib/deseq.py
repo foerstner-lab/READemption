@@ -61,6 +61,10 @@ class DESeqRunner(object):
                 self._deseq_extended_folder,
                 comparison_file.replace(
                     ".csv", "_with_annotation_and_countings.csv")), "w")
+            output_fh.write("# Reference library (divisor): {}\n".format(
+                combo[1]))
+            output_fh.write("# Comparison library (numerator): {}\n".format(
+                combo[0]))
             try:
                 deseq_result_fh = open("%s/%s" % (
                     self._deseq_raw_folder, comparison_file))
