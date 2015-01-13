@@ -776,7 +776,8 @@ class Controller(object):
         from reademptionlib.vizdeseq import DESeqViz
         deseq_path_template = (
             self._paths.deseq_raw_folder + "/deseq_comp_%s_vs_%s.csv")
-        deseq_viz = DESeqViz(self._paths.deseq_script_path, deseq_path_template)
+        deseq_viz = DESeqViz(
+            self._paths.deseq_script_path, deseq_path_template)
         deseq_viz.create_scatter_plots(
             self._paths.viz_deseq_scatter_plot_path)
         deseq_viz.create_volcano_plots(
