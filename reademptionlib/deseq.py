@@ -3,12 +3,13 @@ import sys
 import os
 from subprocess import call
 
+
 class DESeqRunner(object):
 
     def __init__(
             self, libs, conditions, deseq_raw_folder, deseq_extended_folder,
-            deseq_script_path, gene_wise_quanti_combined_path, 
-            deseq_tmp_session_info_script, deseq_session_info, 
+            deseq_script_path, gene_wise_quanti_combined_path,
+            deseq_tmp_session_info_script, deseq_session_info,
             cooks_cutoff_off=False):
         self._libs = libs
         self._conditions = conditions
@@ -26,7 +27,7 @@ class DESeqRunner(object):
             tmp_r_script_fh.write("library('DESeq2')\nsessionInfo()\n")
         with open(self._deseq_session_info, "w") as session_info_fh:
             with open(os.devnull, "w") as devnull:
-                call(["Rscript", self._deseq_tmp_session_info_script,], 
+                call(["Rscript", self._deseq_tmp_session_info_script],
                      stdout=session_info_fh, stderr=devnull)
         os.remove(self._deseq_tmp_session_info_script)
 
@@ -41,8 +42,8 @@ class DESeqRunner(object):
         conditions = [libs_to_conditions[lib] for lib in libs]
         condition_str = ", ".join(["'%s'" % cond for cond in conditions])
         file_content = self._deseq_script_template() % (
-            self._gene_wise_quanti_combined_path, self._first_data_column-1, 
-            len(libs),self._first_data_column, libs_str, condition_str)
+            self._gene_wise_quanti_combined_path, self._first_data_column-1,
+            len(libs), self._first_data_column, libs_str, condition_str)
         file_content += self._comparison_call_strings(conditions)
         deseq_fh = open(self._deseq_script_path, "w")
         deseq_fh.write(file_content)
@@ -56,25 +57,25 @@ class DESeqRunner(object):
             output_fh = open("%s/%s" % (
                 self._deseq_extended_folder,
                 comparison_file.replace(
-                ".csv", "_with_annotation_and_countings.csv")), "w")
+                    ".csv", "_with_annotation_and_countings.csv")), "w")
             try:
                 deseq_result_fh = open("%s/%s" % (
                     self._deseq_raw_folder, comparison_file))
             except:
                 sys.stderr.write("Apparently DESeq did not generate the "
-                                 "file \"%s\". Extension stopped.\n" % 
+                                 "file \"%s\". Extension stopped.\n" %
                                  comparison_file)
                 continue
             for counting_file_row, comparison_file_row in zip(
                 csv.reader(open(
                     self._gene_wise_quanti_combined_path), delimiter="\t"),
-                csv.reader(deseq_result_fh, delimiter="\t")):
+                    csv.reader(deseq_result_fh, delimiter="\t")):
                 if comparison_file_row[0] == "baseMean":
                     # Add another column to the header
                     comparison_file_row = [""] + comparison_file_row
                     # Extend column description
                     counting_file_row[self._first_data_column:] = [
-                        "%s raw countings" % lib_name for lib_name in 
+                        "%s raw countings" % lib_name for lib_name in
                         counting_file_row[self._first_data_column:]]
                 output_fh.write("\t".join(
                     counting_file_row + comparison_file_row[1:]) + "\n")
@@ -96,7 +97,7 @@ class DESeqRunner(object):
         for index, condition_combo in enumerate(condition_combos):
             call_string += ("comp%s <- results(dds, contrast="
                             "c('condition','%s', '%s')%s)\n" % (
-                            index, condition_combo[0], condition_combo[1], 
+                            index, condition_combo[0], condition_combo[1],
                                 cooks_cutoff_str))
             comparison_file = "deseq_comp_%s_vs_%s.csv" % (
                 condition_combo[0], condition_combo[1])
