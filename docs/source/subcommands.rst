@@ -235,6 +235,9 @@ overlaps are counted and separately listed.
     --skip_antisense, -a  Do not count anti-sense read-gene-overlaps. By default
                           sense and anti-sense overlaps are counted and
                           separately reported.
+    --non_strand_specific
+                          Use countings of reads overlapping with a gene on both
+                          strands and sum them up.
     --processes PROCESSES, -p PROCESSES
                           Number of processes that should be used (default 1).
     --features ALLOWED_FEATURES, -t ALLOWED_FEATURES
