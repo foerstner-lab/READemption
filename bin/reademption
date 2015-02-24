@@ -168,6 +168,10 @@ def main():
         help="Do not count anti-sense read-gene-overlaps. By default sense "
         "and anti-sense overlaps are counted and separately reported.")
     gene_wise_quanti_parser.add_argument(
+        "--non_strand_specific", default=False, action="store_true", 
+        help="Use countings of reads overlapping with a gene on both strands "
+        "and sum them up.")
+    gene_wise_quanti_parser.add_argument(
         "--processes", "-p", default=1, type=int,
         help="Number of processes that should be used (default 1).")
     gene_wise_quanti_parser.add_argument(
