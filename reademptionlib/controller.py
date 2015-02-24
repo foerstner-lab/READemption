@@ -665,9 +665,13 @@ class Controller(object):
     def _gene_quanti_create_overview(
             self, annotation_files, annotation_paths, lib_names):
         """Create an overview table of all gene quantification for all libs."""
+        strand_specific = True
+        if self._args.non_strand_specific:
+                    strand_specific = False
         gene_wise_overview = GeneWiseOverview(
             allowed_features_str=self._args.allowed_features,
-            skip_antisense=self._args.skip_antisense)
+            skip_antisense=self._args.skip_antisense,
+            strand_specific=strand_specific)
         path_and_name_combos = {}
         for annotation_file, annotation_path in zip(
                 annotation_files, annotation_paths):
