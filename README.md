@@ -32,7 +32,7 @@ Short version (if you have all the requirements installed):
     $ pip install READemption
 
 [Long version](http://pythonhosted.org/READemption/installation.html)
-including a decryption of the requirements and how do you get them.
+including a description of the requirements and how do you get them.
 
 License
 -------
