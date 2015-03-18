@@ -3,6 +3,7 @@ import os.path
 from reademptionlib.gff3 import Gff3Parser
 import pysam
 
+
 class GeneWiseQuantification(object):
 
     def __init__(self, min_overlap=1, norm_by_alignment_freq=True,
@@ -142,11 +143,14 @@ class GeneWiseQuantification(object):
         return ("|".join(
                 [str(val) for val in [seq_id, feature, start, end, strand]]))
 
+
 class GeneWiseOverview(object):
 
-    def __init__(self, allowed_features_str=None, skip_antisense=False):
+    def __init__(self, allowed_features_str=None, skip_antisense=False, 
+                 strand_specific=True):
         self._allowed_features = _allowed_features(allowed_features_str)
         self._skip_antisense = skip_antisense
+        self._strand_specific = strand_specific
 
     def create_overview_raw_countings(
             self, path_and_name_combos, read_files, overview_path):
@@ -170,13 +174,18 @@ class GeneWiseOverview(object):
                 ["Orientation of counted reads relative to the strand "
                  "location of the annotation"] + _gff_field_descriptions() 
                 + read_files) + "\n")
-        self._add_to_overview(
-            path_and_name_combos, "sense", 9, output_fh, normalization,
-            libs_and_tnoar)
-        if self._skip_antisense is False:
+        if self._strand_specific:
             self._add_to_overview(
-                path_and_name_combos, "anti-sense", 10, output_fh,
-                normalization, libs_and_tnoar)
+                path_and_name_combos, "sense", 9, output_fh, normalization,
+                libs_and_tnoar)
+            if self._skip_antisense is False:
+                self._add_to_overview(
+                    path_and_name_combos, "anti-sense", 10, output_fh,
+                    normalization, libs_and_tnoar)
+        else:
+            self._add_to_overview_strand_unspecific(
+                path_and_name_combos, "sense_and_antisense", 9, 10,
+                output_fh, normalization, libs_and_tnoar)
 
     def _add_to_overview(
             self, path_and_name_combos, direction, column, output_fh,
@@ -210,6 +219,46 @@ class GeneWiseOverview(object):
             table = zip(*table_columns)
             for row in table:
                 output_fh.write("\t".join(row) + "\n")
+
+    def _add_to_overview_strand_unspecific(
+            self, path_and_name_combos, direction, column1, column2, output_fh,
+            normalization=None, libs_and_tnoar=None):
+        gff3_parser = Gff3Parser()
+        for annotation_path in sorted(path_and_name_combos.keys()):
+            table_columns = []
+            entries = []
+            seq_lengths = []
+            for entry in gff3_parser.entries(open(annotation_path)):
+                if _entry_to_use(entry, self._allowed_features) is False:
+                    continue
+                entries.append(direction + "\t" + str(entry))
+                seq_lengths.append(entry.end - entry.start + 1)
+            table_columns.append(entries)
+            for read_file, gene_quanti_path in path_and_name_combos[
+                    annotation_path]:
+                reader = csv.reader(open(gene_quanti_path), delimiter="\t")
+                next(reader) # skip first line
+                if normalization == "RPKM":
+                    table_columns.append([
+                        self._rpkm(str(
+                            float(row[column1])+float(row[column2])),
+                                   length, libs_and_tnoar[read_file])
+                        for row, length in zip(reader, seq_lengths)])
+                elif normalization == "TNOAR":
+                    table_columns.append([
+                        self._norm_by_tnoar(
+                            str(float(row[column1])+float(row[column2])),
+                            libs_and_tnoar[read_file])
+                        for row, length in zip(reader, seq_lengths)])
+                else:
+                    table_columns.append(
+                        [str(float(row[column1])+float(row[column2]))
+                                          for row in reader])
+            # Generate a table by rotating the column list
+            table = zip(*table_columns)
+            for row in table:
+                output_fh.write("\t".join(row) + "\n")
+
 
     def _rpkm(self, counting, length, total_no_of_aligned_reads):
         """

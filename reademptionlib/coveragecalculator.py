@@ -59,8 +59,8 @@ class CoverageCalculator(object):
         return pysam.Samfile(bam_file)
 
     def _add_whole_alignment_coverage(self, entry, increment, start, end):
-        if ((entry.is_reverse is False and entry.is_read2 == False) or
-            (entry.is_reverse is True and entry.is_read2 == True)):
+        if ((entry.is_reverse is False and entry.is_read2 is False) or
+            (entry.is_reverse is True and entry.is_read2 is True)):
             self._coverages["forward"][start:end] = [
                 coverage + increment for coverage in
                 self._coverages["forward"][start:end]]

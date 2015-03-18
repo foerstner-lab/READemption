@@ -3,7 +3,7 @@ License
 
 READemption is open source software and available under the ISC license.
 
-Copyright (c) 2011-2014, Konrad Förstner <konrad.foerstner@uni-wuerzburg.de>
+Copyright (c) 2011-2015, Konrad Förstner <konrad.foerstner@uni-wuerzburg.de>
 
 Permission to use, copy, modify, and/or distribute this software for
 any purpose with or without fee is hereby granted, provided that the
