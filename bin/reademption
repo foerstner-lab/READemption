@@ -9,7 +9,7 @@ __author__ = "Konrad Foerstner <konrad@foerstner.org>"
 __copyright__ = "2011-2015 by Konrad Foerstner <konrad@foerstner.org>"
 __license__ = "ISC license"
 __email__ = "konrad@foerstner.org"
-__version__ = "0.3.6dev"
+__version__ = "0.3.6"
 
 def main():
     parser = argparse.ArgumentParser()
