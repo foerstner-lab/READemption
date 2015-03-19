@@ -75,6 +75,7 @@ class GeneQuantiViz(object):
         plt.xlabel("Expression %s" % lib_1)
         plt.ylabel("Expression %s" % lib_2)
         self._pp.savefig()
+        plt.close(fig)
 
     def _set_axis_max(self):
         self._axis_max = max(
