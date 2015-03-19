@@ -9,7 +9,7 @@ import matplotlib.cm as cm
 
 class GeneQuantiViz(object):
     
-    def __init__(self, gene_wise_quanti_combined_path, lib_names, 
+    def __init__(self, gene_wise_quanti_combined_path, lib_names,
                  use_antisene=True, axis_min=None, axis_max=None):
         self._gene_wise_quanti_combined_path = gene_wise_quanti_combined_path
         self._lib_names = lib_names
@@ -31,7 +31,7 @@ class GeneQuantiViz(object):
                 self._lib_names_and_countings[
                     self._lib_names[index]].append(float(cell))
                 self._lib_names_and_class_quanti[
-                    self._lib_names[index]][row[0]][row[3]] += float(cell) 
+                    self._lib_names[index]][row[0]][row[3]] += float(cell)
         
     def plot_correlations(self, plot_path):
         self._prepare_document(plot_path)
@@ -59,18 +59,18 @@ class GeneQuantiViz(object):
         ax.set_yscale('log')
         ax.set_xscale('log')
         # Draw line
-        plt.plot([self._axis_min, self._axis_max], 
-                 [self._axis_min, self._axis_max], 
+        plt.plot([self._axis_min, self._axis_max],
+                 [self._axis_min, self._axis_max],
                  linestyle="solid", color="green", alpha=0.4)
         # Calculate the Pearson correlation coefficient
         corr_coeff = np.corrcoef(self._lib_names_and_countings[lib_1],
                                  self._lib_names_and_countings[lib_2])[0][1]
         # Set axis ranges
-        plt.axis([self._axis_min, self._axis_max, 
+        plt.axis([self._axis_min, self._axis_max,
                   self._axis_min, self._axis_max])
         plt.title("%s vs. %s\n(r = %s)" % (lib_1, lib_2, corr_coeff))
-        plt.plot(self._lib_names_and_countings[lib_1], 
-                 self._lib_names_and_countings[lib_2], 
+        plt.plot(self._lib_names_and_countings[lib_1],
+                 self._lib_names_and_countings[lib_2],
                  "k.", alpha=0.2)
         plt.xlabel("Expression %s" % lib_1)
         plt.ylabel("Expression %s" % lib_2)
@@ -79,7 +79,7 @@ class GeneQuantiViz(object):
 
     def _set_axis_max(self):
         self._axis_max = max(
-            [max(counting) 
+            [max(counting)
              for counting in self._lib_names_and_countings.values()])
 
     def plot_annotation_class_quantification(self, plot_path):
@@ -104,12 +104,12 @@ class GeneQuantiViz(object):
                     for lib in self._lib_names]
                 color = cm.Accent(
                     1.0/(float(len(all_classes_sorted))*2)*color_index)
-                plt.bar(range(no_of_libs), countings, align="center", 
+                plt.bar(range(no_of_libs), countings, align="center",
                         bottom=bottom, linewidth=0, color=color, width=0.5,
                         label=anno_class+" "+direction)
                 bottom = bottom + countings
                 color_index += 1
-        plt.xticks(np.array(range(no_of_libs)), self._lib_names, rotation=45, 
+        plt.xticks(np.array(range(no_of_libs)), self._lib_names, rotation=45,
                    ha="right")
         plt.tight_layout()
         ax.spines['top'].set_visible(False)

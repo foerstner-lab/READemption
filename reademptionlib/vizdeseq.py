@@ -45,7 +45,7 @@ class DESeqViz(object):
             np.log10(significant_deseq_result.baseMean),
             significant_deseq_result.log2FoldChange, ".r", alpha=0.5)
         plt.title("{} vs. {} - MA plot".format(condition_1, condition_2))
-        y_max = max([abs(log2_fc) 
+        y_max = max([abs(log2_fc)
                      for log2_fc in deseq_result.log2FoldChange])
         plt.ylim(-1.1 * y_max, 1.1 * y_max)
         plt.xlabel("log10 base mean")
@@ -75,7 +75,7 @@ class DESeqViz(object):
         
     def _create_volcano_plots(self, condition_1, condition_2):
         deseq_path = self._deseq_path_template % (condition_1, condition_2)
-        (basemean, log2_fold_changes, p_values, 
+        (basemean, log2_fold_changes, p_values,
          adj_p_values) = self._parse_deseq_file(deseq_path)
         cleaned_p_values = []
         cleaned_log2_fold_changes = []
@@ -84,7 +84,7 @@ class DESeqViz(object):
                 cleaned_p_values.append(p_value)
                 cleaned_log2_fold_changes.append(log2_fold_change)
         self._create_volcano_plot(
-            cleaned_log2_fold_changes, cleaned_p_values, condition_1, 
+            cleaned_log2_fold_changes, cleaned_p_values, condition_1,
             condition_2, self._pp_raw)
         cleaned_adj_p_values = []
         cleaned_log2_fold_changes = []
@@ -93,8 +93,8 @@ class DESeqViz(object):
                 cleaned_adj_p_values.append(p_value)
                 cleaned_log2_fold_changes.append(log2_fold_change)
         self._create_volcano_plot(
-            cleaned_log2_fold_changes, cleaned_adj_p_values, 
-            condition_1, condition_2, self._pp_adj, 
+            cleaned_log2_fold_changes, cleaned_adj_p_values,
+            condition_1, condition_2, self._pp_adj,
             pvalue_string_mod="(adjusted)")
 
     def _create_volcano_plot(
@@ -102,12 +102,12 @@ class DESeqViz(object):
         pvalue_string_mod=""):
         fig = plt.figure()
         max_log_2_fold_change = max(
-            [abs(min(log2_fold_changes)), 
+            [abs(min(log2_fold_changes)),
              abs(max(log2_fold_changes))])
         mod_p_values = -1 * np.log10(p_values)
         max_mod_p_values = max(mod_p_values)
         # Set axis ranges
-        plt.axis([-1*max_log_2_fold_change, max_log_2_fold_change, 
+        plt.axis([-1*max_log_2_fold_change, max_log_2_fold_change,
                    0, max_mod_p_values])
         plt.plot(log2_fold_changes, mod_p_values, "k.", alpha=0.3)
         # Add axis labels
@@ -115,17 +115,17 @@ class DESeqViz(object):
         plt.ylabel("- log$_{10}$ p-value %s" % (pvalue_string_mod))
         plt.title("%s vs. %s" % (condition_1, condition_2))
         signifant_p_value = -1*np.log10(self._p_value_significance_limit)
-        plt.plot([-1*max_log_2_fold_change, max_log_2_fold_change], 
-                 [signifant_p_value, signifant_p_value], 
+        plt.plot([-1*max_log_2_fold_change, max_log_2_fold_change],
+                 [signifant_p_value, signifant_p_value],
                  linestyle="dotted", color="green", alpha=0.5)
         log2_fold_change_limit = 1
-        plt.plot([-1*self._log_2_fold_chance_limit, 
+        plt.plot([-1*self._log_2_fold_chance_limit,
                    -1*self._log_2_fold_chance_limit],
-                 [0, max_mod_p_values], 
+                 [0, max_mod_p_values],
                  linestyle="dotted", color="green", alpha=0.5)
-        plt.plot([self._log_2_fold_chance_limit, 
-                  self._log_2_fold_chance_limit], 
-                 [0, max_mod_p_values], 
+        plt.plot([self._log_2_fold_chance_limit,
+                  self._log_2_fold_chance_limit],
+                 [0, max_mod_p_values],
                  linestyle="dotted", color="green", alpha=0.5)
         pp.savefig()
         plt.close(fig)
