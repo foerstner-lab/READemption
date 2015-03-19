@@ -51,6 +51,7 @@ class DESeqViz(object):
         plt.xlabel("log10 base mean")
         plt.ylabel("log2 fold-change")
         self._pp_scatterplots.savefig()
+        plt.close(fig)
 
     def create_volcano_plots(self, volcano_plot_path, volcano_plot_adj_path):
         self._pp_raw = PdfPages(volcano_plot_path)
@@ -127,6 +128,7 @@ class DESeqViz(object):
                  [0, max_mod_p_values], 
                  linestyle="dotted", color="green", alpha=0.5)
         pp.savefig()
+        plt.close(fig)
 
     def _parse_deseq_file(self, deseq_path):
         basemeans = []
