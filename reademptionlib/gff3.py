@@ -1,4 +1,6 @@
 import csv
+import sys
+
 
 class Gff3Parser(object):
     """
@@ -14,15 +16,25 @@ class Gff3Parser(object):
         """
         """
         for entry_dict in csv.DictReader(
-            input_gff_fh, delimiter="\t", 
-            fieldnames=["seq_id", "source", "feature", "start", 
+            input_gff_fh, delimiter="\t",
+            fieldnames=["seq_id", "source", "feature", "start",
                         "end", "score", "strand", "phase", "attributes"]):
             if entry_dict["seq_id"].startswith("#"):
                 continue
-            yield(self._dict_to_entry(entry_dict))
+            try:
+                yield(self._dict_to_entry(entry_dict))
+            except:
+                sys.stderr.write(
+                    "Error! Please make sure that you use GFF3 formated "
+                    "annotation files. GTF2/GTF is not valid and the usage "
+                    "of that format is not recommended anymore (see "
+                    "http://www.sequenceontology.org/gff3.shtml for more "
+                    "information).\n")
+                sys.exit(0)
     
     def _dict_to_entry(self, entry_dict):
         return Gff3Entry(entry_dict)
+
 
 class Gff3Entry(object):
 
@@ -48,11 +60,11 @@ class Gff3Entry(object):
         if attributes_string.endswith(";"):
             attributes_string = attributes_string[:-1]
         return dict(
-                [key_value_pair.split("=") 
-                 for key_value_pair in attributes_string.split(";")])
+            [key_value_pair.split("=")
+             for key_value_pair in attributes_string.split(";")])
 
     def __str__(self):
         return "\t".join([str(field) for field in [
-                        self.seq_id, self.source, self.feature, self.start,
-                        self.end, self.score, self.strand, self.phase, 
-                        self.attribute_string]])
+            self.seq_id, self.source, self.feature, self.start,
+            self.end, self.score, self.strand, self.phase,
+            self.attribute_string]])

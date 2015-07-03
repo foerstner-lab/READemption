@@ -55,7 +55,7 @@ following publication: *READemption – A tool for the computational
 analysis of deep-sequencing-based transcriptome data*.
 Konrad U. Förstner, Jörg Vogel, Cynthia M. Sharma. 2014,
 Bioinformatics, Aug 13. `Fulltext
-<http://bioinformatics.oxfordjournals.org/content/early/2014/08/13/bioinformatics.btu533.abstract>`_,
+<http://bioinformatics.oxfordjournals.org/content/30/23/3421>`_,
 `Pre-print at bioRxiv
 <http://biorxiv.org/content/early/2014/05/19/003723>`_.
 

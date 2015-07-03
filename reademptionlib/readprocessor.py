@@ -3,12 +3,14 @@ import bz2
 from collections import defaultdict
 from reademptionlib.polyaclipper import PolyAClipper
 from Bio import SeqIO
+from Bio.Seq import Seq
+
 
 class ReadProcessor(object):
-
-    def __init__(self, poly_a_clipping=False,  min_read_length=12, 
+    
+    def __init__(self, poly_a_clipping=False,  min_read_length=12,
                  paired_end=False, fastq=False, min_phred_score=None,
-                 adapter=None):
+                 adapter=None, reverse_complement=False):
         self._poly_a_clipping = poly_a_clipping
         self._min_read_length = min_read_length
         self._paired_end = paired_end
@@ -16,6 +18,7 @@ class ReadProcessor(object):
         self._min_phred_score = min_phred_score
         self._adapter = adapter
         self._poly_a_clipper = PolyAClipper()
+        self._reverse_complement = reverse_complement
 
     def process_single_end(self, input_path, output_path):
         self._init_stat_dict()
@@ -42,11 +45,12 @@ class ReadProcessor(object):
         self._stats["unmodified"]
         self._stats["too_short"]
         self._stats["long_enough"]
-        self._stats["read_length_before_processing_and_freq"] = defaultdict(int)
-        self._stats["read_length_after_processing_and_freq"] = defaultdict(int)        
+        self._stats[
+            "read_length_before_processing_and_freq"] = defaultdict(int)
+        self._stats["read_length_after_processing_and_freq"] = defaultdict(int)
     
     def _input_fh(self, input_path):
-        """Return a file hande 
+        """Return a file hande
 
         Can deal with plain fasta files, gzipped fasta or bzipped2 fasta.
         """
@@ -77,6 +81,9 @@ class ReadProcessor(object):
             self._stats["total_no_of_reads"] += 1
             if self._fastq and not self._min_phred_score is None:
                 seq = self._trim_by_quality(seq, qualities)
+            if self._reverse_complement:
+                seq = Seq(seq)
+                seq = str(seq.reverse_complement())
             if not self._adapter is None:
                 seq = self._clip_adapter(seq)
             if self._poly_a_clipping:
@@ -103,14 +110,14 @@ class ReadProcessor(object):
     def _parse_sequences(self, input_fh):
         if self._fastq:
             for seq_record in SeqIO.parse(input_fh, "fastq"):
-                yield(seq_record.description, str(seq_record.seq), 
+                yield(seq_record.description, str(seq_record.seq),
                       seq_record.letter_annotations["phred_quality"])
         else:
             for seq_record in SeqIO.parse(input_fh, "fasta"):
                 yield(seq_record.description, str(seq_record.seq), None)
         
     def _process_paired_end(
-        self, input_p1_fh, input_p2_fh, output_p1_fh, output_p2_fh):
+            self, input_p1_fh, input_p2_fh, output_p1_fh, output_p2_fh):
         for fasta_entry_p1, fasta_entry_p2 in zip(
                 self._parse_sequences(input_p1_fh),
                 self._parse_sequences(input_p2_fh,)):
@@ -124,13 +131,18 @@ class ReadProcessor(object):
             raw_seq_p2_len = len(seq_p2)
             self._stats["total_no_of_reads"] += 1
             self._stats["unmodified"] += 1
-            if self._fastq and not self._min_phred_score is None:
+            if self._fastq and self._min_phred_score is not None:
                 seq_p1 = self._trim_by_quality(seq_p1, qualities_p1)
                 seq_p2 = self._trim_by_quality(seq_p2, qualities_p2)
-            if not self._adapter is None:
+            if self._reverse_complement:
+                seq_p1 = Seq(seq_p1)
+                seq_p1 = str(seq_p1.reverse_complement())
+                seq_p2 = Seq(seq_p2)
+                seq_p2 = str(seq_p2.reverse_complement())
+            if self._adapter is not None:
                 seq_p1 = self._clip_adapter(seq_p1)
                 seq_p2 = self._clip_adapter(seq_p2)
-            if (raw_seq_p1_len < self._min_read_length or 
+            if (raw_seq_p1_len < self._min_read_length or
                 raw_seq_p2_len < self._min_read_length):
                 self._stats["too_short"] += 1
                 continue

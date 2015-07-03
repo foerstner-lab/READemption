@@ -259,7 +259,8 @@ class Controller(object):
                     min_read_length=self._args.min_read_length,
                     fastq=self._args.fastq,
                     min_phred_score=self._args.min_phred_score,
-                    adapter=self._args.adapter)
+                    adapter=self._args.adapter,
+                    reverse_complement=self._args.reverse_complement)
                 read_files_and_jobs[lib_name] = executor.submit(
                     read_processor.process_single_end, read_path,
                     processed_read_path)

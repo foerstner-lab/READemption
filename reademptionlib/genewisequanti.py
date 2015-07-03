@@ -24,7 +24,7 @@ class GeneWiseQuantification(object):
         self._unique_only = unique_only
 
     def calc_overlaps_per_alignment(self, read_alignment_path,
-                                  annotation_paths):
+                                    annotation_paths):
         """Calculate for each alignment the number of genes it
         overlaps. This has to be done globally i.e. for all annotation
         files combined in one dictionary.
