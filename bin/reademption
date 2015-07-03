@@ -91,6 +91,9 @@ def main():
         "Attention! You have to take care that there are no partially "
         "generated files left!")
     read_aligning_parser.add_argument(
+        "--reverse_complement", "-R", default=False, action="store_true",
+        help="Map reverse complements of the input reads.")
+    read_aligning_parser.add_argument(
         "--progress", "-g", default=False, action="store_true",
         help="Show progress of the segemehl mapping.")
     read_aligning_parser.add_argument(
