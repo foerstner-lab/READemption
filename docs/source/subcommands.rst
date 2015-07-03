@@ -113,7 +113,9 @@ preprocessing.
                           previous run) and do not overwrite them if they exits.
                           Attention! You have to take care that there are no
                           partially generated files left!
-    --progress, -g        Show progress of the segemehl mapping.
+    --reverse_complement, -R
+                          Map reverse complement of the input reads.
+    --progress, -g          Show progress of the segemehl mapping.
     --crossalign_cleaning CROSSALIGN_CLEANING_STRING, -x CROSSALIGN_CLEANING_STRING
                           Remove reads that are cross-mapped to replicons of
                           different species. To associated species and replicons
