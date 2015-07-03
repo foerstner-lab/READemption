@@ -127,7 +127,8 @@ class DESeqRunner(object):
             "rawCountTable))])\n"
             "libs <- c(%s)\n"
             "conds <- c(%s)\n"
-            "samples <- data.frame(row.names=libs, condition=conds)\n"
+            "samples <- data.frame(row.names=libs, condition=conds, "
+            "lib=libs)\n"
             "dds <- DESeqDataSetFromMatrix(countData=countTable, "
             "colData=samples, design=~condition)\n"
             "dds <- DESeq(dds)\n\n"
@@ -141,7 +142,7 @@ class DESeqRunner(object):
             "distsRL <- dist(t(assay(rld)))\n"
             "mat <- as.matrix(distsRL)\n"
             "rownames(mat) <- with(colData(dds), "
-            "paste(condition, sep=' : '))\n"
+            "paste(lib, sep=' : '))\n"
             "hmcol <- colorRampPalette(brewer.pal(9, 'GnBu'))(100)\n"
             "heatmap.2(mat, trace='none', col = rev(hmcol), "
             "margin=c(13, 13))\n")
