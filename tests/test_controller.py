@@ -23,6 +23,7 @@ class ArgMock(object):
     fastq = False
     min_phred_score = None
     adapter = None
+    reverse_complement = False
 
 class TestController(unittest.TestCase):
 
