@@ -105,7 +105,7 @@ class DESeqRunner(object):
         for index, condition_combo in enumerate(condition_combos):
             call_string += ("comp%s <- results(dds, contrast="
                             "c('condition','%s', '%s')%s)\n" % (
-                            index, condition_combo[0], condition_combo[1],
+                                index, condition_combo[0], condition_combo[1],
                                 cooks_cutoff_str))
             comparison_file = "deseq_comp_%s_vs_%s.csv" % (
                 condition_combo[0], condition_combo[1])

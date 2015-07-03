@@ -5,6 +5,7 @@ import unittest
 sys.path.append(".")
 from reademptionlib.segemehl import Segemehl
 
+
 class TestSegemehl(unittest.TestCase):
     """Provide general functionalities for tha actuall testing classes."""
     
@@ -41,7 +42,7 @@ class TestSegemehlIndexBuilding(TestSegemehl):
         self.assertEqual(self._sha1_of_file(self.index_file_path), 
                          "78668505720e53735f807bb5485b0b38cc3cbc22")
         self._remove_files(self.fasta_file_path, self.index_file_path)
-
+        
     def test_build_index_lower_letters(self):
         self._create_tmp_fasta_file(
             self.fasta_file_path, self.example_data.genome_fasta_upper)

@@ -1,5 +1,6 @@
 import json
 
+
 class RawStatDataWriter(object):
 
     def __init__(self, pretty=False):
@@ -16,10 +17,11 @@ class RawStatDataWriter(object):
             indent = None
         output_fh.write(json.dumps(input_object, indent=indent))
 
-class RawStatDataReader(object):
 
+class RawStatDataReader(object):
+            
     def read(self, input_file):
-        with  open(input_file) as input_fh:
+        with open(input_file) as input_fh:
             data = self._read(input_fh)
             input_fh.close()
         return data
