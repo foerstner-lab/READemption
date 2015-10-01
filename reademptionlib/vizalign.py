@@ -39,8 +39,10 @@ class AlignViz(object):
         pp = PdfPages(output_file)
         for lib in self._lib_names:
             lengths_and_freqs = self._read_processing_stats[lib][dict_key]
-            self._generate_histogram(lengths_and_freqs, title_template % lib)
+            fig = self._generate_histogram(lengths_and_freqs,
+                                           title_template % lib)
             pp.savefig()
+            plt.close(fig)
         pp.close()
     
     def _generate_histogram(self, lengths_and_freqs, title):

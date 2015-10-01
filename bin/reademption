@@ -219,6 +219,9 @@ def main():
         "viz_align", 
         help="Generate read processing and alignment visualisations.")
     viz_align_parser.add_argument(
+        "--paired_end", "-P", default=False, action="store_true",
+        help="Use this if reads are originating from a paired-end sequencing.")
+    viz_align_parser.add_argument(
         "project_path", default=".", nargs="?",
         help="Path of the project folder. If none is given the current "
         "directory is used.")
@@ -228,6 +231,9 @@ def main():
     viz_gene_quanti_parser = subparsers.add_parser(
         "viz_gene_quanti", 
         help="Generate gene wise quantification visualisations.")
+    viz_gene_quanti_parser.add_argument(
+        "--paired_end", "-P", default=False, action="store_true",
+        help="Use this if reads are originating from a paired-end sequencing.")
     viz_gene_quanti_parser.add_argument(
         "project_path", default=".", nargs="?",
         help="Path of the project folder. If none is given the current "

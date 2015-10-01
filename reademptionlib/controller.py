@@ -264,7 +264,7 @@ class Controller(object):
                 read_files_and_jobs[lib_name] = executor.submit(
                     read_processor.process_single_end, read_path,
                     processed_read_path)
-        self._evaluet_job_and_generate_stat_file(lib_name, read_files_and_jobs)
+        self._evaluet_job_and_generate_stat_file(read_files_and_jobs)
 
     def _prepare_reads_paired_end(self):
         read_files_and_jobs = {}
@@ -286,10 +286,9 @@ class Controller(object):
                 read_files_and_jobs[lib_name] = executor.submit(
                     read_processor.process_paired_end, read_path_pair,
                     processed_read_path_pair)
-        self._evaluet_job_and_generate_stat_file(lib_name, read_files_and_jobs)
+        self._evaluet_job_and_generate_stat_file(read_files_and_jobs)
 
-    def _evaluet_job_and_generate_stat_file(
-            self, lib_name, read_files_and_jobs):
+    def _evaluet_job_and_generate_stat_file(self, read_files_and_jobs):
         raw_stat_data_writer = RawStatDataWriter(pretty=True)
         # Evaluate thread outcome
         self._check_job_completeness(read_files_and_jobs.values())
@@ -701,18 +700,20 @@ class Controller(object):
 
     def _libs_and_total_num_of_aligned_reads(self):
         """Read the total number of reads per library."""
-        with open(self._paths.read_alignments_stats_path) as read_aligner_stats_fh:
+        with open(self._paths
+                  .read_alignments_stats_path) as read_aligner_stats_fh:
             read_aligner_stats = json.loads(read_aligner_stats_fh.read())
         return dict([(lib, values["stats_total"]["no_of_aligned_reads"])
                      for lib, values in read_aligner_stats.items()])
 
     def _libs_and_total_num_of_uniquely_aligned_reads(self):
         """Read the total number of reads per library."""
-        with open(self._paths.read_alignments_stats_path) as read_aligner_stats_fh:
+        with open(self._paths
+                  .read_alignments_stats_path) as read_aligner_stats_fh:
             read_aligner_stats = json.loads(read_aligner_stats_fh.read())
         return dict([(lib, values[
             "stats_total"]["no_of_uniquely_aligned_reads"])
-                     for lib, values in read_aligner_stats.items()])
+            for lib, values in read_aligner_stats.items()])
 
     def compare_with_deseq(self):
         """Manage the pairwise expression comparison with DESeq."""
@@ -729,7 +730,7 @@ class Controller(object):
             self._paths.gene_wise_quanti_combined_path,
             self._paths.deseq_tmp_session_info_script,
             self._paths.deseq_session_info,
-            self._args.cooks_cutoff_off)
+            self._args.scooks_cutoff_off)
         deseq_runner.create_deseq_script_file()
         deseq_runner.write_session_info_file()
         deseq_runner.run_deseq()
@@ -753,7 +754,7 @@ class Controller(object):
                 "The number of read libraries is lower or higher than "
                 "expected. The following read libs are available: %s\nThe "
                 "following read list string is suggested: \"%s\"\n" % (
-                ", ".join(read_files), ",".join(lib_names)))
+                    ", ".join(lib_names), ",".join(lib_names)))
         for lib in lib_names:
             if lib not in arg_libs:
                 self._write_err_msg_and_quit(
@@ -769,7 +770,8 @@ class Controller(object):
         """Generate plots based on the read processing and mapping"""
         from reademptionlib.vizalign import AlignViz
         align_viz = AlignViz(
-            self._paths.get_lib_names_single_end(),
+            self._paths.get_lib_names_single_end() if not self._args.paired_end
+            else self._paths.get_lib_names_paired_end(),
             self._paths.read_processing_stats_path,
             self._paths.read_alignments_stats_path)
         align_viz.read_stat_files()
@@ -783,7 +785,8 @@ class Controller(object):
         from reademptionlib.vizgenequanti import GeneQuantiViz
         gene_quanti_viz = GeneQuantiViz(
             self._paths.gene_wise_quanti_combined_path,
-            self._paths.get_lib_names_single_end())
+            self._paths.get_lib_names_single_end() if not self._args.paired_end
+            else self._paths.get_lib_names_paired_end())
         gene_quanti_viz.parse_input_table()
         gene_quanti_viz.plot_correlations(
             self._paths.viz_gene_quanti_scatter_plot_path)
