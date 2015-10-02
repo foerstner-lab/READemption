@@ -1,9 +1,9 @@
-import csv
 import sys
 from collections import defaultdict
 from functools import reduce
 from reademptionlib.fasta import FastaParser
 import pysam
+
 
 class ReadAlignerStats(object):
 
@@ -12,7 +12,8 @@ class ReadAlignerStats(object):
 
     def count(self, read_alignment_result_bam_path, unaligned_reads_path):
         self._stats = {}
-        self._count_aligned_reads_and_alignments(read_alignment_result_bam_path)
+        self._count_aligned_reads_and_alignments(
+            read_alignment_result_bam_path)
         self._count_unaligned_reads(unaligned_reads_path)
         return self._stats
 
@@ -46,7 +47,7 @@ class ReadAlignerStats(object):
         for ref_id, stats in stats_per_ref.items():
             stats_per_ref[ref_id][
                 "no_of_hits_per_read_and_freqs"] = self._calc_down_to_read(
-                    stats_per_ref[ref_id]["no_of_hits_per_read_and_freqs"])
+                stats_per_ref[ref_id]["no_of_hits_per_read_and_freqs"])
         self._stats["stats_total"] = self._sum_countings(stats_per_ref)
 
     def _sum_countings(self, stats_per_ref):

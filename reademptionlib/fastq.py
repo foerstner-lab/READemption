@@ -1,5 +1,5 @@
 class FastqParser(object):
-    """A class for parsing and handling fastQ files. 
+    """A class for parsing and handling fastQ files.
 
     Currently only taking care of the sequences not the quality
     strings. Only four line entries can be handled
@@ -14,13 +14,13 @@ class FastqParser(object):
         entry_line_counter = 0
         for line in fastq_fh:
             # For usual headers
-            if line[0] == '@' and virgin == False and entry_line_counter == 4:
+            if line[0] == '@' and virgin is False and entry_line_counter == 4:
                 entry_line_counter = 1
                 yield(current_header, current_sequence)
                 current_header = line[1:-1]
                 current_sequence = ''
             # For the very first header of the file
-            elif line[0] == '@' and virgin == True:
+            elif line[0] == '@' and virgin is True:
                 virgin = False
                 current_header = line[1:-1]
                 entry_line_counter = 1

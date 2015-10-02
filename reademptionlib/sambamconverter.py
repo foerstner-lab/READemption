@@ -1,6 +1,7 @@
 import os
 import pysam
 
+
 class SamToBamConverter(object):
 
     def __init__(self):

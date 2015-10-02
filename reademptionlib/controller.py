@@ -120,10 +120,10 @@ class Controller(object):
                 max_workers=self._args.processes) as executor:
             for (bam_path, bam_with_crossmappings_path,
                  bam_cleaned_tmp_path, crossmapped_reads_path) in zip(
-                     self._paths.read_alignment_bam_paths,
-                     self._paths.read_alignment_bam_with_crossmappings_paths,
-                     self._paths.read_alignment_bam_cross_cleaned_tmp_paths,
-                     self._paths.crossmapped_reads_paths):
+                    self._paths.read_alignment_bam_paths,
+                    self._paths.read_alignment_bam_with_crossmappings_paths,
+                    self._paths.read_alignment_bam_cross_cleaned_tmp_paths,
+                    self._paths.crossmapped_reads_paths):
                 jobs.append(executor.submit(
                     self._remove_crossaligned_reads_for_lib, bam_path,
                     bam_with_crossmappings_path, bam_cleaned_tmp_path,
@@ -405,7 +405,7 @@ class Controller(object):
                 max_workers=self._args.processes) as executor:
             for (lib_name, read_alignment_bam_path,
                  unaligned_reads_path) in zip(
-                     lib_names, result_bam_paths, unaligned_reads_paths):
+                    lib_names, result_bam_paths, unaligned_reads_paths):
                 read_aligner_stats = ReadAlignerStats()
                 read_files_and_jobs[lib_name] = executor.submit(
                     read_aligner_stats.count, read_alignment_bam_path,
@@ -540,7 +540,7 @@ class Controller(object):
             non_strand_specific=self._args.non_strand_specific)
         (coverage_writers_raw, coverage_writers_tnoar_min_norm,
          coverage_writers_tnoar_mil_norm) = self._wiggle_writers(
-             lib_name, strands, no_of_aligned_reads, min_no_of_aligned_reads)
+            lib_name, strands, no_of_aligned_reads, min_no_of_aligned_reads)
         for ref_seq, coverages in coverage_calculator.ref_seq_and_coverages(
                 bam_path):
             for strand in strands:

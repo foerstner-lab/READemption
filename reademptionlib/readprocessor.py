@@ -143,7 +143,7 @@ class ReadProcessor(object):
                 seq_p1 = self._clip_adapter(seq_p1)
                 seq_p2 = self._clip_adapter(seq_p2)
             if (raw_seq_p1_len < self._min_read_length or
-                raw_seq_p2_len < self._min_read_length):
+                    raw_seq_p2_len < self._min_read_length):
                 self._stats["too_short"] += 1
                 continue
             self._stats["long_enough"] += 1
