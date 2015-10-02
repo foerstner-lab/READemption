@@ -61,3 +61,4 @@ class AlignViz(object):
         plt.bar(lengths, freqs, align="center", color="black",
                 edgecolor="none")
         plt.xlim([0, max(lengths)+1])
+        return fig
