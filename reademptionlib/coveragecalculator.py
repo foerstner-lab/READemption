@@ -4,10 +4,10 @@ import pysam
 class CoverageCalculator(object):
 
     def __init__(self, read_count_splitting=True, uniqueley_aligned_only=False,
-                 first_base_only=False, non_strand_specific=False):
+                 coverage_style="global", non_strand_specific=False):
         self._read_count_splitting = read_count_splitting
         self._uniqueley_aligned_only = uniqueley_aligned_only
-        self._first_base_only = first_base_only
+        self._coverage_style = coverage_style
         self._coverage_add_function = self._select_coverage_add_function()
         self._coverages = {}
         self._non_strand_specific = non_strand_specific
@@ -50,10 +50,12 @@ class CoverageCalculator(object):
             self._coverage_add_function(entry, increment, start, end)
 
     def _select_coverage_add_function(self):
-        if self._first_base_only is False:
-            return self._add_whole_alignment_coverage
-        else:
+        if self._coverage_style == "first_base_only":
             return self._add_first_base_coverage
+        elif self._coverage_style == "last_base_only":
+            return self._add_last_base_coverage
+        else:
+            return self._add_whole_alignment_coverage
 
     def _open_bam_file(self, bam_file):
         return pysam.Samfile(bam_file)
@@ -77,3 +79,12 @@ class CoverageCalculator(object):
         else:
             self._coverages["reverse"][end-1] = self._coverages[
                 "reverse"][end-1] - increment
+
+    def _add_last_base_coverage(self, entry, increment, start, end):
+        if ((entry.is_reverse is False and entry.is_read2 is False) or
+                (entry.is_reverse is True and entry.is_read2 is True)):
+            self._coverages["forward"][end-1] = self._coverages[
+                "forward"][end-1] + increment
+        else:
+            self._coverages["reverse"][start] = self._coverages[
+                "reverse"][start] - increment
