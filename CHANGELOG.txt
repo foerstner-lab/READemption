@@ -1,4 +1,4 @@
-v0.3.6 (2015-07-03)
+v0.3.7 (2015-07-03)
 - Add --reverse_complement flag to align subcommand
 - Use lib name instead of condition for DESeq2 heatmap
 - Add error explanation when GTF/GFF2 annotation files are used
