@@ -120,10 +120,10 @@ class Controller(object):
                 max_workers=self._args.processes) as executor:
             for (bam_path, bam_with_crossmappings_path,
                  bam_cleaned_tmp_path, crossmapped_reads_path) in zip(
-                     self._paths.read_alignment_bam_paths,
-                     self._paths.read_alignment_bam_with_crossmappings_paths,
-                     self._paths.read_alignment_bam_cross_cleaned_tmp_paths,
-                     self._paths.crossmapped_reads_paths):
+                    self._paths.read_alignment_bam_paths,
+                    self._paths.read_alignment_bam_with_crossmappings_paths,
+                    self._paths.read_alignment_bam_cross_cleaned_tmp_paths,
+                    self._paths.crossmapped_reads_paths):
                 jobs.append(executor.submit(
                     self._remove_crossaligned_reads_for_lib, bam_path,
                     bam_with_crossmappings_path, bam_cleaned_tmp_path,
@@ -264,7 +264,7 @@ class Controller(object):
                 read_files_and_jobs[lib_name] = executor.submit(
                     read_processor.process_single_end, read_path,
                     processed_read_path)
-        self._evaluet_job_and_generate_stat_file(lib_name, read_files_and_jobs)
+        self._evaluet_job_and_generate_stat_file(read_files_and_jobs)
 
     def _prepare_reads_paired_end(self):
         read_files_and_jobs = {}
@@ -286,10 +286,9 @@ class Controller(object):
                 read_files_and_jobs[lib_name] = executor.submit(
                     read_processor.process_paired_end, read_path_pair,
                     processed_read_path_pair)
-        self._evaluet_job_and_generate_stat_file(lib_name, read_files_and_jobs)
+        self._evaluet_job_and_generate_stat_file(read_files_and_jobs)
 
-    def _evaluet_job_and_generate_stat_file(
-            self, lib_name, read_files_and_jobs):
+    def _evaluet_job_and_generate_stat_file(self, read_files_and_jobs):
         raw_stat_data_writer = RawStatDataWriter(pretty=True)
         # Evaluate thread outcome
         self._check_job_completeness(read_files_and_jobs.values())
@@ -406,7 +405,7 @@ class Controller(object):
                 max_workers=self._args.processes) as executor:
             for (lib_name, read_alignment_bam_path,
                  unaligned_reads_path) in zip(
-                     lib_names, result_bam_paths, unaligned_reads_paths):
+                    lib_names, result_bam_paths, unaligned_reads_paths):
                 read_aligner_stats = ReadAlignerStats()
                 read_files_and_jobs[lib_name] = executor.submit(
                     read_aligner_stats.count, read_alignment_bam_path,
@@ -537,11 +536,11 @@ class Controller(object):
         coverage_calculator = CoverageCalculator(
             read_count_splitting=read_count_splitting,
             uniqueley_aligned_only=self._args.unique_only,
-            first_base_only=self._args.first_base_only,
+            coverage_style=self._args.coverage_style,
             non_strand_specific=self._args.non_strand_specific)
         (coverage_writers_raw, coverage_writers_tnoar_min_norm,
          coverage_writers_tnoar_mil_norm) = self._wiggle_writers(
-             lib_name, strands, no_of_aligned_reads, min_no_of_aligned_reads)
+            lib_name, strands, no_of_aligned_reads, min_no_of_aligned_reads)
         for ref_seq, coverages in coverage_calculator.ref_seq_and_coverages(
                 bam_path):
             for strand in strands:
@@ -649,6 +648,7 @@ class Controller(object):
             return
         gene_wise_quantification = GeneWiseQuantification(
             min_overlap=self._args.min_overlap,
+            read_region=self._args.read_region,
             norm_by_alignment_freq=norm_by_alignment_freq,
             norm_by_overlap_freq=norm_by_overlap_freq,
             allowed_features_str=self._args.allowed_features,
@@ -701,18 +701,20 @@ class Controller(object):
 
     def _libs_and_total_num_of_aligned_reads(self):
         """Read the total number of reads per library."""
-        with open(self._paths.read_alignments_stats_path) as read_aligner_stats_fh:
+        with open(self._paths
+                  .read_alignments_stats_path) as read_aligner_stats_fh:
             read_aligner_stats = json.loads(read_aligner_stats_fh.read())
         return dict([(lib, values["stats_total"]["no_of_aligned_reads"])
                      for lib, values in read_aligner_stats.items()])
 
     def _libs_and_total_num_of_uniquely_aligned_reads(self):
         """Read the total number of reads per library."""
-        with open(self._paths.read_alignments_stats_path) as read_aligner_stats_fh:
+        with open(self._paths
+                  .read_alignments_stats_path) as read_aligner_stats_fh:
             read_aligner_stats = json.loads(read_aligner_stats_fh.read())
         return dict([(lib, values[
             "stats_total"]["no_of_uniquely_aligned_reads"])
-                     for lib, values in read_aligner_stats.items()])
+            for lib, values in read_aligner_stats.items()])
 
     def compare_with_deseq(self):
         """Manage the pairwise expression comparison with DESeq."""
@@ -753,7 +755,7 @@ class Controller(object):
                 "The number of read libraries is lower or higher than "
                 "expected. The following read libs are available: %s\nThe "
                 "following read list string is suggested: \"%s\"\n" % (
-                ", ".join(read_files), ",".join(lib_names)))
+                    ", ".join(lib_names), ",".join(lib_names)))
         for lib in lib_names:
             if lib not in arg_libs:
                 self._write_err_msg_and_quit(
@@ -769,7 +771,8 @@ class Controller(object):
         """Generate plots based on the read processing and mapping"""
         from reademptionlib.vizalign import AlignViz
         align_viz = AlignViz(
-            self._paths.get_lib_names_single_end(),
+            self._paths.get_lib_names_single_end() if not self._args.paired_end
+            else self._paths.get_lib_names_paired_end(),
             self._paths.read_processing_stats_path,
             self._paths.read_alignments_stats_path)
         align_viz.read_stat_files()
@@ -783,7 +786,8 @@ class Controller(object):
         from reademptionlib.vizgenequanti import GeneQuantiViz
         gene_quanti_viz = GeneQuantiViz(
             self._paths.gene_wise_quanti_combined_path,
-            self._paths.get_lib_names_single_end())
+            self._paths.get_lib_names_single_end() if not self._args.paired_end
+            else self._paths.get_lib_names_paired_end())
         gene_quanti_viz.parse_input_table()
         gene_quanti_viz.plot_correlations(
             self._paths.viz_gene_quanti_scatter_plot_path)

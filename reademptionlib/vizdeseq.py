@@ -99,7 +99,7 @@ class DESeqViz(object):
 
     def _create_volcano_plot(
         self, log2_fold_changes, p_values, condition_1, condition_2, pp,
-        pvalue_string_mod=""):
+            pvalue_string_mod=""):
         fig = plt.figure()
         max_log_2_fold_change = max(
             [abs(min(log2_fold_changes)),
@@ -108,7 +108,7 @@ class DESeqViz(object):
         max_mod_p_values = max(mod_p_values)
         # Set axis ranges
         plt.axis([-1*max_log_2_fold_change, max_log_2_fold_change,
-                   0, max_mod_p_values])
+                  0, max_mod_p_values])
         plt.plot(log2_fold_changes, mod_p_values, "k.", alpha=0.3)
         # Add axis labels
         plt.xlabel("log$_2$ fold change")
@@ -118,9 +118,9 @@ class DESeqViz(object):
         plt.plot([-1*max_log_2_fold_change, max_log_2_fold_change],
                  [signifant_p_value, signifant_p_value],
                  linestyle="dotted", color="green", alpha=0.5)
-        log2_fold_change_limit = 1
+        # log2_fold_change_limit = 1 (never used)
         plt.plot([-1*self._log_2_fold_chance_limit,
-                   -1*self._log_2_fold_chance_limit],
+                  -1*self._log_2_fold_chance_limit],
                  [0, max_mod_p_values],
                  linestyle="dotted", color="green", alpha=0.5)
         plt.plot([self._log_2_fold_chance_limit,

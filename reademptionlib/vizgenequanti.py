@@ -7,6 +7,7 @@ import matplotlib.pyplot as plt
 from matplotlib.backends.backend_pdf import PdfPages
 import matplotlib.cm as cm
 
+
 class GeneQuantiViz(object):
     
     def __init__(self, gene_wise_quanti_combined_path, lib_names,
@@ -19,12 +20,13 @@ class GeneQuantiViz(object):
 
     def parse_input_table(self):
         self._lib_names_and_countings = defaultdict(list)
-        # Dict of dict of dict: lib name -> relative direction (sense/anti-sense) 
+        # Dict of dict of dict:
+        # lib name -> relative direction (sense/anti-sense)
         # -> annotation type (CDS, rRNA ..)
         self._lib_names_and_class_quanti = defaultdict(
             lambda: defaultdict(lambda: defaultdict(float)))
         for row in csv.reader(
-            open(self._gene_wise_quanti_combined_path), delimiter="\t"):
+                open(self._gene_wise_quanti_combined_path), delimiter="\t"):
             if row[0].startswith("Orientation"):
                 continue
             for index, cell in enumerate(row[10:]):
@@ -93,15 +95,15 @@ class GeneQuantiViz(object):
         bottom = np.array([0] * no_of_libs)
         fig = plt.figure()
         ax = plt.subplot(111)
-        font = {'family' : 'sans-serif', 'weight' : 'normal', 'size' : 6}
+        font = {'family': 'sans-serif', 'weight': 'normal', 'size': 6}
         matplotlib.rc('font', **font)
         plt.title("Number of reads per RNA classes")
         color_index = 0
         for direction in ["sense", "anti-sense"]:
             for anno_class in all_classes_sorted:
                 countings = [
-                    self._lib_names_and_class_quanti[lib][direction][anno_class]
-                    for lib in self._lib_names]
+                    self._lib_names_and_class_quanti[lib][direction][
+                        anno_class] for lib in self._lib_names]
                 color = cm.Accent(
                     1.0/(float(len(all_classes_sorted))*2)*color_index)
                 plt.bar(range(no_of_libs), countings, align="center",
