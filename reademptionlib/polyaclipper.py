@@ -11,7 +11,7 @@ class PolyAClipper(object):
         length = 11
         if "AAAA" in sequence:
             for subseq, start_pos in self._aaaa_starting_substrings(
-                sequence, length):
+                    sequence, length):
                 # Tolerate one mismatch
                 if subseq.count("A") < length - 1:
                     continue

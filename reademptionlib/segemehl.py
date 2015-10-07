@@ -1,6 +1,7 @@
 from subprocess import call
 import os
 
+
 class Segemehl(object):
 
     """A simple segemehl wrapper."""
@@ -21,24 +22,24 @@ class Segemehl(object):
 
     def align_reads(
         self, read_file_or_pair, index_file, fasta_files, output_file,
-        hit_strategy=1, accuracy=95, evalue=5.0, threads=1, split=False, 
-        segemehl_format=False, order=False, nonmatch_file=None,
-        other_parameters=None, paired_end=False):
+            hit_strategy=1, accuracy=95, evalue=5.0, threads=1, split=False,
+            segemehl_format=False, order=False, nonmatch_file=None,
+            other_parameters=None, paired_end=False):
         if paired_end is False:
-            assert type(read_file_or_pair) == str 
+            assert type(read_file_or_pair) == str
             segemehl_call = [
-                self._segemehl_bin, 
+                self._segemehl_bin,
                 "--query", read_file_or_pair]
         else:
-            assert type(read_file_or_pair) == list 
+            assert type(read_file_or_pair) == list
             segemehl_call = [
-                self._segemehl_bin, 
+                self._segemehl_bin,
                 "--query", read_file_or_pair[0],
                 "--mate", read_file_or_pair[1]]
         segemehl_call += [
             "--index", index_file,
             "--database"] + fasta_files + [
-            "--outfile", output_file, 
+            "--outfile", output_file,
             "--hitstrategy", str(hit_strategy),
             "--accuracy", str(accuracy),
             "--evalue", str(evalue),
@@ -61,4 +62,3 @@ class Segemehl(object):
                 call(segemehl_call, stderr=devnull)
         else:
             call(segemehl_call)
-            
