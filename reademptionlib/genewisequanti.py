@@ -5,9 +5,10 @@ import pysam
 
 class GeneWiseQuantification(object):
 
-    def __init__(self, min_overlap=1, norm_by_alignment_freq=True,
-                 norm_by_overlap_freq=True, allowed_features_str=None,
-                 skip_antisense=False, unique_only=False):
+    def __init__(self, min_overlap=1, read_region="global",
+                 norm_by_alignment_freq=True, norm_by_overlap_freq=True,
+                 allowed_features_str=None, skip_antisense=False,
+                 unique_only=False):
         """
         - normalize_by_alignment: consider that some reads are aligned at
           more than one location and only count fractions
@@ -16,6 +17,7 @@ class GeneWiseQuantification(object):
 
         """
         self._min_overlap = min_overlap
+        self._read_region = read_region
         self._norm_by_alignment_freq = norm_by_alignment_freq
         self._norm_by_overlap_freq = norm_by_overlap_freq
         self._allowed_features = _allowed_features(allowed_features_str)
@@ -126,9 +128,27 @@ class GeneWiseQuantification(object):
         # this correctly (checked in IGB, IGV and the unit testings).
         for alignment in sam.fetch(
                 reference=entry.seq_id, start=entry.start-1, end=entry.end):
-            if alignment.get_overlap(entry.start-1,
-                                     entry.end) < self._min_overlap:
-                continue
+            # 1-based alignment coordinates
+            start = alignment.pos+1
+            end = alignment.aend
+            if self._read_region == "first_base_only":
+                if (alignment.is_reverse is False) and (
+                   (start < entry.start) or (start > entry.end)):
+                        continue
+                if (alignment.is_reverse is True) and (
+                   (end < entry.start) or (end > entry.end)):
+                        continue
+            elif self._read_region == "last_base_only":
+                if (alignment.is_reverse is False) and (
+                   (end < entry.start) or (end > entry.end)):
+                        continue
+                if (alignment.is_reverse is True) and (
+                   (start < entry.start) or (start > entry.end)):
+                        continue
+            else:
+                if alignment.get_overlap(entry.start-1,
+                                         entry.end) < self._min_overlap:
+                    continue
             if self._skip_antisense:
                 if not self._same_strand(entry, alignment):
                     continue

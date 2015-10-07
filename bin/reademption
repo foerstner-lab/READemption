@@ -163,6 +163,15 @@ def main():
         "--min_overlap", "-o", default=1, type=int,
         help="Minimal read-annotation-overlap (in nt) (default 1).")
     gene_wise_quanti_parser.add_argument(
+        "--read_region", "-b", choices=["global", "first_base_only",
+                                           "last_base_only"],
+        default="global", help="Choose for gene-wise quantification "
+        "if only the first aligned base at the 5' end of each read "
+        "('first_base_only') or the last aligned base at the 3' end of each "
+        "read ('last_base_only') is taken into account. By default the "
+        "overlap is calculated based on the whole range of each alignment "
+        "('global').")
+    gene_wise_quanti_parser.add_argument(
         "--no_count_split_by_alignment_no", "-n", default=False,
         action="store_true", help="Do not split read countings by the number "
         "of alignments a read has. By default this count splitting is "
