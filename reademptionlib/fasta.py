@@ -6,15 +6,15 @@ class FastaParser(object):
         current_header = ''
         current_sequence = ''
         # Switch telling if this the first entry
-        virgin = True 
+        virgin = True
         for line in fasta_fh:
             # For usual headers
-            if line[0] == '>' and virgin == False:
+            if line[0] == '>' and virgin is False:
                 yield(current_header, current_sequence)
                 current_header = line[1:-1]
                 current_sequence = ''
             # For the very first header of the file
-            elif line[0] == '>' and virgin == True:
+            elif line[0] == '>' and virgin is True:
                 virgin = False
                 current_header = line[1:-1]
             # For sequence lines

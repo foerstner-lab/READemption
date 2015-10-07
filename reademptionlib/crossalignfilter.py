@@ -1,9 +1,10 @@
 import pysam
 import sys
 
+
 class CrossAlignFilter(object):
     
-    def __init__(self, input_bam, output_bam, output_crossmapped_reads, 
+    def __init__(self, input_bam, output_bam, output_crossmapped_reads,
                  orgs_and_replicon_ids):
         self._input_bam = input_bam
         self._output_bam = output_bam
@@ -36,7 +37,8 @@ class CrossAlignFilter(object):
                         if org == comp_org:
                             continue
                         for comp_replicon_id in comp_replicon_ids:
-                            comparison = sorted([replicon_id, comp_replicon_id])
+                            comparison = sorted([replicon_id,
+                                                 comp_replicon_id])
                             # Check if comparison of the two replicons
                             # has been done already
                             if comparison in done_replicon_comparison:
@@ -68,12 +70,13 @@ class CrossAlignFilter(object):
         
     def write_crossmapping_free_bam(self):
         with pysam.Samfile(self._input_bam) as input_bam:
-            with pysam.Samfile(self._output_bam, "wb", 
+            with pysam.Samfile(self._output_bam, "wb",
                                header=input_bam.header) as output_bam:
                 for alignment in input_bam.fetch():
                     if not alignment.qname in self._crossmapped_reads:
                         output_bam.write(alignment)
         pysam.index(self._output_bam)
+
 
 class RepliconIdNotInBam(BaseException):
     pass

@@ -1,6 +1,6 @@
-[![Latest Version](https://pypip.in/version/READemption/badge.png)](https://pypi.python.org/pypi/READemption/)
-[![License](https://pypip.in/license/READemption/badge.png)](https://pypi.python.org/pypi/READemption/)
-[![Downloads](https://pypip.in/d/READemption/badge.png)](https://pypi.python.org/pypi/READemption/)
+[![Latest Version](https://img.shields.io/pypi/v/reademption.svg)](https://pypi.python.org/pypi/READemption/)
+[![License](https://img.shields.io/pypi/l/reademption.svg)](https://pypi.python.org/pypi/READemption/)
+[![DOI](https://zenodo.org/badge/doi/10.5281/zenodo.19294.svg)](http://dx.doi.org/10.5281/zenodo.19294)
 
 About
 -----
