@@ -65,7 +65,6 @@ class GeneWiseQuantification(object):
                 sum_sense = 1
                 sum_antisense = 1
             for alignment in self._overlapping_alignments(sam, entry):
-                # alignment_id = self._alignment_id(alignment) (never used)
                 fraction = fraction_calc_method(alignment)
                 if self._same_strand(entry, alignment):
                     sum_sense += fraction
