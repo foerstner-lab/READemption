@@ -99,7 +99,8 @@ class GeneQuantiViz(object):
         matplotlib.rc('font', **font)
         plt.title("Number of reads per RNA classes")
         color_index = 0
-        for direction in ["sense", "anti-sense"]:
+        for direction in self._lib_names_and_class_quanti[
+                self._lib_names[0]].keys():
             for anno_class in all_classes_sorted:
                 countings = [
                     self._lib_names_and_class_quanti[lib][direction][
