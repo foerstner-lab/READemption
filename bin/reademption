@@ -137,13 +137,19 @@ def main():
         "base.")
     coverage_creation_parser.add_argument(
         "--coverage_style", "-b", choices=["global", "first_base_only",
-                                           "last_base_only"],
-        default="global", help="Choose for coverage "
-        "generation if only the first aligned base at the 5' end of each read "
-        "('first_base_only') or the last aligned base at the 3' end of each "
-        "read ('last_base_only') is taken into account. By default the "
-        "coverage is generated using the whole range of each alignment "
+                                           "last_base_only", "centered"],
+        default="global", help="Select for coverage generation if only the "
+        "first aligned base at the 5' end of each read ('first_base_only') or "
+        "the last aligned base at the 3' end of each read ('last_base_only') "
+        "is taken into account. The centered approach ('centered') clips a "
+        "predefined number of nts from each alignment end and adds to the "
+        "remaining genomic region a value divided by its length. By default "
+        "the coverage is generated using the whole range of each alignment "
         "('global').")
+    coverage_creation_parser.add_argument(
+        "--clip_length", "-c", type=int, default=11, help="Number of "
+        "nucleotides that are clipped from each read end for centered "
+        "approach.")
     coverage_creation_parser.add_argument(
         "--check_for_existing_files", "-f", default=False,
         action="store_true", help="Check for existing files (e.g. from a "
