@@ -9,6 +9,7 @@ Problem
 
 When running reademption (e.g. with Python 3.2) you get an error like this:
 ::
+   
    Traceback (most recent call last):
      File "/usr/lib/python3.2/multiprocessing/queues.py", line 272, in _feed
       send(obj)
@@ -27,6 +28,7 @@ Problem
 
 Whenn running ``deseq`` you get an error similar to this:
 ::
+   
    Error in results(dds, contrast = c("condition", "XXX", "YYY")) : 
      unused argument (contrast = c("condition", "XXX", "YYY"))
    Execution halted

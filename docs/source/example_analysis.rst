@@ -209,8 +209,6 @@ subcommand ``deseq`` which makes use of the R library `DESeq2
       -l InSPI2_R1.fa.bz2,InSPI2_R2.fa.bz2,LSP_R1.fa.bz2,LSP_R2.fa.bz2 \
       -c InSPI2,InSPI2,LSP,LSP READemption_analysis
 
-::
-  
 We have to tell READemption which libraries are replicates of which
 condition. This is done by the parameter ``-l`` and ``-c``. ``-l``
 should hold a comma separated list of the libraries and ``-c`` the

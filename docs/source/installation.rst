@@ -91,7 +91,7 @@ Leave ``R``::
 
 
 Install Biopython, pysam and READemption
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Now you can use ``pip`` to install ``pysam`` and ``READemption``::
 
@@ -115,7 +115,7 @@ Installing on a Apple OS X
 To download and install Python 3 follow the instruction at this
 `download page <https://www.python.org/downloads/>`_.
 
-Download and install `xcode <https://developer.apple.com/xcode/>`_ (`download page <https://developer.apple.com/xcode/downloads/>`_) and R
+Download and install `xcode <https://developer.apple.com/xcode/>`_ (`page <https://developer.apple.com/xcode/downloads/>`_) and R
 (download links are on `the frontpage <http://www.r-project.org/>`_).
 
 To install ``pip`` open a terminal and run

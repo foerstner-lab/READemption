@@ -6,7 +6,6 @@ Table of content
 .. toctree::
    :maxdepth: 1
 
-   index
    installation
    live_and_installation_image
    docker_image
