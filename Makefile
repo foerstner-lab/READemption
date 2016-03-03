@@ -6,7 +6,7 @@ coverage:
 	python3-coverage report
 
 package:
-	python3 setup.py sdist
+	python3 setup.py bdist_wheel
 	rm -rf READemption.egg-info
 	ls dist/*
 

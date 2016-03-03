@@ -1,3 +1,7 @@
+v0.3.8 (2016-03-03)
+- Add last base coverage option (by Thorsten Bischler)
+- Numerous fixes (several from Thorsten Bischler)
+- Change to bdist_wheel (PEP 0427)
 v0.3.7 (2015-07-03)
 - Add --reverse_complement flag to align subcommand
 - Use lib name instead of condition for DESeq2 heatmap
