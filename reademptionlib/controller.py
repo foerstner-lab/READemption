@@ -650,6 +650,7 @@ class Controller(object):
         gene_wise_quantification = GeneWiseQuantification(
             min_overlap=self._args.min_overlap,
             read_region=self._args.read_region,
+            clip_length=self._args.clip_length,
             norm_by_alignment_freq=norm_by_alignment_freq,
             norm_by_overlap_freq=norm_by_overlap_freq,
             allowed_features_str=self._args.allowed_features,
