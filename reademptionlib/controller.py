@@ -535,8 +535,9 @@ class Controller(object):
             read_count_splitting = False
         coverage_calculator = CoverageCalculator(
             read_count_splitting=read_count_splitting,
-            uniqueley_aligned_only=self._args.unique_only,
+            uniquely_aligned_only=self._args.unique_only,
             coverage_style=self._args.coverage_style,
+            clip_length=self._args.clip_length,
             non_strand_specific=self._args.non_strand_specific)
         (coverage_writers_raw, coverage_writers_tnoar_min_norm,
          coverage_writers_tnoar_mil_norm) = self._wiggle_writers(
@@ -649,6 +650,7 @@ class Controller(object):
         gene_wise_quantification = GeneWiseQuantification(
             min_overlap=self._args.min_overlap,
             read_region=self._args.read_region,
+            clip_length=self._args.clip_length,
             norm_by_alignment_freq=norm_by_alignment_freq,
             norm_by_overlap_freq=norm_by_overlap_freq,
             allowed_features_str=self._args.allowed_features,
