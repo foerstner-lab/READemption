@@ -31,7 +31,7 @@ class DESeqViz(object):
         self._pp_scatterplots.close()
 
     def _create_scatter_plots(self, condition_1, condition_2):
-        pd.options.display.mpl_style = 'default'
+        matplotlib.style.use('ggplot')
         font = {'family': 'sans-serif', 'size': 7}
         matplotlib.rc('font', **font)
         deseq_result = pd.read_table(
