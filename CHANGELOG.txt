@@ -1,3 +1,9 @@
+v0.3.8 (2016-03-07)
+- Add support for centered approach in coverage and gene_quanti
+  (by Thorsten Bischler)
+- Fix bar chart creation in viz_gene_quanti (by Thorsten Bischler)
+- Fix style for matplotlib
+- Fix MA plots
 v0.3.8 (2016-03-03)
 - Add last base coverage option (by Thorsten Bischler)
 - Numerous fixes (several from Thorsten Bischler)
