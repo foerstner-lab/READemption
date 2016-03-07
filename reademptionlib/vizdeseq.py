@@ -31,7 +31,7 @@ class DESeqViz(object):
         self._pp_scatterplots.close()
 
     def _create_scatter_plots(self, condition_1, condition_2):
-        pd.options.display.mpl_style = 'default'
+        matplotlib.style.use('ggplot')
         font = {'family': 'sans-serif', 'size': 7}
         matplotlib.rc('font', **font)
         deseq_result = pd.read_table(
@@ -41,9 +41,14 @@ class DESeqViz(object):
                  deseq_result.log2FoldChange, ".", alpha=0.3)
         significant_deseq_result = deseq_result[
             deseq_result.padj < self._p_value_significance_limit]
+        non_significant_deseq_result = deseq_result[
+            deseq_result.padj >= self._p_value_significance_limit]
         plt.plot(
             np.log10(significant_deseq_result.baseMean),
-            significant_deseq_result.log2FoldChange, ".r", alpha=0.5)
+            significant_deseq_result.log2FoldChange, ".r", alpha=0.3)
+        plt.plot(
+            np.log10(non_significant_deseq_result.baseMean),
+            non_significant_deseq_result.log2FoldChange, ".k", alpha=0.5)
         plt.title("{} vs. {} - MA plot".format(condition_1, condition_2))
         y_max = max([abs(log2_fc)
                      for log2_fc in deseq_result.log2FoldChange])

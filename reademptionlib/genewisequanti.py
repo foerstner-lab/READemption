@@ -5,7 +5,7 @@ import pysam
 
 class GeneWiseQuantification(object):
 
-    def __init__(self, min_overlap=1, read_region="global",
+    def __init__(self, min_overlap=1, read_region="global", clip_length=11,
                  norm_by_alignment_freq=True, norm_by_overlap_freq=True,
                  allowed_features_str=None, skip_antisense=False,
                  unique_only=False):
@@ -18,6 +18,7 @@ class GeneWiseQuantification(object):
         """
         self._min_overlap = min_overlap
         self._read_region = read_region
+        self._clip_length = clip_length
         self._norm_by_alignment_freq = norm_by_alignment_freq
         self._norm_by_overlap_freq = norm_by_overlap_freq
         self._allowed_features = _allowed_features(allowed_features_str)
@@ -144,6 +145,12 @@ class GeneWiseQuantification(object):
                 if (alignment.is_reverse is True) and (
                    (start < entry.start) or (start > entry.end)):
                         continue
+            elif self._read_region == "centered":
+                if _get_overlap(start + self._clip_length,
+                                end - self._clip_length,
+                                entry.start,
+                                entry.end) < self._min_overlap:
+                    continue
             else:
                 if alignment.get_overlap(entry.start-1,
                                          entry.end) < self._min_overlap:
@@ -321,7 +328,12 @@ def _allowed_features(allowed_features_str):
         return [
             feature.strip() for feature in allowed_features_str.split(",")]
 
-   
+
 def _gff_field_descriptions():
     return ["Sequence name", "Source", "Feature", "Start", "End", "Score",
             "Strand", "Frame", "Attributes"]
+
+def _get_overlap(alignment_start, alignment_end, feature_start, feature_end):
+    return max(0, 
+               min(alignment_end, feature_end) - 
+               max(alignment_start, feature_start) + 1)
