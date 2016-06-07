@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-"""READemption - A RNA-seq Analysis PipeLine"""
+"""READemption - A RNA-seq Analysis Pipeline"""
 
 import argparse
 from reademptionlib.controller import Controller
