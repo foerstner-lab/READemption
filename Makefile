@@ -11,10 +11,10 @@ package:
 	ls dist/*
 
 build:
-	python3 setup.py bdist
+	python3 setup.py bdist_wheel
 
 package_to_pypi:
-	python3 setup.py sdist upload
+	python3 setup.py bdist_wheel upload
 	@echo "Go to https://pypi.python.org/pypi/READemption/"
 
 html_doc:

@@ -6,9 +6,7 @@ Requirements
 
 READemption was started to be developed using Python 3.2 and the user
 is advised to run READemption with this or a higher version. In any
-case, the third party packages `Biopython <http://biopython.org>`_,
-`pysam <https://code.google.com/p/pysam>`_ as well as `setuptools
-<https://pypi.python.org/pypi/setuptools>`_ and `pip
+case `setuptools <https://pypi.python.org/pypi/setuptools>`_ and `pip
 <http://www.pip-installer.org>`_ should be available on the system in
 order to make the installation easy. READemption uses the short read
 mapper `segemehl
@@ -44,18 +42,18 @@ Now you can install the packages::
 
 Some comments:
 
-- Ubuntu 14.04 should have Python 3.4 already installed.
+- Ubuntu 16.04 should have Python 3.5 already installed.
 - ``cython`` is required for ``pysam``
 - ``make``, ``libncurses5-dev`` and ``zlib1g-dev`` are needed for ``segemehl``
-- ``libxml2`` required for the installation of some of the R-packages
+- ``libxml2`` is required for the installation of some of the R-packages
 
 2. Install segemehl
 ~~~~~~~~~~~~~~~~~~~
 
 ::
 
-  curl http://www.bioinf.uni-leipzig.de/Software/segemehl/segemehl_0_1_9.tar.gz > segemehl_0_1_9.tar.gz
-  tar xzf segemehl_0_1_9.tar.gz
+  curl http://www.bioinf.uni-leipzig.de/Software/segemehl/segemehl_0_2_0.tar.gz > segemehl_0_2_0.tar.gz
+  tar xzf segemehl_0_2_0.tar.gz
   cd segemehl_*/segemehl/ && make && cd ../../
 
 Copying the executable to a location that is part of the ``PATH`` e.g
@@ -63,13 +61,13 @@ Copying the executable to a location that is part of the ``PATH`` e.g
 
 ::
 
-  sudo cp segemehl_0_1_9/segemehl/segemehl.x /usr/bin/segemehl.x
-  sudo cp segemehl_0_1_9/segemehl/lack.x /usr/bin/lack.x
+  sudo cp segemehl_0_2_0/segemehl/segemehl.x /usr/bin/segemehl.x
+  sudo cp segemehl_0_2_0/segemehl/lack.x /usr/bin/lack.x
 
 ... or the bin folder of your home directory::
 
   mkdir ~/bin
-  cp segemehl_0_1_9/segemehl/segemehl.x ~/bin
+  cp segemehl_0_2_0/segemehl/segemehl.x ~/bin
 
 3. Install DESeq2
 ~~~~~~~~~~~~~~~~~
@@ -90,13 +88,12 @@ Leave ``R``::
   quit(save = "no")
 
 
-Install Biopython, pysam and READemption
+Install  READemption and it's dependcies
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Now you can use ``pip`` to install ``pysam`` and ``READemption``::
+Now you can use ``pip`` to install ``READemption`` and further python
+packages::
 
-  sudo pip3 install biopython
-  sudo pip3 install pysam
   sudo pip3 install READemption
 
 Voilà! You should now be able to call READemption::
@@ -130,7 +127,7 @@ Install ``matplotlib``:
 
 ::
 
-  pip3 install python3-matplotlib
+  pip3 install matplotlib
 
 
 2. Installing segemehl, DESeq, pysam and READemption
@@ -144,8 +141,8 @@ Updating READemption
 --------------------
 
 Once you have installed READemption as described above you can easily
-update it to the newest version by running
+upgrade it to the newest version by running
 
 ::
 
-  pip3 install READemption -U
+  pip3 install --upgrade READemption
