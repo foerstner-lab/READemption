@@ -11,10 +11,10 @@ package:
 	ls dist/*
 
 build:
-	python3 setup.py bdist
+	python3 setup.py bdist_wheel
 
 package_to_pypi:
-	python3 setup.py sdist upload
+	python3 setup.py bdist_wheel upload
 	@echo "Go to https://pypi.python.org/pypi/READemption/"
 
 html_doc:
@@ -48,8 +48,8 @@ pylint:
 
 new_release:
 	@echo "* Create/checkout a release branch"
-	@echo "  git branch release_v0.3.X"
-	@echo "  git checkout release_v0.3.X"
+	@echo "  git branch release_v0.4.X"
+	@echo "  git checkout release_v0.4.X"
 	@echo "* Change bin/reademption"
 	@echo "* Change setup.py"
 	@echo "* Change docs/source/conf.py"
@@ -59,8 +59,8 @@ new_release:
 	@echo "* Test doc creation"
 	@echo "* make package_to_pypi"
 	@echo "* git add CHANGELOG.txt bin/reademption docs/source/conf.py setup.py"
-	@echo "* Commit changes e.g. 'git commit -m \"Set version to 0.3.X\"'"
-	@echo "* Tag the commit e.g. 'git tag -a v0.3.X -m \"version v0.3.X\"'"
+	@echo "* Commit changes e.g. 'git commit -m \"Set version to 0.4.X\"'"
+	@echo "* Tag the commit e.g. 'git tag -a v0.4.X -m \"version v0.4.X\"'"
 	@echo "* Merge release into dev and master"
 	@echo "* Push it to github: git push"
 	@echo "* Generate a new release based on this tag at"
