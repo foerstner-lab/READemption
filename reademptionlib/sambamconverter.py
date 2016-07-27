@@ -19,7 +19,13 @@ class SamToBamConverter(object):
         temp_unsorted_bam_path = self._temp_unsorted_bam_path(
             bam_path_prefix)
         # Generate unsorted BAM file
-        pysam.view("-Sb", "-o%s" % temp_unsorted_bam_path, sam_path)
+        #### The following line does not work since pysam 0.9.1.4:
+        #### pysam.view("-Sb", "-o%s" % temp_unsorted_bam_path, sam_path)
+        ####
+        #### This is nasty, hopefully only temporaly work-around:
+        with open(temp_unsorted_bam_path, "wb") as unsorted_bam_fh:
+            bam_content = pysam.view("-Sb", sam_path)
+            unsorted_bam_fh.write(bam_content)
         # Generate sorted BAM file
         pysam.sort(temp_unsorted_bam_path, "-o", bam_path_prefix + ".bam")
         # Generate index for BAM file
