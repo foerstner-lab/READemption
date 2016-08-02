@@ -1,3 +1,6 @@
+v0.4.1 (2016-08-02)
+- Fix another issue with pysam in samtobam.py
+- Update dependencies
 v0.4.0 (2016-07-27)
 - Fix issue with pysam in samtobam.py
 - Update installation documentation
