@@ -66,3 +66,5 @@ new_release:
 	@echo "* Generate a new release based on this tag at"
 	@echo "  https://github.com/konrad/READemption/releases/new"
 	@echo "* Upload new docs using 'make upload_doc'"
+
+# Todo: docker_images: docker build -t konradfoerstner/reademption:0.4.1 -t konradfoerstner/reademption:latest .
