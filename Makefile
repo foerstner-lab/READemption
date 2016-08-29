@@ -55,6 +55,7 @@ new_release:
 	@echo "* Change docs/source/conf.py"
 	@echo "* Change CHANGELOG.txt"
 	@echo "* Create new docs"
+	@echo "  make html_doc"
 	@echo "* Test package creation"
 	@echo "* Test doc creation"
 	@echo "* make package_to_pypi"
