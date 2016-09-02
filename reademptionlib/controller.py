@@ -283,9 +283,9 @@ class Controller(object):
                         fastq=self._args.fastq,
                         min_phred_score=self._args.min_phred_score,
                         adapter=self._args.adapter)
-                read_files_and_jobs[lib_name] = executor.submit(
-                    read_processor.process_paired_end, read_path_pair,
-                    processed_read_path_pair)
+                    read_files_and_jobs[lib_name] = executor.submit(
+                        read_processor.process_paired_end, read_path_pair,
+                        processed_read_path_pair)
         self._evaluet_job_and_generate_stat_file(read_files_and_jobs)
 
     def _evaluet_job_and_generate_stat_file(self, read_files_and_jobs):
