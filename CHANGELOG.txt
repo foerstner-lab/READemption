@@ -1,3 +1,5 @@
+v0.4.2 (2016-09-6)
+- Fix problem with current version of DESeq2
 v0.4.2 (2016-08-29)
 - Replace ugly pysam view construct (thanks to Thorsten Bischler)
 v0.4.1 (2016-08-02)
