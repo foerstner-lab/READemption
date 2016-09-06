@@ -127,6 +127,7 @@ class DESeqRunner(object):
             "rawCountTable))])\n"
             "libs <- c(%s)\n"
             "conds <- c(%s)\n"
+            "colnames(countTable) <- libs\n"
             "samples <- data.frame(row.names=libs, condition=conds, "
             "lib=libs)\n"
             "dds <- DESeqDataSetFromMatrix(countData=countTable, "
