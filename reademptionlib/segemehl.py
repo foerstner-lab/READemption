@@ -25,7 +25,7 @@ class Segemehl(object):
             hit_strategy=1, accuracy=95, evalue=5.0, threads=1, split=False,
             segemehl_format=False, order=False, nonmatch_file=None,
             other_parameters=None, paired_end=False):
-        if paired_end is False:
+        if not paired_end:
             assert type(read_file_or_pair) == str
             segemehl_call = [
                 self._segemehl_bin,
