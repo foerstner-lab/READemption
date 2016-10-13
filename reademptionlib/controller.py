@@ -12,7 +12,8 @@ from reademptionlib.genewisequanti import GeneWiseOverview
 from reademptionlib.paths import Paths
 from reademptionlib.projectcreator import ProjectCreator
 from reademptionlib.rawstatdata import RawStatDataWriter, RawStatDataReader
-from reademptionlib.readaligner import ReadAligner
+from reademptionlib.star import STAR_Align
+from reademptionlib.segemehl import Segemehl
 from reademptionlib.readalignerstats import ReadAlignerStats
 from reademptionlib.readrealigner import ReadRealigner
 from reademptionlib.readalignerstatstable import ReadAlignerStatsTable
@@ -24,10 +25,8 @@ from reademptionlib.wiggle import WiggleWriter
 class Controller(object):
 
     """Manage the actions of the subcommands.
-
     The Controller take care of providing the argumentes like path
     names and the parallel processing of tasks.
-
     """
 
     def __init__(self, args):
@@ -78,7 +77,10 @@ class Controller(object):
             if not self._args.realign:
                 self._set_primary_aligner_paths_to_final_paths()
             self._prepare_reads_single_end()
-            self._align_single_end_reads()
+            if self._args.star:
+                self.align_SE_STAR()
+            else:
+                self._align_single_end_reads()
         else:
             # Paired end reads
             self._read_file_pairs = self._paths.get_read_file_pairs()
@@ -88,7 +90,10 @@ class Controller(object):
             if not self._args.realign:
                 self._set_primary_aligner_paths_to_final_paths()
             self._prepare_reads_paired_end()
-            self._align_paired_end_reads()
+            if self._args.star:
+                self.align_PE_STAR()
+            else:
+                self._align_paired_end_reads()
         self._sam_to_bam(
             self._paths.primary_read_aligner_sam_paths,
             self._paths.primary_read_aligner_bam_prefix_paths,
@@ -112,6 +117,78 @@ class Controller(object):
             final_unaligned_reads_paths,
             self._paths.read_alignments_stats_path)
         self._write_alignment_stat_table()
+
+    def align_SE_STAR(self):
+        read_aligner = STAR_Align(
+            self._args.STAR_bin)
+        if self._file_needs_to_be_created(self._paths.index_path_star):
+            read_aligner.build_index(
+                int(self._args.processes),
+                self._paths.read_alignment_index_folder,
+                " ".join([self._paths.ref_seq_folder + '/' + ref for
+                          ref in self._paths.get_ref_seq_files()]),
+                int(self._args.indexN))
+        for read_path, output_path, nomatch_path, bam_path in zip(
+                self._paths.processed_read_paths,
+                self._paths.primary_read_aligner_sam_paths,
+                self._paths.unaligned_reads_paths,
+                self._paths.primary_read_aligner_bam_paths):
+            if not self._file_needs_to_be_created(output_path):
+                continue
+            elif not self._file_needs_to_be_created(bam_path):
+                continue
+            read_aligner.align_reads(
+                int(self._args.processes),
+                self._paths.read_alignment_index_folder,
+                read_path,
+                (self._paths.read_alignments_folder + '/' +
+                 " ".join(self._paths.get_lib_names_single_end()) + '_'),
+                (self._paths.annotation_folder + '/' +
+                 " ".join(self._paths.get_annotation_files())),
+                paired_end=False, include_annotation=False)
+            self._paths.change_primary_aligned_sam_SE()
+            if os.path.isfile(
+                    self._paths.read_alignments_folder + '/' +
+                    " ".join(str(lib_name) for lib_name in
+                             self._paths.get_lib_names_single_end())
+                    + '_Unmapped.out.mate1'):
+                self._paths.change_unmapped_filename_SE()
+
+    def align_PE_STAR(self):
+        read_aligner = STAR_Align(
+            self._args.STAR_bin)
+        if self._file_needs_to_be_created(self._paths.index_path_star):
+            read_aligner.build_index(
+                int(self._args.processes),
+                self._paths.read_alignment_index_folder,
+                " ".join([self._paths.ref_seq_folder + '/' + ref for
+                          ref in self._paths.get_ref_seq_files()]),
+                int(self._args.indexN))
+        for read_path_pair, output_path, nomatch_path, bam_path in zip(
+            self._paths.processed_read_path_pairs,
+            self._paths.primary_read_aligner_sam_paths,
+            self._paths.unaligned_reads_paths,
+                self._paths.primary_read_aligner_bam_paths):
+            if not self._file_needs_to_be_created(output_path):
+                continue
+            elif not self._file_needs_to_be_created(bam_path):
+                continue
+            read_aligner.align_reads(
+                int(self._args.processes),
+                self._paths.read_alignment_index_folder,
+                read_path_pair,
+                (self._paths.read_alignments_folder + '/' +
+                 " ".join(self._paths.get_lib_names_paired_end()) + '_'),
+                (self._paths.annotation_folder + '/' +
+                 " ".join(self._paths.get_annotation_files())),
+                paired_end=True, include_annotation=False)
+            self._paths.change_primary_aligned_sam_PE()
+            if os.path.isfile(
+                    self._paths.read_alignments_folder + '/' +
+                    " ".join(str(lib_name) for lib_name in
+                             self._paths.get_lib_names_paired_end())
+                    + '_Unmapped.out.mate1'):
+                self._paths.change_unmapped_filename_PE()
 
     def _remove_crossaligned_reads(self):
         self._string_to_species_and_sequence_ids()
@@ -283,9 +360,9 @@ class Controller(object):
                         fastq=self._args.fastq,
                         min_phred_score=self._args.min_phred_score,
                         adapter=self._args.adapter)
-                read_files_and_jobs[lib_name] = executor.submit(
-                    read_processor.process_paired_end, read_path_pair,
-                    processed_read_path_pair)
+                    read_files_and_jobs[lib_name] = executor.submit(
+                        read_processor.process_paired_end, read_path_pair,
+                        processed_read_path_pair)
         self._evaluet_job_and_generate_stat_file(read_files_and_jobs)
 
     def _evaluet_job_and_generate_stat_file(self, read_files_and_jobs):
@@ -302,10 +379,10 @@ class Controller(object):
              read_files_and_jobs.items()])
         raw_stat_data_writer.write(
             read_files_and_stats, self._paths.read_processing_stats_path)
-
+    
     def _align_single_end_reads(self):
         """Manage the actual alignment of single end reads."""
-        read_aligner = ReadAligner(
+        read_aligner = Segemehl(
             self._args.segemehl_bin, self._args.progress)
         if self._file_needs_to_be_created(self._paths.index_path):
             read_aligner.build_index(
@@ -321,14 +398,15 @@ class Controller(object):
                 continue
             read_aligner.run_alignment(
                 read_path, self._paths.index_path, self._paths.ref_seq_paths,
-                output_path, nomatch_path, int(self._args.processes),
+                output_path, int(self._args.processes), nomatch_path,
+                int(self._args.hit_strategy),
                 int(self._args.segemehl_accuracy),
                 float(self._args.segemehl_evalue), self._args.split,
                 paired_end=False)
 
     def _align_paired_end_reads(self):
         """Manage the actual alignemnt of paired end reads."""
-        read_aligner = ReadAligner(
+        read_aligner = Segemehl(
             self._args.segemehl_bin, self._args.progress)
         if self._file_needs_to_be_created(self._paths.index_path):
             read_aligner.build_index(
@@ -344,10 +422,12 @@ class Controller(object):
                 continue
             read_aligner.run_alignment(
                 read_path_pair, self._paths.index_path,
-                self._paths.ref_seq_paths, output_path, nomatch_path,
-                int(self._args.processes), int(self._args.segemehl_accuracy),
-                float(self._args.segemehl_evalue), self._args.split,
-                paired_end=True)
+                self._paths.ref_seq_paths, output_path,
+                int(self._args.processes), nomatch_path,
+                int(self._args.hit_strategy),
+                int(self._args.segemehl_accuracy),
+                float(self._args.segemehl_evalue),
+                self._args.split, paired_end=True)
 
     def _realign_unmapped_reads(self):
         read_realigner = ReadRealigner(
@@ -452,12 +532,10 @@ class Controller(object):
 
     def create_coverage_files(self):
         """Create coverage files based on the read alignments.
-
         The coverages are calculated per replicon and the results are
         written to the output file. This might be slower but if all
         coverages are detmined at once the data structure will become
         too large when working with large reference sequences.
-
         """
         self._test_folder_existance(self._paths.required_coverage_folders())
         raw_stat_data_reader = RawStatDataReader()
@@ -809,3 +887,40 @@ class Controller(object):
         deseq_viz.create_volcano_plots(
             self._paths.viz_deseq_volcano_plot_path,
             self._paths.viz_deseq_volcano_plot_adj_path)
+
+    def viz_align_2(self):
+        
+        from reademptionlib.vizalign2 import AlignViz2
+        align_viz2 = AlignViz2()
+        if self._args.paired_end:
+            lib_names = self._paths.get_lib_names_paired_end()
+        else:
+            lib_names = self._paths.get_lib_names_single_end()
+        align_viz2.alignment_stats(
+            self._paths.read_alignments_stats_path,
+            str(self._paths.viz_align_base_folder) + '/' + "_".join(
+                lib_names + ['out_json_alignment']),
+            str(self._paths.viz_align_base_folder) + '/' + "_".join(
+                lib_names + ['BAM_stats_alignment']))
+        align_viz2.process_stats(
+            self._paths.read_processing_stats_path,
+            str(self._paths.viz_align_base_folder) + '/' + "_".join(
+                lib_names + ['out_json_process']),
+            str(self._paths.viz_align_base_folder) + '/' + "_".join(
+                lib_names + ['BAM_stats_process']))
+            
+    def viz_align_TK(self):
+        """Generate plots based on the read processing and mapping"""
+        from reademptionlib.vizalign2 import AlignViz2
+        align_viz_tk = AlignViz2()
+        if self._args.input_align:
+            align_viz_tk.alignment_stats(
+                str(self._args.input_align),
+                str(self._args.output_align),
+                str(self._args.output_align))
+        if self._args.input_process:
+            align_viz_tk.process_stats(
+                str(self._args.input_process),
+                str(self._args.output_process),
+                str(self._args.output_process))
+                

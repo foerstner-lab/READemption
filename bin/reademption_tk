@@ -1,0 +1,118 @@
+#!/usr/bin/env python3
+
+"""The toolkit version of READemption"""
+
+import argparse
+from reademptionlib.controller_tk import Controller_TK
+
+__author__ = "Diarmaid Tobin <diarmaidtobin@web.de>"
+__copyright__ = "2016 by Konrad Foerstner <konrad@foerstner.org>"
+__license__ = "ISC license"
+__email__ = "konrad@foerstner.org"
+__version__ = "0.3.9"
+
+
+def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        "--version", "-v", default=False, action="store_true",
+        help="show version")
+    subparsers = parser.add_subparsers(help="commands")
+
+    # Parameters for viz_align_TK
+    viz_align_TK_parser = subparsers.add_parser(
+        "viz_align",
+        help="Vizualisation of alignment output csv files; "
+        "viz_align -i/-I <input.csv> -o/-O <output>")
+    viz_align_TK_parser.add_argument(
+        "--input_align", "-i",
+        help="Use for read_alignments_final.json input (<path/input file>)")
+    viz_align_TK_parser.add_argument(
+        "--output_align", "-o",
+        help="Use for read_alignments_final.json output (<path/output file>)")
+    viz_align_TK_parser.add_argument(
+        "--input_process", "-I",
+        help="Use for read_processing.json (<path/input file>)")
+    viz_align_TK_parser.add_argument(
+        "--output_process", "-O",
+        help="Use for read_processing.json output (<path/output file>)")
+    viz_align_TK_parser.add_argument(
+        "project_path", default=".", nargs="?",
+        help="Path of the project folder. If none is given the current "
+        "directory is used.")
+    viz_align_TK_parser.set_defaults(func=viz_align_TK)
+
+    #Parameters for wiggle file creation
+    coverage_creation_tk_parser = subparsers.add_parser(
+        "coverage", help="Create coverage files in wiggle format")
+    coverage_creation_tk_parser.add_argument(
+        "--input_coverage", "-i",
+        help="specify path/input BAM file")
+    coverage_creation_tk_parser.add_argument(
+        "--output_coverage", "-o",
+        help="specify path/output wiggle file")
+    coverage_creation_tk_parser.add_argument(
+        "--trackname", "-t",
+        help="insert the desired trackname of your outputfile(s)")
+    coverage_creation_tk_parser.add_argument(
+        "--factor", "-f", default=1000000, type=int,
+        help="choose factor for normalization (factor/nr. of aligned reads)")
+    coverage_creation_tk_parser.add_argument(
+        "--paired_end", "-P", default=False, action="store_true",
+         help="Use this if reads originate from paired-end sequencing.")
+    coverage_creation_tk_parser.add_argument(
+         "--unique_only", "-u", default=False, action="store_true",
+        help="Use uniquely aligned reads only.")
+    coverage_creation_tk_parser.add_argument(
+        "--normalize_by_uniquely", "-U", default=False, action="store_true",
+        help="Normalize by the number of uniquely aligned reads. By default "
+        "the normalization is done based on the total number of aligned reads "
+        "even if only uniquely aligned reads are used for the coverage "
+        "calculation.")
+    coverage_creation_tk_parser.add_argument(
+        "--processes", "-p", default=1, type=int,
+        help="Number of processes that should be used (default 1).")
+    coverage_creation_tk_parser.add_argument(
+         "--skip_read_count_splitting", "-s", default=False,
+        action="store_true", help="Do not split the read counting between "
+        "different alignings. Default is to do the splitting.")
+    coverage_creation_tk_parser.add_argument(
+        "--non_strand_specific", "-d", default=False,
+        action="store_true", help="Do not distict between the coverage of the "
+        "forward and reverse strand but sum them to a single value for each "
+        "base.")
+    coverage_creation_tk_parser.add_argument(
+        "--coverage_style", "-b", choices=["global", "first_base_only",
+                                           "last_base_only", "centered"],
+        default="global", help="Select for coverage generation if only the "
+        "first aligned base at the 5' end of each read ('first_base_only') or "
+        "the last aligned base at the 3' end of each read ('last_base_only') "
+        "is taken into account. The centered approach ('centered') clips a "
+        "predefined number of nts from each alignment end and adds to the "
+        "remaining genomic region a value divided by its length. By default "
+        "the coverage is generated using the whole range of each alignment "
+        "('global').")
+    coverage_creation_tk_parser.add_argument(
+        "--clip_length", "-cl", type=int, default=11, help="Number of "
+        "nucleotides that are clipped from each alignment end for centered "
+        "approach.")
+    coverage_creation_tk_parser.set_defaults(func=create_coverage_files_TK)
+    
+    args = parser.parse_args()
+    if args.version is True:
+        print("READemption version " + __version__)
+    elif "func" in dir(args):
+        controller_tk = Controller_TK(args)
+        args.func(controller_tk)
+    else:
+        parser.print_help()
+
+        
+def viz_align_TK(controller_tk):
+    controller_tk.viz_align_TK()
+
+def create_coverage_files_TK(controller_tk):
+    controller_tk.get_and_submit_bam_stats()
+
+
+main()

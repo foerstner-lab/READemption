@@ -25,7 +25,7 @@ def main():
     create_project_parser.add_argument(
         "project_path", default=".", help="Name/path of the project.")
     create_project_parser.set_defaults(func=create_project)
-
+    
     # Parameters for read alignment
     read_aligning_parser = subparsers.add_parser(
         "align", help="Run read alignings")
@@ -38,8 +38,29 @@ def main():
         help="Minimal read length after clipping (default 12). Should be "
         "higher for eukaryotic species.")
     read_aligning_parser.add_argument(
+        "--hit_strategy", "-H", default=1, type=int,
+        help="By default, only the best-scoring alignments will "
+        "be shown for each read.")
+
+    read_aligning_parser.add_argument(
         "--processes", "-p", default=1, type=int,
         help="Number of processes that should be used (default 1).")
+    read_aligning_parser.add_argument(
+        "--star", default=False, action="store_true",
+        help="Number of processes that should be used (default 1).")
+    read_aligning_parser.add_argument(
+        "--indexN", "-iN", default=14, type=int,
+        help="For small genomes, the parameter '--genomeSAindexNbases' needs "
+        "to be scaled down, with a typical value of min(14, "
+        " log2(GenomeLength)/2 - 1). For example, for 1 megaBase genome, "
+        " this is equal to 9, for 100 kb genome, this is equal to 7.")
+    read_aligning_parser.add_argument(
+        "--include_annotation", "-iA", default=False,
+        help="use annotation file for mapping process in order to improve "
+        "its accuracy")
+    read_aligning_parser.add_argument(
+        "--STAR_bin", default="STAR",
+        help="STAR's binary path (default 'STAR').")
     read_aligning_parser.add_argument(
         "--segemehl_accuracy", "-a", default=95.0, type=float,
         help="Segemehl's minimal accuracy (in %%) (default 95).")
@@ -254,6 +275,42 @@ def main():
         "directory is used.")
     viz_align_parser.set_defaults(func=viz_align)
 
+    # viz_align_2
+    viz_align_parser2 = subparsers.add_parser(
+        "viz_align_2",
+        help="Generate read processing and alignment visualisations.")
+    viz_align_parser2.add_argument(
+        "--paired_end", "-P", default=False, action="store_true",
+        help="Use this if reads originate from paired-end sequencing.")
+    viz_align_parser2.add_argument(
+        "project_path", default=".", nargs="?",
+        help="Path of the project folder. If none is given the current "
+        "directory is used.")
+    viz_align_parser2.set_defaults(func=viz_align_2)
+
+    # Parameters for viz_align_TK
+    viz_align_TK_parser = subparsers.add_parser(
+        "viz_align_TK",
+        help="Vizualisation of alignment output csv files; "
+        "viz_align_TK -i <input.csv> -o <output>")
+    viz_align_TK_parser.add_argument(
+        "--input_align", "-i",
+        help="Use for read_alignments_final.json input (<path/input file>)")
+    viz_align_TK_parser.add_argument(
+        "--output_align", "-o",
+        help="Use for read_alignments_final.json output (<path/output file>)")
+    viz_align_TK_parser.add_argument(
+        "--input_process", "-I",
+        help="Use for read_processing.json (<path/input file>)")
+    viz_align_TK_parser.add_argument(
+        "--output_process", "-O",
+        help="Use for read_processing.json output (<path/output file>)")
+    viz_align_TK_parser.add_argument(
+        "project_path", default=".", nargs="?",
+        help="Path of the project folder. If none is given the current "
+        "directory is used.")
+    viz_align_TK_parser.set_defaults(func=viz_align_TK)
+    
     # Parameters for viz_gene_quanti
     viz_gene_quanti_parser = subparsers.add_parser(
         "viz_gene_quanti",
@@ -296,26 +353,29 @@ def main():
 def create_project(controller):
     controller.create_project(__version__)
 
-
+def align_star(controller):
+    controller.align_star()
+    
 def align_reads(controller):
     controller.align_reads()
-
-
+    
 def create_coverage_files(controller):
     controller.create_coverage_files()
-
 
 def run_gene_wise_quantification(controller):
     controller.quantify_gene_wise()
 
-
 def run_deseq(controller):
     controller.compare_with_deseq()
-
 
 def viz_align(controller):
     controller.viz_align()
 
+def viz_align_2(controller):
+    controller.viz_align_2()
+    
+def viz_align_TK(controller):
+    controller.viz_align_TK()
 
 def viz_gene_quanti(controller):
     controller.viz_gene_quanti()
