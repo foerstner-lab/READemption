@@ -3,6 +3,7 @@ from collections import defaultdict
 from functools import reduce
 from reademptionlib.fasta import FastaParser
 import pysam
+import os
 
 
 class ReadAlignerStats(object):
@@ -12,16 +13,22 @@ class ReadAlignerStats(object):
 
     def count(self, read_alignment_result_bam_path, unaligned_reads_path):
         self._stats = {}
-        self._count_aligned_reads_and_alignments(
-            read_alignment_result_bam_path)
-        self._count_unaligned_reads(unaligned_reads_path)
+        if unaligned_reads_path == "NA":
+            self._count_aligned_reads_and_alignments(
+                read_alignment_result_bam_path)
+        else:
+            self._count_aligned_reads_and_alignments(
+                read_alignment_result_bam_path)
+            self._count_unaligned_reads(unaligned_reads_path)
         return self._stats
 
     def _count_unaligned_reads(self, unaligned_read_paths):
-        
-        with open(unaligned_read_paths) as fasta_fh:
-            self._stats["stats_total"][
-                "no_of_unaligned_reads"] = self._count_fasta_entries(fasta_fh)
+        if os.path.isfile(unaligned_read_paths):
+            with open(unaligned_read_paths) as fasta_fh:
+                self._stats[
+                    "stats_total"][
+                        "no_of_unaligned_reads"
+                    ] = self._count_fasta_entries(fasta_fh)
 
     def _count_fasta_entries(self, fasta_fh):
         return reduce(lambda x, y: x + 1,

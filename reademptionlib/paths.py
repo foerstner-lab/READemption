@@ -123,6 +123,7 @@ class Paths(object):
         self.read_alignment_stats_table_path = "%s/read_alignment_stats.csv" % (
             self.align_report_folder)
         self.index_path = "%s/index.idx" % self.read_alignment_index_folder
+        self.index_path_star = "%s/chrLength.txt" % self.read_alignment_index_folder
         self.deseq_script_path = "%s/deseq.R" % self.deseq_raw_folder
         self.deseq_pca_heatmap_path = "%s/sample_comparison_pca_heatmap.pdf" % (
             self.deseq_raw_folder)
@@ -202,6 +203,10 @@ class Paths(object):
     def get_annotation_files(self):
         """Read the names of annotation files."""
         return self._get_sorted_folder_content(self.annotation_folder)
+
+    def get_alignment_files(self):
+        """Read the names of STAR output files in order to alter them"""
+        return self._get_sorted_folder_content(self.read_alignments_folder)
 
     def required_folders(self):
         return (self.required_base_folders() +
@@ -368,3 +373,63 @@ class Paths(object):
             path += "_multi_by_%.1f" % (multi)
         path += "_%s.wig" % strand
         return path
+
+    def get_processed_read_files(self):
+            """Read the names of processed read files"""
+            return self._get_sorted_folder_content(self.processed_reads_folder)
+
+    def get_primary_alignment(self):
+        """Read the names of primary aligned sam files"""
+        return self._get_sorted_folder_content(self.read_alignments_folder)
+
+    def change_primary_aligned_sam_SE(self):
+        """Change the Prefix of STAR output SAM file"""
+        os.rename((self.read_alignments_folder + '/' +
+                   " ".join(self.get_lib_names_single_end()) +
+                   '_Aligned.out.sam'),
+                  (self.read_alignments_folder + '/'
+                   + " ".join(str(lib_name) for lib_name in
+                              self.get_lib_names_single_end())
+                   + "_alignments_primary_aligner.sam"))
+
+    def change_primary_aligned_sam_PE(self):
+        """Change the Prefix of STAR output SAM file"""
+        os.rename((self.read_alignments_folder + '/' +
+                   " ".join(self.get_lib_names_paired_end()) +
+                   '_Aligned.out.sam'),
+                  (self.read_alignments_folder + '/'
+                   + " ".join(str(lib_name) for lib_name in
+                              self.get_lib_names_paired_end())
+                   + "_alignments_primary_aligner.sam"))
+
+    def change_unmapped_filename_SE(self):
+        """Change file name of unmapped reads"""
+        os.rename((self.read_alignments_folder + '/'
+                   + " ".join(str(lib_name) for lib_name in
+                              self.get_lib_names_single_end())
+                   + '_Unmapped.out.mate1'),
+                  (self.unaligned_reads_folder + '/'
+                   + " ".join(str(lib_name) for lib_name in
+                              self.get_lib_names_single_end())
+                   + "_unaligned.fa"))
+       
+    def change_unmapped_filename_PE(self):
+        """Change file name of unmapped reads"""
+        os.rename((self.read_alignments_folder + '/'
+                   + " ".join(str(lib_name) for lib_name in
+                              self.get_lib_names_paired_end())
+                   + '_Unmapped.out.mate1'),
+                  (self.unaligned_reads_folder + '/'
+                   + " ".join(str(lib_name) for lib_name in
+                              self.get_lib_names_paired_end())
+                   + "_unaligned_1.fa"))
+        os.rename((self.read_alignments_folder + '/'
+                   + " ".join(str(lib_name) for lib_name in
+                              self.get_lib_names_paired_end())
+                   + '_Unmapped.out.mate2'),
+                  (self.unaligned_reads_folder + '/'
+                   + " ".join(str(lib_name) for lib_name in
+                              self.get_lib_names_paired_end())
+                   + "_unaligned_2.fa"))
+
+        """cat file1.fasta file2.fasta > combined.fasta"""
