@@ -1,155 +1,167 @@
-import csv
+import pandas as pd
 import numpy as np
+from bokeh.layouts import column
+from bokeh.plotting import figure, ColumnDataSource
+from bokeh.models import (HoverTool, BoxSelectTool, BoxZoomTool, ResetTool,
+                          PanTool, WheelZoomTool, ResizeTool)
+from bokeh.resources import CDN
+from bokeh.embed import file_html
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_pdf import PdfPages
-import pandas as pd
 
 
 class DESeqViz(object):
-    
-    def __init__(self, deseq_script_path, deseq_path_template, max_pvalue):
-        self._deseq_script_path = deseq_script_path
-        self._deseq_path_template = deseq_path_template
-        self._basemean_column = 1
-        self._log_2_fold_chance_column = 2
-        self._p_value_column = 5
-        self._adj_p_value_column = 6
-        self._p_value_significance_limit = max_pvalue
-        self._log_fold_change_limit = 2
-        self._log_2_fold_chance_limit = 1
 
-    def create_scatter_plots(self, plot_path):
-        self._pp_scatterplots = PdfPages(plot_path)
-        conditions = self._extract_condition_names()
-        for condition_1 in conditions:
-            for condition_2 in conditions:
-                if condition_1 == condition_2:
-                    continue
-                self._create_scatter_plots(condition_1, condition_2)
-        self._pp_scatterplots.close()
-
-    def _create_scatter_plots(self, condition_1, condition_2):
-        matplotlib.style.use('ggplot')
-        font = {'family': 'sans-serif', 'size': 7}
-        matplotlib.rc('font', **font)
-        deseq_result = pd.read_table(
-            self._deseq_path_template % (condition_1, condition_2))
-        fig = plt.figure()
-        plt.plot(np.log10(deseq_result.baseMean),
-                 deseq_result.log2FoldChange, ".", alpha=0.3)
-        significant_deseq_result = deseq_result[
-            deseq_result.padj < self._p_value_significance_limit]
-        non_significant_deseq_result = deseq_result[
-            deseq_result.padj >= self._p_value_significance_limit]
-        plt.plot(
-            np.log10(significant_deseq_result.baseMean),
-            significant_deseq_result.log2FoldChange, ".r", alpha=0.3)
-        plt.plot(
-            np.log10(non_significant_deseq_result.baseMean),
-            non_significant_deseq_result.log2FoldChange, ".k", alpha=0.5)
-        plt.title("{} vs. {} - MA plot".format(condition_1, condition_2))
-        y_max = max([abs(log2_fc)
-                     for log2_fc in deseq_result.log2FoldChange])
-        plt.ylim(-1.1 * y_max, 1.1 * y_max)
-        plt.xlabel("log10 base mean")
-        plt.ylabel("log2 fold-change")
-        self._pp_scatterplots.savefig()
-        plt.close(fig)
-
-    def create_volcano_plots(self, volcano_plot_path, volcano_plot_adj_path):
-        self._pp_raw = PdfPages(volcano_plot_path)
-        self._pp_adj = PdfPages(volcano_plot_adj_path)
-        conditions = self._extract_condition_names()
-        for condition_1 in conditions:
-            for condition_2 in conditions:
-                if condition_1 == condition_2:
-                    continue
-                self._create_volcano_plots(condition_1, condition_2)
-        self._pp_raw.close()
-        self._pp_adj.close()
-
-    def _extract_condition_names(self):
-        with open(self._deseq_script_path) as deseq_script_fh:
-            for line in deseq_script_fh:
-                if line.startswith("conds <- c('"):
-                    for string in ["conds <- c('", "(", ")", "'", ","]:
-                        line = line.replace(string, "")
-                    return sorted(list(set(line.split())))
+    def __init__(self, input_file, output_path, cutoff, condition, alpha,
+                 color_sig, color_non_sig, shape, glyph_size):
+        self._input_file = input_file
+        self._output_path = output_path
+        self._cutoff = cutoff
+        self._condition = condition
+        self._alpha = alpha
+        self._col_sig = str(color_sig)
+        self._col_non_sig = str(color_non_sig)
+        self._shape = shape
+        self._glyph_size = glyph_size
         
-    def _create_volcano_plots(self, condition_1, condition_2):
-        deseq_path = self._deseq_path_template % (condition_1, condition_2)
-        (basemean, log2_fold_changes, p_values,
-         adj_p_values) = self._parse_deseq_file(deseq_path)
-        cleaned_p_values = []
-        cleaned_log2_fold_changes = []
-        for p_value, log2_fold_change in zip(p_values, log2_fold_changes):
-            if p_value != "NA" and log2_fold_change != "NA":
-                cleaned_p_values.append(p_value)
-                cleaned_log2_fold_changes.append(log2_fold_change)
-        self._create_volcano_plot(
-            cleaned_log2_fold_changes, cleaned_p_values, condition_1,
-            condition_2, self._pp_raw)
-        cleaned_adj_p_values = []
-        cleaned_log2_fold_changes = []
-        for p_value, log2_fold_change in zip(adj_p_values, log2_fold_changes):
-            if p_value != "NA" and log2_fold_change != "NA":
-                cleaned_adj_p_values.append(p_value)
-                cleaned_log2_fold_changes.append(log2_fold_change)
-        self._create_volcano_plot(
-            cleaned_log2_fold_changes, cleaned_adj_p_values,
-            condition_1, condition_2, self._pp_adj,
-            pvalue_string_mod="(adjusted)")
+    def read_and_modificate_input(self):
+        deseq_data = pd.read_csv(self._input_file, sep='\t', skiprows=2)
+        attr_dic = []
+        for index, row in deseq_data.iterrows():
+            attr_dic.append(self._dictionary_attributes(row))
+        df_attributes = pd.DataFrame(attr_dic)
+        deseq_data_mod = pd.concat([deseq_data, df_attributes],
+                                   axis=1, join_axes=[deseq_data.index])
+        deseq_data_mod.drop("Attributes", axis=1, inplace=True)
+        self._plot_MH_matplotlib(deseq_data_mod)
+        self._plot_MA_matplotlib(deseq_data_mod)
+        self._plot_bokeh_MA(deseq_data_mod)
+    
+    def _plot_bokeh_MA(self, deseq_data_mod):
+        plots = []
+        deseq_sig = deseq_data_mod[deseq_data_mod.padj < self._cutoff]
+        deseq_no_sig = deseq_data_mod[deseq_data_mod.padj >= self._cutoff]
+        pl = figure(tools=[HoverTool(tooltips=[
+            ("Protein_ID", "@Name"), ("Sequence type", "@gbkey"),
+            ("Product", "@product"), ("log2FoldChange", "@log2FoldChange"),
+            ("baseMean", "@baseMean")]), PanTool(), BoxSelectTool(),
+                           BoxZoomTool(), WheelZoomTool(), ResizeTool(),
+                           ResetTool()])
+        pl.background_fill_color = "White"
+        pl.grid.grid_line_color = "black"
+        pl.xaxis.axis_label = 'log10 baseMean'
+        pl.yaxis.axis_label = 'log2 FoldChange'
+        pl.title.text = 'MA Plot'
+        self._plot(pl, np.log10(deseq_sig["baseMean"]),
+                   deseq_sig["log2FoldChange"], self._col_sig,
+                   self._glyph_size, self._alpha, 'padj significant')
+        self._plot(pl, np.log10(deseq_no_sig["baseMean"]),
+                   deseq_no_sig["log2FoldChange"], self._col_non_sig,
+                   self._glyph_size, self._alpha, 'padj non-significant')
+        plots.append(pl)
+        self._plot_bokeh_MH(deseq_data_mod, plots)
 
-    def _create_volcano_plot(
-        self, log2_fold_changes, p_values, condition_1, condition_2, pp,
-            pvalue_string_mod=""):
-        fig = plt.figure()
-        max_log_2_fold_change = max(
-            [abs(min(log2_fold_changes)),
-             abs(max(log2_fold_changes))])
-        mod_p_values = -1 * np.log10(p_values)
-        max_mod_p_values = max(mod_p_values)
-        # Set axis ranges
-        plt.axis([-1*max_log_2_fold_change, max_log_2_fold_change,
-                  0, max_mod_p_values])
-        plt.plot(log2_fold_changes, mod_p_values, "k.", alpha=0.3)
-        # Add axis labels
-        plt.xlabel("log$_2$ fold change")
-        plt.ylabel("- log$_{10}$ p-value %s" % (pvalue_string_mod))
-        plt.title("%s vs. %s" % (condition_1, condition_2))
-        signifant_p_value = -1*np.log10(self._p_value_significance_limit)
-        plt.plot([-1*max_log_2_fold_change, max_log_2_fold_change],
-                 [signifant_p_value, signifant_p_value],
-                 linestyle="dotted", color="green", alpha=0.5)
-        # log2_fold_change_limit = 1 (never used)
-        plt.plot([-1*self._log_2_fold_chance_limit,
-                  -1*self._log_2_fold_chance_limit],
-                 [0, max_mod_p_values],
-                 linestyle="dotted", color="green", alpha=0.5)
-        plt.plot([self._log_2_fold_chance_limit,
-                  self._log_2_fold_chance_limit],
-                 [0, max_mod_p_values],
-                 linestyle="dotted", color="green", alpha=0.5)
-        pp.savefig()
-        plt.close(fig)
+    def _plot_bokeh_MH(self, deseq_data_mod, plots):
+        for replicon, data_group in deseq_data_mod.groupby(["Sequence name"]):
+            data_group_sig = data_group[data_group.padj < self._cutoff]
+            data_group_no_sig = data_group[data_group.padj >= self._cutoff]
+            pl = figure(tools=[HoverTool(tooltips=[
+                ("Protein_ID", "@Name"), ("Sequence type", "@gbkey"),
+                ("Product", "@product"), ("log2FoldChange", "@log2FoldChange"),
+                ("baseMean", "@baseMean")]), PanTool(), BoxSelectTool(),
+                               BoxZoomTool(), WheelZoomTool(), ResizeTool(),
+                               ResetTool()])
+            pl.background_fill_color = "White"
+            pl.grid.grid_line_color = "black"
+            pl.xaxis.axis_label = 'Sequence Start Position'
+            pl.yaxis.axis_label = 'log2 FoldChange'
+            pl.title.text = 'MH Plot (' + replicon + ')'
+            pl.circle(data_group_sig["Start"],
+                      data_group_sig["log2FoldChange"], alpha=float(0.5),
+                      size=self._calc_glyph_size(data_group_sig),
+                      legend=('padj significant (cutoff: ' + str(
+                          self._cutoff) + ')'), color='Red')
+            pl.circle(data_group_no_sig["Start"],
+                      data_group_no_sig["log2FoldChange"],
+                      size=self._calc_glyph_size(
+                          data_group_no_sig), alpha=float(0.5),
+                      legend=('padj non-significant (cutoff: ' + str(
+                          self._cutoff) + ')'), color='Black')
+            plots.append(pl)
+        plot = column(*plots)
+        html = file_html(plot, CDN, 'MA & MH Plot {}'.format(
+            self._condition))
+        with open('{}/MA & MH Plot {}.html'.format(self._output_path,
+                                                   self._condition),
+                  'w') as output_bokeh:
+            output_bokeh.write(html)
+        
+    def _plot(self, pl, x, y, color, size, alpha, legend):
+        if self._shape == 'circle':
+            return(pl.circle(x, y, color=color, size=size, alpha=alpha,
+                             legend=legend))
+        if self._shape == 'square':
+            return(pl.square(x, y, color=color, size=size, alpha=alpha,
+                             legend=legend))
 
-    def _parse_deseq_file(self, deseq_path):
-        basemeans = []
-        log_2_fold_changes = []
-        p_values = []
-        adj_p_values = []
-        for row in csv.reader(open(deseq_path), delimiter="\t"):
-            if row[0].startswith("baseMean"):
-                continue
-            basemeans.append(float(row[self._basemean_column]))
-            for value_list, column_no in (
-                    (log_2_fold_changes, self._log_2_fold_chance_column),
-                    (p_values, self._p_value_column),
-                    (adj_p_values, self._adj_p_value_column)):
-                try:
-                    value_list.append(float(row[column_no]))
-                except ValueError:
-                    value_list.append(row[column_no])
-        return basemeans, log_2_fold_changes, p_values, adj_p_values
+    def _dictionary_attributes(self, row):
+        dic = dict([key.split("=")
+                    for key in row["Attributes"].split(";")])
+        return dic
+
+    def _calc_glyph_size(self, data):
+        return np.log2(data["End"].sub(data["Start"], axis=0))
+
+    def _plot_MH_matplotlib(self, deseq_data_mod):
+        with PdfPages('{}/MH_plot {}.pdf'.format(self._output_path,
+                                                 self._condition)) as pdf:
+            for replicon, data_group in deseq_data_mod.groupby([
+                    "Sequence name"]):
+                data_group_sig = data_group[data_group.padj < self._cutoff]
+                data_group_no_sig = data_group[data_group.padj >= self._cutoff]
+                matplotlib.style.use('ggplot')
+                fig = plt.figure()
+                ax = fig.add_subplot(111)
+                ax.scatter(data_group_sig["Start"].tolist(),
+                           data_group_sig["log2FoldChange"].tolist(),
+                           s=8, c='r', label=(
+                               'padj significant(cutoff: ' + str(
+                                   self._cutoff) + ')'))
+                ax.scatter(data_group_no_sig["Start"].tolist(),
+                           data_group_no_sig["log2FoldChange"].tolist(),
+                           s=8, c='k', label=(
+                               'padj non-significant(cutoff: ' + str(
+                                   self._cutoff) + ')'))
+                plt.xlabel('Sequence Start Position')
+                plt.ylabel('log2FoldChange')
+                plt.title('MH plot (' + replicon + ')')
+                leg = plt.legend(fancybox=True, loc='best')
+                leg.get_frame().set_alpha(0.5)
+                pdf.savefig()
+                plt.close()
+
+    def _plot_MA_matplotlib(self, deseq_data_mod):
+        deseq_sig = deseq_data_mod[deseq_data_mod.padj < self._cutoff]
+        deseq_no_sig = deseq_data_mod[deseq_data_mod.padj >= self._cutoff]
+        with PdfPages('{}/MA_plot {}.pdf'.format(self._output_path,
+                                                 self._condition)) as pdf:
+            matplotlib.style.use('ggplot')
+            fig = plt.figure()
+            ax = fig.add_subplot(111)
+            ax.scatter(np.log10(deseq_sig["baseMean"].tolist()),
+                       deseq_sig["log2FoldChange"].tolist(), s=8, c='r',
+                       label=('padj significant(cutoff: ' + str(
+                           self._cutoff) + ')'))
+            ax.scatter(np.log10(deseq_no_sig["baseMean"].tolist()),
+                       deseq_no_sig["log2FoldChange"], s=8, c='k', label=(
+                           'padj non-significant(cutoff: ' + str(
+                               self._cutoff) + ')'))
+            plt.xlabel('log10 baseMean')
+            plt.ylabel('log2 FoldChange')
+            plt.title('MA plot')
+            leg = plt.legend(fancybox=True, loc='best')
+            leg.get_frame().set_alpha(0.5)
+            pdf.savefig()
+            plt.close()
