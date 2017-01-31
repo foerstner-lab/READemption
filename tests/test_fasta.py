@@ -1,45 +1,12 @@
-from io import StringIO
-import unittest
 import sys
-sys.path.append(".")
+sys.path.append("./tests")
+from io import StringIO
 from reademptionlib.fasta import FastaParser
 
-class TestFastaParser(unittest.TestCase):
 
-    def setUp(self):
-        self.fasta_parser = FastaParser()
-        self.example_data = ExampleData()
-
-    def test_parse_1(self):
-        fasta_fh = StringIO(self.example_data.fasta_seqs_1)
-        self.assertEqual(
-            list(self.fasta_parser.entries(fasta_fh)), 
-            [('test_1 a random sequence', 'TTTAGAAATTACACA'), 
-             ('test_2 another random sequence', 'ACGAGAAATTAAATTAAATT'), 
-             ('test_3 another random sequence', 'TAGAGACATTGGATTTTATT')])
-
-    def test_parse_empty_file(self):
-        fasta_fh = StringIO("")
-        self.assertEqual(
-            list(self.fasta_parser.entries(fasta_fh)), [])
-
-    def test_single_entry_file_header(self):
-        fasta_fh = StringIO(self.example_data.fasta_seqs_2)
-        self.assertEqual(self.fasta_parser.single_entry_file_header(fasta_fh), 
-                         "test_4 a random sequence")
-
-    def test_header_id_1(self):
-        self.assertEqual(
-            self.fasta_parser.header_id("seq_10101 An important protein"),
-            "seq_10101")
-
-    def test_header_id_2(self):
-        self.assertEqual(
-            self.fasta_parser.header_id("seq_10101\tAn important protein"),
-            "seq_10101")
-
-class ExampleData(object):
-
+def test_fasta_parser():
+    # Define some dummy data & parser object
+    fasta_parser = FastaParser()
     fasta_seqs_1 = """>test_1 a random sequence
 TTTAG
 AAATT
@@ -55,14 +22,32 @@ ACATT
 GGATT
 TTATT
 """
-
     fasta_seqs_2 = """>test_4 a random sequence
 TTTAG
 AAATT
 ACACA
 """
-    
 
-if __name__ == "__main__":
-    unittest.main()
-    
+    # test fasta entry
+    fasta_fh = StringIO(fasta_seqs_1)
+    assert list(fasta_parser.entries(fasta_fh)) == [
+        ('test_1 a random sequence', 'TTTAGAAATTACACA'),
+        ('test_2 another random sequence', 'ACGAGAAATTAAATTAAATT'),
+        ('test_3 another random sequence', 'TAGAGACATTGGATTTTATT')]
+
+    # test empty fasta file
+    fasta_empty_fh = StringIO("")
+    assert list(fasta_parser.entries(fasta_empty_fh)) == []
+
+    # test single entry file header
+    fasta_header_fh = StringIO(fasta_seqs_2)
+    assert fasta_parser.single_entry_file_header(
+        fasta_header_fh) == "test_4 a random sequence"
+
+    # test header id 1
+    assert fasta_parser.header_id(
+        "seq_10101 An important protein") == "seq_10101"
+
+    # test header id 2
+    assert fasta_parser.header_id(
+        "seq_10101\tAn important protein") == "seq_10101"

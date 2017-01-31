@@ -1,0 +1,6 @@
+{
+  "test_coverage_calculator.py": true,
+  "test_genewisequanti.py": true,
+  "test_paths.py": true,
+  "test_segemehl.py": true
+}
