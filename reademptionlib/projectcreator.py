@@ -5,6 +5,7 @@ import matplotlib
 import pandas as pd
 import pysam
 
+
 class ProjectCreator(object):
 
     def create_root_folder(self, project_name):
