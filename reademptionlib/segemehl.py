@@ -18,9 +18,11 @@ class Segemehl(object):
         else:
             call(segemehl_call)
 
+    # Due to testing I changed threads -> threads=1, hit_strategy
+    # -> hit_strategy=1, nomatch_path deleted 'threads, nomatch_path, hit_s..'
     def run_alignment(
         self, read_file_or_pair, index_file, fasta_files, output_file,
-            threads, nomatch_path, hit_strategy, accuracy=95, evalue=5.0,
+            nomatch_path, threads=1, hit_strategy=1, accuracy=95, evalue=5.0,
             split=False, segemehl_format=False, order=False,
             other_parameters=None, paired_end=False):
         if not paired_end:
@@ -38,7 +40,7 @@ class Segemehl(object):
             "--index", index_file,
             "--database"] + fasta_files + [
             "--outfile", output_file,
-            "--threads", str(threads), 
+            "--threads", str(threads),
             "--nomatchfilename", nomatch_path,
             "--hitstrategy", str(hit_strategy),
             "--accuracy", str(accuracy),
