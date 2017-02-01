@@ -56,10 +56,12 @@ class DESeqViz(object):
         pl.title.text = 'MA Plot'
         self._plot(pl, np.log10(deseq_sig["baseMean"]),
                    deseq_sig["log2FoldChange"], self._col_sig,
-                   self._glyph_size, self._alpha, 'padj significant')
+                   self._glyph_size, self._alpha, 'padj significant',
+                   ColumnDataSource(deseq_sig))
         self._plot(pl, np.log10(deseq_no_sig["baseMean"]),
                    deseq_no_sig["log2FoldChange"], self._col_non_sig,
-                   self._glyph_size, self._alpha, 'padj non-significant')
+                   self._glyph_size, self._alpha, 'padj non-significant',
+                   ColumnDataSource(deseq_no_sig))
         plots.append(pl)
         self._plot_bokeh_MH(deseq_data_mod, plots)
 
@@ -82,13 +84,15 @@ class DESeqViz(object):
                       data_group_sig["log2FoldChange"], alpha=float(0.5),
                       size=self._calc_glyph_size(data_group_sig),
                       legend=('padj significant (cutoff: ' + str(
-                          self._cutoff) + ')'), color='Red')
+                          self._cutoff) + ')'), color='Red',
+                      source=ColumnDataSource(data_group_sig))
             pl.circle(data_group_no_sig["Start"],
                       data_group_no_sig["log2FoldChange"],
                       size=self._calc_glyph_size(
                           data_group_no_sig), alpha=float(0.5),
                       legend=('padj non-significant (cutoff: ' + str(
-                          self._cutoff) + ')'), color='Black')
+                          self._cutoff) + ')'), color='Black',
+                      source=ColumnDataSource(data_group_no_sig))
             plots.append(pl)
         plot = column(*plots)
         html = file_html(plot, CDN, 'MA & MH Plot {}'.format(
@@ -98,13 +102,13 @@ class DESeqViz(object):
                   'w') as output_bokeh:
             output_bokeh.write(html)
         
-    def _plot(self, pl, x, y, color, size, alpha, legend):
+    def _plot(self, pl, x, y, color, size, alpha, legend, source):
         if self._shape == 'circle':
             return(pl.circle(x, y, color=color, size=size, alpha=alpha,
-                             legend=legend))
+                             legend=legend, source=source))
         if self._shape == 'square':
             return(pl.square(x, y, color=color, size=size, alpha=alpha,
-                             legend=legend))
+                             legend=legend, source=source))
 
     def _dictionary_attributes(self, row):
         dic = dict([key.split("=")
