@@ -238,7 +238,9 @@ class GeneQuantiViz(object):
                                                           WheelZoomTool(),
                                                           ResetTool()])
                     pl.scatter(gene_quanti_combined_raw[lib_1],
-                               gene_quanti_combined_raw[lib_2], color='Black')
+                               gene_quanti_combined_raw[lib_2], color='Black',
+                               source=ColumnDataSource(
+                                   gene_quanti_combined_raw))
                     pl.xaxis.axis_label = 'Expression %s' % (lib_1)
                     pl.yaxis.axis_label = 'Expression %s' % (lib_2)
                     pl.title.text_font_style = 'italic'
