@@ -1,5 +1,6 @@
 import hashlib
 import os
+import re
 import sys
 sys.path.append("./tests")
 import segemehl_data as sd
@@ -148,4 +149,7 @@ def align_reads_and_give_result(read_file_content, **kwargs):
     result_fh = open(sd.aligning_result_path)
     result = result_fh.read()
     result_fh.close()
-    return result
+    if '--silent' in result:
+        map_spec, reads = result.split("--silent", 1)
+    return reads
+    
