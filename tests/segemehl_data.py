@@ -45,25 +45,17 @@ GATCCGGTAGAAAAATTGCTGGCGGTGGGCCATTACCTTGAATCTACCGTCGATATCGCG
 GAATCGACTCGCCGTATCGCCGCCAGCCAGATCCCGGCCGATCACATGATCCTGATGGCG
 GGCTTTACCGCCGGTAATGAAAAGGGTGAACTGGTGGTGCTGGGCCGTAATGGTTCCGAC
 """
-    sam_result_aligned_1 = """@HD	VN:1.0
-@SQ	SN:SL1344	LN:960
-@PG	ID:segemehl	VN:0.2.0-$Rev: 418 $ ($Date: 2015-01-05 05:17:35 -0500 (Mon, 05 Jan 2015) $)	CL:segemehl.x --query /tmp/test_reads.fa --index /tmp/test.idx --database /tmp/test.fa --outfile /tmp/test_aligning_results.sam --threads 1 --nomatchfilename /tmp/test_unmapped_reads.fa --hitstrategy 1 --accuracy 95 --evalue 5.0 --silent
+    sam_result_aligned_1 = """
 read_01	0	SL1344	181	255	60M	*	0	0	ACAACATCCATGAACCGCATCAGCACCACCACCATTACCACCATCACCATTACCACAGGT	*	NM:i:0	MD:Z:60	NH:i:1	XI:i:0	XA:Z:Q
 """
-    sam_result_aligned_2 = """@HD	VN:1.0
-@SQ	SN:SL1344	LN:960
-@PG	ID:segemehl	VN:0.2.0-$Rev: 418 $ ($Date: 2015-01-05 05:17:35 -0500 (Mon, 05 Jan 2015) $)	CL:segemehl.x --query /tmp/test_reads.fa --index /tmp/test.idx --database /tmp/test.fa --outfile /tmp/test_aligning_results.sam --threads 1 --nomatchfilename /tmp/test_unmapped_reads.fa --hitstrategy 1 --accuracy 95 --evalue 5.0 --silent
+    sam_result_aligned_2 = """
 read_03	0	SL1344	301	255	20M	*	0	0	GCTTTTTTTTCGACCAGACA	*	NM:i:1	MD:Z:18G1	NH:i:1	XI:i:0	XA:Z:Q
 """
 
-    sam_result_aligned_3 = """@HD	VN:1.0
-@SQ	SN:SL1344	LN:960
-@PG	ID:segemehl	VN:0.2.0-$Rev: 418 $ ($Date: 2015-01-05 05:17:35 -0500 (Mon, 05 Jan 2015) $)	CL:segemehl.x --query /tmp/test_reads.fa --index /tmp/test.idx --database /tmp/test.fa --outfile /tmp/test_aligning_results.sam --threads 1 --nomatchfilename /tmp/test_unmapped_reads.fa --hitstrategy 1 --accuracy 90 --evalue 5.0 --silent
+    sam_result_aligned_3 = """
 read_05	0	SL1344	301	255	20M	*	0	0	GCTTTTTTTTCGACCAGTCA	*	NM:i:2	MD:Z:17A0G1	NH:i:1	XI:i:0	XA:Z:Q
 """
-    sam_result_no_aligned = """@HD	VN:1.0
-@SQ	SN:SL1344	LN:960
-@PG	ID:segemehl	VN:0.2.0-$Rev: 418 $ ($Date: 2015-01-05 05:17:35 -0500 (Mon, 05 Jan 2015) $)	CL:segemehl.x --query /tmp/test_reads.fa --index /tmp/test.idx --database /tmp/test.fa --outfile /tmp/test_aligning_results.sam --threads 1 --nomatchfilename /tmp/test_unmapped_reads.fa --hitstrategy 1 --accuracy 95 --evalue 5.0 --silent
+    sam_result_no_aligned = """
 """
     global fasta_file_path
     global index_file_path
