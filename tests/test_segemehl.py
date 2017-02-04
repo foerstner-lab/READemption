@@ -1,6 +1,5 @@
 import hashlib
 import os
-import re
 import sys
 sys.path.append("./tests")
 import segemehl_data as sd
