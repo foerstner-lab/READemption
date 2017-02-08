@@ -1,15 +1,23 @@
 from reademptionlib.controller_projectcreator import CreateProject
 from reademptionlib.controller_alignment import PerformAlignment
+from reademptionlib.controller_coverage import CalculateCoverage
+from reademptionlib.controller_genequanti import GeneQuantification
+from reademptionlib.controller_deseq import RunDeseq
 
 
 def data_controllers():
-    arg_mock = ArgMock()
+    arg_mock_align = ArgMockAlignment()
+    arg_mock_cov = ArgMockCoverage()
+    arg_mock_quanti = ArgMockQuanti()
+    arg_mock_deseq = ArgMockDESeq()
     version = "0.4.4.dev"
     test_project_name = "a_test_project"
-    project_creator = CreateProject(arg_mock)
-
-    controller_align = PerformAlignment(arg_mock)
-
+    project_creator = CreateProject(arg_mock_align)
+    controller_align = PerformAlignment(arg_mock_align)
+    controller_coverage = CalculateCoverage(arg_mock_cov)
+    controller_genequanti = GeneQuantification(arg_mock_quanti)
+    controller_deseq = RunDeseq(arg_mock_deseq)
+   
     genome_fasta = """>SL1344 genome sequence
 AGAGATTACGTCTGGTTGCAAGAGATCATGACAGGGGGAATTGGTTGAAAATAAATATAT
 CGCCAGCAGCACATGAACAAGTTTCGGAATGTGATCAATTTAAAAATTTATTGACTTAGG
@@ -27,6 +35,26 @@ ATGTCGATCGCGATTATGGCGGGACTTCTGGAGGCGCGTGGGCATCGCGTCACGGTGATC
 GATCCGGTAGAAAAATTGCTGGCGGTGGGCCATTACCTTGAATCTACCGTCGATATCGCG
 GAATCGACTCGCCGTATCGCCGCCAGCCAGATCCCGGCCGATCACATGATCCTGATGGCG
 GGCTTTACCGCCGGTAATGAAAAGGGTGAACTGGTGGTGCTGGGCCGTAATGGTTCCGAC
+AACGGTGCGGGCTGACGCGTACAGGAAACACAGAAAAAAGCCCGCACCTGAACAGTGCGG
+CGGTTGAAAATGGTTGTCGAACAAGAATTCGCTCAGATCAAACATGTTCTGCATGGTATC
+ATGTCGATCGCGATTATGGCGGGACTTCTGGAGGCGCGTGGGCATCGCGTCACGGTGATC
+AGGCAAGGGCAGGTAGCGACCGTACTTAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+TTGTCGAACAAGAATTCGCTCAGATCAAAAAAAAAAAAGGGGGTGTAAAAAAAGTGTAAA
+GTGGGGTGGGTAGAGAGAGAGATTTTTTTGAGAGAGAGAAGGGTTTTTAGAGTAGAGAGG
+CGCCAGCCAGATCCCGAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+GGCCATTACCTTGAATCTACCGTCGATATCGCGGAATCGACTCGCCGTATCGAAAAAAAA
+AAAGGGACTTCTGGAGGCGCGTGGGCATCGCGTCACGGTGAAAAAAAAAAAAAAAAAAAA
+TCTGGAGGCGCGTGGGCATCGCGTCACGGTAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+GAATCGACTCGCCGTATCGCCGCCAGCCAGATCCCGGCCGATCAGATGATCCTGATGGCG
+ATGGCGGGACTTCTGGAGGCGCGTGGGCATCGCGTCACGGTGATCAAAAAAAAAAAAAAA
+GGTCAGTGCCCGGATAGCATCAACGCCGCGCTGATTTGCAAAAAAAAAAAAAAAAAAAAA
+AAGTTTTTTTGTGAGAGAGAAGTTTTGAGAGAGAGTTAGAGGAAAAAAAAAAAAAAAAAA
+CGCCAGCAGCACATGAACAAGTTTCGGAATGTGATCAATTTAAAAATTTATTGACTTAGG
+CGCCAGCAGCACATGAACAAGTTTCGGAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+ATGAACAAGTTTCGGAATGTGATCAATTTAAAAATTTATTGACTTAGGAAAAAAAAAAAA
+TGTGATCAATTTAAAAATTTATTGACTTAGGAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+GGCCATGACCTTGAATCTACCGTCGATATCGCGGAATCGACTCGCCGTATCGAAAAAAAA
 """ 
 
     read_fasta_1 = """>read_01
@@ -130,6 +158,9 @@ read_01	SL1344	50	59	+	1	no_overlap
     global version
     global project_creator
     global controller_align
+    global controller_coverage
+    global controller_genequanti
+    global controller_deseq
     global genome_fasta
     global read_fasta_1
     global read_fasta_2
@@ -141,7 +172,7 @@ read_01	SL1344	50	59	+	1	no_overlap
     global overlap_output_2
 
     
-class ArgMock(object):
+class ArgMockAlignment(object):
     project_path = "a_test_project"
     min_read_length = 20
     STAR_bin = "STAR"
@@ -160,4 +191,55 @@ class ArgMock(object):
     adapter = None
     reverse_complement = False
 
-    
+
+class ArgMockCoverage(object):
+    project_path = "a_test_project"
+    processes = 1
+    normalize_by_uniquely = False
+    non_strand_specific = False
+    skip_read_count_splitting = False
+    unique_only = False
+    coverage_style = "global"
+    clip_length = 11
+    check_for_existing_files = False
+
+
+class ArgMockQuanti(object):
+    project_path = "a_test_project"
+    min_overlap = 1
+    read_region = "global"
+    clip_length = 1
+    paired_end = False
+    no_count_split_by_alignment_no = False
+    no_count_splitting_by_gene_no = False
+    skip_antisense = False
+    non_strand_specific = False
+    processes = 1
+    features = None
+    allowed_features = None
+    unique_only = False
+    pseudocounts = False
+    check_for_existing_files = False
+
+
+class ArgMockDESeq(object):
+    project_path = "a_test_project"
+    libs = "libbar.fa,libfoo.fa"
+    conditions = "condition_1,condition_2"
+    cooks_cutoff_off = False
+    padj_cutoff = 0.05
+    shape = "circle"
+    alpha = 0.5
+    color_sig = "red"
+    color_non_sig = "black"
+    glyph_size = 8
+    deseq_raw_folder = "{}/output/deseq/deseq_raw".format(project_path)
+    deseq_extended_folder = "{}/output/deseq/deseq_with_annotations".format(
+        project_path)
+    deseq_script_path = deseq_raw_folder
+    deseq_pca_heatmap_path = deseq_raw_folder
+    gene_wise_quanti_combined_path = deseq_raw_folder
+    deseq_tmp_session_info_script = deseq_raw_folder
+    deseq_session_info = deseq_raw_folder
+
+
