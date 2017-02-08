@@ -31,8 +31,10 @@ def test_read_aligning():
     
     genome_fh.write(cd.genome_fasta)
     genome_fh.close()
+    # File containing overlap sequences with reference but not annotation
     read_fh_1.write(cd.read_fasta_1)
     read_fh_1.close()
+    # file containing overlap sequences with the reference and annotation
     read_fh_2.write(cd.read_fasta_2)
     read_fh_2.close()
     
@@ -46,3 +48,12 @@ def test_read_aligning():
     cd.controller_align._paths._set_folder_names()
     cd.controller_align.align_reads()
 
+    # Create coverage files
+    cd.controller_coverage._paths.required_coverage_folders()
+    cd.controller_coverage.create_coverage_files()
+
+    # Perform gene wise quantification
+    cd.controller_genequanti.quantify_gene_wise()
+    
+    # Perform DESeq
+    cd.controller_deseq.compare_with_deseq()
