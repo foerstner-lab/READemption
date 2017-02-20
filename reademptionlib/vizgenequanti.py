@@ -99,8 +99,11 @@ class GeneQuantiViz(object):
         font = {'family': 'sans-serif', 'weight': 'normal', 'size': 6}
         matplotlib.rc('font', **font)
         plt.title("Number of reads per RNA classes")
-        color_map = plt.get_cmap('Accent')
-        cNorm  = colors.Normalize(vmin=0, vmax=len(all_classes_sorted)-1)
+        color_map = plt.get_cmap('Set3')
+        cNorm  = colors.Normalize(vmin=0,
+                                  vmax=(len(all_classes_sorted) * len(
+                                      self._lib_names_and_class_quanti[
+                                          self._lib_names[0]].keys())) - 1)
         scalarMap = cm.ScalarMappable(norm=cNorm, cmap=color_map)
         color_index = 0
         for direction in self._lib_names_and_class_quanti[
