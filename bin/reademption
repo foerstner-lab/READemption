@@ -55,20 +55,9 @@ def main():
         action="store_true", help="Perform polyA tail clipping. This option "
         "cannot be used for paired-end reads.")
     read_aligning_parser.add_argument(
-        "--realign", "-r", default=False, action="store_true",
-        help="Perform realignment of unmapped reads using 'lack'.")
-    read_aligning_parser.add_argument(
         "--keep_original_alignments", "-k", default=False, action="store_true",
         help="Only used with --realign/-r. Keep the alignment file of the "
         "primary mapper (segemehl) and the realigner (lack) after merging.")
-    read_aligning_parser.add_argument(
-        "--lack_bin", "-L", default="lack.x",
-        help="Lack's binary path (default 'lack.x').")
-    '''
-    read_aligning_parser.add_argument(
-        "--fastq", "-q", default=False, action="store_true",
-        help="Input reads are in FASTQ not FASTA format.")
-    '''
     read_aligning_parser.add_argument(
         "--min_phred_score", "-Q", default=None, type=int,
         help="Minimal Phred score. Works only if read are given in FASTQ "
@@ -132,6 +121,12 @@ def main():
     read_aligning_parser.add_argument(
         "--split", "-S", default=False, action="store_true",
         help="Run segemehl with read splitting.")
+    read_aligning_parser.add_argument(
+        "--lack_bin", "-L", default="lack.x",
+        help="Lack's binary path (default 'lack.x').")
+    read_aligning_parser.add_argument(
+        "--realign", "-r", default=False, action="store_true",
+        help="Perform realignment of unmapped reads using 'lack'.")
     # Cutadapt
     read_aligning_parser.add_argument(
         "--cutadapt", default=False, action="store_true",
@@ -141,7 +136,7 @@ def main():
         help="cutadapt's binary path (default 'cutadapt').")
     read_aligning_parser.add_argument(
         "--cutadapt_options", "-cc", nargs="*", help="Specify in '' the desired "
-        "cutadapt options (i.e. -cc='-a ACTG'). Please keep in mind the order of the options.")
+        "cutadapt options (e.g. -cc='-a A{30}, -m 12'). Please keep in mind the order of the options.")
     read_aligning_parser.add_argument(
         "--min_read_length", "-l", default=12, type=int,
         help="Minimal read length after clipping (default 12). Should be "
