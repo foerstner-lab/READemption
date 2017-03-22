@@ -437,4 +437,13 @@ class Paths(object):
                               "{}/{}".format(self.unaligned_reads_folder,
                                              change_unmapped_output_2))
 
-
+    def gzip_processed_reads(self):
+        
+        with gzip.open(output_path, 'rb') as input_fh:
+            with gzip.open('{}.gz'.format(output_path), 'wb') as output_fh:
+                shutil.copyfileobj(input_fh, output_fh)
+                
+        for output_file in os.listdir(self.processed_reads_folder):
+            if output_file.endswith('fa'):
+                os.remove('{}/{}'.format(
+                    self.processed_reads_folder, output_file))
