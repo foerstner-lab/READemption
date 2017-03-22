@@ -17,7 +17,7 @@ from reademptionlib.star import STAR
 
 
 class PerformAlignment(object):
-    """Perform the alignment with either Segemehl or STAR as Alignment tool."""
+    """Perform the alignment with either Segemehl or STAR."""
 
     def __init__(self, args):
         """Create an instance."""
@@ -85,13 +85,13 @@ class PerformAlignment(object):
                 self._paths.realigned_unaligned_reads_paths)
         if self._args.crossalign_cleaning_str is not None:
             self._remove_crossaligned_reads()
-        self._generate_read_alignment_stats(
-            self._lib_names,
-            self._paths.read_alignment_bam_paths,
-            final_unaligned_reads_paths,
-            self._paths.read_alignments_stats_path)
-        self._write_alignment_stat_table()
         if not self._args.cutadapt:
+            self._generate_read_alignment_stats(
+                self._lib_names,
+                self._paths.read_alignment_bam_paths,
+                final_unaligned_reads_paths,
+                self._paths.read_alignments_stats_path)
+            self._write_alignment_stat_table()
             self._align_viz.alignment_viz(
                 self._paths.read_alignments_stats_path, "{}".format(
                     self._paths.viz_align_base_folder))
@@ -152,15 +152,17 @@ class PerformAlignment(object):
             for lib_name, read_path, processed_read_path in zip(
                     self._lib_names, self._paths.read_paths,
                     self._paths.processed_read_paths):
-                if not self._file_needs_to_be_created(processed_read_path):
+                if not self._helpers.file_needs_to_be_created(
+                        processed_read_path):
                     continue
                 cutadapt = Cutadapt(
                     self._args.cutadapt_options, self._args.cutadapt_bin)
                 read_files_and_jobs[lib_name] = executor.submit(
                     cutadapt.run_cutadapt_se, read_path,
                     self._paths.processed_reads_folder, lib_name)
-        self._evaluet_job_and_generate_stat_file(read_files_and_jobs)
-
+        # self._paths.gzip_processed_reads()
+        self._helpers.check_job_completeness(read_files_and_jobs.values())
+                
     def _evaluet_job_and_generate_stat_file(self, read_files_and_jobs):
         raw_stat_data_writer = RawStatDataWriter(pretty=True)
         # Evaluate thread outcome
@@ -266,7 +268,7 @@ class PerformAlignment(object):
                 read_files_and_jobs[lib_name] = executor.submit(
                     cutadapt.run_cutadapt_pe, read_path_pair,
                     self._paths.processed_reads_folder, lib_name)
-        self._evaluet_job_and_generate_stat_file(read_files_and_jobs)
+        self._helpers.check_job_completeness(read_files_and_jobs.values())
 
     def _align_pe_star(self):
         read_aligner = STAR(
