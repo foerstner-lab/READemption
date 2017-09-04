@@ -5,11 +5,12 @@ import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_pdf import PdfPages
+import matplotlib.colors as colors
 import matplotlib.cm as cm
 
 
 class GeneQuantiViz(object):
-    
+
     def __init__(self, gene_wise_quanti_combined_path, lib_names,
                  use_antisene=True, axis_min=None, axis_max=None):
         self._gene_wise_quanti_combined_path = gene_wise_quanti_combined_path
@@ -34,7 +35,7 @@ class GeneQuantiViz(object):
                     self._lib_names[index]].append(float(cell))
                 self._lib_names_and_class_quanti[
                     self._lib_names[index]][row[0]][row[3]] += float(cell)
-        
+
     def plot_correlations(self, plot_path):
         self._prepare_document(plot_path)
         if self._axis_min is None:
@@ -98,6 +99,12 @@ class GeneQuantiViz(object):
         font = {'family': 'sans-serif', 'weight': 'normal', 'size': 6}
         matplotlib.rc('font', **font)
         plt.title("Number of reads per RNA classes")
+        color_map = plt.get_cmap('Set3')
+        cNorm  = colors.Normalize(vmin=0,
+                                  vmax=(len(all_classes_sorted) * len(
+                                      self._lib_names_and_class_quanti[
+                                          self._lib_names[0]].keys())) - 1)
+        scalarMap = cm.ScalarMappable(norm=cNorm, cmap=color_map)
         color_index = 0
         for direction in self._lib_names_and_class_quanti[
                 self._lib_names[0]].keys():
@@ -105,8 +112,7 @@ class GeneQuantiViz(object):
                 countings = [
                     self._lib_names_and_class_quanti[lib][direction][
                         anno_class] for lib in self._lib_names]
-                color = cm.Accent(
-                    1.0/(float(len(all_classes_sorted))*2)*color_index)
+                color = scalarMap.to_rgba(color_index)
                 plt.bar(range(no_of_libs), countings, align="center",
                         bottom=bottom, linewidth=0, color=color, width=0.5,
                         label=anno_class+" "+direction)
