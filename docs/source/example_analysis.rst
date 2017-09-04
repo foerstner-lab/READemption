@@ -67,7 +67,7 @@ folder it several times we store it in an environment variable called
 
 ::
 
-  $ FTP_SOURCE=ftp://ftp.ncbi.nih.gov/genomes/Bacteria/Salmonella_enterica_serovar_Typhimurium_SL1344_uid86645
+  $ FTP_SOURCE=ftp://ftp.ncbi.nih.gov/genomes/archive/old_refseq/Bacteria/Salmonella_enterica_serovar_Typhimurium_SL1344_uid86645/
 
 We download the reference sequence (the chromosome and three plasmids)
 in FASTA format and store them in the ``reference_sequences``
