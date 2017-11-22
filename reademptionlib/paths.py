@@ -259,7 +259,7 @@ class Paths(object):
     def set_read_files_dep_file_lists_single_end(self, read_files, lib_names):
         self.read_paths = self._path_list(self.read_fasta_folder, read_files)
         self.processed_read_paths = self._path_list(
-            self.processed_reads_folder, lib_names,
+            self.read_processing_base_folder, lib_names,
             appendix="_processed.fa.gz")
         self.unaligned_reads_paths = self._path_list(
             self.unaligned_reads_folder, lib_names,
@@ -275,8 +275,8 @@ class Paths(object):
             self._path_list(self.read_fasta_folder, read_file_pair)
             for read_file_pair in read_file_pairs]
         self.processed_read_path_pairs = [
-            self._path_list(
-                self.processed_reads_folder,
+            self._path_list(                
+                self.read_processing_base_folder,
                 [self._clean_file_name(read_file)
                  for read_file in read_file_pair], appendix="_processed.fa.gz")
             for read_file_pair in read_file_pairs]
@@ -284,10 +284,10 @@ class Paths(object):
         # together into on file. Due to this there is only one file
         # per pair.
         self.unaligned_reads_paths = self._path_list(
-            self.unaligned_reads_folder, lib_names, 
+            self.unaligned_reads_folder, lib_names,
             appendix="_unaligned.fa")
         self.realigned_unaligned_reads_paths = self._path_list(
-            self.unaligned_reads_folder, lib_names, 
+            self.unaligned_reads_folder, lib_names,
             appendix="_unaligned_after_realignment.fa")
         self._set_alignment_paths(lib_names)
 
@@ -379,7 +379,7 @@ class Paths(object):
 
     def get_processed_read_files(self):
             """Read the names of processed read files"""
-            return self._get_sorted_folder_content(self.processed_reads_folder)
+            return self._get_sorted_folder_content(self.read_processing_base_folder)
 
     def get_primary_alignment(self):
         """Read the names of primary aligned sam files"""
@@ -449,12 +449,10 @@ class Paths(object):
                                              change_unmapped_output_2))
 
     def gzip_processed_reads(self):
-        
         with gzip.open(output_path, 'rb') as input_fh:
             with gzip.open('{}.gz'.format(output_path), 'wb') as output_fh:
                 shutil.copyfileobj(input_fh, output_fh)
-                
-        for output_file in os.listdir(self.processed_reads_folder):
+        for output_file in os.listdir(self.read_processing_base_folder):
             if output_file.endswith('fa'):
                 os.remove('{}/{}'.format(
-                    self.processed_reads_folder, output_file))
+                    self.read_processing_base_folder, output_file))

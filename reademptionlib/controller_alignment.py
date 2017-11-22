@@ -3,14 +3,12 @@ import os
 from reademptionlib.vizalign import AlignViz
 from reademptionlib.bammerger import BamMerger
 from reademptionlib.crossalignfilter import CrossAlignFilter
-from reademptionlib.cutadapt import Cutadapt
 from reademptionlib.helpers import Helpers
 from reademptionlib.paths import Paths
 from reademptionlib.rawstatdata import RawStatDataWriter, RawStatDataReader
 from reademptionlib.readalignerstats import ReadAlignerStats
 from reademptionlib.readrealigner import ReadRealigner
 from reademptionlib.readalignerstatstable import ReadAlignerStatsTable
-from reademptionlib.readprocessor import ReadProcessor
 from reademptionlib.sambamconverter import SamToBamConverter
 from reademptionlib.segemehl import Segemehl
 from reademptionlib.star import STAR
@@ -122,46 +120,6 @@ class PerformAlignment(object):
         self._paths.primary_read_aligner_stats_path = (
             self._paths.read_alignments_stats_path)
 
-    def _prepare_reads_single_end(self):
-        """Manage the prepartion of reads before the actual mappings."""
-        read_files_and_jobs = {}
-        with concurrent.futures.ProcessPoolExecutor(
-                max_workers=self._args.processes) as executor:
-            for lib_name, read_path, processed_read_path in zip(
-                    self._lib_names, self._paths.read_paths,
-                    self._paths.processed_read_paths):
-                if not self._helpers.file_needs_to_be_created(
-                        processed_read_path):
-                    continue
-                read_processor = ReadProcessor(
-                    poly_a_clipping=self._args.poly_a_clipping,
-                    min_read_length=self._args.min_read_length,
-                    min_phred_score=self._args.min_phred_score,
-                    adapter=self._args.adapter,
-                    reverse_complement=self._args.reverse_complement)
-                read_files_and_jobs[lib_name] = executor.submit(
-                    read_processor.process_single_end, read_path,
-                    processed_read_path)
-        self._evaluet_job_and_generate_stat_file(read_files_and_jobs)
-
-    def _prepare_reads_se_cutadapt(self):
-        cutadapt = Cutadapt(self._args.cutadapt_bin)
-        read_files_and_jobs = {}
-        with concurrent.futures.ProcessPoolExecutor(
-                max_workers=self._args.processes) as executor:
-            for lib_name, read_path, processed_read_path in zip(
-                    self._lib_names, self._paths.read_paths,
-                    self._paths.processed_read_paths):
-                if not self._helpers.file_needs_to_be_created(
-                        processed_read_path):
-                    continue
-                cutadapt = Cutadapt(
-                    self._args.cutadapt_options, self._args.cutadapt_bin)
-                read_files_and_jobs[lib_name] = executor.submit(
-                    cutadapt.run_cutadapt_se, read_path,
-                    self._paths.processed_reads_folder, lib_name)
-        # self._paths.gzip_processed_reads()
-        self._helpers.check_job_completeness(read_files_and_jobs.values())
                 
     def _evaluet_job_and_generate_stat_file(self, read_files_and_jobs):
         raw_stat_data_writer = RawStatDataWriter(pretty=True)
@@ -230,45 +188,6 @@ class PerformAlignment(object):
                 int(self._args.segemehl_accuracy),
                 float(self._args.segemehl_evalue), self._args.split,
                 paired_end=False)
-
-    def _prepare_reads_paired_end(self):
-        read_files_and_jobs = {}
-        with concurrent.futures.ProcessPoolExecutor(
-                max_workers=self._args.processes) as executor:
-            for lib_name, read_path_pair, processed_read_path_pair in zip(
-                self._lib_names, self._paths.read_path_pairs,
-                    self._paths.processed_read_path_pairs):
-                for processed_read_path in processed_read_path_pair:
-                    if not self._helpers.file_needs_to_be_created(
-                            processed_read_path):
-                        continue
-                    read_processor = ReadProcessor(
-                        poly_a_clipping=False,
-                        min_read_length=self._args.min_read_length,
-                        min_phred_score=self._args.min_phred_score,
-                        adapter=self._args.adapter)
-                    read_files_and_jobs[lib_name] = executor.submit(
-                        read_processor.process_paired_end, read_path_pair,
-                        processed_read_path_pair)
-        self._evaluet_job_and_generate_stat_file(read_files_and_jobs)
-
-    def _prepare_reads_pe_cutadapt(self):
-        cutadapt = Cutadapt(self._args.cutadapt_bin)
-        read_files_and_jobs = {}
-        with concurrent.futures.ProcessPoolExecutor(
-                max_workers=self._args.processes) as executor:
-            for lib_name, read_path_pair, processed_read_path_pair in zip(
-                    self._lib_names, self._paths.read_path_pairs,
-                    self._paths.processed_read_path_pairs):
-                if not self._helpers.file_needs_to_be_created(
-                        processed_read_path_pair):
-                    continue
-                cutadapt = Cutadapt(
-                    self._args.cutadapt_options, self._args.cutadapt_bin)
-                read_files_and_jobs[lib_name] = executor.submit(
-                    cutadapt.run_cutadapt_pe, read_path_pair,
-                    self._paths.processed_reads_folder, lib_name)
-        self._helpers.check_job_completeness(read_files_and_jobs.values())
 
     def _align_pe_star(self):
         read_aligner = STAR(

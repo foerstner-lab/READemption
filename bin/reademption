@@ -42,10 +42,16 @@ def main():
     read_processing_parser.add_argument(
         "--project_path", "-f", help="Path of the project folder.",
         required=True)
-    read_processing_parser.set_defaults(func=process_reads)
     read_processing_parser.add_argument(
         "--processes", "-p", default=1, type=int,
-        help="Number of processes that should be used (default 1).")
+        help="Number of processes that should be used (default 1).")    
+    read_processing_parser.add_argument(
+        "--cutadapt_options", "-cc", default="", help="Specify in the desired "
+        "cutadapt options (e.g. -cc='-a A{30}, -m 12'). "
+        "Please keep of the options in mind the order o.")
+    read_processing_parser.add_argument(
+        "--cutadapt_bin", default="cutadapt",
+        help="cutadapt's binary path (default 'cutadapt').")
     read_processing_parser.add_argument(
         "--paired_end", "-P", default=False, action="store_true",
         help="Use this if reads are originating from a paired-end sequencing. "
@@ -53,6 +59,15 @@ def main():
         "of the file type suffixes (e.g. 'my_sample_p1.fa' and "
         "'my_sample_p2.fa' or 'my_sample_p1.fa.bz2' and 'my_sample_p2.fa.bz2'"
         "). This option cannot be used with polyA tail clipping.")
+    read_processing_parser.add_argument(
+        "--check_for_existing_files", "-F", default=False,
+        action="store_true", help="Check for existing files (e.g. from a "
+        "interrupted previous run) and do not overwrite them if they exits. "
+        "Attention! You have to take care that there are no partially "
+        "generated files left!")    
+    read_processing_parser.set_defaults(func=process_reads)
+
+    """
     read_processing_parser.add_argument(
         "--poly_a_clipping", "-c", default=False,
         action="store_true", help="Perform polyA tail clipping. This option "
@@ -70,12 +85,10 @@ def main():
         "--reverse_complement", "-R", default=False, action="store_true",
         help="Map reverse complement of the input reads.")
     read_processing_parser.add_argument(
-        "--cutadapt_options", "-cc", nargs="*", help="Specify in '' the desired "
-        "cutadapt options (e.g. -cc='-a A{30}, -m 12'). Please keep in mind the order of the options.")
-    read_processing_parser.add_argument(
         "--min_read_length", "-l", default=12, type=int,
         help="Minimal read length after clipping (default 12). Should be "
         "higher for eukaryotic species.")
+    """
 
     # Parameters for read alignment with segemehl
     align_segemehl_parser = subparsers.add_parser(
@@ -354,7 +367,8 @@ def create_project(args):
     project_create_controller.create_project(__version__)
 
 def process_reads(args):
-    read_processing_controller = ReadProcessingController(arg)
+    read_processing_controller = ReadProcessingController(args)
+    read_processing_controller.process_reads()
     
 def align_reads_with_segemehl(args):
     segemehl_controller = SegemehlController(args)
@@ -363,7 +377,7 @@ def align_reads_with_star(args):
     star_controller = StarController(args) 
     
 def create_coverage_files(args):
-    coverage_controler = CoverageController()
+    coverage_controler = CoverageController(args)
 
 def run_gene_wise_quantification(args):
     quanti_controller = QuantiController(args)

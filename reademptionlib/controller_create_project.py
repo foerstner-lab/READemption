@@ -36,4 +36,3 @@ folders in order to perform ongoing procession steps."""
             "Please copy read files into folder \"%s\" and "
             "reference sequences files into folder \"%s\".\n" % (
                 self._paths.read_fasta_folder, self._paths.ref_seq_folder))
-

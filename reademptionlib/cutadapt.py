@@ -10,8 +10,9 @@ class Cutadapt(object):
         output_path = "%s/%s_processed.fa.gz" % (
             processed_read_path, lib_name)
         cutadapt_call = [
-            self._cutadapt_bin, "-o", output_path, read_path,
-            str(self._cutadapt_options)[2:-2]]
+            self._cutadapt_bin, "--quiet", "-o", output_path,
+            self._cutadapt_options, read_path]
+                        
         call(cutadapt_call)
 
     def run_cutadapt_pe(
@@ -20,9 +21,9 @@ class Cutadapt(object):
             processed_read_path, lib_name)
         output_path_p2 = "%s/%s_p2_processed.fa.gz" % (
             processed_read_path, lib_name)
-        cutadapt_call = [self._cutadapt_bin, "-o", output_path_p1, "-p",
-                         output_path_p2, read_path_pair[0], read_path_pair[1],
-                         str(self._cutadapt_options)[2:-2]]
+        cutadapt_call = [self._cutadapt_bin, self._cutadapt_options,
+                         "-o", output_path_p1, "-p",
+                         output_path_p2, read_path_pair[0], read_path_pair[1]]
         call(cutadapt_call)
         
 
