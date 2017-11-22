@@ -4,12 +4,13 @@ import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_pdf import PdfPages
+"""
 from bokeh.charts import Bar
 from bokeh.layouts import column
 from bokeh.models import (HoverTool, BoxZoomTool, ResetTool)
 from bokeh.resources import CDN
 from bokeh.embed import file_html
-
+"""
 
 class AlignViz(object):
 

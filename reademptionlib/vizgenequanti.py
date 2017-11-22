@@ -9,6 +9,7 @@ import matplotlib.pyplot as plt
 from matplotlib.backends.backend_pdf import PdfPages
 import matplotlib.colors as colors
 import matplotlib.cm as cm
+"""
 from bokeh.plotting import figure, ColumnDataSource
 from bokeh.charts import Bar
 from bokeh.layouts import column
@@ -16,6 +17,7 @@ from bokeh.models import (HoverTool, BoxZoomTool, ResetTool, PanTool,
                           WheelZoomTool)
 from bokeh.resources import CDN
 from bokeh.embed import file_html
+"""
 
 
 class GeneQuantiViz(object):
