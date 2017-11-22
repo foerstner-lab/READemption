@@ -32,10 +32,141 @@ def main():
         "project_path", default=".", help="Name/path of the project.")
     create_project_parser.set_defaults(func=create_project,
                                        controller=CreateProject)
+
+    # Arguments for read procssing
+    read_processing_parser = subparsers.add_parser(
+        "process_reads", help="Process reads")
+    read_processing_parser.add_argument(
+        "project_path", default=".", help="Name/path of the project.")
+    read_processing_parser.set_defaults(func=process_reads,
+                                        controller=CreateProject)
+    read_processing_parser.add_argument(
+        "--processes", "-p", default=1, type=int,
+        help="Number of processes that should be used (default 1).")
+    read_processing_parser.add_argument(
+        "--paired_end", "-P", default=False, action="store_true",
+        help="Use this if reads are originating from a paired-end sequencing. "
+        "The members of a pair must be marked with '_p1' and '_p2' in front "
+        "of the file type suffixes (e.g. 'my_sample_p1.fa' and "
+        "'my_sample_p2.fa' or 'my_sample_p1.fa.bz2' and 'my_sample_p2.fa.bz2'"
+        "). This option cannot be used with polyA tail clipping.")
+    read_processing_parser.add_argument(
+        "--poly_a_clipping", "-c", default=False,
+        action="store_true", help="Perform polyA tail clipping. This option "
+        "cannot be used for paired-end reads.")
+    read_processing_parser.add_argument(
+        "--min_phred_score", "-Q", default=None, type=int,
+        help="Minimal Phred score. Works only if read are given in FASTQ "
+        "format. As soon as a based drop below this value it and all the "
+        "nucleotides downstream of it will be trimmed off.")
+    read_processing_parser.add_argument(
+        "--adapter", "-A", default=None, type=str,
+        help="Adapter sequence. If it is found in a read it and all the "
+        "nucleotides downstream will be trimmed off.")
+    read_processing_parser.add_argument(
+        "--reverse_complement", "-R", default=False, action="store_true",
+        help="Map reverse complement of the input reads.")    
     
-    # Parameters for read alignment
-    read_aligning_parser = subparsers.add_parser(
-        "align", help="Run read alignings")
+
+    # Parameters for read alignment with segemehl
+    align_segemehl_parser = subparsers.add_parser(
+        "align_segemehl", help="Align reads with segemehl")
+    align_segemehl_parser.add_argument(
+        "project_path", default=".", nargs="?",
+        help="Path of the project folder. If none is given the current "
+        "directory is used.")
+    align_segemehl_parser.add_argument(
+        "--processes", "-p", default=1, type=int,
+        help="Number of processes that should be used (default 1).")
+    align_segemehl_parser.add_argument(
+        "--paired_end", "-P", default=False, action="store_true",
+        help="Use this if reads are originating from a paired-end sequencing. "
+        "The members of a pair must be marked with '_p1' and '_p2' in front "
+        "of the file type suffixes (e.g. 'my_sample_p1.fa' and "
+        "'my_sample_p2.fa' or 'my_sample_p1.fa.bz2' and 'my_sample_p2.fa.bz2'"
+        "). This option cannot be used with polyA tail clipping.")
+    align_segemehl_parser.add_argument(
+        "--check_for_existing_files", "-f", default=False,
+        action="store_true", help="Check for existing files (e.g. from a "
+        "interrupted previous run) and do not overwrite them if they exits. "
+        "Attention! You have to take care that there are no partially "
+        "generated files left!")
+    align_segemehl_parser.add_argument(
+        "--progress", "-g", default=False, action="store_true",
+        help="Show progress of the segemehl mapping.")
+    align_segemehl_parser.add_argument(
+        "--crossalign_cleaning", "-x", default=None,
+        dest="crossalign_cleaning_str", metavar="CROSSALIGN_CLEANING_STRING",
+        help="Remove reads that are cross-mapped to replicons of different "
+        "species. To associated species and replicons give a string in the "
+        "following format: '<ORG_NAME_1>:<org_1_repl1>,<org_1_repl2>,..,"
+        "<org_1_repl_n>;<ORG_NAME_2>:<org_2_repl1>,<org_2_repl2>,..,"
+        "<org_2_repl_n>'")
+    align_segemehl_parser.add_argument(
+        "--hit_strategy", "-H", default=1, type=int,
+        help="By default, only the best-scoring alignments will "
+        "be shown for each read.")
+    align_segemehl_parser.add_argument(
+        "--segemehl_accuracy", "-a", default=95.0, type=float,
+        help="Segemehl's minimal accuracy (in %%) (default 95).")
+    align_segemehl_parser.add_argument(
+        "--segemehl_evalue", "-e", default=5.0, type=float,
+        help="Segemehl's maximal e-value (default 5.0).")
+    align_segemehl_parser.add_argument(
+        "--segemehl_bin", "-s", default="segemehl.x",
+        help="Segemehl's binary path (default 'segemehl.x').")
+    align_segemehl_parser.add_argument(
+        "--split", "-S", default=False, action="store_true",
+        help="Run segemehl with read splitting.")
+    align_segemehl_parser.add_argument(
+        "--lack_bin", "-L", default="lack.x",
+        help="Lack's binary path (default 'lack.x').")
+    align_segemehl_parser.add_argument(
+        "--realign", "-r", default=False, action="store_true",
+        help="Perform realignment of unmapped reads using 'lack'.")
+    
+    # Parameters for read alignment with STAR
+    align_star_parser = subparsers.add_parser(
+        "align_star", help="Align reads with STAR")
+    align_star_parser.add_argument(
+        "--STAR_bin", default="STAR",
+        help="STAR's binary path (default 'STAR').")
+    align_star_parser.add_argument(
+        "--indexN", "-iN", default=14, type=int,
+        help="For small genomes, the parameter '--genomeSAindexNbases' needs "
+        "to be scaled down, with a typical value of min(14, "
+        " log2(GenomeLength)/2 - 1). For example, for 1 megaBase genome, "
+        " this is equal to 9, for 100 kb genome, this is equal to 7. (STAR only).")
+    align_star_parser.add_argument(
+        "--include_annotation", "-iA", default=False,
+        help="use annotation file for mapping process in order to improve "
+        "its accuracy (STAR only).")    
+    align_star_parser.add_argument(
+        "--processes", "-p", default=1, type=int,
+        help="Number of processes that should be used (default 1).")
+    align_star_parser.add_argument(
+        "--paired_end", "-P", default=False, action="store_true",
+        help="Use this if reads are originating from a paired-end sequencing. "
+        "The members of a pair must be marked with '_p1' and '_p2' in front "
+        "of the file type suffixes (e.g. 'my_sample_p1.fa' and "
+        "'my_sample_p2.fa' or 'my_sample_p1.fa.bz2' and 'my_sample_p2.fa.bz2'"
+        "). This option cannot be used with polyA tail clipping.")
+    align_star_parser.add_argument(
+        "--check_for_existing_files", "-f", default=False,
+        action="store_true", help="Check for existing files (e.g. from a "
+        "interrupted previous run) and do not overwrite them if they exits. "
+        "Attention! You have to take care that there are no partially "
+        "generated files left!")
+    align_star_parser.add_argument(
+        "--crossalign_cleaning", "-x", default=None,
+        dest="crossalign_cleaning_str", metavar="CROSSALIGN_CLEANING_STRING",
+        help="Remove reads that are cross-mapped to replicons of different "
+        "species. To associated species and replicons give a string in the "
+        "following format: '<ORG_NAME_1>:<org_1_repl1>,<org_1_repl2>,..,"
+        "<org_1_repl_n>;<ORG_NAME_2>:<org_2_repl1>,<org_2_repl2>,..,"
+        "<org_2_repl_n>'")
+    
+    """   
     read_aligning_parser.add_argument(
         "project_path", default=".", nargs="?",
         help="Path of the project folder. If none is given the current "
@@ -143,6 +274,8 @@ def main():
         "higher for eukaryotic species.")
     read_aligning_parser.set_defaults(func=align_reads,
                                       controller=PerformAlignment)
+    """
+
 
     # Parameters for coverage file building
     coverage_creation_parser = subparsers.add_parser(
@@ -318,6 +451,9 @@ def main():
 
 def create_project(controller_projectcreator):
     controller_projectcreator.create_project(__version__)
+
+def process_reads():
+    pass
     
 def align_reads(controller_alignment):
     controller_alignment.align_reads()
