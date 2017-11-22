@@ -384,6 +384,7 @@ def align_reads_with_star(args):
 
 def create_coverage_files(args):
     coverage_controler = CoverageController(args)
+    coverage_controler.create_coverage_files()
 
 
 def run_gene_wise_quantification(args):
