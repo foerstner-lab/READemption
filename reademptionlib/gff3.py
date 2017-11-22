@@ -11,14 +11,16 @@ class Gff3Parser(object):
     a validator can be found here:
     http://modencode.oicr.on.ca/cgi-bin/validate_gff3_online
     """
-
-    def entries(self, input_gff_fh):
+    
+    def entries(self, input_gff_fh, debug=False):
         """
         """
         for entry_dict in csv.DictReader(
             input_gff_fh, delimiter="\t",
             fieldnames=["seq_id", "source", "feature", "start",
                         "end", "score", "strand", "phase", "attributes"]):
+            if debug:
+                print(entry_dict)
             if entry_dict["seq_id"].startswith("#"):
                 continue
             try:

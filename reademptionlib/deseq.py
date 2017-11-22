@@ -1,6 +1,7 @@
 import csv
 import sys
 import os
+import pandas as pd
 from subprocess import call
 
 
@@ -88,6 +89,26 @@ class DESeqRunner(object):
                     counting_file_row + comparison_file_row[1:]) + "\n")
             output_fh.close()
 
+    def create_final_output_files(self):
+        for output_file in os.listdir(self._deseq_extended_folder):
+            comments_csv = pd.read_csv('{}/{}'.format(
+                self._deseq_extended_folder, output_file), sep='\t', nrows=1)
+            data_csv = pd.read_csv('{}/{}'.format(
+                self._deseq_extended_folder, output_file), sep='\t', header=2)
+            data_csv['FoldChange'] = 2 ** data_csv['log2FoldChange']
+            for lib in self._libs:
+                if lib in data_csv.columns:
+                    data_csv = data_csv.rename(columns={
+                        lib: '{} countings'.format(lib)})
+            new_output_csv = open('{}/Final_{}'.format(
+                self._deseq_extended_folder, output_file), 'a')
+            new_output_csv.write('{}\n'.format(''.join(list(comments_csv))))
+            new_output_csv.write('{}\n'.format(''.join(list(
+                comments_csv.iloc[0]))))
+            data_csv.to_csv(new_output_csv, sep='\t')
+            new_output_csv.close()
+            os.remove('{}/{}'.format(self._deseq_extended_folder, output_file))
+        
     def _condition_combos(self, conditions):
         non_redundant_conditions = set(conditions)
         for cond1 in non_redundant_conditions:

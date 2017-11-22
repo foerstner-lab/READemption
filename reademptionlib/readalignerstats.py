@@ -42,7 +42,7 @@ class ReadAlignerStats(object):
         for ref_id in bam.references:
             self._init_counting_dict(stats_per_ref, ref_id)
         for entry in bam.fetch():
-            ref_id = bam.getrname(entry.tid)
+            ref_id = bam.get_reference_name(entry.tid)
             try:
                 self._count_alignment(
                     entry, ref_id, stats_per_ref, no_of_hits_per_read_freq)
@@ -109,4 +109,4 @@ class ReadAlignerStats(object):
             stats_per_ref[ref_id][
                 "no_of_uniquely_aligned_reads"] += 1.0/no_of_splits
         stats_per_ref[ref_id][
-            "alignment_length_and_freqs"][entry.alen] += 1
+            "alignment_length_and_freqs"][entry.query_length] += 1

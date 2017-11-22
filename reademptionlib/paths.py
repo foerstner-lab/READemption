@@ -1,13 +1,15 @@
 import os
+import shutil
 import sys
+
 
 class Paths(object):
 
-    def __init__(self, base_path="."):
-        self.base_path = base_path
+    def __init__(self, args):
+        self.base_path = args.project_path
         self._set_folder_names()
         self._set_static_files()
-
+        
     def _set_folder_names(self):
         """Set the name of folders used in a project."""
         self.input_folder = "%s/input" % (self.base_path)
@@ -57,10 +59,10 @@ class Paths(object):
         self.gene_quanti_combined_folder = "%s/gene_quanti_combined" % (
             self.gene_quanti_base_folder)
         self.gene_wise_quanti_combined_path = (
-            "%s/gene_wise_quantifications_combined.csv" % 
+            "%s/gene_wise_quantifications_combined.csv" %
             self.gene_quanti_combined_folder)
         self.gene_wise_quanti_combined_rpkm_path = (
-            "%s/gene_wise_quantifications_combined_rpkm.csv" % 
+            "%s/gene_wise_quantifications_combined_rpkm.csv" %
             self.gene_quanti_combined_folder)
         self.gene_wise_quanti_combined_tnoar_path = (
             "%s/gene_wise_quantifications_combined_tnoar.csv" % 
@@ -75,22 +77,10 @@ class Paths(object):
     def _set_viz_align_folder_names(self):
         self.viz_align_base_folder = (
             "%s/viz_align" % self.output_folder)
-        self.viz_align_input_read_length_plot_path = (
-            "%s/input_reads_length_distributions.pdf" % 
-            self.viz_align_base_folder)
-        self.viz_align_processed_reads_length_plot_path = (
-            "%s/processed_reads_length_distributions.pdf" 
-            % self.viz_align_base_folder)
 
     def _set_viz_gene_quanti_folder_names(self):
         self.viz_gene_quanti_base_folder = (
             "%s/viz_gene_quanti" % self.output_folder)
-        self.viz_gene_quanti_scatter_plot_path = (
-            "%s/expression_scatter_plots.pdf" % 
-            self.viz_gene_quanti_base_folder)
-        self.viz_gene_quanti_rna_classes_plot_path = (
-            "%s/rna_class_sizes.pdf" % 
-            self.viz_gene_quanti_base_folder)
 
     def _set_viz_deseq_folder_names(self):
         self.viz_deseq_base_folder = (
@@ -138,7 +128,7 @@ class Paths(object):
         return list(filter(lambda file: 
                            not (file.endswith("~") or 
                                 os.path.basename(file).startswith(".")),
-                      sorted(os.listdir(folder))))
+                           sorted(os.listdir(folder))))
 
     def get_read_files(self):
         """Read the names of the read files."""
@@ -146,10 +136,11 @@ class Paths(object):
 
     def get_read_file_pairs(self):
         """Read the names of the read files as paired for paired end reads."""
-        read_files =self._get_sorted_folder_content(self.read_fasta_folder)
+        read_files = self._get_sorted_folder_content(self.read_fasta_folder)
         if len(read_files) % 2 != 0:
-            sys.stderr.write("Error: Number of files is unequal. This cannot be "
-                             "the case for paired end run data.\n")
+            sys.stderr.write(
+                "Error: Number of files is unequal. This cannot be "
+                "the case for paired end run data.\n")
             sys.exit(1)
         for read_file in read_files:
             if not ("_p1" in read_file or "_p2" in read_file):
@@ -179,12 +170,12 @@ class Paths(object):
 
         """
         p1_names = [self._clean_file_name(file_name) 
-                   for file_name in self.get_read_files()][::2]
+                    for file_name in self.get_read_files()][::2]
         for p1_name in p1_names:
             if not p1_name.endswith("_p1"):
                 sys.stderr.write("Error: File '%s' should end with '_p1' but "
-                                "does not. Please check file name convention "
-                                "for paired end reads.\n" % p1_name)
+                                 "does not. Please check file name convention "
+                                 "for paired end reads.\n" % p1_name)
                 sys.exit(1)
         return [p1_name[:-3] for p1_name in p1_names]
 
@@ -215,8 +206,8 @@ class Paths(object):
                 self.required_coverage_folders() +
                 self.required_gene_quanti_folders() +
                 self.required_deseq_folders() +
-                self.required_viz_align_folders() + 
-                self.required_viz_gene_quanti_folders() + 
+                self.required_viz_align_folders() +
+                self.required_viz_gene_quanti_folders() +
                 self.required_viz_deseq_folders())
 
     def required_base_folders(self):
@@ -260,22 +251,22 @@ class Paths(object):
             self.processed_reads_folder, lib_names,
             appendix="_processed.fa.gz")
         self.unaligned_reads_paths = self._path_list(
-            self.unaligned_reads_folder, lib_names, 
+            self.unaligned_reads_folder, lib_names,
             appendix="_unaligned.fa")
         self.realigned_unaligned_reads_paths = self._path_list(
-            self.unaligned_reads_folder, lib_names, 
+            self.unaligned_reads_folder, lib_names,
             appendix="_unaligned_after_realignment.fa")
         self._set_alignment_paths(lib_names)
 
     def set_read_files_dep_file_lists_paired_end(
-        self, read_file_pairs, lib_names):
+            self, read_file_pairs, lib_names):
         self.read_path_pairs = [
-            self._path_list(self.read_fasta_folder, read_file_pair) 
+            self._path_list(self.read_fasta_folder, read_file_pair)
             for read_file_pair in read_file_pairs]
         self.processed_read_path_pairs = [
             self._path_list(
-                self.processed_reads_folder, 
-                [self._clean_file_name(read_file) 
+                self.processed_reads_folder,
+                [self._clean_file_name(read_file)
                  for read_file in read_file_pair], appendix="_processed.fa.gz")
             for read_file_pair in read_file_pairs]
         # The read of both files that are not matchend will be dumped
@@ -300,44 +291,45 @@ class Paths(object):
             appendix="_alignments_primary_aligner.bam")
         # samtool appends ".bam" so only the prefix is required
         self.primary_read_aligner_bam_prefix_paths = self._path_list(
-            self.read_alignments_folder, 
+            self.read_alignments_folder,
             lib_names, appendix="_alignments_primary_aligner")
         ###
         # For the remapper
         self.read_realigner_tmp_sam_paths = self._path_list(
-            self.read_alignments_folder, lib_names, 
+            self.read_alignments_folder, lib_names,
             appendix="_alignments_tmp_for_realigner.sam")
         self.read_realigner_sam_paths = self._path_list(
             self.read_alignments_folder, lib_names,
             appendix="_alignments_realigner.sam")
         self.read_realigner_bam_paths = self._path_list(
-            self.read_alignments_folder, lib_names, 
+            self.read_alignments_folder, lib_names,
             appendix="_alignments_realigner.bam")
         self.read_realigner_bam_prefixes_paths = self._path_list(
-            self.read_alignments_folder, 
+            self.read_alignments_folder,
             lib_names, appendix="_alignments_realigner")
         ### 
         # For the cross-aligned cleaned
         self.read_alignment_bam_cross_cleaned_tmp_paths = self._path_list(
-            self.read_alignments_folder, lib_names, 
+            self.read_alignments_folder, lib_names,
             appendix="_alignments_tmp_crossmapped_cleaned.bam")
         self.read_alignment_bam_with_crossmappings_paths = self._path_list(
-            self.read_alignments_folder, lib_names, 
+            self.read_alignments_folder, lib_names,
             appendix="_alignments_potententially_with_crossmappings.bam")
         self.crossmapped_reads_paths = self._path_list(
-            self.read_alignments_folder, lib_names, 
+            self.read_alignments_folder, lib_names,
             appendix="_crossmapped_reads.txt")
         ###
         # For the final (merged) version
         self.read_alignment_bam_paths = self._path_list(
-            self.read_alignments_folder, lib_names, 
+            self.read_alignments_folder, lib_names,
             appendix="_alignments_final.bam")
         self.read_alignment_bam_prefix_paths = self._path_list(
-            self.read_alignments_folder, lib_names, 
+            self.read_alignments_folder, lib_names,
             appendix="_alignments_final")
 
     def set_ref_seq_paths(self, ref_seq_files):
-        self.ref_seq_paths = self._path_list(self.ref_seq_folder, ref_seq_files)
+        self.ref_seq_paths = self._path_list(
+            self.ref_seq_folder, ref_seq_files)
 
     def set_annotation_paths(self, annotation_files):
         self.annotation_paths = self._path_list(
@@ -367,9 +359,9 @@ class Paths(object):
     def _wiggle_file_path(
             self, folder, read_file, strand, multi=None, div=None):
         path = "%s/%s" % (folder, read_file)
-        if not div is None:
+        if div is not None:
             path += "_div_by_%.1f" % (div)
-        if not multi is None:
+        if multi is not None:
             path += "_multi_by_%.1f" % (multi)
         path += "_%s.wig" % strand
         return path
@@ -382,17 +374,37 @@ class Paths(object):
         """Read the names of primary aligned sam files"""
         return self._get_sorted_folder_content(self.read_alignments_folder)
 
-    def change_primary_aligned_sam_SE(self):
-        """Change the Prefix of STAR output SAM file"""
-        os.rename((self.read_alignments_folder + '/' +
-                   " ".join(self.get_lib_names_single_end()) +
-                   '_Aligned.out.sam'),
-                  (self.read_alignments_folder + '/'
-                   + " ".join(str(lib_name) for lib_name in
-                              self.get_lib_names_single_end())
-                   + "_alignments_primary_aligner.sam"))
-
-    def change_primary_aligned_sam_PE(self):
+    def relocate_and_rename_star_output_se(self):
+        star_log_file = "{}/Log.out".format(os.getcwd())
+        if os.path.exists(star_log_file):
+            shutil.move(star_log_file,
+                        "{}/STAR_Log.out".format(self.align_report_folder))
+        align_output = self.read_alignments_folder
+        for output_file in os.listdir(align_output):
+            change_align_output = output_file.replace(
+                ".samAligned.out.sam", ".sam")
+            if change_align_output != output_file:
+                os.rename("{}/{}".format(align_output, output_file),
+                          "{}/{}".format(align_output, change_align_output))
+            if output_file.endswith('Unmapped.out.mate1'):
+                change_unmapped_output = output_file.replace(
+                    "alignments_primary_aligner.samUnmapped.out.mate1",
+                    "unaligned.fa")
+                if change_unmapped_output != output_file:
+                    os.rename("{}/{}".format(align_output, output_file),
+                              "{}/{}".format(self.unaligned_reads_folder,
+                                             change_unmapped_output))
+            report_output = self.align_report_folder
+            suffix_list = [".out", "SJ.out.tab"]
+            for suffix in suffix_list:
+                if output_file.endswith(suffix):
+                    shutil.move("{}/{}".format(
+                        align_output, output_file), "{}/{}".format(
+                            report_output, output_file))
+            if output_file.endswith('STARtmp'):
+                shutil.rmtree("{}/{}".format(align_output, output_file))
+                
+    def relocate_and_rename_star_output_pe(self):
         """Change the Prefix of STAR output SAM file"""
         os.rename((self.read_alignments_folder + '/' +
                    " ".join(self.get_lib_names_paired_end()) +
@@ -401,35 +413,37 @@ class Paths(object):
                    + " ".join(str(lib_name) for lib_name in
                               self.get_lib_names_paired_end())
                    + "_alignments_primary_aligner.sam"))
+        align_output = self.read_alignments_folder
+        for output_file in os.listdir(align_output):
+            change_align_output = output_file.replace(
+                ".samAligned.out.sam", ".sam")
+            if change_align_output != output_file:
+                os.rename("{}/{}".format(align_output, output_file),
+                          "{}/{}".format(align_output, change_align_output))
+            if output_file.endswith("Unmapped.out.mate1"):
+                change_unmapped_output_1 = output_file.replace(
+                    "Unmapped.out.mate1",
+                    "unaligned_1.fa")
+                if change_unmapped_output_1 != output_file:
+                    os.rename("{}/{}".format(align_output, output_file),
+                              "{}/{}".format(self.unaligned_reads_folder,
+                                             change_unmapped_output_1))
+            if output_file.endswith("Unmapped.out.mate2"):
+                change_unmapped_output_2 = output_file.replace(
+                    "Unmapped.out.mate2",
+                    "unaligned_2.fa")
+                if change_unmapped_output_2 != output_file:
+                    os.rename("{}/{}".format(align_output, output_file),
+                              "{}/{}".format(self.unaligned_reads_folder,
+                                             change_unmapped_output_2))
 
-    def change_unmapped_filename_SE(self):
-        """Change file name of unmapped reads"""
-        os.rename((self.read_alignments_folder + '/'
-                   + " ".join(str(lib_name) for lib_name in
-                              self.get_lib_names_single_end())
-                   + '_Unmapped.out.mate1'),
-                  (self.unaligned_reads_folder + '/'
-                   + " ".join(str(lib_name) for lib_name in
-                              self.get_lib_names_single_end())
-                   + "_unaligned.fa"))
-       
-    def change_unmapped_filename_PE(self):
-        """Change file name of unmapped reads"""
-        os.rename((self.read_alignments_folder + '/'
-                   + " ".join(str(lib_name) for lib_name in
-                              self.get_lib_names_paired_end())
-                   + '_Unmapped.out.mate1'),
-                  (self.unaligned_reads_folder + '/'
-                   + " ".join(str(lib_name) for lib_name in
-                              self.get_lib_names_paired_end())
-                   + "_unaligned_1.fa"))
-        os.rename((self.read_alignments_folder + '/'
-                   + " ".join(str(lib_name) for lib_name in
-                              self.get_lib_names_paired_end())
-                   + '_Unmapped.out.mate2'),
-                  (self.unaligned_reads_folder + '/'
-                   + " ".join(str(lib_name) for lib_name in
-                              self.get_lib_names_paired_end())
-                   + "_unaligned_2.fa"))
-
-        """cat file1.fasta file2.fasta > combined.fasta"""
+    def gzip_processed_reads(self):
+        
+        with gzip.open(output_path, 'rb') as input_fh:
+            with gzip.open('{}.gz'.format(output_path), 'wb') as output_fh:
+                shutil.copyfileobj(input_fh, output_fh)
+                
+        for output_file in os.listdir(self.processed_reads_folder):
+            if output_file.endswith('fa'):
+                os.remove('{}/{}'.format(
+                    self.processed_reads_folder, output_file))

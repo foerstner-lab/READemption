@@ -1,5 +1,6 @@
-import gzip
 import bz2
+import gzip
+import lzma
 from collections import defaultdict
 from reademptionlib.polyaclipper import PolyAClipper
 from Bio import SeqIO
@@ -8,13 +9,12 @@ from Bio.Seq import Seq
 
 class ReadProcessor(object):
     
-    def __init__(self, poly_a_clipping=False,  min_read_length=12,
-                 paired_end=False, fastq=False, min_phred_score=None,
+    def __init__(self, poly_a_clipping=False,  min_read_length=20,
+                 paired_end=False, min_phred_score=None,
                  adapter=None, reverse_complement=False):
         self._poly_a_clipping = poly_a_clipping
         self._min_read_length = min_read_length
         self._paired_end = paired_end
-        self._fastq = fastq
         self._min_phred_score = min_phred_score
         self._adapter = adapter
         self._poly_a_clipper = PolyAClipper()
@@ -52,12 +52,21 @@ class ReadProcessor(object):
     def _input_fh(self, input_path):
         """Return a file hande
 
-        Can deal with plain fasta files, gzipped fasta or bzipped2 fasta.
+        Can deal with plain fasta files, gzipped bzipped2 fasta.
         """
         if input_path.endswith(".gz"):
             return gzip.open(input_path, "rt")
         elif input_path.endswith(".bz2"):
             return bz2.open(input_path, "rt")
+        elif input_path.endswith(".xz"):
+            return lzma.open(input_path, "rt")
+        with open(input_path, "r") as check_file:
+            check_file.seek(0)
+            first_line = check_file.readline()
+            if first_line[0] == '@':
+                self._fastq = True
+            else:
+                self._fastq = False
         return open(input_path)
 
     def _trim_by_quality(self, seq, qualities):
@@ -79,15 +88,15 @@ class ReadProcessor(object):
         for header, seq, qualities in self._parse_sequences(input_fh):
             raw_seq_len = len(seq)
             self._stats["total_no_of_reads"] += 1
-            if self._fastq and not self._min_phred_score is None:
+            if self._fastq and self._min_phred_score is not None:
                 seq = self._trim_by_quality(seq, qualities)
             if self._reverse_complement:
                 seq = Seq(seq)
                 seq = str(seq.reverse_complement())
-            if not self._adapter is None:
+            if self._adapter is not None:
                 seq = self._clip_adapter(seq)
             if self._poly_a_clipping:
-                seq = self._poly_a_clipper.clip_poly_a_strech(seq)
+                seq = self._poly_a_clipper.clip_poly_a_stretch(seq)
                 seq = self._poly_a_clipper.remove_3_prime_a(seq)
             clipped_seq_len = len(seq)
             if clipped_seq_len == raw_seq_len - 1:

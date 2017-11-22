@@ -25,7 +25,7 @@ class SamToBamConverter(object):
         # Generate sorted BAM file
         pysam.sort(temp_unsorted_bam_path, "-o", bam_path_prefix + ".bam")
         # Generate index for BAM file
-        pysam.index("%s.bam" % bam_path_prefix)
+        pysam.index("{}.bam".format(bam_path_prefix))
         # Remove unsorted BAM file
         os.remove(temp_unsorted_bam_path)
         # Remove SAM file
