@@ -24,7 +24,6 @@ class ReadProcessingController():
             self._prepare_reads_pe_cutadapt()
 
     def _prepare_reads_se_cutadapt(self):
-        cutadapt = Cutadapt(self._args.cutadapt_bin)
         read_files_and_jobs = {}
         with concurrent.futures.ProcessPoolExecutor(
                 max_workers=self._args.processes) as executor:
