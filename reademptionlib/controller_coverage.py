@@ -1,13 +1,13 @@
 import concurrent.futures
 import sys
-from reademptionlib.coveragecalculator import CoverageCalculator
 from reademptionlib.helpers import Helpers
 from reademptionlib.paths import Paths
+from reademptionlib.coveragecalculator import CoverageCalculator
 from reademptionlib.rawstatdata import RawStatDataReader
 from reademptionlib.wiggle import WiggleWriter
 
 
-class CalculateCoverage(object):
+class CoverageController(object):
 
     def __init__(self, args):
         self._args = args

@@ -4,7 +4,8 @@ from reademptionlib.paths import Paths
 from reademptionlib.rawstatdata import RawStatDataReader
 
 
-class RunDeseq(object):
+class DESeq2Controller(object):
+    
     def __init__(self, args):
         self._args = args
         self._paths = Paths(args)

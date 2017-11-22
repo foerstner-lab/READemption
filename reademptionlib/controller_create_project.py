@@ -3,7 +3,7 @@ from reademptionlib.paths import Paths
 from reademptionlib.projectcreator import ProjectCreator
 
 
-class CreateProject(object):
+class ProjectCreateController(object):
     """Create a READemption project including the necessary
 folders in order to perform ongoing procession steps."""
 

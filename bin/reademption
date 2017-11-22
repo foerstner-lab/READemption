@@ -3,12 +3,12 @@
 """READemption - A RNA-seq Analysis Pipeline"""
 
 import argparse
-from reademptionlib.controller_coverage import CalculateCoverage
-from reademptionlib.controller_projectcreator import CreateProject
-from reademptionlib.controller_genequanti import GeneQuantification
-from reademptionlib.controller_alignment import PerformAlignment
-from reademptionlib.controller_deseq import RunDeseq
-
+from reademptionlib.controller_coverage import CoverageController
+from reademptionlib.controller_create_project import ProjectCreateController
+from reademptionlib.controller_quanti import QuantiController
+from reademptionlib.controller_segemehl import SegemehlController
+from reademptionlib.controller_star import StarController
+from reademptionlib.controller_deseq2 import DESeq2Controller
 
 
 __author__ = "Konrad Foerstner <konrad@foerstner.org>"
@@ -30,16 +30,14 @@ def main():
         "create", help="Create a project")
     create_project_parser.add_argument(
         "--project_path", "-f", help="Path of the project folder.")
-    create_project_parser.set_defaults(func=create_project,
-                                       controller=CreateProject)
+    create_project_parser.set_defaults(func=create_project)
 
     # Arguments for read procssing
     read_processing_parser = subparsers.add_parser(
         "process_reads", help="Process reads")
     read_processing_parser.add_argument(
         "--project_path", "-f", help="Path of the project folder.")
-    read_processing_parser.set_defaults(func=process_reads,
-                                        controller=CreateProject)
+    read_processing_parser.set_defaults(func=process_reads)
     read_processing_parser.add_argument(
         "--processes", "-p", default=1, type=int,
         help="Number of processes that should be used (default 1).")
@@ -217,8 +215,7 @@ def main():
         "interrupted previous run) and do not overwrite them if they exits. "
         "Attention! You have to take care that there are no partially "
         "generated files left!")
-    coverage_creation_parser.set_defaults(func=create_coverage_files,
-                                          controller=CalculateCoverage)
+    coverage_creation_parser.set_defaults(func=create_coverage_files)
 
     # Parameters for gene wise quantification
     gene_wise_quanti_parser = subparsers.add_parser(
@@ -284,8 +281,7 @@ def main():
         "interrupted previous run) and do not overwrite them if they exits. "
         "Attention! You have to take care that there are no partially "
         "generated files left!")
-    gene_wise_quanti_parser.set_defaults(func=run_gene_wise_quantification,
-                                         controller=GeneQuantification)
+    gene_wise_quanti_parser.set_defaults(func=run_gene_wise_quantification)
 
     # Parameters for DESeq calling
     deseq_parser = subparsers.add_parser(
@@ -322,36 +318,35 @@ def main():
     deseq_parser.add_argument(
         "--glyph_size", "-g", type=int, default=8,
         help="Specify the size of the glyphs (MA plot only).")
-    deseq_parser.set_defaults(func=run_deseq, controller=RunDeseq)
+    deseq_parser.set_defaults(func=run_deseq2)
 
     args = parser.parse_args()
     if args.version is True:
         print("READemption version " + __version__)
     elif "func" in dir(args):
-        controller = args.controller(args)
-        args.func(controller)
-        """original form:
-        controller = Controller(args)
-        args.func(controller)"""
+        args.func()
     else:
         parser.print_help()
 
-def create_project(controller_projectcreator):
+def create_project():
     controller_projectcreator.create_project(__version__)
 
 def process_reads():
     pass
     
-def align_reads(controller_alignment):
+def align_reads_with_segemehl():
+    controller_alignment.align_reads()
+
+def align_reads_with_star():
     controller_alignment.align_reads()
     
-def create_coverage_files(controller_coverage):
+def create_coverage_files():
     controller_coverage.create_coverage_files()
 
-def run_gene_wise_quantification(controller_genequanti):
+def run_gene_wise_quantification():
     controller_genequanti.quantify_gene_wise()
 
-def run_deseq(controller_deseq):
+def run_deseq2():
     controller_deseq.compare_with_deseq()
 
 main()

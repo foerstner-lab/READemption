@@ -9,7 +9,7 @@ from reademptionlib.rawstatdata import RawStatDataReader
 from reademptionlib.vizgenequanti import GeneQuantiViz
 
 
-class GeneQuantification(object):
+class QuantiController(object):
 
     def __init__(self, args):
         self._args = args
