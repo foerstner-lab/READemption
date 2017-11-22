@@ -3,7 +3,7 @@ import numpy as np
 from bokeh.layouts import column
 from bokeh.plotting import figure, ColumnDataSource
 from bokeh.models import (HoverTool, BoxSelectTool, BoxZoomTool, ResetTool,
-                          PanTool, WheelZoomTool, ResizeTool)
+                          PanTool, WheelZoomTool)
 from bokeh.resources import CDN
 from bokeh.embed import file_html
 import matplotlib
@@ -12,7 +12,7 @@ import matplotlib.pyplot as plt
 from matplotlib.backends.backend_pdf import PdfPages
 
 
-class DESeqViz(object):
+class DESeq2Vis(object):
 
     def __init__(self, input_file, output_path, cutoff, condition, alpha,
                  color_sig, color_non_sig, shape, glyph_size):
@@ -47,8 +47,7 @@ class DESeqViz(object):
             ("Protein_ID", "@Name"), ("Sequence type", "@gbkey"),
             ("Product", "@product"), ("log2 fold change", "@log2FoldChange"),
             ("base mean", "@baseMean")]), PanTool(), BoxSelectTool(),
-                           BoxZoomTool(), WheelZoomTool(), ResizeTool(),
-                           ResetTool()])
+                           BoxZoomTool(), WheelZoomTool(), ResetTool()])
         pl.background_fill_color = "White"
         pl.grid.grid_line_color = "black"
         pl.xaxis.axis_label = 'log10 base mean'

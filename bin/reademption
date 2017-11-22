@@ -394,7 +394,7 @@ def run_gene_quanti(args):
 
 def run_deseq2(args):
     deseq2_controller = DESeq2Controller(args)
-
+    deseq2_controller.compare_with_deseq2()
 
 def vis_deseq2(args):
     vis_deseq2_controller = DESeq2VisController(args)
