@@ -125,7 +125,7 @@ class Paths(object):
         self.deseq2_tmp_session_info_script = "%s/tmp.R" % self.deseq2_raw_folder
         self.deseq2_session_info = "%s/R_session_info.txt" % (
             self.deseq2_raw_folder)
-        self.version_path = "%s/versions_of_used_libraries.txt" % (
+        self.version_path = "%s/version_log.txt" % (
             self.output_folder)
 
     def _get_sorted_folder_content(self, folder):
@@ -318,7 +318,7 @@ class Paths(object):
         self.read_realigner_bam_prefixes_paths = self._path_list(
             self.read_alignments_folder,
             lib_names, appendix="_alignments_realigner")
-        ### 
+        ###
         # For the cross-aligned cleaned
         self.read_alignment_bam_cross_cleaned_tmp_paths = self._path_list(
             self.read_alignments_folder, lib_names,
@@ -379,7 +379,8 @@ class Paths(object):
 
     def get_processed_read_files(self):
             """Read the names of processed read files"""
-            return self._get_sorted_folder_content(self.read_processing_base_folder)
+            return self._get_sorted_folder_content(
+                self.read_processing_base_folder)
 
     def get_primary_alignment(self):
         """Read the names of primary aligned sam files"""
