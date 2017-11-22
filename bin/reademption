@@ -11,6 +11,7 @@ from reademptionlib.controller_quanti import QuantiController
 from reademptionlib.controller_segemehl import SegemehlController
 from reademptionlib.controller_star import StarController
 from reademptionlib.controller_deseq2 import DESeq2Controller
+from reademptionlib.controller_vis_deseq2 import DESeq2VisController
 
 
 __author__ = "Konrad Foerstner <konrad@foerstner.org>"
@@ -296,43 +297,50 @@ def main():
     gene_wise_quanti_parser.set_defaults(func=run_gene_wise_quantification)
 
     # Parameters for DESeq calling
-    deseq_parser = subparsers.add_parser(
+    deseq2_parser = subparsers.add_parser(
         "deseq2", help="Compare expression pairwise using DESeq")
-    deseq_parser.add_argument(
+    deseq2_parser.add_argument(
         "--project_path", "-f", help="Path of the project folder.",
         required=True)
-    deseq_parser.add_argument(
+    deseq2_parser.add_argument(
         "--libs", "-l", required=True,
         help="Comma separated list of libraries.")
-    deseq_parser.add_argument(
+    deseq2_parser.add_argument(
         "--conditions", "-c", required=True,
         help="Comma separated list of condition in the same order as "
         "their corresponding libraries.")
-    deseq_parser.add_argument(
+    deseq2_parser.add_argument(
         "--cooks_cutoff_off", "-k", default=False, action="store_true")
-    # Following parameters refer to DESeq visualization
-    deseq_parser.add_argument(
+    deseq2_parser.set_defaults(func=run_deseq2)
+
+
+    vis_deseq2_parser = subparsers.add_parser(
+        "vis_deseq2", help="Visualize DESeq2 results")
+    vis_deseq2_parser.add_argument(
+        "--project_path", "-f", help="Path of the project folder.",
+        required=True)
+    vis_deseq2_parser.add_argument(
         "--padj_cutoff", "-p", type=float, default=0.05,
         help="specify adjusted p-value cutoff.")
-    deseq_parser.add_argument(
+    vis_deseq2_parser.add_argument(
         "--shape", "-s", default='circle', help="Use to determine the glyph "
         "shape. Chosse between 'circle' and 'shape' (MA plot only).")
-    deseq_parser.add_argument(
+    vis_deseq2_parser.add_argument(
         "--alpha", "-a", type=float, default=0.5,
         help="Use to determine transparency of glyphs (MA plot only).")
-    deseq_parser.add_argument(
+    vis_deseq2_parser.add_argument(
         "--color_sig", "-cs", default="red",
         help="Determine the color of glyphs representing significant data "
         " (MA plot only).")
-    deseq_parser.add_argument(
+    vis_deseq2_parser.add_argument(
         "--color_non_sig", "-cn", default="black",
         help="Determine the color of glyphs representing non-significant data"
         " (MA plot only).")
-    deseq_parser.add_argument(
+    vis_deseq2_parser.add_argument(
         "--glyph_size", "-g", type=int, default=8,
-        help="Specify the size of the glyphs (MA plot only).")
-    deseq_parser.set_defaults(func=run_deseq2)
-
+        help="Specify the size of the glyphs (MA plot only).")    
+    vis_deseq2_parser.set_defaults(func=vis_deseq2)
+    
     args = parser.parse_args()
     if args.version is True:
         print("READemption version " + __version__)
@@ -360,8 +368,12 @@ def create_coverage_files(args):
 def run_gene_wise_quantification(args):
     quanti_controller = QuantiController(args)
 
-def run_deseq2():
+def run_deseq2(args):
     deseq2_controller = DESeq2Controller(args)
 
+def vis_deseq2(args):
+    vis_deseq2_controller = DESeq2VisController(args)
+
+    
 main()
 
