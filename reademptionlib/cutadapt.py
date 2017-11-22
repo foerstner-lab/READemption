@@ -12,7 +12,6 @@ class Cutadapt(object):
         cutadapt_call = [
             self._cutadapt_bin, "--quiet", "-o", output_path,
             self._cutadapt_options, read_path]
-                        
         call(cutadapt_call)
 
     def run_cutadapt_pe(
@@ -25,5 +24,3 @@ class Cutadapt(object):
                          "-o", output_path_p1, "-p",
                          output_path_p2, read_path_pair[0], read_path_pair[1]]
         call(cutadapt_call)
-        
-
