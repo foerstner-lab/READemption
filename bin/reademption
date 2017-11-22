@@ -15,7 +15,7 @@ __author__ = "Konrad Foerstner <konrad@foerstner.org>"
 __copyright__ = "2011-2017 by Konrad Foerstner <konrad@foerstner.org>"
 __license__ = "ISC license"
 __email__ = "konrad@foerstner.org"
-__version__ = "0.4.4.dev"
+__version__ = "2.0.0.dev"
 
 
 def main():
