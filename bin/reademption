@@ -362,32 +362,41 @@ def main():
     else:
         parser.print_help()
 
+
 def create_project(args):
     project_create_controller = ProjectCreateController(args)
     project_create_controller.create_project(__version__)
 
+
 def process_reads(args):
     read_processing_controller = ReadProcessingController(args)
     read_processing_controller.process_reads()
-    
+
+
 def align_reads_with_segemehl(args):
     segemehl_controller = SegemehlController(args)
+    segemehl_controller.align_with_segemehl()
+
 
 def align_reads_with_star(args):
     star_controller = StarController(args) 
-    
+
+
 def create_coverage_files(args):
     coverage_controler = CoverageController(args)
+
 
 def run_gene_wise_quantification(args):
     quanti_controller = QuantiController(args)
 
+
 def run_deseq2(args):
     deseq2_controller = DESeq2Controller(args)
+
 
 def vis_deseq2(args):
     vis_deseq2_controller = DESeq2VisController(args)
 
-    
+
 main()
 
