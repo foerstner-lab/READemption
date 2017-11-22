@@ -15,26 +15,31 @@ class Paths(object):
         self.input_folder = "%s/input" % (self.base_path)
         self.output_folder = "%s/output" % (self.base_path)
         self._set_input_folder_names()
+        self._set_read_processing_folder_names()
         self._set_read_alignment_folder_names()
         self._set_coverage_folder_names()
         self._set_gene_quanti_folder_names()
-        self._set_deseq_folder_names()
-        self._set_viz_align_folder_names()
-        self._set_viz_gene_quanti_folder_names()
-        self._set_viz_deseq_folder_names()
+        self._set_deseq2_folder_names()
+        self._set_vis_align_folder_names()
+        self._set_vis_gene_quanti_folder_names()
+        self._set_vis_deseq2_folder_names()
 
     def _set_input_folder_names(self):
         self.read_fasta_folder = "%s/reads" % self.input_folder
         self.ref_seq_folder = "%s/reference_sequences" % self.input_folder
         self.annotation_folder = "%s/annotations" % self.input_folder
 
+    def _set_read_processing_folder_names(self):
+        self.read_processing_base_folder = "{}/processed_reads".format(
+            self.output_folder)
+        self.read_processing_report_folder = "{}/reports_and_stats".format(
+            self.read_processing_base_folder)
+
     def _set_read_alignment_folder_names(self):
         self.align_base_folder = "%s/align" % self.output_folder
         self.read_alignment_index_folder = "%s/index" % (
             self.align_base_folder)
         self.read_alignments_folder = "%s/alignments" % (
-            self.align_base_folder)
-        self.processed_reads_folder = "%s/processed_reads" % (
             self.align_base_folder)
         self.unaligned_reads_folder = "%s/unaligned_reads" % (
             self.align_base_folder)
@@ -65,35 +70,35 @@ class Paths(object):
             "%s/gene_wise_quantifications_combined_rpkm.csv" %
             self.gene_quanti_combined_folder)
         self.gene_wise_quanti_combined_tnoar_path = (
-            "%s/gene_wise_quantifications_combined_tnoar.csv" % 
+            "%s/gene_wise_quantifications_combined_tnoar.csv" %
             self.gene_quanti_combined_folder)
 
-    def _set_deseq_folder_names(self):
-        self.deseq_base_folder = ("%s/deseq" % self.output_folder)
-        self.deseq_raw_folder = ("%s/deseq_raw" % self.deseq_base_folder)
-        self.deseq_extended_folder = (
-            "%s/deseq_with_annotations" % self.deseq_base_folder)
+    def _set_deseq2_folder_names(self):
+        self.deseq2_base_folder = ("%s/DESeq2" % self.output_folder)
+        self.deseq2_raw_folder = ("%s/DESeq2_raw" % self.deseq2_base_folder)
+        self.deseq2_extended_folder = (
+            "%s/DESeq2_with_annotations" % self.deseq2_base_folder)
 
-    def _set_viz_align_folder_names(self):
-        self.viz_align_base_folder = (
-            "%s/viz_align" % self.output_folder)
+    def _set_vis_align_folder_names(self):
+        self.vis_align_base_folder = (
+            "%s/vis_align" % self.output_folder)
 
-    def _set_viz_gene_quanti_folder_names(self):
-        self.viz_gene_quanti_base_folder = (
-            "%s/viz_gene_quanti" % self.output_folder)
+    def _set_vis_gene_quanti_folder_names(self):
+        self.vis_gene_quanti_base_folder = (
+            "%s/vis_gene_quanti" % self.output_folder)
 
-    def _set_viz_deseq_folder_names(self):
-        self.viz_deseq_base_folder = (
-            "%s/viz_deseq" % self.output_folder)
-        self.viz_deseq_scatter_plot_path = (
-            "%s/MA_plots.pdf" % 
-            self.viz_deseq_base_folder)
-        self.viz_deseq_volcano_plot_path = (
-            "%s/volcano_plots_log2_fold_change_vs_p-value.pdf" % 
-            self.viz_deseq_base_folder)
-        self.viz_deseq_volcano_plot_adj_path = (
+    def _set_vis_deseq2_folder_names(self):
+        self.vis_deseq2_base_folder = (
+            "%s/vis_deseq2" % self.output_folder)
+        self.vis_deseq2_scatter_plot_path = (
+            "%s/MA_plots.pdf" %
+            self.vis_deseq2_base_folder)
+        self.vis_deseq2_volcano_plot_path = (
+            "%s/volcano_plots_log2_fold_change_vs_p-value.pdf" %
+            self.vis_deseq2_base_folder)
+        self.vis_deseq2_volcano_plot_adj_path = (
             "%s/volcano_plots_log2_fold_change_vs_adjusted_p-value.pdf" %
-            self.viz_deseq_base_folder)
+            self.vis_deseq2_base_folder)
 
     def _set_static_files(self):
         """Set name of common files."""
@@ -114,19 +119,19 @@ class Paths(object):
             self.align_report_folder)
         self.index_path = "%s/index.idx" % self.read_alignment_index_folder
         self.index_path_star = "%s/chrLength.txt" % self.read_alignment_index_folder
-        self.deseq_script_path = "%s/deseq.R" % self.deseq_raw_folder
-        self.deseq_pca_heatmap_path = "%s/sample_comparison_pca_heatmap.pdf" % (
-            self.deseq_raw_folder)
-        self.deseq_tmp_session_info_script = "%s/tmp.R" % self.deseq_raw_folder
-        self.deseq_session_info = "%s/R_session_info.txt" % (
-            self.deseq_raw_folder)
+        self.deseq2_script_path = "%s/deseq2.R" % self.deseq2_raw_folder
+        self.deseq2_pca_heatmap_path = "%s/sample_comparison_pca_heatmap.pdf" % (
+            self.deseq2_raw_folder)
+        self.deseq2_tmp_session_info_script = "%s/tmp.R" % self.deseq2_raw_folder
+        self.deseq2_session_info = "%s/R_session_info.txt" % (
+            self.deseq2_raw_folder)
         self.version_path = "%s/versions_of_used_libraries.txt" % (
-            self.align_report_folder)
+            self.output_folder)
 
     def _get_sorted_folder_content(self, folder):
         """Return the sorted file list of a folder"""
-        return list(filter(lambda file: 
-                           not (file.endswith("~") or 
+        return list(filter(lambda file:
+                           not (file.endswith("~") or
                                 os.path.basename(file).startswith(".")),
                            sorted(os.listdir(folder))))
 
@@ -148,7 +153,7 @@ class Paths(object):
                     "Error: You specified this as paired end run data but the "
                     "file name '%s' does not contain '_p1' or '_p2'.\n")
                 sys.exit(1)
-        read_file_pairs = list(read_file_pair for read_file_pair in 
+        read_file_pairs = list(read_file_pair for read_file_pair in
                                zip(read_files[::2], read_files[1::2]))
         for read_file_pair in read_file_pairs:
             if read_file_pair[0] != read_file_pair[1].replace("_p2.", "_p1."):
@@ -160,7 +165,7 @@ class Paths(object):
 
     def get_lib_names_single_end(self):
         """Extract the suffux free name of single end libraries"""
-        return [self._clean_file_name(file_name) 
+        return [self._clean_file_name(file_name)
                 for file_name in self.get_read_files()]
 
     def get_lib_names_paired_end(self):
@@ -169,7 +174,7 @@ class Paths(object):
         For each pair of read files one library name is returned.
 
         """
-        p1_names = [self._clean_file_name(file_name) 
+        p1_names = [self._clean_file_name(file_name)
                     for file_name in self.get_read_files()][::2]
         for p1_name in p1_names:
             if not p1_name.endswith("_p1"):
@@ -180,7 +185,7 @@ class Paths(object):
         return [p1_name[:-3] for p1_name in p1_names]
 
     def _clean_file_name(self, file_name):
-        for suffix in ["bz2", "BZ", "gz", "GZ", "fa", "fasta", "FA", "FASTA", 
+        for suffix in ["bz2", "BZ", "gz", "GZ", "fa", "fasta", "FA", "FASTA",
                        "fastq", "fq", "FQ", "FASTQ"]:
             if file_name.endswith(suffix):
                 suffix = "." + suffix
@@ -202,13 +207,14 @@ class Paths(object):
     def required_folders(self):
         return (self.required_base_folders() +
                 self.required_input_folders() +
+                self.required_read_processing_folders() +
                 self.required_read_alignment_folders() +
                 self.required_coverage_folders() +
                 self.required_gene_quanti_folders() +
-                self.required_deseq_folders() +
-                self.required_viz_align_folders() +
-                self.required_viz_gene_quanti_folders() +
-                self.required_viz_deseq_folders())
+                self.required_deseq2_folders() +
+                self.required_vis_align_folders() +
+                self.required_vis_gene_quanti_folders() +
+                self.required_vis_deseq2_folders())
 
     def required_base_folders(self):
         return [self.input_folder, self.output_folder]
@@ -217,33 +223,38 @@ class Paths(object):
         return [self.read_fasta_folder, self.ref_seq_folder,
                 self.annotation_folder]
 
+    def required_read_processing_folders(self):
+        return [self.read_processing_base_folder,
+                self.read_processing_report_folder]
+    
     def required_read_alignment_folders(self):
-        return [self.align_base_folder, self.read_alignments_folder, 
-                self.processed_reads_folder, self.unaligned_reads_folder, 
-                self.read_alignment_index_folder, self.align_report_folder,
+        return [self.align_base_folder, self.read_alignments_folder,
+                self.unaligned_reads_folder,
+                self.read_alignment_index_folder,
+                self.align_report_folder,
                 self.raw_stat_data_folder]
 
     def required_coverage_folders(self):
-        return [self.coverage_base_folder, self.coverage_raw_folder, 
-                self.coverage_tnoar_min_norm_folder, 
+        return [self.coverage_base_folder, self.coverage_raw_folder,
+                self.coverage_tnoar_min_norm_folder,
                 self.coverage_tnoar_mil_norm_folder]
 
     def required_gene_quanti_folders(self):
-        return [self.gene_quanti_base_folder, self.gene_quanti_per_lib_folder, 
+        return [self.gene_quanti_base_folder, self.gene_quanti_per_lib_folder,
                 self.gene_quanti_combined_folder]
 
-    def required_deseq_folders(self):
-        return [self.deseq_base_folder, self.deseq_raw_folder, 
-                self.deseq_extended_folder]
+    def required_deseq2_folders(self):
+        return [self.deseq2_base_folder, self.deseq2_raw_folder,
+                self.deseq2_extended_folder]
 
-    def required_viz_align_folders(self):
-        return [self.viz_align_base_folder]
+    def required_vis_align_folders(self):
+        return [self.vis_align_base_folder]
 
-    def required_viz_gene_quanti_folders(self):
-        return [self.viz_gene_quanti_base_folder]
+    def required_vis_gene_quanti_folders(self):
+        return [self.vis_gene_quanti_base_folder]
 
-    def required_viz_deseq_folders(self):
-        return [self.viz_deseq_base_folder]
+    def required_vis_deseq2_folders(self):
+        return [self.vis_deseq2_base_folder]
 
     def set_read_files_dep_file_lists_single_end(self, read_files, lib_names):
         self.read_paths = self._path_list(self.read_fasta_folder, read_files)
