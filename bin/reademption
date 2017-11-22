@@ -3,8 +3,10 @@
 """READemption - A RNA-seq Analysis Pipeline"""
 
 import argparse
-from reademptionlib.controller_coverage import CoverageController
+
 from reademptionlib.controller_create_project import ProjectCreateController
+from reademptionlib.controller_process_reads import ReadProcessingController
+from reademptionlib.controller_coverage import CoverageController
 from reademptionlib.controller_quanti import QuantiController
 from reademptionlib.controller_segemehl import SegemehlController
 from reademptionlib.controller_star import StarController
@@ -29,14 +31,16 @@ def main():
     create_project_parser = subparsers.add_parser(
         "create", help="Create a project")
     create_project_parser.add_argument(
-        "--project_path", "-f", help="Path of the project folder.")
+        "--project_path", "-f", help="Path of the project folder.",
+        required=True)
     create_project_parser.set_defaults(func=create_project)
 
     # Arguments for read procssing
     read_processing_parser = subparsers.add_parser(
         "process_reads", help="Process reads")
     read_processing_parser.add_argument(
-        "--project_path", "-f", help="Path of the project folder.")
+        "--project_path", "-f", help="Path of the project folder.",
+        required=True)
     read_processing_parser.set_defaults(func=process_reads)
     read_processing_parser.add_argument(
         "--processes", "-p", default=1, type=int,
@@ -76,7 +80,8 @@ def main():
     align_segemehl_parser = subparsers.add_parser(
         "align_segemehl", help="Align reads with segemehl")
     align_segemehl_parser.add_argument(
-        "--project_path", "-f", help="Path of the project folder.")
+        "--project_path", "-f", help="Path of the project folder.",
+        required=True)
     align_segemehl_parser.add_argument(
         "--processes", "-p", default=1, type=int,
         help="Number of processes that should be used (default 1).")
@@ -126,10 +131,14 @@ def main():
     align_segemehl_parser.add_argument(
         "--realign", "-r", default=False, action="store_true",
         help="Perform realignment of unmapped reads using 'lack'.")
+    align_segemehl_parser.set_defaults(func=align_reads_with_segemehl)
     
     # Parameters for read alignment with STAR
     align_star_parser = subparsers.add_parser(
         "align_star", help="Align reads with STAR")
+    align_star_parser.add_argument(
+        "--project_path", "-f", help="Path of the project folder.",
+        required=True)    
     align_star_parser.add_argument(
         "--STAR_bin", default="STAR",
         help="STAR's binary path (default 'STAR').")
@@ -167,12 +176,14 @@ def main():
         "following format: '<ORG_NAME_1>:<org_1_repl1>,<org_1_repl2>,..,"
         "<org_1_repl_n>;<ORG_NAME_2>:<org_2_repl1>,<org_2_repl2>,..,"
         "<org_2_repl_n>'")
+    align_star_parser.set_defaults(func=align_reads_with_star)
 
     # Parameters for coverage file building
     coverage_creation_parser = subparsers.add_parser(
         "coverage", help="Create coverage (wiggle) files")
     coverage_creation_parser.add_argument(
-        "--project_path", "-f", help="Path of the project folder.")
+        "--project_path", "-f", help="Path of the project folder.",
+        required=True)
     coverage_creation_parser.add_argument(
         "--unique_only", "-u", default=False, action="store_true",
         help="Use uniquely aligned reads only.")
@@ -219,9 +230,10 @@ def main():
 
     # Parameters for gene wise quantification
     gene_wise_quanti_parser = subparsers.add_parser(
-        "gene_quanti", help="Quantify the expression gene wise")
+        "quanti", help="Quantify the expression gene wise")
     gene_wise_quanti_parser.add_argument(
-        "--project_path", "-f", help="Path of the project folder.")
+        "--project_path", "-f", help="Path of the project folder.",
+        required=True)
     gene_wise_quanti_parser.add_argument(
         "--min_overlap", "-o", default=1, type=int,
         help="Minimal read-annotation-overlap (in nt) (default 1).")
@@ -285,9 +297,10 @@ def main():
 
     # Parameters for DESeq calling
     deseq_parser = subparsers.add_parser(
-        "deseq", help="Compare expression pairwise using DESeq")
+        "deseq2", help="Compare expression pairwise using DESeq")
     deseq_parser.add_argument(
-        "--project_path", "-f", help="Path of the project folder.")
+        "--project_path", "-f", help="Path of the project folder.",
+        required=True)
     deseq_parser.add_argument(
         "--libs", "-l", required=True,
         help="Comma separated list of libraries.")
@@ -324,30 +337,31 @@ def main():
     if args.version is True:
         print("READemption version " + __version__)
     elif "func" in dir(args):
-        args.func()
+        args.func(args)
     else:
         parser.print_help()
 
-def create_project():
-    controller_projectcreator.create_project(__version__)
+def create_project(args):
+    project_create_controller = ProjectCreateController(args)
+    project_create_controller.create_project(__version__)
 
-def process_reads():
-    pass
+def process_reads(args):
+    read_processing_controller = ReadProcessingController(arg)
     
-def align_reads_with_segemehl():
-    controller_alignment.align_reads()
+def align_reads_with_segemehl(args):
+    segemehl_controller = SegemehlController(args)
 
-def align_reads_with_star():
-    controller_alignment.align_reads()
+def align_reads_with_star(args):
+    star_controller = StarController(args) 
     
-def create_coverage_files():
-    controller_coverage.create_coverage_files()
+def create_coverage_files(args):
+    coverage_controler = CoverageController()
 
-def run_gene_wise_quantification():
-    controller_genequanti.quantify_gene_wise()
+def run_gene_wise_quantification(args):
+    quanti_controller = QuantiController(args)
 
 def run_deseq2():
-    controller_deseq.compare_with_deseq()
+    deseq2_controller = DESeq2Controller(args)
 
 main()
 
