@@ -65,8 +65,14 @@ def main():
         "nucleotides downstream will be trimmed off.")
     read_processing_parser.add_argument(
         "--reverse_complement", "-R", default=False, action="store_true",
-        help="Map reverse complement of the input reads.")    
-    
+        help="Map reverse complement of the input reads.")
+    read_processing_parser.add_argument(
+        "--cutadapt_options", "-cc", nargs="*", help="Specify in '' the desired "
+        "cutadapt options (e.g. -cc='-a A{30}, -m 12'). Please keep in mind the order of the options.")
+    read_processing_parser.add_argument(
+        "--min_read_length", "-l", default=12, type=int,
+        help="Minimal read length after clipping (default 12). Should be "
+        "higher for eukaryotic species.")
 
     # Parameters for read alignment with segemehl
     align_segemehl_parser = subparsers.add_parser(
@@ -263,13 +269,7 @@ def main():
     read_aligning_parser.add_argument(
         "--cutadapt_bin", default="cutadapt",
         help="cutadapt's binary path (default 'cutadapt').")
-    read_aligning_parser.add_argument(
-        "--cutadapt_options", "-cc", nargs="*", help="Specify in '' the desired "
-        "cutadapt options (e.g. -cc='-a A{30}, -m 12'). Please keep in mind the order of the options.")
-    read_aligning_parser.add_argument(
-        "--min_read_length", "-l", default=12, type=int,
-        help="Minimal read length after clipping (default 12). Should be "
-        "higher for eukaryotic species.")
+
     read_aligning_parser.set_defaults(func=align_reads,
                                       controller=PerformAlignment)
     """
