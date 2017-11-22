@@ -307,7 +307,7 @@ def main():
         "interrupted previous run) and do not overwrite them if they exits. "
         "Attention! You have to take care that there are no partially "
         "generated files left!")
-    gene_wise_quanti_parser.set_defaults(func=run_gene_wise_quantification)
+    gene_wise_quanti_parser.set_defaults(func=run_gene_quanti)
 
     # Parameters for DESeq calling
     deseq2_parser = subparsers.add_parser(
@@ -387,8 +387,9 @@ def create_coverage_files(args):
     coverage_controler.create_coverage_files()
 
 
-def run_gene_wise_quantification(args):
+def run_gene_quanti(args):
     quanti_controller = QuantiController(args)
+    quanti_controller.quantify_gene_wise()
 
 
 def run_deseq2(args):

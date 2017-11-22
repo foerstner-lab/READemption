@@ -20,7 +20,7 @@ from bokeh.embed import file_html
 """
 
 
-class GeneQuantiViz(object):
+class GeneQuantiVis(object):
     def __init__(self, gene_wise_quanti_combined_path, lib_names, output_path,
                  use_antisene=True, axis_min=None, axis_max=None):
         self._gene_wise_quanti_combined_path = gene_wise_quanti_combined_path
@@ -252,7 +252,7 @@ class GeneQuantiViz(object):
                     plots.append(pl)
         column(*plots)
         plot = column(*plots)
-        html = file_html(plot, CDN, 'Viz Gene Quanti')
+        html = file_html(plot, CDN, 'Vis Gene Quanti')
         with open(
                 self._output_path + '/Visualization Gene Quantification.html',
                 'w') as output_bokeh:

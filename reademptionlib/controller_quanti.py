@@ -6,7 +6,7 @@ from reademptionlib.genewisequanti import GeneWiseQuantification
 from reademptionlib.helpers import Helpers
 from reademptionlib.paths import Paths
 from reademptionlib.rawstatdata import RawStatDataReader
-from reademptionlib.vizgenequanti import GeneQuantiViz
+from reademptionlib.visgenequanti import GeneQuantiVis
 
 
 class QuantiController(object):
@@ -53,7 +53,7 @@ class QuantiController(object):
         self._helpers.check_job_completeness(jobs)
         self._gene_quanti_create_overview(
             annotation_files, self._paths.annotation_paths, lib_names)
-        self._viz_gene_quanti()
+        self._vis_gene_quanti()
 
     def _quantify_gene_wise(
             self, lib_name, read_alignment_path,
@@ -134,12 +134,12 @@ class QuantiController(object):
         return dict([(lib, values["stats_total"]["no_of_aligned_reads"])
                      for lib, values in read_aligner_stats.items()])
 
-    def _viz_gene_quanti(self):
+    def _vis_gene_quanti(self):
         """Generate plots based on the gene-wise read countings"""
-        gene_quanti_viz = GeneQuantiViz(
+        gene_quanti_vis = GeneQuantiVis(
             self._paths.gene_wise_quanti_combined_path,
             self._paths.get_lib_names_single_end() if not self._args.paired_end
             else self._paths.get_lib_names_paired_end(),
-            self._paths.viz_gene_quanti_base_folder)
-        gene_quanti_viz.parse_input_table()
+            self._paths.vis_gene_quanti_base_folder)
+        gene_quanti_vis.parse_input_table()
         
