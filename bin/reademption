@@ -36,7 +36,7 @@ def main():
         required=True)
     create_project_parser.set_defaults(func=create_project)
 
-    # Arguments for read procssing
+    # Arguments for read processing
     read_processing_parser = subparsers.add_parser(
         "process_reads", help="Process reads")
     read_processing_parser.add_argument(
