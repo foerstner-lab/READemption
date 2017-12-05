@@ -1,9 +1,9 @@
-from reademptionlib.visdeseq2 import DESeq2Vis
+from reademptionlib.vis_deseq2 import DESeq2Vis
 from reademptionlib.helpers import Helpers
 from reademptionlib.paths import Paths
 
 
-class DESeq2Controller(object):
+class DESeq2VisController(object):
     
     def __init__(self, args):
         self._args = args

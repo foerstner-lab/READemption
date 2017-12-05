@@ -34,7 +34,8 @@ class ReadProcessingController():
                         processed_read_path):
                     continue
                 cutadapt = Cutadapt(
-                    self._args.cutadapt_options, self._args.cutadapt_bin)
+                    self._args, self._args.cutadapt_options,
+                    self._args.cutadapt_bin)
                 read_files_and_jobs[lib_name] = executor.submit(
                     cutadapt.run_cutadapt_se, read_path,
                     self._paths.read_processing_base_folder, lib_name)
@@ -42,7 +43,6 @@ class ReadProcessingController():
         # self._helpers.check_job_completeness(read_files_and_jobs.values())
 
     def _prepare_reads_pe_cutadapt(self):
-        cutadapt = Cutadapt(self._args.cutadapt_bin)
         read_files_and_jobs = {}
         with concurrent.futures.ProcessPoolExecutor(
                 max_workers=self._args.processes) as executor:
