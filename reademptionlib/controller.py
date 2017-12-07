@@ -656,8 +656,9 @@ class Controller(object):
             allowed_features_str=self._args.allowed_features,
             skip_antisense=self._args.skip_antisense,
             unique_only=self._args.unique_only)
-        gene_wise_quantification.calc_overlaps_per_alignment(
-            read_alignment_path, self._paths.annotation_paths)
+        if norm_by_overlap_freq:
+            gene_wise_quantification.calc_overlaps_per_alignment(
+                read_alignment_path, self._paths.annotation_paths)
         for annotation_file, annotation_path in zip(
                 annotation_files, self._paths.annotation_paths):
             gene_wise_quantification.quantify(
