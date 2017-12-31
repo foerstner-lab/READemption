@@ -333,7 +333,8 @@ def _gff_field_descriptions():
     return ["Sequence name", "Source", "Feature", "Start", "End", "Score",
             "Strand", "Frame", "Attributes"]
 
+
 def _get_overlap(alignment_start, alignment_end, feature_start, feature_end):
-    return max(0, 
-               min(alignment_end, feature_end) - 
+    return max(0,
+               min(alignment_end, feature_end) -
                max(alignment_start, feature_start) + 1)
