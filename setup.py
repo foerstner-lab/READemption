@@ -5,7 +5,7 @@ except ImportError:
 
 setup(
     name='READemption',
-    version='0.4.3',
+    version='0.4.4',
     packages=['reademptionlib', 'tests'],
     author='Konrad U. Förstner',
     author_email='konrad@foerstner.org',
