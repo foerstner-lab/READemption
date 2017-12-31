@@ -1,3 +1,6 @@
+v0.4.5 (2017-12-31)
+- Move documentation to Read the Docs
+- New theme for docs
 v0.4.4 (2017-12-31)
 - Fix issue with unnecessary gene quanti
 - Fix issue of DESeq2 MA plot generation
