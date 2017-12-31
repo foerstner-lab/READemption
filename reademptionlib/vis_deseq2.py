@@ -74,7 +74,7 @@ class DESeq2Vis(object):
                 ("Product", "@product"),
                 ("log2 fold change", "@log2FoldChange"),
                 ("base mean", "@baseMean")]), PanTool(), BoxSelectTool(),
-                               BoxZoomTool(), WheelZoomTool(), ResizeTool(),
+                               BoxZoomTool(), WheelZoomTool(),
                                ResetTool()])
             pl.background_fill_color = "White"
             pl.grid.grid_line_color = "black"
