@@ -36,19 +36,20 @@ class DESeqViz(object):
         matplotlib.rc('font', **font)
         deseq_result = pd.read_table(
             self._deseq_path_template % (condition_1, condition_2))
+        # Remove 0 base mean row as those would otherwise couse trouble
+        # for the log10
+        deseq_result = deseq_result[deseq_result.baseMean > 0]
         fig = plt.figure()
-        plt.plot(np.log10(deseq_result.baseMean),
-                 deseq_result.log2FoldChange, ".", alpha=0.3)
         significant_deseq_result = deseq_result[
-            deseq_result.padj < self._p_value_significance_limit]
+            (deseq_result.padj < self._p_value_significance_limit)]
         non_significant_deseq_result = deseq_result[
-            deseq_result.padj >= self._p_value_significance_limit]
-        plt.plot(
-            np.log10(significant_deseq_result.baseMean),
-            significant_deseq_result.log2FoldChange, ".r", alpha=0.3)
+            (deseq_result.padj >= self._p_value_significance_limit)]
         plt.plot(
             np.log10(non_significant_deseq_result.baseMean),
             non_significant_deseq_result.log2FoldChange, ".k", alpha=0.5)
+        plt.plot(
+            np.log10(significant_deseq_result.baseMean),
+            significant_deseq_result.log2FoldChange, ".r", alpha=0.3)
         plt.title("{} vs. {} - MA plot".format(condition_1, condition_2))
         y_max = max([abs(log2_fc)
                      for log2_fc in deseq_result.log2FoldChange])
@@ -109,7 +110,12 @@ class DESeqViz(object):
         max_log_2_fold_change = max(
             [abs(min(log2_fold_changes)),
              abs(max(log2_fold_changes))])
+        # To avoid problem with zero in log10
+        p_values = np.array(p_values)
+        p_values[p_values == 0.0] = 10**-100
         mod_p_values = -1 * np.log10(p_values)
+        mod_p_values[mod_p_values == float("+inf")] = 0.0
+        mod_p_values[mod_p_values == float("-inf")] = 0.0
         max_mod_p_values = max(mod_p_values)
         # Set axis ranges
         plt.axis([-1*max_log_2_fold_change, max_log_2_fold_change,
