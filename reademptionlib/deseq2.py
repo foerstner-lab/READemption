@@ -100,14 +100,14 @@ class DESeq2Runner(object):
                 if lib in data_csv.columns:
                     data_csv = data_csv.rename(columns={
                         lib: '{} countings'.format(lib)})
-            new_output_csv = open('{}/Final_{}'.format(
+            new_output_csv = open('{}/{}'.format(
                 self._deseq2_extended_folder, output_file), 'a')
             new_output_csv.write('{}\n'.format(''.join(list(comments_csv))))
             new_output_csv.write('{}\n'.format(''.join(list(
                 comments_csv.iloc[0]))))
             data_csv.to_csv(new_output_csv, sep='\t')
             new_output_csv.close()
-            os.remove('{}/{}'.format(self._deseq2_extended_folder, output_file))
+            # os.remove('{}/{}'.format(self._deseq2_extended_folder, output_file))
         
     def _condition_combos(self, conditions):
         non_redundant_conditions = set(conditions)
