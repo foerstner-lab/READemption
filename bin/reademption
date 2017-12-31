@@ -11,7 +11,7 @@ from reademptionlib.controller_quanti import QuantiController
 from reademptionlib.controller_segemehl import SegemehlController
 from reademptionlib.controller_star import StarController
 from reademptionlib.controller_deseq2 import DESeq2Controller
-from reademptionlib.controller_vis_deseq2 import DESeq2VisController
+from reademptionlib.controller_vis_deseq2 import VisDESeq2Controller
 
 
 __author__ = "Konrad Foerstner <konrad@foerstner.org>"
@@ -351,7 +351,12 @@ def main():
         " (MA plot only).")
     vis_deseq2_parser.add_argument(
         "--glyph_size", "-g", type=int, default=8,
-        help="Specify the size of the glyphs (MA plot only).")    
+        help="Specify the size of the glyphs (MA plot only).")
+    # TODO - this should be extracted from the deseq2 meta data:
+    vis_deseq2_parser.add_argument(
+        "--conditions", "-c", required=True,
+        help="Comma separated list of condition in the same order as "
+        "their corresponding libraries.")    
     vis_deseq2_parser.set_defaults(func=vis_deseq2)
     
     args = parser.parse_args()
@@ -397,7 +402,8 @@ def run_deseq2(args):
     deseq2_controller.compare_with_deseq2()
 
 def vis_deseq2(args):
-    vis_deseq2_controller = DESeq2VisController(args)
+    vis_deseq2_controller = VisDESeq2Controller(args)
+    vis_deseq2_controller.vis_deseq2()
 
 
 main()
