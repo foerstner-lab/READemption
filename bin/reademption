@@ -36,7 +36,7 @@ def main():
         required=True)
     create_project_parser.set_defaults(func=create_project)
 
-    # Arguments for read procssing
+    # Arguments for read processing
     read_processing_parser = subparsers.add_parser(
         "process_reads", help="Process reads")
     read_processing_parser.add_argument(
@@ -46,9 +46,27 @@ def main():
         "--processes", "-p", default=1, type=int,
         help="Number of processes that should be used (default 1).")    
     read_processing_parser.add_argument(
-        "--cutadapt_options", "-cc", default="", help="Specify in the desired "
+        "--cutadapt_options", "-cc", default=None, help="Specify in the desired " #default changed to "None" changed to None
         "cutadapt options (e.g. -cc='-a A{30}, -m 12'). "
         "Please keep of the options in mind the order o.")
+    read_processing_parser.add_argument(
+        "--adapter", "-a", default=None, type=str,
+        help="Adapter sequence. If it is found in a read it and all the "
+        "nucleotides downstream will be trimmed off.")
+    read_processing_parser.add_argument(
+        "--min_read_length", "-m", default=12, type=int,
+        help="Minimal read length after clipping (default 12). Should be "
+        "higher for eukaryotic species.")
+    read_processing_parser.add_argument(
+        "--min_phred_score", "-q", default=None, type=int,
+        help="Minimal Phred score. Works only if read are given in FASTQ "
+        "format. As soon as a based drop below this value it and all the "
+        "nucleotides downstream of it will be trimmed off.")
+    read_processing_parser.add_argument(
+        "--poly_a_clipping", "-c", default=False,
+        action="store_true", help="Perform polyA tail clipping. This option "
+        "cannot be used for paired-end reads.")
+    
     read_processing_parser.add_argument(
         "--cutadapt_bin", default="cutadapt",
         help="cutadapt's binary path (default 'cutadapt').")
@@ -69,25 +87,8 @@ def main():
 
     """
     read_processing_parser.add_argument(
-        "--poly_a_clipping", "-c", default=False,
-        action="store_true", help="Perform polyA tail clipping. This option "
-        "cannot be used for paired-end reads.")
-    read_processing_parser.add_argument(
-        "--min_phred_score", "-Q", default=None, type=int,
-        help="Minimal Phred score. Works only if read are given in FASTQ "
-        "format. As soon as a based drop below this value it and all the "
-        "nucleotides downstream of it will be trimmed off.")
-    read_processing_parser.add_argument(
-        "--adapter", "-A", default=None, type=str,
-        help="Adapter sequence. If it is found in a read it and all the "
-        "nucleotides downstream will be trimmed off.")
-    read_processing_parser.add_argument(
         "--reverse_complement", "-R", default=False, action="store_true",
         help="Map reverse complement of the input reads.")
-    read_processing_parser.add_argument(
-        "--min_read_length", "-l", default=12, type=int,
-        help="Minimal read length after clipping (default 12). Should be "
-        "higher for eukaryotic species.")
     """
 
     # Parameters for read alignment with segemehl
