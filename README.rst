@@ -19,7 +19,7 @@ Documentation
 -------------
 
 Documentation can be found on
-`here <http://pythonhosted.org/READemption/>`__.
+`here <https://reademption.readthedocs.io>`__.
 
 Installation
 ------------
@@ -30,13 +30,13 @@ Short version (if you have all the requirements installed):
 
     $ pip install READemption
 
-`Long version <http://pythonhosted.org/READemption/installation.html>`__
+`Long version <https://reademption.readthedocs.io/en/latest/installation.html>`__
 including a decryption of the requirements and how do you get them.
 
 License
 -------
 
-`ICSL <https://en.wikipedia.org/wiki/ISC_license>`__ (Internet Systems
+`ICSL <https://reademption.readthedocs.io/en/latest/license.html>`__ (Internet Systems
 Consortium license ~ simplified BSD license) - see LICENSE.txt
 
 Development
