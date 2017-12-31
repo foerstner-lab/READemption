@@ -10,6 +10,9 @@ package:
 	rm -rf READemption.egg-info
 	ls dist/*
 
+clean:
+	find -name "*pyc" -exec rm {} \;
+
 build:
 	# python3 setup.py bdist_wheel
 	 python3 setup.py bdist
