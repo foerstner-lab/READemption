@@ -6,7 +6,8 @@ coverage:
 	python3-coverage report
 
 package:
-	python3 setup.py bdist_wheel
+	# python3 setup.py bdist_wheel
+	python3 setup.py bdist
 	rm -rf READemption.egg-info
 	ls dist/*
 
@@ -25,10 +26,11 @@ package_to_pypi:
 html_doc:
 	cd docs && make html && cd ..
 
-upload_doc:
-	cd docs/build/html/ && zip -r READemption_docs.zip * && cd ../../.. && mv docs/build/html/READemption_docs.zip .
-	@echo ""
-	@echo "Upload READemption_docs.zip at https://pypi.python.org/pypi?%3Aaction=pkg_edit&name=READemption"
+# Obsolete
+#upload_doc:
+#	cd docs/build/html/ && zip -r READemption_docs.zip * && cd ../../.. && mv docs/build/html/READemption_docs.zip .
+#	@echo ""
+#	@echo "Upload READemption_docs.zip at https://pypi.python.org/pypi?%3Aaction=pkg_edit&name=READemption"
 
 show_html_docs:
 	firefox docs/build/html/index.html &
@@ -71,6 +73,6 @@ new_release:
 	@echo "* Push it to github: git push"
 	@echo "* Generate a new release based on this tag at"
 	@echo "  https://github.com/konrad/READemption/releases/new"
-	@echo "* Upload new docs using 'make upload_doc'"
+	# @echo "* Upload new docs using 'make upload_doc'"
 
 # Todo: docker_images: docker build -t konradfoerstner/reademption:0.4.1 -t konradfoerstner/reademption:latest .
