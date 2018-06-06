@@ -3,7 +3,7 @@ from reademptionlib.helpers import Helpers
 from reademptionlib.paths import Paths
 
 
-class DESeq2VisController(object):
+class VisDESeq2Controller(object):
     
     def __init__(self, args):
         self._args = args

@@ -1,4 +1,4 @@
-FROM ubuntu:16.04
+From ubuntu:16.04
 MAINTAINER Konrad Förstner <konrad.foerstner@uni-wuerzburg.de>
 
 RUN apt-get update && apt-get dist-upgrade -y
