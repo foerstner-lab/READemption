@@ -11,6 +11,7 @@ class DESeqRunner(object):
             deseq_script_path, deseq_pca_heatmap_path,
             gene_wise_quanti_combined_path,
             deseq_tmp_session_info_script, deseq_session_info,
+            fc_shrinkage_off,
             cooks_cutoff_off=False):
         self._libs = libs
         self._conditions = conditions
@@ -23,6 +24,7 @@ class DESeqRunner(object):
         self._deseq_session_info = deseq_session_info
         self._cooks_cutoff_off = cooks_cutoff_off
         self._first_data_column = 11
+        self._fc_shrinkage_off = fc_shrinkage_off
 
     def write_session_info_file(self):
         with open(self._deseq_tmp_session_info_script, "w") as tmp_r_script_fh:
@@ -43,9 +45,14 @@ class DESeqRunner(object):
         libs_str = ",".join(["'%s'" % lib for lib in libs])
         conditions = [libs_to_conditions[lib] for lib in libs]
         condition_str = ", ".join(["'%s'" % cond for cond in conditions])
+        if not self._fc_shrinkage_off:
+            beta_prior_str = ", betaPrior=TRUE"
+        elif self._fc_shrinkage_off:
+            beta_prior_str = ""
         file_content = self._deseq_script_template() % (
             self._gene_wise_quanti_combined_path, self._first_data_column-1,
             len(libs), self._first_data_column, libs_str, condition_str,
+            beta_prior_str,
             self._deseq_pca_heatmap_path)
         file_content += self._comparison_call_strings(conditions)
         deseq_fh = open(self._deseq_script_path, "w")
@@ -132,7 +139,7 @@ class DESeqRunner(object):
             "lib=libs)\n"
             "dds <- DESeqDataSetFromMatrix(countData=countTable, "
             "colData=samples, design=~condition)\n"
-            "dds <- DESeq(dds)\n\n"
+            "dds <- DESeq(dds%s)\n\n"
             "# PCA plot\n"
             "pdf('%s')\n"
             "rld <- rlog(dds)\n"
