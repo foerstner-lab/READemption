@@ -38,7 +38,9 @@ class ReadProcessingController():
                     self._args.cutadapt_bin)
                 read_files_and_jobs[lib_name] = executor.submit(
                     cutadapt.run_cutadapt_se, read_path,
-                    self._paths.read_processing_base_folder, lib_name)
+                    self._paths.read_processing_base_folder,
+                    self._paths.read_processing_report_folder,
+                    lib_name)
         # self._paths.gzip_processed_reads()
         # self._helpers.check_job_completeness(read_files_and_jobs.values())
 

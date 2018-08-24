@@ -1,4 +1,6 @@
 from subprocess import call
+from subprocess import check_call
+from subprocess import check_output
 
 class Cutadapt(object):
 
@@ -6,8 +8,9 @@ class Cutadapt(object):
         self._cutadapt_bin = cutadapt_bin
         self._args = args 
         self._cutadapt_options = cutadapt_options
-        
-    def run_cutadapt_se(self, read_path, processed_read_path, lib_name):
+    
+    def run_cutadapt_se(self, read_path, processed_read_path, report_folder,
+                        lib_name):
         if self._cutadapt_options is None:
             cutadapt_options = []
             if self._args.adapter is not None:
@@ -23,16 +26,21 @@ class Cutadapt(object):
                 poly_a_clipping_option = "-a AAAAAA" # Are 6 As a proper number
                                                      # for poly-A-clipping?
                 cutadapt_options.append(poly_a_clipping_option)    
-    
+
         else:
             cutadapt_options = self._cutadapt_options.split(",")
         output_path = "%s/%s_processed.fa.gz" % (
             processed_read_path, lib_name)
-        cutadapt_call = [self._cutadapt_bin, "--quiet", "-o", output_path]
+        cutadapt_call = [self._cutadapt_bin]
         for option in cutadapt_options:
             cutadapt_call.append(option)
-        cutadapt_call.append(read_path)
-        call(cutadapt_call)
+        cutadapt_call_arguments = ["-o", output_path, read_path]
+        for arguments in cutadapt_call_arguments:
+            cutadapt_call.append(arguments)
+        cutadapt_report = check_output(cutadapt_call)
+        report_folder_file = "{}/processing_report.txt".format(report_folder)
+        with open(report_folder_file, "w") as processing_report:
+            processing_report.write(str(cutadapt_report))
 
     def run_cutadapt_pe(
             self, read_path_pair, processed_read_path, lib_name):
