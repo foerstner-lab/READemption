@@ -812,6 +812,7 @@ class Controller(object):
             self._paths.gene_wise_quanti_combined_path,
             self._paths.deseq_tmp_session_info_script,
             self._paths.deseq_session_info,
+            self._args.fc_shrinkage_off,
             self._args.cooks_cutoff_off)
         deseq_runner.create_deseq_script_file()
         deseq_runner.write_session_info_file()

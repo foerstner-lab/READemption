@@ -260,6 +260,9 @@ def main():
         "their corresponding libraries.")
     deseq_parser.add_argument(
         "--cooks_cutoff_off", "-k", default=False, action="store_true")
+    deseq_parser.add_argument(
+        "--fc_shrinkage_off", "-so", default=False, action="store_true",
+        help="turn off log2 fold change shrinkage")
     deseq_parser.set_defaults(func=run_deseq)
 
     # Parameters for viz_align
