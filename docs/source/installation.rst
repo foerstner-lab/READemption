@@ -56,6 +56,8 @@ Some comments:
   tar xzf segemehl_0_2_0.tar.gz
   cd segemehl_*/segemehl/ && make && cd ../../
 
+In the future segemehl version 0.3.0 will be integrated into Reademption. For the time being we recommend using version 0.2.0.
+
 Copying the executable to a location that is part of the ``PATH`` e.g
 ``/usr/bin/`` ...
 
