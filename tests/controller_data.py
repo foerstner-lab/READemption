@@ -1,99 +1,23 @@
-import os
-import sys
-import unittest
-import shutil
-sys.path.append(".")
-from reademptionlib.controller import Controller
+from reademptionlib.controller_projectcreator import CreateProject
+from reademptionlib.controller_alignment import PerformAlignment
+from reademptionlib.controller_coverage import CalculateCoverage
+from reademptionlib.controller_genequanti import GeneQuantification
+from reademptionlib.controller_deseq import RunDeseq
 
-class ArgMock(object):
-    project_path = "a_test_project"
-    min_read_length = 12
-    segemehl_bin = "segemehl.x"
-    threads = 1
-    segemehl_accuracy = 95
-    segemehl_evalue = 5.0
-    paired_end = False
-    processes = 1
-    check_for_existing_files = False
-    poly_a_clipping = True
-    progress = False
-    split = False
-    realign = False
-    crossalign_cleaning_str = None
-    fastq = False
-    min_phred_score = None
-    adapter = None
-    reverse_complement = False
 
-class TestController(unittest.TestCase):
-
-    def setUp(self):
-        arg_mock = ArgMock()
-        self.test_project_name = arg_mock.project_path
-        self.controller = Controller(arg_mock)
-        self.example_data = ExampleData()
-        self.maxDiff = None
-
-    def tearDown(self):
-        self._remove_project_folder()
-
-    def _generate_input_fasta_files(self):
-        genome_fh = open("%s/%s" % (
-                self.controller._paths.ref_seq_folder, "agenome.fa"), "w")
-        read_fh_1 = open("%s/%s" % (
-                self.controller._paths.read_fasta_folder, "libfoo.fa"), "w")
-        read_fh_2 = open("%s/%s" % (
-                self.controller._paths.read_fasta_folder, "libbar.fa"), "w")
-        genome_fh.write(self.example_data.genome_fasta)
-        genome_fh.close()
-        read_fh_1.write(self.example_data.read_fasta_1)
-        read_fh_1.close()
-        read_fh_2.write(self.example_data.read_fasta_2)
-        read_fh_2.close()
-
-    def _generate_mapping_files(self):
-        for file_path, sam_content in zip(
-            self.controller._paths.read_mapping_result_sam_paths, 
-            [self.example_data.sam_content_1, 
-             self.example_data.sam_content_2]):
-            mapping_fh = open(file_path, "w")
-            mapping_fh.write(sam_content)
-            mapping_fh.close()
-
-    def _generate_annotation_files(self):
-        annotation_fh = open(
-            "%s/some_annos.gff" % 
-            self.controller._paths.annotation_folder, "w")
-        print(self.controller._paths.annotation_folder)
-        annotation_fh.write(self.example_data.gff_content_1)
-        annotation_fh.close()
-        
-    def _remove_project_folder(self):
-        if os.path.exists(self.test_project_name):
-            shutil.rmtree(self.test_project_name)
-
-class TestControllerCreateProject(TestController):
-
-    def test_create_project(self):
-        self._version = 0.1
-        self.controller.create_project(self._version)
-        self.assertEqual(
-            set(list(os.listdir(self.test_project_name))), 
-            set(['input', 'output']))
-        self._remove_project_folder()
-
-class TestControllerReadAligning(TestController):
-
-    def test_read_aligning(self):
-        self._version = 0.1
-        self.controller.create_project(self._version)
-        self.controller._paths._set_folder_names()
-        self._generate_input_fasta_files()
-        self.controller.align_reads()
-        self._remove_project_folder()
-    
-class ExampleData(object):
-
+def data_controllers():
+    arg_mock_align = ArgMockAlignment()
+    arg_mock_cov = ArgMockCoverage()
+    arg_mock_quanti = ArgMockQuanti()
+    arg_mock_deseq = ArgMockDESeq()
+    version = "0.4.4.dev"
+    test_project_name = "a_test_project"
+    project_creator = CreateProject(arg_mock_align)
+    controller_align = PerformAlignment(arg_mock_align)
+    controller_coverage = CalculateCoverage(arg_mock_cov)
+    controller_genequanti = GeneQuantification(arg_mock_quanti)
+    controller_deseq = RunDeseq(arg_mock_deseq)
+   
     genome_fasta = """>SL1344 genome sequence
 AGAGATTACGTCTGGTTGCAAGAGATCATGACAGGGGGAATTGGTTGAAAATAAATATAT
 CGCCAGCAGCACATGAACAAGTTTCGGAATGTGATCAATTTAAAAATTTATTGACTTAGG
@@ -111,6 +35,26 @@ ATGTCGATCGCGATTATGGCGGGACTTCTGGAGGCGCGTGGGCATCGCGTCACGGTGATC
 GATCCGGTAGAAAAATTGCTGGCGGTGGGCCATTACCTTGAATCTACCGTCGATATCGCG
 GAATCGACTCGCCGTATCGCCGCCAGCCAGATCCCGGCCGATCACATGATCCTGATGGCG
 GGCTTTACCGCCGGTAATGAAAAGGGTGAACTGGTGGTGCTGGGCCGTAATGGTTCCGAC
+AACGGTGCGGGCTGACGCGTACAGGAAACACAGAAAAAAGCCCGCACCTGAACAGTGCGG
+CGGTTGAAAATGGTTGTCGAACAAGAATTCGCTCAGATCAAACATGTTCTGCATGGTATC
+ATGTCGATCGCGATTATGGCGGGACTTCTGGAGGCGCGTGGGCATCGCGTCACGGTGATC
+AGGCAAGGGCAGGTAGCGACCGTACTTAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+TTGTCGAACAAGAATTCGCTCAGATCAAAAAAAAAAAAGGGGGTGTAAAAAAAGTGTAAA
+GTGGGGTGGGTAGAGAGAGAGATTTTTTTGAGAGAGAGAAGGGTTTTTAGAGTAGAGAGG
+CGCCAGCCAGATCCCGAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+GGCCATTACCTTGAATCTACCGTCGATATCGCGGAATCGACTCGCCGTATCGAAAAAAAA
+AAAGGGACTTCTGGAGGCGCGTGGGCATCGCGTCACGGTGAAAAAAAAAAAAAAAAAAAA
+TCTGGAGGCGCGTGGGCATCGCGTCACGGTAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+GAATCGACTCGCCGTATCGCCGCCAGCCAGATCCCGGCCGATCAGATGATCCTGATGGCG
+ATGGCGGGACTTCTGGAGGCGCGTGGGCATCGCGTCACGGTGATCAAAAAAAAAAAAAAA
+GGTCAGTGCCCGGATAGCATCAACGCCGCGCTGATTTGCAAAAAAAAAAAAAAAAAAAAA
+AAGTTTTTTTGTGAGAGAGAAGTTTTGAGAGAGAGTTAGAGGAAAAAAAAAAAAAAAAAA
+CGCCAGCAGCACATGAACAAGTTTCGGAATGTGATCAATTTAAAAATTTATTGACTTAGG
+CGCCAGCAGCACATGAACAAGTTTCGGAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+ATGAACAAGTTTCGGAATGTGATCAATTTAAAAATTTATTGACTTAGGAAAAAAAAAAAA
+TGTGATCAATTTAAAAATTTATTGACTTAGGAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+GGCCATGACCTTGAATCTACCGTCGATATCGCGGAATCGACTCGCCGTATCGAAAAAAAA
 """ 
 
     read_fasta_1 = """>read_01
@@ -210,7 +154,92 @@ read_01	SL1344	500	509	+	1	SL1344	EMBL	gene	505	550	.	-	.	ID=SL1344:rumba;locus_
     overlap_output_2 = """read_01	SL1344	1	10	+	1	no_overlap
 read_01	SL1344	50	59	+	1	no_overlap
 """
+    global test_project_name
+    global version
+    global project_creator
+    global controller_align
+    global controller_coverage
+    global controller_genequanti
+    global controller_deseq
+    global genome_fasta
+    global read_fasta_1
+    global read_fasta_2
+    global sam_content_1
+    global sam_content_2
+    global gff_content_1
+    # global gff_content_2
+    global overlap_output_1
+    global overlap_output_2
 
-if __name__ == "__main__":
-    unittest.main()
+    
+class ArgMockAlignment(object):
+    project_path = "a_test_project"
+    min_read_length = 20
+    STAR_bin = "STAR"
+    indexN = 10
+    threads = 1
+    paired_end = False
+    cutadapt = False
+    segemehl = False
+    processes = 1
+    check_for_existing_files = False
+    poly_a_clipping = True
+    split = False
+    realign = False
+    crossalign_cleaning_str = None
+    min_phred_score = None
+    adapter = None
+    reverse_complement = False
+
+
+class ArgMockCoverage(object):
+    project_path = "a_test_project"
+    processes = 1
+    normalize_by_uniquely = False
+    non_strand_specific = False
+    skip_read_count_splitting = False
+    unique_only = False
+    coverage_style = "global"
+    clip_length = 11
+    check_for_existing_files = False
+
+
+class ArgMockQuanti(object):
+    project_path = "a_test_project"
+    min_overlap = 1
+    read_region = "global"
+    clip_length = 1
+    paired_end = False
+    no_count_split_by_alignment_no = False
+    no_count_splitting_by_gene_no = False
+    skip_antisense = False
+    non_strand_specific = False
+    processes = 1
+    features = None
+    allowed_features = None
+    unique_only = False
+    pseudocounts = False
+    check_for_existing_files = False
+
+
+class ArgMockDESeq(object):
+    project_path = "a_test_project"
+    libs = "libbar.fa,libfoo.fa"
+    conditions = "condition_1,condition_2"
+    cooks_cutoff_off = False
+    padj_cutoff = 0.05
+    shape = "circle"
+    alpha = 0.5
+    color_sig = "red"
+    color_non_sig = "black"
+    glyph_size = 8
+    deseq_raw_folder = "{}/output/deseq/deseq_raw".format(project_path)
+    deseq_extended_folder = "{}/output/deseq/deseq_with_annotations".format(
+        project_path)
+    deseq_script_path = deseq_raw_folder
+    deseq_pca_heatmap_path = deseq_raw_folder
+    gene_wise_quanti_combined_path = deseq_raw_folder
+    deseq_tmp_session_info_script = deseq_raw_folder
+    deseq_session_info = deseq_raw_folder
+
 

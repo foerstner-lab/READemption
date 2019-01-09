@@ -1,0 +1,2 @@
+class StarController:
+    pass

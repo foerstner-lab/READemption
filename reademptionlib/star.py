@@ -1,7 +1,7 @@
 from subprocess import call
 
 
-class STAR_Align(object):
+class STAR(object):
 
     """A simple STAR wrapper."""
 
