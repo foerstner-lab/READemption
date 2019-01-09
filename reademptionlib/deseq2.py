@@ -11,12 +11,8 @@ class DESeq2Runner(object):
             self, libs, conditions, deseq2_raw_folder, deseq2_extended_folder,
             deseq2_script_path, deseq2_pca_heatmap_path,
             gene_wise_quanti_combined_path,
-<<<<<<< HEAD:reademptionlib/deseq.py
             deseq_tmp_session_info_script, deseq_session_info,
             fc_shrinkage_off,
-=======
-            deseq2_tmp_session_info_script, deseq2_session_info,
->>>>>>> dev_reademption2:reademptionlib/deseq2.py
             cooks_cutoff_off=False):
         self._libs = libs
         self._conditions = conditions
