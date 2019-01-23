@@ -1,7 +1,7 @@
 from reademptionlib.controller_create_project import ProjectCreateController
 from reademptionlib.controller_alignment import PerformAlignment
 from reademptionlib.controller_coverage import CoverageController
-from reademptionlib.controller_genequanti import GeneQuantification
+from reademptionlib.controller_quanti import QuantiController
 from reademptionlib.controller_deseq import RunDeseq
 
 
@@ -31,7 +31,7 @@ def data_controllers():
     project_creator = ProjectCreateController(arg_mock_align)
     controller_align = PerformAlignment(arg_mock_align)
     controller_coverage = CoverageController(arg_mock_cov)
-    controller_genequanti = GeneQuantification(arg_mock_quanti)
+    controller_genequanti = QuantiController(arg_mock_quanti)
     controller_deseq = RunDeseq(arg_mock_deseq)
    
     genome_fasta = """>SL1344 genome sequence
