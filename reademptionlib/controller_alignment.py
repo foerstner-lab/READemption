@@ -1,6 +1,6 @@
 import concurrent.futures
 import os
-from reademptionlib.vizalign import AlignViz
+from reademptionlib.visalign import AlignViz
 from reademptionlib.bammerger import BamMerger
 from reademptionlib.crossalignfilter import CrossAlignFilter
 from reademptionlib.helpers import Helpers
