@@ -6,6 +6,22 @@ from reademptionlib.controller_deseq import RunDeseq
 
 
 def data_controllers():
+    global test_project_name
+    global version
+    global project_creator
+    global controller_align
+    global controller_coverage
+    global controller_genequanti
+    global controller_deseq
+    global genome_fasta
+    global read_fasta_1
+    global read_fasta_2
+    global sam_content_1
+    global sam_content_2
+    global gff_content_1
+    # global gff_content_2
+    global overlap_output_1
+    global overlap_output_2
     arg_mock_align = ArgMockAlignment()
     arg_mock_cov = ArgMockCoverage()
     arg_mock_quanti = ArgMockQuanti()
@@ -154,24 +170,8 @@ read_01	SL1344	500	509	+	1	SL1344	EMBL	gene	505	550	.	-	.	ID=SL1344:rumba;locus_
     overlap_output_2 = """read_01	SL1344	1	10	+	1	no_overlap
 read_01	SL1344	50	59	+	1	no_overlap
 """
-    global test_project_name
-    global version
-    global project_creator
-    global controller_align
-    global controller_coverage
-    global controller_genequanti
-    global controller_deseq
-    global genome_fasta
-    global read_fasta_1
-    global read_fasta_2
-    global sam_content_1
-    global sam_content_2
-    global gff_content_1
-    # global gff_content_2
-    global overlap_output_1
-    global overlap_output_2
 
-    
+
 class ArgMockAlignment(object):
     project_path = "a_test_project"
     min_read_length = 20
