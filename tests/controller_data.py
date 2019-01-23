@@ -1,4 +1,4 @@
-from reademptionlib.controller_projectcreator import CreateProject
+from reademptionlib.controller_create_project import ProjectCreateController
 from reademptionlib.controller_alignment import PerformAlignment
 from reademptionlib.controller_coverage import CalculateCoverage
 from reademptionlib.controller_genequanti import GeneQuantification
@@ -28,7 +28,7 @@ def data_controllers():
     arg_mock_deseq = ArgMockDESeq()
     version = "0.4.4.dev"
     test_project_name = "a_test_project"
-    project_creator = CreateProject(arg_mock_align)
+    project_creator = ProjectCreateController(arg_mock_align)
     controller_align = PerformAlignment(arg_mock_align)
     controller_coverage = CalculateCoverage(arg_mock_cov)
     controller_genequanti = GeneQuantification(arg_mock_quanti)
