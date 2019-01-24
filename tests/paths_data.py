@@ -28,7 +28,7 @@ def data_paths():
         paths.annotation_folder,
         paths.read_alignment_index_folder,
         paths.read_alignments_folder,
-        paths.processed_reads_folder,
+        paths.read_processing_base_folder,
         paths.unaligned_reads_folder,
         paths.coverage_raw_folder,
         paths.coverage_tnoar_min_norm_folder,

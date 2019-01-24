@@ -9,7 +9,7 @@ class Paths(object):
         self.base_path = args.project_path
         self._set_folder_names()
         self._set_static_files()
-        
+
     def _set_folder_names(self):
         """Set the name of folders used in a project."""
         self.input_folder = "%s/input" % (self.base_path)
