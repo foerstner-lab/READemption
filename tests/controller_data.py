@@ -2,7 +2,7 @@ from reademptionlib.controller_create_project import ProjectCreateController
 from reademptionlib.controller_alignment import PerformAlignment
 from reademptionlib.controller_coverage import CoverageController
 from reademptionlib.controller_quanti import QuantiController
-from reademptionlib.controller_deseq import RunDeseq
+from reademptionlib.controller_deseq2 import DESeq2Controller
 
 
 def data_controllers():
