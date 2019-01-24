@@ -2,6 +2,11 @@ from reademptionlib.coveragecalculator import CoverageCalculator
 
 
 def data_coverage_calculator():
+    global coverage_calculator
+    global sam_bam_prefix
+    global sam_content_1
+    global sam_content_2
+    global sam_content_3
     coverage_calculator = CoverageCalculator()
     sam_bam_prefix = "dummy"
     sam_content_1 = """@HD	VN:1.0
@@ -37,8 +42,4 @@ myread:004	0	chrom	5	255	10M	*	0	0	GTGGACAACC	*	NM:i:1	MD:Z:11T3	NH:i:9	XI:i:1	X
 myread:005	0	chrom	5	255	10M	*	0	0	GTGGACAACC	*	NM:i:1	MD:Z:11T3	NH:i:9	XI:i:1	XA:Z:Q
 myread:006	0	chrom	5	255	10M	*	0	0	GTGGACAACC	*	NM:i:1	MD:Z:11T3	NH:i:9	XI:i:1	XA:Z:Q
 """
-    global coverage_calculator
-    global sam_bam_prefix
-    global sam_content_1
-    global sam_content_2
-    global sam_content_3
+

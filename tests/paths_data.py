@@ -3,6 +3,13 @@ from reademptionlib.paths import Paths
 
 
 def data_paths():
+    global base_path
+    global test_folder
+    global test_files
+    global test_lib_names
+    global paths
+    global folder_names
+    global static_files
     parser = argparse.ArgumentParser()
     parser.add_argument("project_path", default="/tmp/test", nargs="?")
     args = parser.parse_args()
@@ -35,11 +42,3 @@ def data_paths():
         paths.read_alignment_stats_table_path,
         paths.ref_seq_file_stats,
         paths.index_path]
-    global base_path
-    global test_folder
-    global test_files
-    global test_lib_names
-    global paths
-    global folder_names
-    global static_files
-

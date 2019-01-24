@@ -2,6 +2,19 @@ from reademptionlib.segemehl import Segemehl
 
 
 def data_segemehl():
+    global fasta_file_path
+    global index_file_path
+    global read_fasta_file_path
+    global aligning_result_path
+    global unmapped_reads_path
+    global segemehl
+    global maxDiff
+    global genome_fasta_lower
+    global genome_fasta_upper
+    global sam_result_aligned_1
+    global sam_result_aligned_2
+    global sam_result_aligned_3
+    global sam_result_no_aligned
     fasta_file_path = "/tmp/test.fa"
     index_file_path = "/tmp/test.idx"
     read_fasta_file_path = "/tmp/test_reads.fa"
@@ -57,17 +70,3 @@ read_05	0	SL1344	301	255	20M	*	0	0	GCTTTTTTTTCGACCAGTCA	*	NM:i:2	MD:Z:17A0G1	NH:
 """
     sam_result_no_aligned = """
 """
-    global fasta_file_path
-    global index_file_path
-    global read_fasta_file_path
-    global aligning_result_path
-    global unmapped_reads_path
-    global segemehl
-    global maxDiff
-    global genome_fasta_lower
-    global genome_fasta_upper
-    global sam_result_aligned_1
-    global sam_result_aligned_2
-    global sam_result_aligned_3
-    global sam_result_no_aligned
-    

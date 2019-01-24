@@ -2,6 +2,9 @@ from reademptionlib.genewisequanti import GeneWiseQuantification
 
 
 def data_gene_wise_quanti():
+    global gene_wise_quantification
+    global sam_bam_prefix
+    global sam_content
     gene_wise_quantification = GeneWiseQuantification()
     sam_bam_prefix = "dummy"
     sam_content = """@HD	VN:1.0
@@ -19,8 +22,3 @@ myread:08	16	chrom	35	255	10M	*	0	0	GTGGACAACC	*	NM:i:1	MD:Z:11T3	NH:i:1	XI:i:1	
 myread:09	16	chrom	35	255	10M	*	0	0	GTGGACAACC	*	NM:i:1	MD:Z:11T3	NH:i:1	XI:i:1	XA:Z:Q
 myread:10	16	chrom	35	255	10M	*	0	0	GTGGACAACC	*	NM:i:1	MD:Z:11T3	NH:i:1	XI:i:1	XA:Z:Q
 """
-
-    global gene_wise_quantification
-    global sam_bam_prefix
-    global sam_content
-    
