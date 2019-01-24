@@ -32,7 +32,7 @@ def data_controllers():
     controller_align = PerformAlignment(arg_mock_align)
     controller_coverage = CoverageController(arg_mock_cov)
     controller_genequanti = QuantiController(arg_mock_quanti)
-    controller_deseq = RunDeseq(arg_mock_deseq)
+    controller_deseq = DESeq2Controller(arg_mock_deseq)
    
     genome_fasta = """>SL1344 genome sequence
 AGAGATTACGTCTGGTTGCAAGAGATCATGACAGGGGGAATTGGTTGAAAATAAATATAT
