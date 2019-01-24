@@ -1,8 +1,8 @@
 import os
 import shutil
 import sys
-sys.path.append("./tests")
 import paths_data as pd
+sys.path.append("./tests")
 
 
 def setup_function():
@@ -93,7 +93,7 @@ def test_set_ref_seq_paths():
     assert pd.paths.ref_seq_paths == ["{}/{}".format(
         pd.paths.ref_seq_folder, file) for file in pd.test_files]
 
-    
+
 def create_folder_with_files(folder, file_names):
     os.makedirs(folder)
     for file_name in file_names:
