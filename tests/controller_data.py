@@ -1,5 +1,6 @@
 from reademptionlib.controller_create_project import ProjectCreateController
-from reademptionlib.controller_alignment import PerformAlignment
+#from reademptionlib.controller_alignment import PerformAlignment
+from reademptionlib.controller_segemehl import SegemehlController
 from reademptionlib.controller_coverage import CoverageController
 from reademptionlib.controller_quanti import QuantiController
 from reademptionlib.controller_deseq2 import DESeq2Controller
@@ -9,7 +10,7 @@ def data_controllers():
     global test_project_name
     global version
     global project_creator
-    global controller_align
+    global controller_align_segemehl
     global controller_coverage
     global controller_genequanti
     global controller_deseq
@@ -29,7 +30,7 @@ def data_controllers():
     version = "0.4.4.dev"
     test_project_name = "a_test_project"
     project_creator = ProjectCreateController(arg_mock_align)
-    controller_align = PerformAlignment(arg_mock_align)
+    controller_align_segemehl = SegemehlController(arg_mock_align)
     controller_coverage = CoverageController(arg_mock_cov)
     controller_genequanti = QuantiController(arg_mock_quanti)
     controller_deseq = DESeq2Controller(arg_mock_deseq)
@@ -190,7 +191,7 @@ class ArgMockAlignment(object):
     min_phred_score = None
     adapter = None
     reverse_complement = False
-
+    fastq = False
 
 class ArgMockCoverage(object):
     project_path = "a_test_project"

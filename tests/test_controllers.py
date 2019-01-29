@@ -22,12 +22,12 @@ def test_create_project():
     
 def test_read_aligning():
     # generate input fasta files
-    genome_fh = open("{}/{}".format(cd.controller_align._paths.ref_seq_folder,
+    genome_fh = open("{}/{}".format(cd.controller_align_segemehl._paths.ref_seq_folder,
                                     "agenome.fa"), "w")
     read_fh_1 = open("{}/{}".format(
-        cd.controller_align._paths.read_fasta_folder, "libfoo.fa"), "w")
+        cd.controller_align_segemehl._paths.read_fasta_folder, "libfoo.fa"), "w")
     read_fh_2 = open("{}/{}".format(
-        cd.controller_align._paths.read_fasta_folder, "libbar.fa"), "w")
+        cd.controller_align_segemehl._paths.read_fasta_folder, "libbar.fa"), "w")
     
     genome_fh.write(cd.genome_fasta)
     genome_fh.close()
@@ -40,13 +40,13 @@ def test_read_aligning():
     
     # generate annotation files
     annotation_fh = open("{}/some_annos.gff".format(
-        cd.controller_align._paths.annotation_folder), "w")
+        cd.controller_align_segemehl._paths.annotation_folder), "w")
     annotation_fh.write(cd.gff_content_1)
     annotation_fh.close()
 
     # Perform the mapping
-    cd.controller_align._paths._set_folder_names()
-    cd.controller_align.align_reads()
+    cd.controller_align_segemehl._paths._set_folder_names()
+    cd.controller_align_segemehl.align_with_segemehl()
 
     # Create coverage files
     cd.controller_coverage._paths.required_coverage_folders()
