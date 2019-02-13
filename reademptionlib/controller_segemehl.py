@@ -30,6 +30,7 @@ class SegemehlController():
         self._ref_seq_files = self._paths.get_ref_seq_files()
         self._paths.set_ref_seq_paths(self._ref_seq_files)
         self._test_align_file_existance()
+        self._check_job_completeness = self._helpers.check_job_completeness
         if not self._args.paired_end:
             # Single end reads
             self._read_files = self._paths.get_read_files()
