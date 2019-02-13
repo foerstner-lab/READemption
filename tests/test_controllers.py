@@ -1,25 +1,25 @@
 import os
 import shutil
 import sys
-sys.path.append("./tests")
 import controller_data as cd
+sys.path.append("./tests")
 
 
 def setup_function(function):
     cd.data_controllers()
     cd.project_creator.create_project(cd.version)
 
-    
+
 def teardown_function(function):
     if os.path.exists(cd.test_project_name):
         shutil.rmtree(cd.test_project_name)
-        
+
 
 def test_create_project():
     assert set(list(os.listdir(cd.test_project_name))) == set([
         'input', 'output'])
 
-    
+
 def test_read_aligning():
     # generate input fasta files
     genome_fh = open("{}/{}".format(cd.controller_align_segemehl._paths.ref_seq_folder,
