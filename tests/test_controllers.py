@@ -1,9 +1,8 @@
 import os
 import shutil
 import sys
-import controller_data as cd
 sys.path.append("./tests")
-
+import controller_data as cd
 
 def setup_function(function):
     cd.data_controllers()
