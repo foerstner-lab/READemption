@@ -10,10 +10,11 @@ from Bio.Seq import Seq
 class ReadProcessor(object):
     
     def __init__(self, poly_a_clipping=False,  min_read_length=20,
-                 paired_end=False, min_phred_score=None,
+                 fastq=False, paired_end=False, min_phred_score=None,
                  adapter=None, reverse_complement=False):
         self._poly_a_clipping = poly_a_clipping
         self._min_read_length = min_read_length
+        self._fastq = fastq
         self._paired_end = paired_end
         self._min_phred_score = min_phred_score
         self._adapter = adapter
@@ -60,13 +61,18 @@ class ReadProcessor(object):
             return bz2.open(input_path, "rt")
         elif input_path.endswith(".xz"):
             return lzma.open(input_path, "rt")
-        with open(input_path, "r") as check_file:
-            check_file.seek(0)
-            first_line = check_file.readline()
-            if first_line[0] == '@':
-                self._fastq = True
-            else:
-                self._fastq = False
+        """the following 7 lines check whether the input file is in 
+        fastq format or not. This is not needed anymore since the 
+        information has to be given as an argument to the subcommand 'align_segemehl'.
+        If no errors arise in the future these lines can be deleted.
+        """
+        #with open(input_path, "r") as check_file:
+        #    check_file.seek(0)
+        #    first_line = check_file.readline()
+        #    if first_line[0] == '@':
+        #        self._fastq = True
+        #    else:
+        #        self._fastq = False
         return open(input_path)
 
     def _trim_by_quality(self, seq, qualities):
