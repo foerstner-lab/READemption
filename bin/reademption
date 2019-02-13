@@ -147,7 +147,7 @@ def main():
         "--realign", "-r", default=False, action="store_true",
         help="Perform realignment of unmapped reads using 'lack'.")
     align_segemehl_parser.set_defaults(func=align_reads_with_segemehl)
-
+'''
     # Parameters for read alignment with STAR
     align_star_parser = subparsers.add_parser(
         "align_star", help="Align reads with STAR")
@@ -193,7 +193,7 @@ def main():
         "<org_1_repl_n>;<ORG_NAME_2>:<org_2_repl1>,<org_2_repl2>,..,"
         "<org_2_repl_n>'")
     align_star_parser.set_defaults(func=align_reads_with_star)
-
+'''
     # Parameters for coverage file building
     coverage_creation_parser = subparsers.add_parser(
         "coverage", help="Create coverage (wiggle) files")
@@ -386,10 +386,10 @@ def align_reads_with_segemehl(args):
     segemehl_controller = SegemehlController(args)
     segemehl_controller.align_with_segemehl()
 
-
+'''
 def align_reads_with_star(args):
     star_controller = StarController(args)
-
+'''
 
 def create_coverage_files(args):
     coverage_controler = CoverageController(args)
