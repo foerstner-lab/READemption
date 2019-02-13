@@ -23,14 +23,15 @@ def data_controllers():
     # global gff_content_2
     global overlap_output_1
     global overlap_output_2
-    arg_mock_align = ArgMockAlignment()
+    arg_mock_align_segemehl = ArgMockAlignment_segemehl()
+    arg_mock_align_star = ArgMockAlignment_star()
     arg_mock_cov = ArgMockCoverage()
     arg_mock_quanti = ArgMockQuanti()
     arg_mock_deseq = ArgMockDESeq()
     version = "0.4.4.dev"
     test_project_name = "a_test_project"
-    project_creator = ProjectCreateController(arg_mock_align)
-    controller_align_segemehl = SegemehlController(arg_mock_align)
+    project_creator = ProjectCreateController(arg_mock_align_star)
+    controller_align_segemehl = SegemehlController(arg_mock_align_segemehl)
     controller_coverage = CoverageController(arg_mock_cov)
     controller_genequanti = QuantiController(arg_mock_quanti)
     controller_deseq = DESeq2Controller(arg_mock_deseq)
@@ -173,7 +174,7 @@ read_01	SL1344	50	59	+	1	no_overlap
 """
 
 
-class ArgMockAlignment(object):
+class ArgMockAlignment_star(object):
     project_path = "a_test_project"
     min_read_length = 20
     STAR_bin = "STAR"
@@ -192,6 +193,23 @@ class ArgMockAlignment(object):
     adapter = None
     reverse_complement = False
     fastq = False
+
+
+class ArgMockAlignment_segemehl(object):
+    project_path = "a_test_project"
+    processes = 1
+    paired_end = False
+    check_for_existing_files = False
+    progress = False
+    crossalign_cleaning = None
+    hit_strategy = 1
+    segemehl_accuracy = 95
+    segemehl_evalue = 5.0
+    segemehl_bin = "segemehl.x"
+    split = False
+    lack_bin = "lack.x"
+    realign = False
+
 
 class ArgMockCoverage(object):
     project_path = "a_test_project"
