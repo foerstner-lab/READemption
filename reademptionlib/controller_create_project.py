@@ -24,7 +24,7 @@ folders in order to perform ongoing procession steps."""
             "========================================\n"
             "=======================\n"
             "==============\n\n"
-            "[http://pythonhosted.org/READemption/]\n\n")
+            "[https://reademption.readthedocs.io/en/latest/]\n\n")
         project_creator = ProjectCreator()
         project_creator.create_root_folder(self._args.project_path)
         project_creator.create_subfolders(self._paths.required_folders())
