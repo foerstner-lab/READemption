@@ -3,6 +3,7 @@ import shutil
 import sys
 sys.path.append("./tests")
 import controller_data as cd
+import pytest
 
 def setup_function(function):
     cd.data_controllers()
@@ -19,6 +20,7 @@ def test_create_project():
         'input', 'output'])
 
 
+@pytest.mark.skip("")
 def test_read_aligning():
     # generate input fasta files
     genome_fh = open("{}/{}".format(cd.controller_align_segemehl._paths.ref_seq_folder,
