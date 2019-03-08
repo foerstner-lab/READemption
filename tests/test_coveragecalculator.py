@@ -19,12 +19,14 @@ class TestCoverageCalculator(unittest.TestCase):
                 os.remove(self._sam_bam_prefix + suffix)
 
     def _generate_bam_file(self, sam_content, file_prefix):
-        sam_file = "%s.sam" % file_prefix
-        bam_file = "%s.bam" % file_prefix
+        sam_file = "{}.sam".format(file_prefix)
+        bam_file = "{}.bam".format(file_prefix)
         sam_fh = open(sam_file, "w")
         sam_fh.write(sam_content)
         sam_fh.close()
-        pysam.view("-Sb", "-o%s" % bam_file, sam_file)
+        pysam.view(
+            "-Sb", "-o{}".format(bam_file), sam_file, catch_stdout=False)
+        breakpoint()
         pysam.index(bam_file)
         self._bam = pysam.Samfile(bam_file)
 
