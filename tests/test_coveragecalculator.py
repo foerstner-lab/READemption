@@ -109,7 +109,8 @@ class TestCoverageCalculator(unittest.TestCase):
         """If first_base_only is True only the first nucleotide of a
         mapping is considered.
         """
-        self.coverage_calculator = CoverageCalculator(first_base_only=True)
+        self.coverage_calculator = CoverageCalculator(
+            coverage_style="first_base_only")
         self._generate_bam_file(
             self.example_data.sam_content_1, self._sam_bam_prefix)
         self.coverage_calculator._init_coverage_list(self._bam.lengths[0])
