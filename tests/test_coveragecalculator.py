@@ -35,9 +35,9 @@ class TestCoverageCalculator(unittest.TestCase):
             sorted(self.coverage_calculator._coverages.keys()),
             ["forward", "reverse"])
         self.assertListEqual(
-            self.coverage_calculator._coverages["forward"], [0.0] * 10)
+            self.coverage_calculator._coverages["forward"].tolist(), [0.0] * 10)
         self.assertListEqual(
-            self.coverage_calculator._coverages["reverse"], [0.0] * 10)
+            self.coverage_calculator._coverages["reverse"].tolist(), [0.0] * 10)
 
     def test_calc_coverage_1(self):
         """Check correct start at first list element"""
@@ -48,11 +48,11 @@ class TestCoverageCalculator(unittest.TestCase):
         self.assertEqual(
             len(self.coverage_calculator._coverages["forward"]), 1500)
         self.assertListEqual(
-            self.coverage_calculator._coverages["forward"][0:15],
+            self.coverage_calculator._coverages["forward"][0:15].tolist(),
             [5.0, 5.0, 5.0, 5.0, 5.0, 5.0, 5.0, 5.0, 5.0, 5.0,
              0.0, 0.0, 0.0, 0.0, 0.0])
         self.assertListEqual(
-            self.coverage_calculator._coverages["reverse"][0:15],
+            self.coverage_calculator._coverages["reverse"][0:15].tolist(),
             [-5.0, -5.0, -5.0, -5.0, -5.0, -5.0, -5.0, -5.0, -5.0, -5.0,
              0.0, 0.0, 0.0, 0.0, 0.0])
 
@@ -68,7 +68,7 @@ class TestCoverageCalculator(unittest.TestCase):
         self.coverage_calculator._calc_coverage("chrom", self._bam)
         self.assertListEqual(
             self.coverage_calculator._coverages[
-                "forward"][0:15],
+                "forward"][0:15].tolist(),
             [0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5,
              0.0, 0.0, 0.0, 0.0, 0.0])
 
@@ -85,7 +85,7 @@ class TestCoverageCalculator(unittest.TestCase):
         self.coverage_calculator._calc_coverage("chrom", self._bam)
         self.assertListEqual(
             self.coverage_calculator._coverages[
-                "forward"][0:15],
+                "forward"][0:15].tolist(),
             [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0,
              0.0, 0.0, 0.0, 0.0, 0.0])
 
@@ -94,14 +94,14 @@ class TestCoverageCalculator(unittest.TestCase):
         that are aligned to more than on location.
         """
         self.coverage_calculator = CoverageCalculator(
-            uniqueley_aligned_only=True)
+            uniquely_aligned_only=True)
         self._generate_bam_file(
             self.example_data.sam_content_3, self._sam_bam_prefix)
         self.coverage_calculator._init_coverage_list(self._bam.lengths[0])
         self.coverage_calculator._calc_coverage("chrom", self._bam)
         self.assertListEqual(
             self.coverage_calculator._coverages[
-                "forward"][0:15],
+                "forward"][0:15].tolist(),
             [3.0, 3.0, 3.0, 3.0, 3.0, 3.0, 3.0, 3.0, 3.0, 3.0,
              0.0, 0.0, 0.0, 0.0, 0.0])
 
@@ -116,12 +116,12 @@ class TestCoverageCalculator(unittest.TestCase):
         self.coverage_calculator._calc_coverage("chrom", self._bam)
         self.assertListEqual(
             self.coverage_calculator._coverages[
-                "forward"][0:15],
+                "forward"][0:15].tolist(),
                 [5.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
                  0.0, 0.0, 0.0, 0.0, 0.0])
         self.assertListEqual(
             self.coverage_calculator._coverages[
-                "reverse"][0:15],
+                "reverse"][0:15].tolist(),
             [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, -5.0,
              0.0, 0.0, 0.0, 0.0, 0.0])
 
