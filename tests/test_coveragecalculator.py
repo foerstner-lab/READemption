@@ -26,7 +26,6 @@ class TestCoverageCalculator(unittest.TestCase):
         sam_fh.close()
         pysam.view(
             "-Sb", "-o{}".format(bam_file), sam_file, catch_stdout=False)
-        breakpoint()
         pysam.index(bam_file)
         self._bam = pysam.Samfile(bam_file)
 
