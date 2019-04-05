@@ -129,7 +129,7 @@ class Paths(object):
         self.deseq_tmp_session_info_script = "%s/tmp.R" % self.deseq_raw_folder
         self.deseq_session_info = "%s/R_session_info.txt" % (
             self.deseq_raw_folder)
-        self.version_path = "%s/versions_of_used_libraries.txt" % (
+        self.version_path = "%s/version_log.txt" % (
             self.align_report_folder)
 
     def _get_sorted_folder_content(self, folder):
