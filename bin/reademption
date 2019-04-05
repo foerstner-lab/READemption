@@ -23,16 +23,14 @@ def main():
     create_project_parser = subparsers.add_parser(
         "create", help="Create a project")
     create_project_parser.add_argument(
-        "project_path", default=".", help="Name/path of the project.")
+        "--project_path", "-f", help="Path of the project folder.")
     create_project_parser.set_defaults(func=create_project)
 
     # Parameters for read alignment
     read_aligning_parser = subparsers.add_parser(
         "align", help="Run read alignings")
     read_aligning_parser.add_argument(
-        "project_path", default=".", nargs="?",
-        help="Path of the project folder. If none is given the current "
-        "directory is used.")
+        "--project_path", "-f", help="Path of the project folder.")
     read_aligning_parser.add_argument(
         "--min_read_length", "-l", default=12, type=int,
         help="Minimal read length after clipping (default 12). Should be "
@@ -243,9 +241,7 @@ def main():
         "--paired_end", "-P", default=False, action="store_true",
         help="Use this if reads are originating from a paired-end sequencing.")
     viz_align_parser.add_argument(
-        "project_path", default=".", nargs="?",
-        help="Path of the project folder. If none is given the current "
-        "directory is used.")
+        "--project_path", "-f", help="Path of the project folder.")
     viz_align_parser.set_defaults(func=viz_align)
 
     # Parameters for viz_gene_quanti
@@ -256,9 +252,7 @@ def main():
         "--paired_end", "-P", default=False, action="store_true",
         help="Use this if reads are originating from a paired-end sequencing.")
     viz_gene_quanti_parser.add_argument(
-        "project_path", default=".", nargs="?",
-        help="Path of the project folder. If none is given the current "
-        "directory is used.")
+        "--project_path", "-f", help="Path of the project folder.")
     viz_gene_quanti_parser.set_defaults(func=viz_gene_quanti)
 
     # Parameters for viz_deseq
@@ -266,9 +260,7 @@ def main():
         "viz_deseq",
         help="Generate DESeq visualisations.")
     viz_deseq_parser.add_argument(
-        "project_path", default=".", nargs="?",
-        help="Path of the project folder. If none is given the current "
-        "directory is used.")
+        "--project_path", "-f", help="Path of the project folder.")
 
     viz_deseq_parser.add_argument(
         "--max_pvalue", type=float, default="0.05",
