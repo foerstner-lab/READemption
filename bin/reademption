@@ -86,7 +86,7 @@ def main():
         help="Adapter sequence. If it is found in a read it and all the "
         "nucleotides downstream will be trimmed off.")
     read_aligning_parser.add_argument(
-        "--check_for_existing_files", "-f", default=False,
+        "--check_for_existing_files", "-F", default=False,
         action="store_true", help="Check for existing files (e.g. from a "
         "interrupted previous run) and do not overwrite them if they exits. "
         "Attention! You have to take care that there are no partially "
@@ -111,9 +111,7 @@ def main():
     coverage_creation_parser = subparsers.add_parser(
         "coverage", help="Create coverage (wiggle) files")
     coverage_creation_parser.add_argument(
-        "project_path", default=".", nargs="?",
-        help="Path of the project folder. If none is given the current "
-        "directory is used.")
+        "--project_path", "-f", help="Path of the project folder.")
     coverage_creation_parser.add_argument(
         "--unique_only", "-u", default=False, action="store_true",
         help="Use uniquely aligned reads only.")
@@ -151,7 +149,7 @@ def main():
         "nucleotides that are clipped from each alignment end for centered "
         "approach.")
     coverage_creation_parser.add_argument(
-        "--check_for_existing_files", "-f", default=False,
+        "--check_for_existing_files", "-F", default=False,
         action="store_true", help="Check for existing files (e.g. from a "
         "interrupted previous run) and do not overwrite them if they exits. "
         "Attention! You have to take care that there are no partially "
@@ -162,9 +160,7 @@ def main():
     gene_wise_quanti_parser = subparsers.add_parser(
         "gene_quanti", help="Quantify the expression gene wise")
     gene_wise_quanti_parser.add_argument(
-        "project_path", default=".", nargs="?",
-        help="Path of the project folder. If none is given the current "
-        "directory is used.")
+        "--project_path", "-f", help="Path of the project folder.")
     gene_wise_quanti_parser.add_argument(
         "--min_overlap", "-o", default=1, type=int,
         help="Minimal read-annotation-overlap (in nt) (default 1).")
@@ -216,7 +212,7 @@ def main():
         "--pseudocounts", "-c", default=False, action="store_true",
         help="Add a pseudocount of 1 to each gene.")
     gene_wise_quanti_parser.add_argument(
-        "--check_for_existing_files", "-f", default=False,
+        "--check_for_existing_files", "-F", default=False,
         action="store_true", help="Check for existing files (e.g. from a "
         "interrupted previous run) and do not overwrite them if they exits. "
         "Attention! You have to take care that there are no partially "
@@ -227,9 +223,7 @@ def main():
     deseq_parser = subparsers.add_parser(
         "deseq", help="Compare expression pairwise using DESeq")
     deseq_parser.add_argument(
-        "project_path", default=".", nargs="?",
-        help="Path of the project folder. If none is given the current "
-        "directory is used.")
+        "--project_path", "-f", help="Path of the project folder.")
     deseq_parser.add_argument(
         "--libs", "-l", required=True,
         help="Comma separated list of libraries.")
