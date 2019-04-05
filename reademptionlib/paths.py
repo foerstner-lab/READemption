@@ -123,7 +123,6 @@ class Paths(object):
         self.read_alignment_stats_table_path = "%s/read_alignment_stats.csv" % (
             self.align_report_folder)
         self.index_path = "%s/index.idx" % self.read_alignment_index_folder
-<<<<<<< HEAD
         self.deseq_script_path = "%s/deseq.R" % self.deseq_raw_folder
         self.deseq_pca_heatmap_path = "%s/sample_comparison_pca_heatmap.pdf" % (
             self.deseq_raw_folder)
@@ -132,17 +131,6 @@ class Paths(object):
             self.deseq_raw_folder)
         self.version_path = "%s/versions_of_used_libraries.txt" % (
             self.align_report_folder)
-=======
-        self.index_path_star = "%s/chrLength.txt" % self.read_alignment_index_folder
-        self.deseq2_script_path = "%s/deseq2.R" % self.deseq2_raw_folder
-        self.deseq2_pca_heatmap_path = "%s/sample_comparison_pca_heatmap.pdf" % (
-            self.deseq2_raw_folder)
-        self.deseq2_tmp_session_info_script = "%s/tmp.R" % self.deseq2_raw_folder
-        self.deseq2_session_info = "%s/R_session_info.txt" % (
-            self.deseq2_raw_folder)
-        self.version_path = "%s/version_log.txt" % (
-            self.output_folder)
->>>>>>> ea056bd... Change version file name and cleanup
 
     def _get_sorted_folder_content(self, folder):
         """Return the sorted file list of a folder"""
@@ -323,7 +311,7 @@ class Paths(object):
         self.read_realigner_bam_prefixes_paths = self._path_list(
             self.read_alignments_folder, 
             lib_names, appendix="_alignments_realigner")
-        ###
+        ### 
         # For the cross-aligned cleaned
         self.read_alignment_bam_cross_cleaned_tmp_paths = self._path_list(
             self.read_alignments_folder, lib_names, 
@@ -380,87 +368,3 @@ class Paths(object):
             path += "_multi_by_%.1f" % (multi)
         path += "_%s.wig" % strand
         return path
-<<<<<<< HEAD
-=======
-
-    def get_processed_read_files(self):
-            """Read the names of processed read files"""
-            return self._get_sorted_folder_content(
-                self.read_processing_base_folder)
-
-    def get_primary_alignment(self):
-        """Read the names of primary aligned sam files"""
-        return self._get_sorted_folder_content(self.read_alignments_folder)
-
-    def relocate_and_rename_star_output_se(self):
-        star_log_file = "{}/Log.out".format(os.getcwd())
-        if os.path.exists(star_log_file):
-            shutil.move(star_log_file,
-                        "{}/STAR_Log.out".format(self.align_report_folder))
-        align_output = self.read_alignments_folder
-        for output_file in os.listdir(align_output):
-            change_align_output = output_file.replace(
-                ".samAligned.out.sam", ".sam")
-            if change_align_output != output_file:
-                os.rename("{}/{}".format(align_output, output_file),
-                          "{}/{}".format(align_output, change_align_output))
-            if output_file.endswith('Unmapped.out.mate1'):
-                change_unmapped_output = output_file.replace(
-                    "alignments_primary_aligner.samUnmapped.out.mate1",
-                    "unaligned.fa")
-                if change_unmapped_output != output_file:
-                    os.rename("{}/{}".format(align_output, output_file),
-                              "{}/{}".format(self.unaligned_reads_folder,
-                                             change_unmapped_output))
-            report_output = self.align_report_folder
-            suffix_list = [".out", "SJ.out.tab"]
-            for suffix in suffix_list:
-                if output_file.endswith(suffix):
-                    shutil.move("{}/{}".format(
-                        align_output, output_file), "{}/{}".format(
-                            report_output, output_file))
-            if output_file.endswith('STARtmp'):
-                shutil.rmtree("{}/{}".format(align_output, output_file))
-                
-    def relocate_and_rename_star_output_pe(self):
-        """Change the Prefix of STAR output SAM file"""
-        os.rename((self.read_alignments_folder + '/' +
-                   " ".join(self.get_lib_names_paired_end()) +
-                   '_Aligned.out.sam'),
-                  (self.read_alignments_folder + '/'
-                   + " ".join(str(lib_name) for lib_name in
-                              self.get_lib_names_paired_end())
-                   + "_alignments_primary_aligner.sam"))
-        align_output = self.read_alignments_folder
-        for output_file in os.listdir(align_output):
-            change_align_output = output_file.replace(
-                ".samAligned.out.sam", ".sam")
-            if change_align_output != output_file:
-                os.rename("{}/{}".format(align_output, output_file),
-                          "{}/{}".format(align_output, change_align_output))
-            if output_file.endswith("Unmapped.out.mate1"):
-                change_unmapped_output_1 = output_file.replace(
-                    "Unmapped.out.mate1",
-                    "unaligned_1.fa")
-                if change_unmapped_output_1 != output_file:
-                    os.rename("{}/{}".format(align_output, output_file),
-                              "{}/{}".format(self.unaligned_reads_folder,
-                                             change_unmapped_output_1))
-            if output_file.endswith("Unmapped.out.mate2"):
-                change_unmapped_output_2 = output_file.replace(
-                    "Unmapped.out.mate2",
-                    "unaligned_2.fa")
-                if change_unmapped_output_2 != output_file:
-                    os.rename("{}/{}".format(align_output, output_file),
-                              "{}/{}".format(self.unaligned_reads_folder,
-                                             change_unmapped_output_2))
-
-    def gzip_processed_reads(self):
-        with gzip.open(output_path, 'rb') as input_fh:
-            with gzip.open('{}.gz'.format(output_path), 'wb') as output_fh:
-                shutil.copyfileobj(input_fh, output_fh)
-        for output_file in os.listdir(self.read_processing_base_folder):
-            if output_file.endswith('fa'):
-                os.remove('{}/{}'.format(
-                    self.read_processing_base_folder, output_file))
->>>>>>> ea056bd... Change version file name and cleanup
