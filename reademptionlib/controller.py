@@ -89,10 +89,10 @@ class Controller(object):
                 self._set_primary_aligner_paths_to_final_paths()
             self._prepare_reads_paired_end()
             self._align_paired_end_reads()
-        self._sam_to_bam(
-            self._paths.primary_read_aligner_sam_paths,
-            self._paths.primary_read_aligner_bam_prefix_paths,
-            self._paths.primary_read_aligner_bam_paths)
+        #self._sam_to_bam(
+        #    self._paths.primary_read_aligner_sam_paths,
+        #    self._paths.primary_read_aligner_bam_prefix_paths,
+        #    self._paths.primary_read_aligner_bam_paths)
         self._generate_read_alignment_stats(
             self._lib_names,
             self._paths.primary_read_aligner_bam_paths,
@@ -205,10 +205,10 @@ class Controller(object):
         # As the realigner needs a *sorted* SAM file
         self._generate_sorted_tmp_sam_file()
         self._realign_unmapped_reads()
-        self._sam_to_bam(
-            self._paths.read_realigner_sam_paths,
-            self._paths.read_realigner_bam_prefixes_paths,
-            self._paths.read_realigner_sam_paths)
+        #self._sam_to_bam(
+        #    self._paths.read_realigner_sam_paths,
+        #    self._paths.read_realigner_bam_prefixes_paths,
+        #    self._paths.read_realigner_sam_paths)
         self._generate_read_alignment_stats(
             self._lib_names,
             self._paths.read_realigner_bam_paths,
@@ -312,7 +312,7 @@ class Controller(object):
                 self._paths.ref_seq_paths, self._paths.index_path)
         for read_path, output_path, nomatch_path, bam_path in zip(
             self._paths.processed_read_paths,
-            self._paths.primary_read_aligner_sam_paths,
+            self._paths.primary_read_aligner_bam_paths,
             self._paths.unaligned_reads_paths,
                 self._paths.read_alignment_bam_paths):
             if not self._file_needs_to_be_created(output_path):

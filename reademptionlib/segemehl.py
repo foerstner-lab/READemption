@@ -40,6 +40,7 @@ class Segemehl(object):
             "--index", index_file,
             "--database"] + fasta_files + [
             "--outfile", output_file,
+            "--bamabafixoida",
             "--hitstrategy", str(hit_strategy),
             "--accuracy", str(accuracy),
             "--evalue", str(evalue),
@@ -53,12 +54,14 @@ class Segemehl(object):
         if nonmatch_file:
             segemehl_call += ["--nomatchfilename", nonmatch_file]
         if self._show_progress is False:
-            segemehl_call += ["--silent"]
+            #segemehl_call += ["--silent"]
+            pass
         if other_parameters:
             segemehl_call.append(other_parameters)
         # Discard standard error output
         if self._show_progress is False:
             with open(os.devnull, "w") as devnull:
-                call(segemehl_call, stderr=devnull)
+                #call(segemehl_call, stderr=devnull)
+                call(segemehl_call)
         else:
             call(segemehl_call)

@@ -287,30 +287,30 @@ class Paths(object):
     def _set_alignment_paths(self, lib_names):
         ###
         # For the primary mapper
-        self.primary_read_aligner_sam_paths = self._path_list(
-            self.read_alignments_folder, lib_names,
-            appendix="_alignments_primary_aligner.sam")
+        #self.primary_read_aligner_sam_paths = self._path_list(
+        #    self.read_alignments_folder, lib_names,
+        #    appendix="_alignments_primary_aligner.sam")
         self.primary_read_aligner_bam_paths = self._path_list(
             self.read_alignments_folder, lib_names,
             appendix="_alignments_primary_aligner.bam")
         # samtool appends ".bam" so only the prefix is required
-        self.primary_read_aligner_bam_prefix_paths = self._path_list(
-            self.read_alignments_folder, 
-            lib_names, appendix="_alignments_primary_aligner")
+        #self.primary_read_aligner_bam_prefix_paths = self._path_list(
+        #    self.read_alignments_folder, 
+        #    lib_names, appendix="_alignments_primary_aligner")
         ###
         # For the remapper
-        self.read_realigner_tmp_sam_paths = self._path_list(
-            self.read_alignments_folder, lib_names, 
-            appendix="_alignments_tmp_for_realigner.sam")
-        self.read_realigner_sam_paths = self._path_list(
-            self.read_alignments_folder, lib_names,
-            appendix="_alignments_realigner.sam")
+        #self.read_realigner_tmp_sam_paths = self._path_list(
+        #    self.read_alignments_folder, lib_names, 
+        #    appendix="_alignments_tmp_for_realigner.sam")
+        #self.read_realigner_sam_paths = self._path_list(
+        #    self.read_alignments_folder, lib_names,
+        #    appendix="_alignments_realigner.sam")
         self.read_realigner_bam_paths = self._path_list(
             self.read_alignments_folder, lib_names, 
             appendix="_alignments_realigner.bam")
-        self.read_realigner_bam_prefixes_paths = self._path_list(
-            self.read_alignments_folder, 
-            lib_names, appendix="_alignments_realigner")
+        #self.read_realigner_bam_prefixes_paths = self._path_list(
+        #    self.read_alignments_folder, 
+        #    lib_names, appendix="_alignments_realigner")
         ### 
         # For the cross-aligned cleaned
         self.read_alignment_bam_cross_cleaned_tmp_paths = self._path_list(
