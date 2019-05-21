@@ -1,4 +1,5 @@
 from subprocess import call
+import pysam
 import os
 
 
@@ -65,3 +66,4 @@ class Segemehl(object):
                 call(segemehl_call)
         else:
             call(segemehl_call)
+        pysam.index(output_file)
