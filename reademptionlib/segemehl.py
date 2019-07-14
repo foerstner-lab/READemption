@@ -66,4 +66,7 @@ class Segemehl(object):
                 call(segemehl_call)
         else:
             call(segemehl_call)
+        tmp_sorted_outfile = f"{output_file}_sorted"
+        pysam.sort("-o", tmp_sorted_outfile, output_file)
+        os.rename(tmp_sorted_outfile, output_file)
         pysam.index(output_file)
