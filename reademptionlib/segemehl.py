@@ -62,8 +62,7 @@ class Segemehl(object):
         # Discard standard error output
         if self._show_progress is False:
             with open(os.devnull, "w") as devnull:
-                #call(segemehl_call, stderr=devnull)
-                call(segemehl_call)
+                call(segemehl_call, stderr=devnull)
         else:
             call(segemehl_call)
         tmp_sorted_outfile = f"{output_file}_sorted"
