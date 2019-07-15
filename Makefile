@@ -12,6 +12,7 @@ package:
 
 clean:
 	find -name "*pyc" -exec rm {} \;
+	rm -rf build dist READemption.egg-info *~
 
 build:
 	 python3 setup.py bdist
