@@ -1,5 +1,6 @@
 [![Latest Version](https://img.shields.io/pypi/v/reademption.svg)](https://pypi.python.org/pypi/READemption/)
 [![License](https://img.shields.io/pypi/l/reademption.svg)](https://pypi.python.org/pypi/READemption/)
+[![Documentation Status](https://readthedocs.org/projects/reademption/badge/?version=latest)](https://reademption.readthedocs.io/en/latest/?badge=latest)
 [![DOI](https://zenodo.org/badge/2756/konrad/READemption.svg)](https://zenodo.org/badge/latestdoi/2756/konrad/READemption)
 
 
