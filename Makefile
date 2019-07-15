@@ -25,8 +25,7 @@ package_to_pypi:
 	python3 -m twine upload  --verbose  dist/*
 
 html_doc:
-	cd docs_sphinx && make html && cd ..
-	cp -r docs_sphinx/build/html/* docs/
+	cd docs && make html && cd ..
 
 # Obsolete
 #upload_doc:

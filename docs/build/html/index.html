@@ -1,0 +1,269 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>READemption - A RNA-Seq Analysis Pipeline &mdash; READemption 0.5.0 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script type="text/javascript" src="_static/jquery.js"></script>
+        <script type="text/javascript" src="_static/underscore.js"></script>
+        <script type="text/javascript" src="_static/doctools.js"></script>
+        <script type="text/javascript" src="_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Installation and updating" href="installation.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="#" class="icon icon-home"> READemption
+          
+
+          
+            
+            <img src="_static/READemption_logo.png" class="logo" alt="Logo"/>
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.5
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation and updating</a></li>
+<li class="toctree-l1"><a class="reference internal" href="live_and_installation_image.html">Live system and installation image</a></li>
+<li class="toctree-l1"><a class="reference internal" href="docker_image.html">Docker image</a></li>
+<li class="toctree-l1"><a class="reference internal" href="subcommands.html">READemption’s subcommands</a></li>
+<li class="toctree-l1"><a class="reference internal" href="example_analysis.html">Performing an example analysis</a></li>
+<li class="toctree-l1"><a class="reference internal" href="troubleshooting.html">Troubleshooting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="license.html">License</a></li>
+<li class="toctree-l1"><a class="reference internal" href="versions.html">Versions/Change log</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="#">READemption</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="#">Docs</a> &raquo;</li>
+        
+      <li>READemption - A RNA-Seq Analysis Pipeline</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="reademption-a-rna-seq-analysis-pipeline">
+<h1>READemption - A RNA-Seq Analysis Pipeline<a class="headerlink" href="#reademption-a-rna-seq-analysis-pipeline" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="table-of-content">
+<h2>Table of content<a class="headerlink" href="#table-of-content" title="Permalink to this headline">¶</a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation and updating</a></li>
+<li class="toctree-l1"><a class="reference internal" href="live_and_installation_image.html">Live system and installation image</a></li>
+<li class="toctree-l1"><a class="reference internal" href="docker_image.html">Docker image</a></li>
+<li class="toctree-l1"><a class="reference internal" href="subcommands.html">READemption’s subcommands</a></li>
+<li class="toctree-l1"><a class="reference internal" href="example_analysis.html">Performing an example analysis</a></li>
+<li class="toctree-l1"><a class="reference internal" href="troubleshooting.html">Troubleshooting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="license.html">License</a></li>
+<li class="toctree-l1"><a class="reference internal" href="versions.html">Versions/Change log</a></li>
+</ul>
+</div>
+</div>
+<div class="section" id="reademption-in-a-nutshell">
+<h2>READemption in a nutshell<a class="headerlink" href="#reademption-in-a-nutshell" title="Permalink to this headline">¶</a></h2>
+<p>READemption is a pipeline for the computational evaluation of
+RNA-Seq data. It was originally developed to process dRNA-Seq reads
+(as introduced by Sharma et al., Nature, 2010 (<a class="reference external" href="http://www.ncbi.nlm.nih.gov/pubmed/20164839">Pubmed</a>)) originating from
+bacterial samples. Meanwhile is has been extended to process data
+generated in different experimental setups and from all domains of
+life. The <a class="reference external" href="subcommands.html">functions</a> which are accessible via a
+command-line interface cover read processing and aligning, coverage
+calculation, gene expression quantification, differential gene
+expression analysis as well as visualization. In order to set up and
+perform analyses quickly READemption follows the principal of
+<em>convention over configuration</em>: Once the input files are
+copied/linked into defined folders no further parameters have to be
+given. Still, READemption’s behavior can be adapted to specific needs
+of the user by parameters.</p>
+</div>
+<div class="section" id="download">
+<h2>Download<a class="headerlink" href="#download" title="Permalink to this headline">¶</a></h2>
+<p>READemption can be download from <a class="reference external" href="https://pypi.python.org/pypi/READemption/">its PyPI page</a>. Please read the
+<a class="reference external" href="installation.html">installation instructions</a>.</p>
+</div>
+<div class="section" id="source-code">
+<h2>Source code<a class="headerlink" href="#source-code" title="Permalink to this headline">¶</a></h2>
+<p>The source code of READemption can be found at <a class="reference external" href="https://github.com/konrad/READemption">https://github.com/konrad/READemption</a>.</p>
+</div>
+<div class="section" id="cite">
+<h2>Cite<a class="headerlink" href="#cite" title="Permalink to this headline">¶</a></h2>
+<p>If you apply READemption in your data analysis please cite the
+following publication: <em>READemption – A tool for the computational
+analysis of deep-sequencing-based transcriptome data</em>.
+Konrad U. Förstner, Jörg Vogel, Cynthia M. Sharma. 2014,
+Bioinformatics, Aug 13. <a class="reference external" href="http://bioinformatics.oxfordjournals.org/content/30/23/3421">Fulltext</a>,
+<a class="reference external" href="http://biorxiv.org/content/early/2014/05/19/003723">Pre-print at bioRxiv</a>.</p>
+</div>
+<div class="section" id="contact">
+<h2>Contact<a class="headerlink" href="#contact" title="Permalink to this headline">¶</a></h2>
+<p>For question and requests feel free to contact <a class="reference external" href="http://konrad.foerstner.org/">Konrad Förstner</a> &lt;<a class="reference external" href="mailto:konrad&#46;foerstner&#37;&#52;&#48;uni-wuerzburg&#46;de">konrad<span>&#46;</span>foerstner<span>&#64;</span>uni-wuerzburg<span>&#46;</span>de</a>&gt;</p>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="installation.html" class="btn btn-neutral float-right" title="Installation and updating" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2019, Konrad U. Förstner and Till Sauerwein
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+  
+    <div class="footer">
+    This documention is licensed under the <a href="https://creativecommons.org/licenses/by/3.0/">Creative Commons Attribution license</a>, 2019, Konrad U. Förstner and Till Sauerwein.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.8.5.
+    </div>
+
+
+</body>
+</html>
