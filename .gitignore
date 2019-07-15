@@ -4,3 +4,6 @@ rapl/doc/build/
 # Links for development only
 bin/reademptionlib
 
+.cache
+.coverage
+.pytest_cache
