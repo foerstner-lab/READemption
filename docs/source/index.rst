@@ -62,4 +62,4 @@ Contact
 =======
 
 For question and requests feel free to contact `Konrad Förstner
-<http://konrad.foerstner.org/>`_ <konrad.foerstner@uni-wuerzburg.de>
+<http://konrad.foerstner.org/>`_ <foerstner@zbmed.de>
