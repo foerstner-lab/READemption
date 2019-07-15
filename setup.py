@@ -5,17 +5,17 @@ except ImportError:
 
 setup(
     name='READemption',
-    version='0.4.5',
+    version='0.5.0',
     packages=['reademptionlib', 'tests'],
-    author='Konrad U. Förstner',
+    author='Konrad U. Förstner, Till Sauerwein',
     author_email='konrad@foerstner.org',
     description='A RNA-Seq Analysis Pipeline',
     url='',
     install_requires=[
-        "biopython >= 1.67",
-        "matplotlib >= 1.5.1",
-        "pandas >= 0.18.1",
-        "pysam >= 0.9.1.4"
+        "biopython >= 1.73",
+        "matplotlib >= 2.2.2",
+        "pandas >= 0.24.2",
+        "pysam >= 0.15.2"
     ],
     scripts=['bin/reademption'],
     license='ISC License (ISCL)',

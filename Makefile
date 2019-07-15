@@ -7,7 +7,7 @@ coverage:
 
 package:
 	# python3 setup.py bdist_wheel
-	python3 setup.py bdist
+	python3 setup.py sdist bdist_wheel
 	rm -rf READemption.egg-info
 	ls dist/*
 
@@ -20,8 +20,9 @@ build:
 
 package_to_pypi:
 	# python3 setup.py bdist_wheel upload
-	python3 setup.py bdist upload
-	@echo "Go to https://pypi.python.org/pypi/READemption/"
+	#	python3 setup.py bdist upload
+	# @echo "Go to https://pypi.python.org/pypi/READemption/"
+	python3 -m twine upload  --verbose  dist/*
 
 html_doc:
 	cd docs && make html && cd ..

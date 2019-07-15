@@ -1,3 +1,6 @@
+v0.5.0 (2019-07-15)
+- Addapted to segemehl 0.3.4
+- Several clean-ups
 v0.4.5 (2017-12-31)
 - Move documentation to Read the Docs
 - New theme for docs
