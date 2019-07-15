@@ -44,7 +44,7 @@ READemption can be download from `its PyPI page
 Source code
 ===========
 
-The source code of READemption can be found at https://github.com/konrad/READemption.
+The source code of READemption can be found at https://github.com/foerstner-lab/READemption.
 
 Cite
 ====
