@@ -25,7 +25,7 @@ adapted to specific needs of the user by parameters.
 Documentation
 -------------
 
-Documentation can be found on [here](http://pythonhosted.org/READemption/).
+Documentation can be found on [here](https://reademption.readthedocs.io).
 
 Installation
 ------------
@@ -34,7 +34,7 @@ Short version (if you have all the requirements installed):
 
     $ pip install READemption
 
-[Long version](http://pythonhosted.org/READemption/installation.html)
+[Long version](https://reademption.readthedocs.io)
 including a description of the requirements and how do you get them.
 
 License
