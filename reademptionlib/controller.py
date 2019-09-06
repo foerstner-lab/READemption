@@ -334,15 +334,14 @@ class Controller(object):
         if self._file_needs_to_be_created(self._paths.index_path):
             read_aligner.build_index(
                 self._paths.ref_seq_paths, self._paths.index_path)
-        for read_path_pair, output_path, nomatch_path, bam_path in zip(
+        for read_path_pair, output_path, nomatch_path in zip(
             self._paths.processed_read_path_pairs,
-            self._paths.primary_read_aligner_sam_paths,
-            self._paths.unaligned_reads_paths,
-                self._paths.primary_read_aligner_bam_paths):
+                self._paths.primary_read_aligner_bam_paths,
+            self._paths.unaligned_reads_paths):
             if not self._file_needs_to_be_created(output_path):
                 continue
-            elif not self._file_needs_to_be_created(bam_path):
-                continue
+            #elif not self._file_needs_to_be_created(bam_path):
+            #    continue
             read_aligner.run_alignment(
                 read_path_pair, self._paths.index_path,
                 self._paths.ref_seq_paths, output_path, nomatch_path,
