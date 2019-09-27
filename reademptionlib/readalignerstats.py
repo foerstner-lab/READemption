@@ -89,17 +89,32 @@ class ReadAlignerStats(object):
         entry_tags_dict = dict(entry.tags)
         no_of_hits = entry_tags_dict["NH"]
         # Consider split reads
-        no_of_splits = float(entry_tags_dict.get("XL", 1))
+
+        number_of_split_alignments_within_this_SAM_record = float(entry_tags_dict.get("XH", 1))
+        total_number_of_split_alignments_for_the_whole_read = float(entry_tags_dict.get("XJ", 1))
+        proportion_of_total_split_alignments_of_the_whole_read_for_this_sam_record = (
+            number_of_split_alignments_within_this_SAM_record / total_number_of_split_alignments_for_the_whole_read)
+        if "XH" in entry_tags_dict:
+            stats_per_ref[ref_id]["no_of_split_alignments"] += (
+               proportion_of_total_split_alignments_of_the_whole_read_for_this_sam_record)
+            stats_per_ref[ref_id]["no_of_hits_per_read_and_freqs"][
+                no_of_hits] += 1.0/(
+                    float(no_of_hits) * proportion_of_total_split_alignments_of_the_whole_read_for_this_sam_record)
+            stats_per_ref[ref_id][
+                "no_of_alignments"] += proportion_of_total_split_alignments_of_the_whole_read_for_this_sam_record
+            stats_per_ref[
+                ref_id]["no_of_aligned_reads"] += (
+                    proportion_of_total_split_alignments_of_the_whole_read_for_this_sam_record / (float(no_of_hits)))
+        else:
+            stats_per_ref[ref_id]["no_of_alignments"] += 1.0
+            stats_per_ref[
+                ref_id]["no_of_aligned_reads"] += 1.0/(
+                float(no_of_hits))
         stats_per_ref[ref_id]["no_of_hits_per_read_and_freqs"][
-            no_of_hits] += 1
-        if "XL" in entry_tags_dict:
-            stats_per_ref[ref_id]["no_of_split_alignments"] += 1.0/no_of_splits
-        stats_per_ref[ref_id]["no_of_alignments"] += 1.0/no_of_splits
-        stats_per_ref[
-            ref_id]["no_of_aligned_reads"] += 1.0/(
-            float(no_of_hits) * no_of_splits)
+            no_of_hits] += proportion_of_total_split_alignments_of_the_whole_read_for_this_sam_record
         if no_of_hits == 1:
             stats_per_ref[ref_id][
-                "no_of_uniquely_aligned_reads"] += 1.0/no_of_splits
+                "no_of_uniquely_aligned_reads"] += (
+                    1.0/proportion_of_total_split_alignments_of_the_whole_read_for_this_sam_record)
         stats_per_ref[ref_id][
             "alignment_length_and_freqs"][entry.alen] += 1
