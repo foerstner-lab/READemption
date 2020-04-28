@@ -25,7 +25,7 @@ class Controller(object):
 
     """Manage the actions of the subcommands.
 
-    The Controller take care of providing the argumentes like path
+    The Controller takes care of providing the arguments like path
     names and the parallel processing of tasks.
 
     """
@@ -455,7 +455,7 @@ class Controller(object):
 
         The coverages are calculated per replicon and the results are
         written to the output file. This might be slower but if all
-        coverages are detmined at once the data structure will become
+        coverages are determined at once the data structure will become
         too large when working with large reference sequences.
 
         """
@@ -500,7 +500,7 @@ class Controller(object):
     def _all_coverage_file_exist(
         self, lib_name, strands, no_of_aligned_reads,
             min_no_of_aligned_reads):
-        """Test the existance of all coverage file of a library"""
+        """Test the existance of all coverage files of a library"""
         files = []
         for strand in strands:
             files.append(self._paths.wiggle_file_raw_path(lib_name, strand))
@@ -654,7 +654,7 @@ class Controller(object):
             norm_by_alignment_freq=norm_by_alignment_freq,
             norm_by_overlap_freq=norm_by_overlap_freq,
             allowed_features_str=self._args.allowed_features,
-            skip_antisense=self._args.skip_antisense,
+            add_antisense=self._args.add_antisense,
             unique_only=self._args.unique_only)
         if norm_by_overlap_freq:
             gene_wise_quantification.calc_overlaps_per_alignment(
@@ -674,7 +674,7 @@ class Controller(object):
                     strand_specific = False
         gene_wise_overview = GeneWiseOverview(
             allowed_features_str=self._args.allowed_features,
-            skip_antisense=self._args.skip_antisense,
+            add_antisense=self._args.add_antisense,
             strand_specific=strand_specific)
         path_and_name_combos = {}
         for annotation_file, annotation_path in zip(

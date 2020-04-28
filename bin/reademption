@@ -188,9 +188,9 @@ def main():
         "of genes it overlaps with. By default this count splitting is "
         "performed.")
     gene_wise_quanti_parser.add_argument(
-        "--skip_antisense", "-a", default=False, action="store_true",
-        help="Do not count anti-sense read-gene-overlaps. By default sense "
-        "and anti-sense overlaps are counted and separately reported.")
+        "--add_antisense", "-a", default=False, action="store_true",
+        help="Count anti-sense and sense read-gene-overlaps and report them separately. By default only sense "
+        "overlaps are counted.")
     gene_wise_quanti_parser.add_argument(
         "--non_strand_specific", default=False, action="store_true",
         help="Use countings of reads overlapping with a gene on both strands "

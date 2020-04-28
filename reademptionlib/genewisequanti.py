@@ -7,7 +7,7 @@ class GeneWiseQuantification(object):
 
     def __init__(self, min_overlap=1, read_region="global", clip_length=11,
                  norm_by_alignment_freq=True, norm_by_overlap_freq=True,
-                 allowed_features_str=None, skip_antisense=False,
+                 allowed_features_str=None, add_antisense=False,
                  unique_only=False):
         """
         - normalize_by_alignment: consider that some reads are aligned at
@@ -22,7 +22,7 @@ class GeneWiseQuantification(object):
         self._norm_by_alignment_freq = norm_by_alignment_freq
         self._norm_by_overlap_freq = norm_by_overlap_freq
         self._allowed_features = _allowed_features(allowed_features_str)
-        self._skip_antisense = skip_antisense
+        self._add_antisense = add_antisense
         self._unique_only = unique_only
 
     def calc_overlaps_per_alignment(self, read_alignment_path,
@@ -155,7 +155,7 @@ class GeneWiseQuantification(object):
                 if alignment.get_overlap(entry.start-1,
                                          entry.end) < self._min_overlap:
                     continue
-            if self._skip_antisense:
+            if not self._add_antisense:
                 if not self._same_strand(entry, alignment):
                     continue
             if self._unique_only:
@@ -175,10 +175,10 @@ class GeneWiseQuantification(object):
 
 class GeneWiseOverview(object):
 
-    def __init__(self, allowed_features_str=None, skip_antisense=False,
+    def __init__(self, allowed_features_str=None, add_antisense=False,
                  strand_specific=True):
         self._allowed_features = _allowed_features(allowed_features_str)
-        self._skip_antisense = skip_antisense
+        self._add_antisense = add_antisense
         self._strand_specific = strand_specific
 
     def create_overview_raw_countings(
@@ -211,7 +211,7 @@ class GeneWiseOverview(object):
             self._add_to_overview(
                 path_and_name_combos, "sense", 9, output_fh, normalization,
                 libs_and_tnoar)
-            if self._skip_antisense is False:
+            if self._add_antisense:
                 self._add_to_overview(
                     path_and_name_combos, "anti-sense", 10, output_fh,
                     normalization, libs_and_tnoar)
