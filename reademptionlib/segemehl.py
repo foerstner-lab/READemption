@@ -67,11 +67,13 @@ class Segemehl(object):
             call(segemehl_call)
         # Discard unmapped reads for further analysis.
         # Unmapped reads are stored in the folder output/align/unaligned_reads.
+        tmp_filtered_output_file = f"{output_file}_filtered"
         pysam.view("-b",
                    "-F", "4",
-                   "-o", output_file,
+                   "-o", tmp_filtered_output_file,
                    output_file,
                    catch_stdout=False)
+        os.rename(tmp_filtered_output_file, output_file)
 
         tmp_sorted_outfile = f"{output_file}_sorted"
         pysam.sort("-o", tmp_sorted_outfile, output_file)
