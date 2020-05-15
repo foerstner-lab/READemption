@@ -125,9 +125,9 @@ class DESeqViz(object):
         plt.xlabel("log$_2$ fold change")
         plt.ylabel("- log$_{10}$ p-value %s" % (pvalue_string_mod))
         plt.title("%s vs. %s" % (condition_1, condition_2))
-        signifant_p_value = -1*np.log10(self._p_value_significance_limit)
+        significant_p_value = -1*np.log10(self._p_value_significance_limit)
         plt.plot([-1*max_log_2_fold_change, max_log_2_fold_change],
-                 [signifant_p_value, signifant_p_value],
+                 [significant_p_value, significant_p_value],
                  linestyle="dotted", color="green", alpha=0.5)
         # log2_fold_change_limit = 1 (never used)
         plt.plot([-1*self._log_2_fold_chance_limit,
