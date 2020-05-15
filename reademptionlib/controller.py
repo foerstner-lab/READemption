@@ -647,6 +647,9 @@ class Controller(object):
                 "The file(s) %s exist(s). Skipping their/its generation.\n" %
                 ", " .join(gene_quanti_paths))
             return
+        strand_specific = True
+        if self._args.non_strand_specific:
+            strand_specific = False
         gene_wise_quantification = GeneWiseQuantification(
             min_overlap=self._args.min_overlap,
             read_region=self._args.read_region,
@@ -655,6 +658,8 @@ class Controller(object):
             norm_by_overlap_freq=norm_by_overlap_freq,
             allowed_features_str=self._args.allowed_features,
             add_antisense=self._args.add_antisense,
+            antisense_only=self._args.antisense_only,
+            strand_specific=strand_specific,
             unique_only=self._args.unique_only)
         if norm_by_overlap_freq:
             gene_wise_quantification.calc_overlaps_per_alignment(
@@ -675,6 +680,7 @@ class Controller(object):
         gene_wise_overview = GeneWiseOverview(
             allowed_features_str=self._args.allowed_features,
             add_antisense=self._args.add_antisense,
+            antisense_only=self._args.antisense_only,
             strand_specific=strand_specific)
         path_and_name_combos = {}
         for annotation_file, annotation_path in zip(

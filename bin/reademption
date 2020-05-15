@@ -192,6 +192,10 @@ def main():
         help="Count anti-sense and sense read-gene-overlaps and report them separately. By default only sense "
         "overlaps are counted.")
     gene_wise_quanti_parser.add_argument(
+        "--antisense_only", "-x", default=False, action="store_true",
+        help="Count only anti-sense read-gene-overlaps and no sense overlaps. By default only sense "
+             "overlaps are counted.")
+    gene_wise_quanti_parser.add_argument(
         "--non_strand_specific", default=False, action="store_true",
         help="Use countings of reads overlapping with a gene on both strands "
         "and sum them up.")

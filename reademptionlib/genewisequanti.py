@@ -7,7 +7,8 @@ class GeneWiseQuantification(object):
 
     def __init__(self, min_overlap=1, read_region="global", clip_length=11,
                  norm_by_alignment_freq=True, norm_by_overlap_freq=True,
-                 allowed_features_str=None, add_antisense=False,
+                 allowed_features_str=None, add_antisense=False, antisense_only=False,
+                 strand_specific=True,
                  unique_only=False):
         """
         - normalize_by_alignment: consider that some reads are aligned at
@@ -23,6 +24,8 @@ class GeneWiseQuantification(object):
         self._norm_by_overlap_freq = norm_by_overlap_freq
         self._allowed_features = _allowed_features(allowed_features_str)
         self._add_antisense = add_antisense
+        self._antisense_only = antisense_only
+        self._strand_specific = strand_specific
         self._unique_only = unique_only
 
     def calc_overlaps_per_alignment(self, read_alignment_path,
@@ -155,8 +158,11 @@ class GeneWiseQuantification(object):
                 if alignment.get_overlap(entry.start-1,
                                          entry.end) < self._min_overlap:
                     continue
-            if not self._add_antisense:
+            if not self._add_antisense and not self._antisense_only and self._strand_specific:
                 if not self._same_strand(entry, alignment):
+                    continue
+            if self._antisense_only:
+                if self._same_strand(entry, alignment):
                     continue
             if self._unique_only:
                 if dict(alignment.tags)["NH"] != 1:
@@ -176,9 +182,11 @@ class GeneWiseQuantification(object):
 class GeneWiseOverview(object):
 
     def __init__(self, allowed_features_str=None, add_antisense=False,
+                 antisense_only=False,
                  strand_specific=True):
         self._allowed_features = _allowed_features(allowed_features_str)
         self._add_antisense = add_antisense
+        self._antisense_only = antisense_only
         self._strand_specific = strand_specific
 
     def create_overview_raw_countings(
@@ -207,15 +215,15 @@ class GeneWiseOverview(object):
             ["Orientation of counted reads relative to the strand "
              "location of the annotation"] + _gff_field_descriptions()
             + read_files) + "\n")
-        if self._strand_specific:
+        if self._strand_specific and not self._antisense_only:
             self._add_to_overview(
                 path_and_name_combos, "sense", 9, output_fh, normalization,
                 libs_and_tnoar)
-            if self._add_antisense:
-                self._add_to_overview(
-                    path_and_name_combos, "anti-sense", 10, output_fh,
-                    normalization, libs_and_tnoar)
-        else:
+        if self._add_antisense or self._antisense_only:
+            self._add_to_overview(
+                path_and_name_combos, "anti-sense", 10, output_fh,
+                normalization, libs_and_tnoar)
+        if not self._strand_specific:
             self._add_to_overview_strand_unspecific(
                 path_and_name_combos, "sense_and_antisense", 9, 10,
                 output_fh, normalization, libs_and_tnoar)
