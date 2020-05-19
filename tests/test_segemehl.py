@@ -97,7 +97,7 @@ class TestSegemehlAligning(TestSegemehl):
                          self.large_output.sam_result_no_aligned_1)
 
     def test_map_reads_single_read_one_mismatch(self):
-        """A 20 nt long read with 1 mismatch at 95% accu should be
+        """A 20 nt long read with 1 mismatch at 95% accuracy should be
         mapped.
 
         GCTTTTTTTTCGACCAGAGA
@@ -226,21 +226,24 @@ class LargeOutput(object):
 @PG	ID:segemehl	VN:0.3.4	CL:segemehl.x --query /tmp/test_reads.fa --index /tmp/test.idx --database /tmp/test.fa --outfile /tmp/test_aligning_results.bam --bamabafixoida --hitstrategy 1 --accuracy 95 --evalue 5.0 --threads 1
 read_01	0	SL1344	181	0	60=	*	0	0	ACAACATCCATGAACCGCATCAGCACCACCACCATTACCACCATCACCATTACCACAGGT	*	HI:i:0	NH:i:1	NM:i:0	MD:Z:60	RG:Z:A1	YZ:Z:0
 """
-    sam_result_aligned_2 = """@HD	VN:1.0
+    sam_result_aligned_2 ="""@HD	VN:1.0	SO:coordinate
 @SQ	SN:SL1344	LN:960
-@PG	ID:segemehl	VN:0.2.0-$Rev: 418 $ ($Date: 2015-01-05 05:17:35 -0500 (Mon, 05 Jan 2015) $)	CL:segemehl.x --query /tmp/test_reads.fa --index /tmp/test.idx --database /tmp/test.fa --outfile /tmp/test_aligning_results.sam --hitstrategy 1 --accuracy 95 --evalue 5.0 --threads 1 --silent
-read_03	0	SL1344	301	255	20M	*	0	0	GCTTTTTTTTCGACCAGACA	*	NM:i:1	MD:Z:18G1	NH:i:1	XI:i:0	XA:Z:Q
+@RG	ID:A1	SM:sample1	LB:library1	PU:unit1	PL:illumina
+@PG	ID:segemehl	VN:0.3.4	CL:segemehl.x --query /tmp/test_reads.fa --index /tmp/test.idx --database /tmp/test.fa --outfile /tmp/test_aligning_results.bam --bamabafixoida --hitstrategy 1 --accuracy 95 --evalue 5.0 --threads 1
+read_03	0	SL1344	301	0	18=1X1=	*	0	0	GCTTTTTTTTCGACCAGACA	*	HI:i:0	NH:i:1	NM:i:1	MD:Z:18G1	RG:Z:A1	YZ:Z:0
 """
 
-    sam_result_aligned_3 = """@HD	VN:1.0
+    sam_result_aligned_3 ="""@HD	VN:1.0	SO:coordinate
 @SQ	SN:SL1344	LN:960
-@PG	ID:segemehl	VN:0.2.0-$Rev: 418 $ ($Date: 2015-01-05 05:17:35 -0500 (Mon, 05 Jan 2015) $)	CL:segemehl.x --query /tmp/test_reads.fa --index /tmp/test.idx --database /tmp/test.fa --outfile /tmp/test_aligning_results.sam --hitstrategy 1 --accuracy 90 --evalue 5.0 --threads 1 --silent
-read_05	0	SL1344	301	255	20M	*	0	0	GCTTTTTTTTCGACCAGTCA	*	NM:i:2	MD:Z:17A0G1	NH:i:1	XI:i:0	XA:Z:Q
+@RG	ID:A1	SM:sample1	LB:library1	PU:unit1	PL:illumina
+@PG	ID:segemehl	VN:0.3.4	CL:segemehl.x --query /tmp/test_reads.fa --index /tmp/test.idx --database /tmp/test.fa --outfile /tmp/test_aligning_results.bam --bamabafixoida --hitstrategy 1 --accuracy 90 --evalue 5.0 --threads 1
+read_05	0	SL1344	301	1	17=2X1=	*	0	0	GCTTTTTTTTCGACCAGTCA	*	HI:i:0	NH:i:1	NM:i:2	MD:Z:17A0G1	RG:Z:A1	YZ:Z:0
 """
 
-    sam_result_no_aligned_1 = """@HD	VN:1.0
+    sam_result_no_aligned_1 ="""@HD	VN:1.0	SO:coordinate
 @SQ	SN:SL1344	LN:960
-@PG	ID:segemehl	VN:0.2.0-$Rev: 418 $ ($Date: 2015-01-05 05:17:35 -0500 (Mon, 05 Jan 2015) $)	CL:segemehl.x --query /tmp/test_reads.fa --index /tmp/test.idx --database /tmp/test.fa --outfile /tmp/test_aligning_results.sam --hitstrategy 1 --accuracy 95 --evalue 5.0 --threads 1 --silent
+@RG	ID:A1	SM:sample1	LB:library1	PU:unit1	PL:illumina
+@PG	ID:segemehl	VN:0.3.4	CL:segemehl.x --query /tmp/test_reads.fa --index /tmp/test.idx --database /tmp/test.fa --outfile /tmp/test_aligning_results.bam --bamabafixoida --hitstrategy 1 --accuracy 95 --evalue 5.0 --threads 1
 """
 
 if __name__ == "__main__":
