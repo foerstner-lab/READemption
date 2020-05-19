@@ -8,10 +8,11 @@ import pysam
 
 class Gff3EntryMoc(object):
 
-    def __init__(self, seq_id, start, end):
+    def __init__(self, seq_id, start, end, strand):
         self.seq_id = seq_id
         self.start = start
         self.end = end
+        self.strand = strand
 
 
 class TestGeneWiseQuantification(unittest.TestCase):
@@ -30,34 +31,52 @@ class TestGeneWiseQuantification(unittest.TestCase):
             self.example_data.sam_content_1, self._sam_bam_prefix)
         self.gene_wise_quantification = GeneWiseQuantification()
         sam = pysam.Samfile(self._sam_bam_prefix + ".bam")
-        # Overlap with all mappings
+        # Overlap with all mappings on the forward strand
         self.assertListEqual(self._mapping_ids(
             self.gene_wise_quantification._overlapping_alignments(
-                sam, Gff3EntryMoc("chrom", 1, 100))),
-            ["myread:01", "myread:02", "myread:03", "myread:04", "myread:05",
-             "myread:06", "myread:07", "myread:08", "myread:09", "myread:10"])
+                sam, Gff3EntryMoc("chrom", 1, 100, "+"))),
+            ["myread:01", "myread:02", "myread:03", "myread:04", "myread:05"])
         # Overlapping with no mapping
         self.assertListEqual(self._mapping_ids(
             self.gene_wise_quantification._overlapping_alignments(
-                sam, Gff3EntryMoc("chrom", 1, 5))), [])
+                sam, Gff3EntryMoc("chrom", 1, 5, "+"))), [])
         # Overlapping by 1 based - in the 5' end of the reads
         self.assertListEqual(self._mapping_ids(
             self.gene_wise_quantification._overlapping_alignments(
-                sam, Gff3EntryMoc("chrom", 1, 10))),
+                sam, Gff3EntryMoc("chrom", 1, 10, "+"))),
             ["myread:01", "myread:02", "myread:03", "myread:04", "myread:05"])
         # No overlap - gene very close upstream of the reads
         self.assertListEqual(self._mapping_ids(
             self.gene_wise_quantification._overlapping_alignments(
-                sam, Gff3EntryMoc("chrom", 1, 9))), [])
+                sam, Gff3EntryMoc("chrom", 1, 9, "+"))), [])
         # Overlapping by 1 based - in the 3' end of the reads
         self.assertListEqual(self._mapping_ids(
             self.gene_wise_quantification._overlapping_alignments(
-                sam, Gff3EntryMoc("chrom", 19, 23))),
+                sam, Gff3EntryMoc("chrom", 19, 23, "+"))),
             ["myread:01", "myread:02", "myread:03", "myread:04", "myread:05"])
+        # Overlapping by 1 based - in the 3' end of the reads but on the wrong strand
+        self.assertListEqual(self._mapping_ids(
+            self.gene_wise_quantification._overlapping_alignments(
+                sam, Gff3EntryMoc("chrom", 19, 23, "-"))), [])
         # No overlap - very close downstream of the reads
         self.assertListEqual(self._mapping_ids(
             self.gene_wise_quantification._overlapping_alignments(
-                sam, Gff3EntryMoc("chrom", 20, 23))), [])
+                sam, Gff3EntryMoc("chrom", 20, 23, "+"))), [])
+        # Overlapping by 1 based - in the 3' end of the reads on the opposite strand, without strand specificity
+        self.gene_wise_quantification._strand_specific = False
+        self.assertListEqual(self._mapping_ids(
+            self.gene_wise_quantification._overlapping_alignments(
+                sam, Gff3EntryMoc("chrom", 19, 23, "-"))),
+            ["myread:01", "myread:02", "myread:03", "myread:04", "myread:05"])
+        # Overlapping by 1 based - in the 3' end of the reads on the opposite strand, with strand specificity
+        # only allowing antisense overlaps
+        self.gene_wise_quantification._strand_specific = True
+        self.gene_wise_quantification._antisense_only = True
+        self.assertListEqual(self._mapping_ids(
+            self.gene_wise_quantification._overlapping_alignments(
+                sam, Gff3EntryMoc("chrom", 19, 100, "-"))),
+            ["myread:01", "myread:02", "myread:03", "myread:04", "myread:05"])
+
 
     def test_overlapping_alignments_2(self):
         """Extraction of overlapping reads - with a non-default
@@ -71,28 +90,28 @@ class TestGeneWiseQuantification(unittest.TestCase):
         # 1 overlapping base in the 5' end of the reads => not enough
         self.assertListEqual(self._mapping_ids(
             self.gene_wise_quantification._overlapping_alignments(
-                sam, Gff3EntryMoc("chrom", 1, 10))), [])
+                sam, Gff3EntryMoc("chrom", 1, 10, "+"))), [])
         # 4 overlapping base in the 5' end of the reads => not enough
         self.assertListEqual(self._mapping_ids(
             self.gene_wise_quantification._overlapping_alignments(
-                sam, Gff3EntryMoc("chrom", 1, 13))), [])
+                sam, Gff3EntryMoc("chrom", 1, 13, "+"))), [])
         # 5 overlapping base in the 5' end of the reads => okay
         self.assertListEqual(self._mapping_ids(
             self.gene_wise_quantification._overlapping_alignments(
-                sam, Gff3EntryMoc("chrom", 1, 14))),
+                sam, Gff3EntryMoc("chrom", 1, 14, "+"))),
             ["myread:01", "myread:02", "myread:03", "myread:04", "myread:05"])
         # 1 overlapping base in the 3' end of the reads => not enough
         self.assertListEqual(self._mapping_ids(
             self.gene_wise_quantification._overlapping_alignments(
-                sam, Gff3EntryMoc("chrom", 19, 23))), [])
+                sam, Gff3EntryMoc("chrom", 19, 23, "+"))), [])
         # 4 overlapping base in the 3' end of the reads => not enough
         self.assertListEqual(self._mapping_ids(
             self.gene_wise_quantification._overlapping_alignments(
-                sam, Gff3EntryMoc("chrom", 16, 23))), [])
-        # 5 overlapping base in the 3' end of the reads => not enough
+                sam, Gff3EntryMoc("chrom", 16, 23, "+"))), [])
+        # 5 overlapping base in the 3' end of the reads => okay
         self.assertListEqual(self._mapping_ids(
             self.gene_wise_quantification._overlapping_alignments(
-                sam, Gff3EntryMoc("chrom", 15, 23))),
+                sam, Gff3EntryMoc("chrom", 15, 23, "+"))),
             ["myread:01", "myread:02", "myread:03", "myread:04", "myread:05"])
 
     def _mapping_ids(self, mappings):
