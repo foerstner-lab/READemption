@@ -7,4 +7,4 @@ install:
   - "pip install biopython"
   - "pip install pysam"
 # command to run tests
-script: pytest tests/test_fasta.py
+script: pytest
