@@ -2,20 +2,15 @@ test:
 	pytest
 
 coverage:
-	python3-coverage run tests/test_all.py
-	python3-coverage report
+	coverage run tests/test_all.py
+	coverage report
 
 package:
+	pandoc -o README.rst README.md
 	python3 setup.py sdist bdist_wheel
 	rm -rf READemption.egg-info
 	ls dist/*
-
-clean:
-	find -name "*pyc" -exec rm {} \;
-	rm -rf build dist READemption.egg-info *~
-
-build:
-	 python3 setup.py bdist
+	rm README.rst
 
 package_to_pypi:
 	python3 -m twine upload  --verbose  dist/*
@@ -33,15 +28,15 @@ new_release:
 	@echo "* Create/checkout a release branch"
 	@echo "  git branch release_v0.4.X"
 	@echo "  git checkout release_v0.4.X"
-	@echo "* Change bin/reademption"
-	@echo "* Change setup.py"
-	@echo "* Change docs/source/conf.py"
-	@echo "* Change CHANGELOG.txt"
+	@echo "* Change version and date in bin/reademption"
+	@echo "* Change version in setup.py"
+	@echo "* Change version, release and date in docs/source/conf.py"
+	@echo "* Add description to CHANGELOG.txt"
 	@echo "* Create new docs"
-	@echo "  make html_doc"
-	@echo "* Test package creation"
+	@echo "  make html_doc" # was this only needed for pythonhosted?
+	@echo "* Create package"
+	@echo " make package_to_pypi"
 	@echo "* Test doc creation"
-	@echo "* make package_to_pypi"
 	@echo "* git add CHANGELOG.txt bin/reademption docs/source/conf.py setup.py"
 	@echo "* Commit changes e.g. 'git commit -m \"Set version to 0.4.X\"'"
 	@echo "* Tag the commit e.g. 'git tag -a v0.4.X -m \"version v0.4.X\"'"
