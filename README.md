@@ -2,8 +2,7 @@
 [![License](https://img.shields.io/pypi/l/reademption.svg)](https://pypi.python.org/pypi/READemption/)
 [![Build Status](https://travis-ci.org/foerstner-lab/READemption.svg?branch=master)](https://travis-ci.org/foerstner-lab/READemption)
 [![Documentation Status](https://readthedocs.org/projects/reademption/badge/?version=latest)](https://reademption.readthedocs.io/en/latest/?badge=latest)
-[![DOI](https://zenodo.org/badge/2756/konrad/READemption.svg)](https://zenodo.org/badge/latestdoi/2756/konrad/READemption)
-
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.1134354.svg)](https://doi.org/10.5281/zenodo.1134354)
 
 About
 -----
