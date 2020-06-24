@@ -707,6 +707,12 @@ class Controller(object):
                 path_and_name_combos, lib_names,
                 self._paths.gene_wise_quanti_combined_tnoar_path,
                 self._libs_and_total_num_of_aligned_reads())
+        if self._file_needs_to_be_created(
+            self._paths.gene_wise_quanti_combined_tpm_path):
+            gene_wise_overview.create_overview_tpm(
+                self._paths.gene_wise_quanti_combined_path,
+                self._paths.gene_wise_quanti_combined_tpm_path
+            )
 
     def _libs_and_total_num_of_aligned_reads(self):
         """Read the total number of reads per library."""
