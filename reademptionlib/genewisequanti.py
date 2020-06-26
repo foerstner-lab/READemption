@@ -209,13 +209,13 @@ class GeneWiseOverview(object):
 
     def create_overview_tpm(
             self, gene_wise_quanti_combined_path, gene_wise_quanti_combined_tpm_path):
-        print(gene_wise_quanti_combined_path)
         gene_quanti = pd.read_csv(gene_wise_quanti_combined_path, sep="\t")
+        # the libs are starting at column 11
         libs = gene_quanti.columns.to_list()[10:]
         gene_quanti_tpm = self._calculate_tpm(gene_quanti, libs)
         gene_quanti_tpm.to_csv(gene_wise_quanti_combined_tpm_path, sep="\t", index=False)
 
-    def _calculate_tpm(self, gene_quanti, libs):
+    def _calculate_tpm(self, gene_quanti, libs)->pd.DataFrame:
         '''
         :param gene_quanti: a pandas data frame generated from the gene wise quantification
         table containing the raw reads
@@ -227,30 +227,30 @@ class GeneWiseOverview(object):
         Günter P. Wagner, Koryu Kin & Vincent J. Lynch,
         DOI: 10.1007/s12064-012-0162-3
 
-                rg x rl x 1000000
+                r_g x rl x 1000000
         TPM  = ────────────────────
-                    flg x T
+                    fl_g x T
         where
-          rg = number of reads that map to a gene
+          r_g = number of reads that map to a gene
           rl = read length i.e., the average number of nucleotides mapped per read
-          flg = feature length or length of the gene
+          fl_g = feature length or length of the gene
           T is the total number of transcripts sampled in a sequencing run and is calculated as follows:
                 ___
-                ╲     rg x rl
+                ╲     r_g x rl
           T =   ╱    ─────────
-                ‾‾‾     flg
+                ‾‾‾     fl_g
                g e G
 
         The Formula can be simplified (by excluding the read length rl) to:
 
-                rg x 1000000
+                r_g x 1000000
         TPM  = ──────────────
-                   flg x A
+                   fl_g x A
         where
                 ___
-                ╲     rg
+                ╲     r_g
           A =   ╱    ────
-                ‾‾‾   flg
+                ‾‾‾   fl_g
                g e G
          The simplified formula is implemented below
         '''
