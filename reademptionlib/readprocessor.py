@@ -7,10 +7,16 @@ from Bio.Seq import Seq
 
 
 class ReadProcessor(object):
-    
-    def __init__(self, poly_a_clipping=False,  min_read_length=12,
-                 paired_end=False, fastq=False, min_phred_score=None,
-                 adapter=None, reverse_complement=False):
+    def __init__(
+        self,
+        poly_a_clipping=False,
+        min_read_length=12,
+        paired_end=False,
+        fastq=False,
+        min_phred_score=None,
+        adapter=None,
+        reverse_complement=False,
+    ):
         self._poly_a_clipping = poly_a_clipping
         self._min_read_length = min_read_length
         self._paired_end = paired_end
@@ -29,12 +35,14 @@ class ReadProcessor(object):
 
     def process_paired_end(self, input_path_pair, output_path_pair):
         self._init_stat_dict()
-        with gzip.open(output_path_pair[0], "wb") as output_p1_fh, \
-                gzip.open(output_path_pair[1], "wb") as output_p2_fh:
+        with gzip.open(output_path_pair[0], "wb") as output_p1_fh, gzip.open(
+            output_path_pair[1], "wb"
+        ) as output_p2_fh:
             input_p1_fh = self._input_fh(input_path_pair[0])
             input_p2_fh = self._input_fh(input_path_pair[1])
             self._process_paired_end(
-                input_p1_fh, input_p2_fh, output_p1_fh, output_p2_fh)
+                input_p1_fh, input_p2_fh, output_p1_fh, output_p2_fh
+            )
         return self._stats
 
     def _init_stat_dict(self):
@@ -45,10 +53,9 @@ class ReadProcessor(object):
         self._stats["unmodified"]
         self._stats["too_short"]
         self._stats["long_enough"]
-        self._stats[
-            "read_length_before_processing_and_freq"] = defaultdict(int)
+        self._stats["read_length_before_processing_and_freq"] = defaultdict(int)
         self._stats["read_length_after_processing_and_freq"] = defaultdict(int)
-    
+
     def _input_fh(self, input_path):
         """Return a file hande
 
@@ -74,7 +81,7 @@ class ReadProcessor(object):
             return seq
         else:
             return seq[:adapter_start_pos]
-        
+
     def _process_single_end(self, input_fh, output_fh):
         for header, seq, qualities in self._parse_sequences(input_fh):
             raw_seq_len = len(seq)
@@ -101,26 +108,33 @@ class ReadProcessor(object):
                 continue
             self._stats["long_enough"] += 1
             self._stats["read_length_before_processing_and_freq"][
-                raw_seq_len] += 1
+                raw_seq_len
+            ] += 1
             self._stats["read_length_after_processing_and_freq"][
-                clipped_seq_len] += 1
+                clipped_seq_len
+            ] += 1
             # Encoding to bytes is necessary due to saving via gzip
             output_fh.write(str.encode(">%s\n%s\n" % (header, seq)))
 
     def _parse_sequences(self, input_fh):
         if self._fastq:
             for seq_record in SeqIO.parse(input_fh, "fastq"):
-                yield(seq_record.description, str(seq_record.seq),
-                      seq_record.letter_annotations["phred_quality"])
+                yield (
+                    seq_record.description,
+                    str(seq_record.seq),
+                    seq_record.letter_annotations["phred_quality"],
+                )
         else:
             for seq_record in SeqIO.parse(input_fh, "fasta"):
-                yield(seq_record.description, str(seq_record.seq), None)
-        
+                yield (seq_record.description, str(seq_record.seq), None)
+
     def _process_paired_end(
-            self, input_p1_fh, input_p2_fh, output_p1_fh, output_p2_fh):
+        self, input_p1_fh, input_p2_fh, output_p1_fh, output_p2_fh
+    ):
         for fasta_entry_p1, fasta_entry_p2 in zip(
-                self._parse_sequences(input_p1_fh),
-                self._parse_sequences(input_p2_fh,)):
+            self._parse_sequences(input_p1_fh),
+            self._parse_sequences(input_p2_fh,),
+        ):
             header_p1 = fasta_entry_p1[0]
             header_p2 = fasta_entry_p2[0]
             seq_p1 = fasta_entry_p1[1]
@@ -142,19 +156,25 @@ class ReadProcessor(object):
             if self._adapter is not None:
                 seq_p1 = self._clip_adapter(seq_p1)
                 seq_p2 = self._clip_adapter(seq_p2)
-            if (raw_seq_p1_len < self._min_read_length or
-                    raw_seq_p2_len < self._min_read_length):
+            if (
+                raw_seq_p1_len < self._min_read_length
+                or raw_seq_p2_len < self._min_read_length
+            ):
                 self._stats["too_short"] += 1
                 continue
             self._stats["long_enough"] += 1
             self._stats["read_length_before_processing_and_freq"][
-                raw_seq_p1_len] += 1
+                raw_seq_p1_len
+            ] += 1
             self._stats["read_length_after_processing_and_freq"][
-                raw_seq_p1_len] += 1
+                raw_seq_p1_len
+            ] += 1
             self._stats["read_length_before_processing_and_freq"][
-                raw_seq_p2_len] += 1
+                raw_seq_p2_len
+            ] += 1
             self._stats["read_length_after_processing_and_freq"][
-                raw_seq_p2_len] += 1
+                raw_seq_p2_len
+            ] += 1
             # Encoding to bytes is necessary due to saving via gzip
             output_p1_fh.write(str.encode(">%s\n%s\n" % (header_p1, seq_p1)))
             output_p2_fh.write(str.encode(">%s\n%s\n" % (header_p2, seq_p2)))

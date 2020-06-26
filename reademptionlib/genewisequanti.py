@@ -3,13 +3,21 @@ from reademptionlib.gff3 import Gff3Parser
 import pysam
 import pandas as pd
 
-class GeneWiseQuantification(object):
 
-    def __init__(self, min_overlap=1, read_region="global", clip_length=11,
-                 norm_by_alignment_freq=True, norm_by_overlap_freq=True,
-                 allowed_features_str=None, add_antisense=False, antisense_only=False,
-                 strand_specific=True,
-                 unique_only=False):
+class GeneWiseQuantification(object):
+    def __init__(
+        self,
+        min_overlap=1,
+        read_region="global",
+        clip_length=11,
+        norm_by_alignment_freq=True,
+        norm_by_overlap_freq=True,
+        allowed_features_str=None,
+        add_antisense=False,
+        antisense_only=False,
+        strand_specific=True,
+        unique_only=False,
+    ):
         """
         - normalize_by_alignment: consider that some reads are aligned at
           more than one location and only count fractions
@@ -28,8 +36,9 @@ class GeneWiseQuantification(object):
         self._strand_specific = strand_specific
         self._unique_only = unique_only
 
-    def calc_overlaps_per_alignment(self, read_alignment_path,
-                                    annotation_paths):
+    def calc_overlaps_per_alignment(
+        self, read_alignment_path, annotation_paths
+    ):
         """Calculate for each alignment the number of genes it
         overlaps. This has to be done globally i.e. for all annotation
         files combined in one dictionary.
@@ -44,21 +53,41 @@ class GeneWiseQuantification(object):
                 for alignment in self._overlapping_alignments(sam, entry):
                     alignment_id = self._alignment_id(alignment)
                     self.alignments_and_no_of_overlaps.setdefault(
-                        alignment_id, 0)
+                        alignment_id, 0
+                    )
                     self.alignments_and_no_of_overlaps[alignment_id] += 1
 
-    def quantify(self, read_alignment_path, annotation_path, output_path,
-                 pseudocounts=False):
-        self._quantify(read_alignment_path, annotation_path, output_path,
-                       self._fraction_calc_method(), pseudocounts)
+    def quantify(
+        self,
+        read_alignment_path,
+        annotation_path,
+        output_path,
+        pseudocounts=False,
+    ):
+        self._quantify(
+            read_alignment_path,
+            annotation_path,
+            output_path,
+            self._fraction_calc_method(),
+            pseudocounts,
+        )
 
-    def _quantify(self, read_alignment_path, annotation_path, output_path,
-                  fraction_calc_method, pseudocounts=False):
+    def _quantify(
+        self,
+        read_alignment_path,
+        annotation_path,
+        output_path,
+        fraction_calc_method,
+        pseudocounts=False,
+    ):
         sam = pysam.Samfile(read_alignment_path)
         gff3_parser = Gff3Parser()
         output_fh = open(output_path, "w")
-        output_fh.write("#" + "\t".join(_gff_field_descriptions()
-                                        + ["sense", "antisense"]) + "\n")
+        output_fh.write(
+            "#"
+            + "\t".join(_gff_field_descriptions() + ["sense", "antisense"])
+            + "\n"
+        )
         for entry in gff3_parser.entries(open(annotation_path)):
             if _entry_to_use(entry, self._allowed_features) is False:
                 continue
@@ -74,19 +103,27 @@ class GeneWiseQuantification(object):
                     sum_sense += fraction
                 else:
                     sum_antisense += fraction
-            output_fh.write(str(entry) + "\t" + str(sum_sense) + "\t" +
-                            str(sum_antisense) + "\n")
+            output_fh.write(
+                str(entry)
+                + "\t"
+                + str(sum_sense)
+                + "\t"
+                + str(sum_antisense)
+                + "\n"
+            )
 
     def _same_strand(self, entry, alignment):
         assert entry.strand in ["+", "-"]
         if alignment.is_read2 is False:
-            if ((entry.strand == "+" and alignment.is_reverse is False) or
-                    (entry.strand == "-" and alignment.is_reverse is True)):
+            if (entry.strand == "+" and alignment.is_reverse is False) or (
+                entry.strand == "-" and alignment.is_reverse is True
+            ):
                 return True
         # Mate pair for paired end sequencing
         elif alignment.is_read2 is True:
-            if ((entry.strand == "+" and alignment.is_reverse is True) or
-                    (entry.strand == "-" and alignment.is_reverse is False)):
+            if (entry.strand == "+" and alignment.is_reverse is True) or (
+                entry.strand == "-" and alignment.is_reverse is False
+            ):
                 return True
         return False
 
@@ -107,58 +144,86 @@ class GeneWiseQuantification(object):
 
     def _fraction_norm_by_alignment_and_overlap(self, alignment):
         alignment_tags = self._alignment_tags(alignment)
-        return (1.0 /
-                float(self.alignments_and_no_of_overlaps[
-                    self._alignment_id(alignment)]) /
-                float(alignment_tags["NH"]) /  # no. of alignments of read
-                float(alignment_tags.get("XL", 1)))  # no. of splits
+        return (
+            1.0
+            / float(
+                self.alignments_and_no_of_overlaps[
+                    self._alignment_id(alignment)
+                ]
+            )
+            / float(alignment_tags["NH"])
+            / float(alignment_tags.get("XL", 1))  # no. of alignments of read
+        )  # no. of splits
 
     def _fraction_norm_by_alignment(self, alignment):
         alignment_tags = self._alignment_tags(alignment)
-        return (1.0 /
-                float(alignment_tags["NH"]) /  # no. of alignments of read
-                float(alignment_tags.get("XL", 1)))  # no. of splits
+        return (
+            1.0
+            / float(alignment_tags["NH"])
+            / float(alignment_tags.get("XL", 1))  # no. of alignments of read
+        )  # no. of splits
 
     def _fraction_norm_by_overlap(self, alignment):
         alignment_tags = self._alignment_tags(alignment)
-        return (1.0 /
-                float(self.alignments_and_no_of_overlaps[
-                    self._alignment_id(alignment)]) /
-                float(alignment_tags.get("XL", 1)))  # no. of splits
+        return (
+            1.0
+            / float(
+                self.alignments_and_no_of_overlaps[
+                    self._alignment_id(alignment)
+                ]
+            )
+            / float(alignment_tags.get("XL", 1))
+        )  # no. of splits
 
     def _overlapping_alignments(self, sam, entry):
         # The substraction of 1 from the start is necessary to perform
         # this correctly (checked in IGB, IGV and the unit testings).
         for alignment in sam.fetch(
-                reference=entry.seq_id, start=entry.start-1, end=entry.end):
+            reference=entry.seq_id, start=entry.start - 1, end=entry.end
+        ):
             # 1-based alignment coordinates
-            start = alignment.pos+1
+            start = alignment.pos + 1
             end = alignment.aend
             if self._read_region == "first_base_only":
                 if (alignment.is_reverse is False) and (
-                   (start < entry.start) or (start > entry.end)):
-                        continue
+                    (start < entry.start) or (start > entry.end)
+                ):
+                    continue
                 if (alignment.is_reverse is True) and (
-                   (end < entry.start) or (end > entry.end)):
-                        continue
+                    (end < entry.start) or (end > entry.end)
+                ):
+                    continue
             elif self._read_region == "last_base_only":
                 if (alignment.is_reverse is False) and (
-                   (end < entry.start) or (end > entry.end)):
-                        continue
+                    (end < entry.start) or (end > entry.end)
+                ):
+                    continue
                 if (alignment.is_reverse is True) and (
-                   (start < entry.start) or (start > entry.end)):
-                        continue
+                    (start < entry.start) or (start > entry.end)
+                ):
+                    continue
             elif self._read_region == "centered":
-                if _get_overlap(start + self._clip_length,
-                                end - self._clip_length,
-                                entry.start,
-                                entry.end) < self._min_overlap:
+                if (
+                    _get_overlap(
+                        start + self._clip_length,
+                        end - self._clip_length,
+                        entry.start,
+                        entry.end,
+                    )
+                    < self._min_overlap
+                ):
                     continue
             else:
-                if alignment.get_overlap(entry.start-1,
-                                         entry.end) < self._min_overlap:
+                if (
+                    alignment.get_overlap(entry.start - 1, entry.end)
+                    < self._min_overlap
+                ):
                     continue
-            if not self._add_antisense and not self._antisense_only and self._strand_specific:
+            if (
+                not self._add_antisense
+                and not self._antisense_only
+                and self._strand_specific
+            ):
                 if not self._same_strand(entry, alignment):
                     continue
             if self._antisense_only:
@@ -167,56 +232,78 @@ class GeneWiseQuantification(object):
             if self._unique_only:
                 if dict(alignment.tags)["NH"] != 1:
                     continue
-            yield(alignment)
+            yield (alignment)
 
     def _alignment_id(self, alignment):
-        return (":".join([str(alignment.tid), alignment.qname,
-                          str(alignment.flag), str(alignment.pos),
-                          str(alignment.aend)]))
+        return ":".join(
+            [
+                str(alignment.tid),
+                alignment.qname,
+                str(alignment.flag),
+                str(alignment.pos),
+                str(alignment.aend),
+            ]
+        )
 
     def _values_to_gene_key(self, seq_id, feature, start, end, strand):
-        return ("|".join(
-                [str(val) for val in [seq_id, feature, start, end, strand]]))
+        return "|".join(
+            [str(val) for val in [seq_id, feature, start, end, strand]]
+        )
 
 
 class GeneWiseOverview(object):
-
-    def __init__(self, allowed_features_str=None, add_antisense=False,
-                 antisense_only=False,
-                 strand_specific=True):
+    def __init__(
+        self,
+        allowed_features_str=None,
+        add_antisense=False,
+        antisense_only=False,
+        strand_specific=True,
+    ):
         self._allowed_features = _allowed_features(allowed_features_str)
         self._add_antisense = add_antisense
         self._antisense_only = antisense_only
         self._strand_specific = strand_specific
 
     def create_overview_raw_countings(
-            self, path_and_name_combos, read_files, overview_path):
+        self, path_and_name_combos, read_files, overview_path
+    ):
         self._create_overview(path_and_name_combos, read_files, overview_path)
 
     def create_overview_rpkm(
-            self, path_and_name_combos, read_files, overview_path,
-            libs_and_tnoar):
-        self._create_overview(path_and_name_combos, read_files, overview_path,
-                              normalization="RPKM",
-                              libs_and_tnoar=libs_and_tnoar)
+        self, path_and_name_combos, read_files, overview_path, libs_and_tnoar
+    ):
+        self._create_overview(
+            path_and_name_combos,
+            read_files,
+            overview_path,
+            normalization="RPKM",
+            libs_and_tnoar=libs_and_tnoar,
+        )
 
     def create_overview_norm_by_tnoar(
-            self, path_and_name_combos, read_files, overview_path,
-            libs_and_tnoar):
-        self._create_overview(path_and_name_combos, read_files, overview_path,
-                              normalization="TNOAR",
-                              libs_and_tnoar=libs_and_tnoar)
+        self, path_and_name_combos, read_files, overview_path, libs_and_tnoar
+    ):
+        self._create_overview(
+            path_and_name_combos,
+            read_files,
+            overview_path,
+            normalization="TNOAR",
+            libs_and_tnoar=libs_and_tnoar,
+        )
 
     def create_overview_tpm(
-            self, gene_wise_quanti_combined_path, gene_wise_quanti_combined_tpm_path):
+        self, gene_wise_quanti_combined_path, gene_wise_quanti_combined_tpm_path
+    ):
         gene_quanti = pd.read_csv(gene_wise_quanti_combined_path, sep="\t")
         # the libs are starting at column 11
         libs = gene_quanti.columns.to_list()[10:]
         gene_quanti_tpm = self._calculate_tpm(gene_quanti, libs)
-        gene_quanti_tpm.to_csv(gene_wise_quanti_combined_tpm_path, sep="\t", index=False)
+        gene_quanti_tpm.to_csv(
+            gene_wise_quanti_combined_tpm_path, sep="\t", index=False
+        )
 
-    def _calculate_tpm(self, gene_quanti, libs)->pd.DataFrame:
-        '''
+    def _calculate_tpm(self, gene_quanti, libs) -> pd.DataFrame:
+        """
         :param gene_quanti: a pandas data frame generated from the gene wise quantification
         table containing the raw reads
         :param libs: a list of library names extracted from the gene wise quantification table
@@ -253,45 +340,83 @@ class GeneWiseOverview(object):
                 ‾‾‾   fl_g
                g e G
          The simplified formula is implemented below
-        '''
+        """
         for lib in libs:
             # calculate A
-            gene_quanti["transcript_count"] = gene_quanti.apply(lambda df: (int(df[lib])) /
-                                                                           (int(df["End"]) - int(df["Start"]) + 1),
-                                                                axis=1)
+            gene_quanti["transcript_count"] = gene_quanti.apply(
+                lambda df: (int(df[lib]))
+                / (int(df["End"]) - int(df["Start"]) + 1),
+                axis=1,
+            )
             A = gene_quanti["transcript_count"].sum()
             # calculate TPM per gene and replace the raw read counts in the gene quanti table
-            gene_quanti[lib] = gene_quanti.apply(lambda df: (int(df[lib]) * 1000000) /
-                                                            ((int(df["End"]) - int(df["Start"]) + 1) * A),
-                                                 axis=1)
+            gene_quanti[lib] = gene_quanti.apply(
+                lambda df: (int(df[lib]) * 1000000)
+                / ((int(df["End"]) - int(df["Start"]) + 1) * A),
+                axis=1,
+            )
             gene_quanti.drop("transcript_count", inplace=True, axis=1)
         return gene_quanti
 
-
-    def _create_overview(self, path_and_name_combos, read_files, overview_path,
-                         normalization=None, libs_and_tnoar=None):
+    def _create_overview(
+        self,
+        path_and_name_combos,
+        read_files,
+        overview_path,
+        normalization=None,
+        libs_and_tnoar=None,
+    ):
         output_fh = open(overview_path, "w")
         # Write header
-        output_fh.write("\t".join(
-            ["Orientation of counted reads relative to the strand "
-             "location of the annotation"] + _gff_field_descriptions()
-            + read_files) + "\n")
+        output_fh.write(
+            "\t".join(
+                [
+                    "Orientation of counted reads relative to the strand "
+                    "location of the annotation"
+                ]
+                + _gff_field_descriptions()
+                + read_files
+            )
+            + "\n"
+        )
         if self._strand_specific and not self._antisense_only:
             self._add_to_overview(
-                path_and_name_combos, "sense", 9, output_fh, normalization,
-                libs_and_tnoar)
+                path_and_name_combos,
+                "sense",
+                9,
+                output_fh,
+                normalization,
+                libs_and_tnoar,
+            )
         if self._add_antisense or self._antisense_only:
             self._add_to_overview(
-                path_and_name_combos, "anti-sense", 10, output_fh,
-                normalization, libs_and_tnoar)
+                path_and_name_combos,
+                "anti-sense",
+                10,
+                output_fh,
+                normalization,
+                libs_and_tnoar,
+            )
         if not self._strand_specific:
             self._add_to_overview_strand_unspecific(
-                path_and_name_combos, "sense_and_antisense", 9, 10,
-                output_fh, normalization, libs_and_tnoar)
+                path_and_name_combos,
+                "sense_and_antisense",
+                9,
+                10,
+                output_fh,
+                normalization,
+                libs_and_tnoar,
+            )
 
     def _add_to_overview(
-            self, path_and_name_combos, direction, column, output_fh,
-            normalization=None, libs_and_tnoar=None):
+        self,
+        path_and_name_combos,
+        direction,
+        column,
+        output_fh,
+        normalization=None,
+        libs_and_tnoar=None,
+    ):
         gff3_parser = Gff3Parser()
         for annotation_path in sorted(path_and_name_combos.keys()):
             table_columns = []
@@ -304,19 +429,28 @@ class GeneWiseOverview(object):
                 seq_lengths.append(entry.end - entry.start + 1)
             table_columns.append(entries)
             for read_file, gene_quanti_path in path_and_name_combos[
-                    annotation_path]:
+                annotation_path
+            ]:
                 reader = csv.reader(open(gene_quanti_path), delimiter="\t")
                 next(reader)  # skip first line
                 if normalization == "RPKM":
-                    table_columns.append([
-                        self._rpkm(row[column], length, libs_and_tnoar[
-                            read_file]) for row, length in zip(
-                            reader, seq_lengths)])
+                    table_columns.append(
+                        [
+                            self._rpkm(
+                                row[column], length, libs_and_tnoar[read_file]
+                            )
+                            for row, length in zip(reader, seq_lengths)
+                        ]
+                    )
                 elif normalization == "TNOAR":
-                    table_columns.append([
-                        self._norm_by_tnoar(row[column], libs_and_tnoar[
-                            read_file]) for row, length in zip(
-                            reader, seq_lengths)])
+                    table_columns.append(
+                        [
+                            self._norm_by_tnoar(
+                                row[column], libs_and_tnoar[read_file]
+                            )
+                            for row, length in zip(reader, seq_lengths)
+                        ]
+                    )
                 else:
                     table_columns.append([row[column] for row in reader])
             # Generate a table by rotating the column list
@@ -325,8 +459,15 @@ class GeneWiseOverview(object):
                 output_fh.write("\t".join(row) + "\n")
 
     def _add_to_overview_strand_unspecific(
-            self, path_and_name_combos, direction, column1, column2, output_fh,
-            normalization=None, libs_and_tnoar=None):
+        self,
+        path_and_name_combos,
+        direction,
+        column1,
+        column2,
+        output_fh,
+        normalization=None,
+        libs_and_tnoar=None,
+    ):
         gff3_parser = Gff3Parser()
         for annotation_path in sorted(path_and_name_combos.keys()):
             table_columns = []
@@ -339,25 +480,38 @@ class GeneWiseOverview(object):
                 seq_lengths.append(entry.end - entry.start + 1)
             table_columns.append(entries)
             for read_file, gene_quanti_path in path_and_name_combos[
-                    annotation_path]:
+                annotation_path
+            ]:
                 reader = csv.reader(open(gene_quanti_path), delimiter="\t")
                 next(reader)  # skip first line
                 if normalization == "RPKM":
-                    table_columns.append([
-                        self._rpkm(str(
-                            float(row[column1])+float(row[column2])),
-                            length, libs_and_tnoar[read_file])
-                        for row, length in zip(reader, seq_lengths)])
+                    table_columns.append(
+                        [
+                            self._rpkm(
+                                str(float(row[column1]) + float(row[column2])),
+                                length,
+                                libs_and_tnoar[read_file],
+                            )
+                            for row, length in zip(reader, seq_lengths)
+                        ]
+                    )
                 elif normalization == "TNOAR":
-                    table_columns.append([
-                        self._norm_by_tnoar(
-                            str(float(row[column1])+float(row[column2])),
-                            libs_and_tnoar[read_file])
-                        for row, length in zip(reader, seq_lengths)])
+                    table_columns.append(
+                        [
+                            self._norm_by_tnoar(
+                                str(float(row[column1]) + float(row[column2])),
+                                libs_and_tnoar[read_file],
+                            )
+                            for row, length in zip(reader, seq_lengths)
+                        ]
+                    )
                 else:
                     table_columns.append(
-                        [str(float(row[column1])+float(row[column2]))
-                         for row in reader])
+                        [
+                            str(float(row[column1]) + float(row[column2]))
+                            for row in reader
+                        ]
+                    )
             # Generate a table by rotating the column list
             table = zip(*table_columns)
             for row in table:
@@ -375,11 +529,14 @@ class GeneWiseOverview(object):
              L = length of the gene
         
         """
-        return str(float(counting)*float(10**9) /
-                   (float(total_no_of_aligned_reads)*float(length)))
+        return str(
+            float(counting)
+            * float(10 ** 9)
+            / (float(total_no_of_aligned_reads) * float(length))
+        )
 
     def _norm_by_tnoar(self, counting, total_no_of_aligned_reads):
-        return str(float(counting)/float(total_no_of_aligned_reads))
+        return str(float(counting) / float(total_no_of_aligned_reads))
 
 
 def _entry_to_use(entry, allowed_features):
@@ -394,16 +551,27 @@ def _allowed_features(allowed_features_str):
     if allowed_features_str is None:
         return None
     else:
-        return [
-            feature.strip() for feature in allowed_features_str.split(",")]
+        return [feature.strip() for feature in allowed_features_str.split(",")]
 
 
 def _gff_field_descriptions():
-    return ["Sequence name", "Source", "Feature", "Start", "End", "Score",
-            "Strand", "Frame", "Attributes"]
+    return [
+        "Sequence name",
+        "Source",
+        "Feature",
+        "Start",
+        "End",
+        "Score",
+        "Strand",
+        "Frame",
+        "Attributes",
+    ]
 
 
 def _get_overlap(alignment_start, alignment_end, feature_start, feature_end):
-    return max(0,
-               min(alignment_end, feature_end) -
-               max(alignment_start, feature_start) + 1)
+    return max(
+        0,
+        min(alignment_end, feature_end)
+        - max(alignment_start, feature_start)
+        + 1,
+    )

@@ -3,10 +3,14 @@ import pysam
 
 
 class CoverageCalculator(object):
-
-    def __init__(self, read_count_splitting=True, uniquely_aligned_only=False,
-                 coverage_style="global", clip_length=11,
-                 non_strand_specific=False):
+    def __init__(
+        self,
+        read_count_splitting=True,
+        uniquely_aligned_only=False,
+        coverage_style="global",
+        clip_length=11,
+        non_strand_specific=False,
+    ):
         self._read_count_splitting = read_count_splitting
         self._uniquely_aligned_only = uniquely_aligned_only
         self._coverage_style = coverage_style
@@ -22,12 +26,15 @@ class CoverageCalculator(object):
             self._calc_coverage(ref_seq, bam)
             if self._non_strand_specific:
                 self._sum_strand_coverages()
-            yield(ref_seq, self._coverages)
+            yield (ref_seq, self._coverages)
 
     def _sum_strand_coverages(self):
         self._coverages["forward_and_reverse"] = [
-            cov_for + abs(cov_rev) for cov_for, cov_rev in
-            zip(self._coverages["forward"], self._coverages["reverse"])]
+            cov_for + abs(cov_rev)
+            for cov_for, cov_rev in zip(
+                self._coverages["forward"], self._coverages["reverse"]
+            )
+        ]
         self._coverages.pop("forward")
         self._coverages.pop("reverse")
 
@@ -66,37 +73,43 @@ class CoverageCalculator(object):
         return pysam.Samfile(bam_file)
 
     def _add_whole_alignment_coverage(self, entry, increment, start, end):
-        if ((entry.is_reverse is False and entry.is_read2 is False) or
-                (entry.is_reverse is True and entry.is_read2 is True)):
+        if (entry.is_reverse is False and entry.is_read2 is False) or (
+            entry.is_reverse is True and entry.is_read2 is True
+        ):
             self._coverages["forward"][start:end] += increment
         else:
             self._coverages["reverse"][start:end] -= increment
 
     def _add_first_base_coverage(self, entry, increment, start, end):
-        if ((entry.is_reverse is False and entry.is_read2 is False) or
-                (entry.is_reverse is True and entry.is_read2 is True)):
+        if (entry.is_reverse is False and entry.is_read2 is False) or (
+            entry.is_reverse is True and entry.is_read2 is True
+        ):
             self._coverages["forward"][start] += increment
         else:
-            self._coverages["reverse"][end-1] -= increment
+            self._coverages["reverse"][end - 1] -= increment
 
     def _add_last_base_coverage(self, entry, increment, start, end):
-        if ((entry.is_reverse is False and entry.is_read2 is False) or
-                (entry.is_reverse is True and entry.is_read2 is True)):
-            self._coverages["forward"][end-1] += increment
+        if (entry.is_reverse is False and entry.is_read2 is False) or (
+            entry.is_reverse is True and entry.is_read2 is True
+        ):
+            self._coverages["forward"][end - 1] += increment
         else:
             self._coverages["reverse"][start] -= increment
-            
+
     def _add_centered_coverage(self, entry, increment, start, end):
         center_start = start + self._clip_length
         center_end = end - self._clip_length
         center_length = float(center_end - center_start)
         if center_length < 1.0:
-            #print(entry)
+            # print(entry)
             return
-        if ((entry.is_reverse is False and entry.is_read2 is False) or
-                (entry.is_reverse is True and entry.is_read2 is True)):
+        if (entry.is_reverse is False and entry.is_read2 is False) or (
+            entry.is_reverse is True and entry.is_read2 is True
+        ):
             self._coverages["forward"][center_start:center_end] += (
-                increment / center_length)
+                increment / center_length
+            )
         else:
             self._coverages["reverse"][center_start:center_end] -= (
-                increment / center_length)
+                increment / center_length
+            )

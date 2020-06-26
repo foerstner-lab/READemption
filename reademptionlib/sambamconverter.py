@@ -3,7 +3,6 @@ import pysam
 
 
 class SamToBamConverter(object):
-
     def __init__(self):
         self._unsorted_appendix = ".tmp_unsorted"
 
@@ -16,12 +15,14 @@ class SamToBamConverter(object):
             # Remove SAM file
             os.remove(sam_path)
             return
-        temp_unsorted_bam_path = self._temp_unsorted_bam_path(
-            bam_path_prefix)
+        temp_unsorted_bam_path = self._temp_unsorted_bam_path(bam_path_prefix)
         # Generate unsorted BAM file
         pysam.samtools.view(
-            "-b", "-o{}".format(temp_unsorted_bam_path), sam_path,
-            catch_stdout=False)
+            "-b",
+            "-o{}".format(temp_unsorted_bam_path),
+            sam_path,
+            catch_stdout=False,
+        )
         # Generate sorted BAM file
         pysam.sort(temp_unsorted_bam_path, "-o", bam_path_prefix + ".bam")
         # Generate index for BAM file
@@ -48,7 +49,8 @@ class SamToBamConverter(object):
     def _generate_empty_bam_file(self, sam_path, bam_path_prefix):
         samfile = pysam.Samfile(sam_path, "r")
         bamfile = pysam.Samfile(
-            "%s.bam" % bam_path_prefix, "wb", header=samfile.header)
+            "%s.bam" % bam_path_prefix, "wb", header=samfile.header
+        )
         bamfile.close()
         samfile.close()
         pysam.index("%s.bam" % bam_path_prefix)

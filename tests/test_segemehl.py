@@ -3,6 +3,7 @@ import os
 import sys
 import unittest
 import pysam
+
 sys.path.append(".")
 from reademptionlib.segemehl import Segemehl
 
@@ -34,23 +35,30 @@ class TestSegemehl(unittest.TestCase):
             if os.path.exists(file_path):
                 os.remove(file_path)
 
+
 class TestSegemehlIndexBuilding(TestSegemehl):
-
     def test_build_index_lower_letters(self):
         self._create_tmp_fasta_file(
-            self.fasta_file_path, self.example_data.genome_fasta_lower)
+            self.fasta_file_path, self.example_data.genome_fasta_lower
+        )
         self.segemehl.build_index([self.fasta_file_path], self.index_file_path)
-        self.assertEqual(self._sha1_of_file(self.index_file_path),
-                         "78668505720e53735f807bb5485b0b38cc3cbc22")
+        self.assertEqual(
+            self._sha1_of_file(self.index_file_path),
+            "78668505720e53735f807bb5485b0b38cc3cbc22",
+        )
         self._remove_files(self.fasta_file_path, self.index_file_path)
 
     def test_build_index_lower_letters(self):
         self._create_tmp_fasta_file(
-            self.fasta_file_path, self.example_data.genome_fasta_upper)
+            self.fasta_file_path, self.example_data.genome_fasta_upper
+        )
         self.segemehl.build_index([self.fasta_file_path], self.index_file_path)
-        self.assertEqual(self._sha1_of_file(self.index_file_path),
-                         "78668505720e53735f807bb5485b0b38cc3cbc22")
+        self.assertEqual(
+            self._sha1_of_file(self.index_file_path),
+            "78668505720e53735f807bb5485b0b38cc3cbc22",
+        )
         self._remove_files(self.fasta_file_path, self.index_file_path)
+
 
 class TestSegemehlAligning(TestSegemehl):
 
@@ -63,7 +71,8 @@ class TestSegemehlAligning(TestSegemehl):
         self.large_output = LargeOutput()
         # Create an index file
         self._create_tmp_fasta_file(
-            self.fasta_file_path, self.example_data.genome_fasta_upper)
+            self.fasta_file_path, self.example_data.genome_fasta_upper
+        )
         self.segemehl.build_index([self.fasta_file_path], self.index_file_path)
 
     def tearDown(self):
@@ -76,12 +85,14 @@ class TestSegemehlAligning(TestSegemehl):
         ACAACATCCATGAACCGCATCAGCACCACCACCATTACCACCATCACCATTACCACAGGT
         """
         read_file_content = (
-            ">read_01\n" +
-            "ACAACATCCATGAACCGCATCAGCACCACCACCATTACCACCATCACCATTACCACAGGT"
-            + "\n")
-        self.assertEqual(self._align_reads_and_give_result(read_file_content),
-                        self.large_output.sam_result_aligned_1)
-
+            ">read_01\n"
+            + "ACAACATCCATGAACCGCATCAGCACCACCACCATTACCACCATCACCATTACCACAGGT"
+            + "\n"
+        )
+        self.assertEqual(
+            self._align_reads_and_give_result(read_file_content),
+            self.large_output.sam_result_aligned_1,
+        )
 
     def test_map_reads_single_read_not_matching(self):
         """
@@ -90,11 +101,14 @@ class TestSegemehlAligning(TestSegemehl):
         ATGTACCACATGAGAGAGATAGAGAGAGATTGACAACCACACACGAGAGAGAGAGAGAGT
         """
         read_file_content = (
-            ">read_02\n" +
-            "ATGTACCACATGAGAGAGATAGAGAGAGATTGACAACCACACACGAGAGAGAGAGAGAGT"
-            + "\n")
-        self.assertEqual(self._align_reads_and_give_result(read_file_content),
-                         self.large_output.sam_result_no_aligned_1)
+            ">read_02\n"
+            + "ATGTACCACATGAGAGAGATAGAGAGAGATTGACAACCACACACGAGAGAGAGAGAGAGT"
+            + "\n"
+        )
+        self.assertEqual(
+            self._align_reads_and_give_result(read_file_content),
+            self.large_output.sam_result_no_aligned_1,
+        )
 
     def test_map_reads_single_read_one_mismatch(self):
         """A 20 nt long read with 1 mismatch at 95% accuracy should be
@@ -104,10 +118,11 @@ class TestSegemehlAligning(TestSegemehl):
         |||||||||||||||||| |
         GCTTTTTTTTCGACCAGACA
         """
-        read_file_content = (
-            ">read_03\nGCTTTTTTTTCGACCAGACA\n")
-        self.assertEqual(self._align_reads_and_give_result(read_file_content),
-                        self.large_output.sam_result_aligned_2)
+        read_file_content = ">read_03\nGCTTTTTTTTCGACCAGACA\n"
+        self.assertEqual(
+            self._align_reads_and_give_result(read_file_content),
+            self.large_output.sam_result_aligned_2,
+        )
 
     def test_map_reads_single_read_two_mismatches_95(self):
         """A 20 nt long read with 2 mismatches at 95% accuracy should
@@ -117,10 +132,11 @@ class TestSegemehlAligning(TestSegemehl):
         |||||||||||||||||  |
         GCTTTTTTTTCGACCAGTCA
         """
-        read_file_content = (
-            ">read_04\nGCTTTTTTTTCGACCAGTCA\n")
-        self.assertEqual(self._align_reads_and_give_result(read_file_content),
-                         self.large_output.sam_result_no_aligned_1)
+        read_file_content = ">read_04\nGCTTTTTTTTCGACCAGTCA\n"
+        self.assertEqual(
+            self._align_reads_and_give_result(read_file_content),
+            self.large_output.sam_result_no_aligned_1,
+        )
 
     def test_map_reads_single_read_two_mismatches_90(self):
         """A 20 nt long read with 2 mismatches at 90% accuracy should
@@ -130,11 +146,11 @@ class TestSegemehlAligning(TestSegemehl):
         |||||||||||||||||  |
         GCTTTTTTTTCGACCAGTCA
         """
-        read_file_content = (
-            ">read_05\nGCTTTTTTTTCGACCAGTCA\n")
+        read_file_content = ">read_05\nGCTTTTTTTTCGACCAGTCA\n"
         self.assertEqual(
             self._align_reads_and_give_result(read_file_content, accuracy=90),
-            self.large_output.sam_result_aligned_3)
+            self.large_output.sam_result_aligned_3,
+        )
 
     def test_map_reads_single_read_three_mismatches(self):
         """A 20 nt long read with 3 mismatches at 90% accuracy should
@@ -144,18 +160,20 @@ class TestSegemehlAligning(TestSegemehl):
         GCTTTATTTTCGACCAGTCA
         """
 
-        read_file_content = (
-            ">read_06\nGCTTTTTTTTCGACCAGTCA\n")
-        self.assertEqual(self._align_reads_and_give_result(read_file_content),
-                        self.large_output.sam_result_no_aligned_1)
+        read_file_content = ">read_06\nGCTTTTTTTTCGACCAGTCA\n"
+        self.assertEqual(
+            self._align_reads_and_give_result(read_file_content),
+            self.large_output.sam_result_no_aligned_1,
+        )
 
     def test_map_reads_single_too_short_read(self):
         """Reads that are too short should be mapped
         """
-        read_file_content = (
-            ">read_07\nGCTTTTTTT\n")
-        self.assertEqual(self._align_reads_and_give_result(read_file_content),
-                        self.large_output.sam_result_no_aligned_1)
+        read_file_content = ">read_07\nGCTTTTTTT\n"
+        self.assertEqual(
+            self._align_reads_and_give_result(read_file_content),
+            self.large_output.sam_result_no_aligned_1,
+        )
 
     def _align_reads_and_give_result(self, read_file_content, **kwargs):
         """
@@ -165,18 +183,31 @@ class TestSegemehlAligning(TestSegemehl):
         """
 
         self._create_tmp_fasta_file(
-            self.read_fasta_file_path, read_file_content)
-        self.segemehl.align_reads(self.read_fasta_file_path, self.index_file_path,
-                                [self.fasta_file_path], self.aligning_result_path_bam,
-                                **kwargs)
+            self.read_fasta_file_path, read_file_content
+        )
+        self.segemehl.align_reads(
+            self.read_fasta_file_path,
+            self.index_file_path,
+            [self.fasta_file_path],
+            self.aligning_result_path_bam,
+            **kwargs
+        )
         self._convert_bam_to_sam()
         result_fh = open(self.aligning_result_path_sam)
         result = result_fh.read()
         result_fh.close()
-        #self._remove_files(self.read_fasta_file_path, self.aligning_result_path)
+        # self._remove_files(self.read_fasta_file_path, self.aligning_result_path)
         return result
+
     def _convert_bam_to_sam(self):
-        pysam.view("-h", "-o", self.aligning_result_path_sam, self.aligning_result_path_bam, catch_stdout=False)
+        pysam.view(
+            "-h",
+            "-o",
+            self.aligning_result_path_sam,
+            self.aligning_result_path_bam,
+            catch_stdout=False,
+        )
+
 
 class ExampleData(object):
 
@@ -197,7 +228,7 @@ atgtcgatcgcgattatggcgggacttctggaggcgcgtgggcatcgcgtcacggtgatc
 gatccggtagaaaaattgctggcggtgggccattaccttgaatctaccgtcgatatcgcg
 gaatcgactcgccgtatcgccgccagccagatcccggccgatcacatgatcctgatggcg
 ggctttaccgccggtaatgaaaagggtgaactggtggtgctgggccgtaatggttccgac
-""" 
+"""
 
     genome_fasta_upper = """>SL1344 genome sequence
 AGAGATTACGTCTGGTTGCAAGAGATCATGACAGGGGGAATTGGTTGAAAATAAATATAT
@@ -216,36 +247,37 @@ ATGTCGATCGCGATTATGGCGGGACTTCTGGAGGCGCGTGGGCATCGCGTCACGGTGATC
 GATCCGGTAGAAAAATTGCTGGCGGTGGGCCATTACCTTGAATCTACCGTCGATATCGCG
 GAATCGACTCGCCGTATCGCCGCCAGCCAGATCCCGGCCGATCACATGATCCTGATGGCG
 GGCTTTACCGCCGGTAATGAAAAGGGTGAACTGGTGGTGCTGGGCCGTAATGGTTCCGAC
-""" 
+"""
+
 
 class LargeOutput(object):
 
-    sam_result_aligned_1 ="""@HD	VN:1.0	SO:coordinate
+    sam_result_aligned_1 = """@HD	VN:1.0	SO:coordinate
 @SQ	SN:SL1344	LN:960
 @RG	ID:A1	SM:sample1	LB:library1	PU:unit1	PL:illumina
 @PG	ID:segemehl	VN:0.3.4	CL:segemehl.x --query /tmp/test_reads.fa --index /tmp/test.idx --database /tmp/test.fa --outfile /tmp/test_aligning_results.bam --bamabafixoida --hitstrategy 1 --accuracy 95 --evalue 5.0 --threads 1
 read_01	0	SL1344	181	0	60=	*	0	0	ACAACATCCATGAACCGCATCAGCACCACCACCATTACCACCATCACCATTACCACAGGT	*	HI:i:0	NH:i:1	NM:i:0	MD:Z:60	RG:Z:A1	YZ:Z:0
 """
-    sam_result_aligned_2 ="""@HD	VN:1.0	SO:coordinate
+    sam_result_aligned_2 = """@HD	VN:1.0	SO:coordinate
 @SQ	SN:SL1344	LN:960
 @RG	ID:A1	SM:sample1	LB:library1	PU:unit1	PL:illumina
 @PG	ID:segemehl	VN:0.3.4	CL:segemehl.x --query /tmp/test_reads.fa --index /tmp/test.idx --database /tmp/test.fa --outfile /tmp/test_aligning_results.bam --bamabafixoida --hitstrategy 1 --accuracy 95 --evalue 5.0 --threads 1
 read_03	0	SL1344	301	0	18=1X1=	*	0	0	GCTTTTTTTTCGACCAGACA	*	HI:i:0	NH:i:1	NM:i:1	MD:Z:18G1	RG:Z:A1	YZ:Z:0
 """
 
-    sam_result_aligned_3 ="""@HD	VN:1.0	SO:coordinate
+    sam_result_aligned_3 = """@HD	VN:1.0	SO:coordinate
 @SQ	SN:SL1344	LN:960
 @RG	ID:A1	SM:sample1	LB:library1	PU:unit1	PL:illumina
 @PG	ID:segemehl	VN:0.3.4	CL:segemehl.x --query /tmp/test_reads.fa --index /tmp/test.idx --database /tmp/test.fa --outfile /tmp/test_aligning_results.bam --bamabafixoida --hitstrategy 1 --accuracy 90 --evalue 5.0 --threads 1
 read_05	0	SL1344	301	1	17=2X1=	*	0	0	GCTTTTTTTTCGACCAGTCA	*	HI:i:0	NH:i:1	NM:i:2	MD:Z:17A0G1	RG:Z:A1	YZ:Z:0
 """
 
-    sam_result_no_aligned_1 ="""@HD	VN:1.0	SO:coordinate
+    sam_result_no_aligned_1 = """@HD	VN:1.0	SO:coordinate
 @SQ	SN:SL1344	LN:960
 @RG	ID:A1	SM:sample1	LB:library1	PU:unit1	PL:illumina
 @PG	ID:segemehl	VN:0.3.4	CL:segemehl.x --query /tmp/test_reads.fa --index /tmp/test.idx --database /tmp/test.fa --outfile /tmp/test_aligning_results.bam --bamabafixoida --hitstrategy 1 --accuracy 95 --evalue 5.0 --threads 1
 """
 
+
 if __name__ == "__main__":
     unittest.main()
-

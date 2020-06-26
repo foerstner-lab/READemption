@@ -6,29 +6,30 @@ import pysam
 
 
 class ReadAlignerStats(object):
-
     def __init__(self):
         self.fasta_parser = FastaParser()
 
     def count(self, read_alignment_result_bam_path, unaligned_reads_path):
         self._stats = {}
-        self._count_aligned_reads_and_alignments(
-            read_alignment_result_bam_path)
+        self._count_aligned_reads_and_alignments(read_alignment_result_bam_path)
         self._count_unaligned_reads(unaligned_reads_path)
         return self._stats
 
     def _count_unaligned_reads(self, unaligned_read_paths):
-        
+
         with open(unaligned_read_paths) as fasta_fh:
             self._stats["stats_total"][
-                "no_of_unaligned_reads"] = self._count_fasta_entries(fasta_fh)
+                "no_of_unaligned_reads"
+            ] = self._count_fasta_entries(fasta_fh)
 
     def _count_fasta_entries(self, fasta_fh):
-        return reduce(lambda x, y: x + 1,
-                      self.fasta_parser.entries(fasta_fh), 0)
+        return reduce(
+            lambda x, y: x + 1, self.fasta_parser.entries(fasta_fh), 0
+        )
 
     def _count_aligned_reads_and_alignments(
-            self, read_alignment_result_bam_path):
+        self, read_alignment_result_bam_path
+    ):
         bam = pysam.Samfile(read_alignment_result_bam_path)
         stats_per_ref = defaultdict(dict)
         no_of_hits_per_read_freq = {}
@@ -38,16 +39,20 @@ class ReadAlignerStats(object):
             ref_id = bam.getrname(entry.tid)
             try:
                 self._count_alignment(
-                    entry, ref_id, stats_per_ref, no_of_hits_per_read_freq)
+                    entry, ref_id, stats_per_ref, no_of_hits_per_read_freq
+                )
             except KeyError:
                 sys.stderr.write(
-                    "SAM entry with unspecified reference found! Stoping\n")
+                    "SAM entry with unspecified reference found! Stoping\n"
+                )
                 sys.exit(2)
         self._stats["stats_per_reference"] = stats_per_ref
         for ref_id, stats in stats_per_ref.items():
             stats_per_ref[ref_id][
-                "no_of_hits_per_read_and_freqs"] = self._calc_down_to_read(
-                stats_per_ref[ref_id]["no_of_hits_per_read_and_freqs"])
+                "no_of_hits_per_read_and_freqs"
+            ] = self._calc_down_to_read(
+                stats_per_ref[ref_id]["no_of_hits_per_read_and_freqs"]
+            )
         self._stats["stats_total"] = self._sum_countings(stats_per_ref)
 
     def _sum_countings(self, stats_per_ref):
@@ -69,9 +74,10 @@ class ReadAlignerStats(object):
         to normalized each frequency value down to the read by
         dividing the frequencig by the number of hits per read.
         """
-        return dict((no_of_hits_per_read, freq/no_of_hits_per_read)
-                    for no_of_hits_per_read, freq in
-                    no_of_hits_per_read_freq.items())
+        return dict(
+            (no_of_hits_per_read, freq / no_of_hits_per_read)
+            for no_of_hits_per_read, freq in no_of_hits_per_read_freq.items()
+        )
 
     def _init_counting_dict(self, stats_per_ref, ref_id):
         stats_per_ref[ref_id] = defaultdict(float)
@@ -79,42 +85,59 @@ class ReadAlignerStats(object):
         stats_per_ref[ref_id]["no_of_aligned_reads"]
         stats_per_ref[ref_id]["no_of_split_alignments"]
         stats_per_ref[ref_id]["no_of_uniquely_aligned_reads"]
-        stats_per_ref[ref_id][
-            "alignment_length_and_freqs"] = defaultdict(int)
-        stats_per_ref[ref_id][
-            "no_of_hits_per_read_and_freqs"] = defaultdict(int)
+        stats_per_ref[ref_id]["alignment_length_and_freqs"] = defaultdict(int)
+        stats_per_ref[ref_id]["no_of_hits_per_read_and_freqs"] = defaultdict(
+            int
+        )
 
-    def _count_alignment(self, entry, ref_id, stats_per_ref,
-                         no_of_hits_per_read_freq):
+    def _count_alignment(
+        self, entry, ref_id, stats_per_ref, no_of_hits_per_read_freq
+    ):
         entry_tags_dict = dict(entry.tags)
         no_of_hits = entry_tags_dict["NH"]
         # Consider split reads
 
-        number_of_split_alignments_within_this_SAM_record = float(entry_tags_dict.get("XH", 1))
-        total_number_of_split_alignments_for_the_whole_read = float(entry_tags_dict.get("XJ", 1))
+        number_of_split_alignments_within_this_SAM_record = float(
+            entry_tags_dict.get("XH", 1)
+        )
+        total_number_of_split_alignments_for_the_whole_read = float(
+            entry_tags_dict.get("XJ", 1)
+        )
         proportion_of_total_split_alignments_of_the_whole_read_for_this_sam_record = (
-            number_of_split_alignments_within_this_SAM_record / total_number_of_split_alignments_for_the_whole_read)
+            number_of_split_alignments_within_this_SAM_record
+            / total_number_of_split_alignments_for_the_whole_read
+        )
         if "XH" in entry_tags_dict:
-            stats_per_ref[ref_id]["no_of_split_alignments"] += (
-               proportion_of_total_split_alignments_of_the_whole_read_for_this_sam_record)
-            stats_per_ref[ref_id]["no_of_hits_per_read_and_freqs"][
-                no_of_hits] += 1.0/(
-                    float(no_of_hits) * proportion_of_total_split_alignments_of_the_whole_read_for_this_sam_record)
             stats_per_ref[ref_id][
-                "no_of_alignments"] += proportion_of_total_split_alignments_of_the_whole_read_for_this_sam_record
-            stats_per_ref[
-                ref_id]["no_of_aligned_reads"] += (
-                    proportion_of_total_split_alignments_of_the_whole_read_for_this_sam_record / (float(no_of_hits)))
+                "no_of_split_alignments"
+            ] += proportion_of_total_split_alignments_of_the_whole_read_for_this_sam_record
+            stats_per_ref[ref_id]["no_of_hits_per_read_and_freqs"][
+                no_of_hits
+            ] += (
+                1.0
+                / (
+                    float(no_of_hits)
+                    * proportion_of_total_split_alignments_of_the_whole_read_for_this_sam_record
+                )
+            )
+            stats_per_ref[ref_id][
+                "no_of_alignments"
+            ] += proportion_of_total_split_alignments_of_the_whole_read_for_this_sam_record
+            stats_per_ref[ref_id]["no_of_aligned_reads"] += (
+                proportion_of_total_split_alignments_of_the_whole_read_for_this_sam_record
+                / (float(no_of_hits))
+            )
         else:
             stats_per_ref[ref_id]["no_of_alignments"] += 1.0
-            stats_per_ref[
-                ref_id]["no_of_aligned_reads"] += 1.0/(
-                float(no_of_hits))
+            stats_per_ref[ref_id]["no_of_aligned_reads"] += 1.0 / (
+                float(no_of_hits)
+            )
         stats_per_ref[ref_id]["no_of_hits_per_read_and_freqs"][
-            no_of_hits] += proportion_of_total_split_alignments_of_the_whole_read_for_this_sam_record
+            no_of_hits
+        ] += proportion_of_total_split_alignments_of_the_whole_read_for_this_sam_record
         if no_of_hits == 1:
-            stats_per_ref[ref_id][
-                "no_of_uniquely_aligned_reads"] += (
-                    1.0/proportion_of_total_split_alignments_of_the_whole_read_for_this_sam_record)
-        stats_per_ref[ref_id][
-            "alignment_length_and_freqs"][entry.alen] += 1
+            stats_per_ref[ref_id]["no_of_uniquely_aligned_reads"] += (
+                1.0
+                / proportion_of_total_split_alignments_of_the_whole_read_for_this_sam_record
+            )
+        stats_per_ref[ref_id]["alignment_length_and_freqs"][entry.alen] += 1
