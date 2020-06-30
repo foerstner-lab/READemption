@@ -2,8 +2,7 @@ READemption's subcommands
 =========================
 
 In general the subcommands need at least one argument - the analysis
-folder. If this is not given READemption assumes that the current
-folder is the analysis folder.
+folder.
 
 create
 ------
@@ -18,15 +17,11 @@ in FASTA format must be copied or linked in
 annotation files in GFF3 format have to be put into
 ``input/annotations``.
 
-::
-
-   usage: reademption create [-h] project_path
-
-   positional arguments:
-     project_path  Name/path of the project.
-
-   optional arguments:
-     -h, --help    show this help message and exit
+.. argparse::
+   :filename: ../bin/reademption
+   :prog: reademption
+   :func: create_parser
+   :path: create
 
 align
 -----
@@ -52,76 +47,11 @@ clipping. If this is not sufficient you can use the `FASTX toolkit
 <https://code.google.com/p/cutadapt/>`_ or other tools for the
 preprocessing.
 
-::
-
-  usage: reademption align [-h] [--min_read_length MIN_READ_LENGTH]
-                           [--processes PROCESSES]
-                           [--segemehl_accuracy SEGEMEHL_ACCURACY]
-                           [--segemehl_evalue SEGEMEHL_EVALUE]
-                           [--segemehl_bin SEGEMEHL_BIN] [--paired_end]
-                           [--split] [--poly_a_clipping] [--realign]
-                           [--keep_original_alignments] [--lack_bin LACK_BIN]
-                           [--fastq] [--check_for_existing_files] [--progress]
-                           [--crossalign_cleaning CROSSALIGN_CLEANING_STRING]
-                           [project_path]
-  
-  positional arguments:
-    project_path          Path of the project folder. If none is given the
-                          current directory is used.
-  
-  optional arguments:
-    -h, --help            show this help message and exit
-    --min_read_length MIN_READ_LENGTH, -l MIN_READ_LENGTH
-                          Minimal read length after clipping (default 12).
-                          Should be higher for eukaryotic species.
-    --processes PROCESSES, -p PROCESSES
-                          Number of processes that should be used (default 1).
-    --segemehl_accuracy SEGEMEHL_ACCURACY, -a SEGEMEHL_ACCURACY
-                          Segemehl's minimal accuracy (in %) (default 95).
-    --segemehl_evalue SEGEMEHL_EVALUE, -e SEGEMEHL_EVALUE
-                          Segemehl's maximal e-value (default 5.0).
-    --segemehl_bin SEGEMEHL_BIN, -s SEGEMEHL_BIN
-                          Segemehl's binary path (default 'segemehl.x').
-    --paired_end, -P      Use this if reads are originating from a paired-end
-                          sequencing. The members of a pair must be marked with
-                          '_p1' and '_p2' in front of the file type suffixes
-                          (e.g. 'my_sample_p1.fa' and 'my_sample_p2.fa' or
-                          'my_sample_p1.fa.bz2' and 'my_sample_p2.fa.bz2'). This
-                          option cannot be use with polyA tail clipping.
-    --split, -S           Run segemehl with read splitting.
-    --poly_a_clipping, -c
-                          Perform polyA tail clipping. This option cannot be
-                          used for paired-end reads.
-    --realign, -r         Perform realignment of unmapped reads using 'lack'.
-    --keep_original_alignments, -k
-                          Only used with --realign/-r. Keep the alignment file
-                          of the primary mapper (segemehl) and the realigner
-                          (lack) after merging.
-    --lack_bin LACK_BIN, -L LACK_BIN
-                          Lack's binary path (default 'lack.x').
-    --fastq, -q           Input reads are in FASTQ not FASTA format.
-    --min_phred_score MIN_PHRED_SCORE, -Q MIN_PHRED_SCORE
-                          Minimal Phred score. Works only if read are given in
-                          FASTQ format. As soon as a based drop below this value
-                          it and all the nucleotides downstream of it will be
-                          trimmed off.
-    --adapter ADAPTER, -A ADAPTER
-                          Adapter sequence. If it is found in a read it and all
-                          the nucleotides downstream will be trimmed off.
-    --check_for_existing_files, -f
-                          Check for existing files (e.g. from a interrupted
-                          previous run) and do not overwrite them if they exits.
-                          Attention! You have to take care that there are no
-                          partially generated files left!
-    --reverse_complement, -R
-                          Map reverse complement of the input reads.
-    --progress, -g          Show progress of the segemehl mapping.
-    --crossalign_cleaning CROSSALIGN_CLEANING_STRING, -x CROSSALIGN_CLEANING_STRING
-                          Remove reads that are cross-mapped to replicons of
-                          different species. To associated species and replicons
-                          give a string in the following format: '<ORG_NAME_1>:<
-                          org_1_repl1>,<org_1_repl2>,..,<org_1_repl_n>;<ORG_NAME
-                          _2>:<org_2_repl1>,<org_2_repl2>,..,<org_2_repl_n>'
+.. argparse::
+   :filename: ../bin/reademption
+   :prog: reademption
+   :func: create_parser
+   :path: align
 
 coverage
 --------
@@ -152,47 +82,15 @@ parameter. If only the first base should be considered add
 ``--first_base_only``. Reads are aligned to multiple location will
 account only in fraction to the values of the different positions. For
 example a read that is mapped to three different location will
-contribute a value of 1/3 to each of the nucleotiedes of these
+contribute a value of 1/3 to each of the nucleotides of these
 positions. To turn off this behavior use
 ``--skip_read_count_splitting``.
 
-:: 
-
-  usage: reademption coverage [-h] [--unique_only] [--normalize_by_uniquely]
-                              [--processes PROCESSES]
-                              [--skip_read_count_splitting] [--first_base_only]
-                              [--check_for_existing_files]
-                              [project_path]
-
-  positional arguments:
-    project_path          Path of the project folder. If none is given the
-                          current directory is used.
-  
-  optional arguments:
-    -h, --help            show this help message and exit
-    --unique_only, -u     Use uniquely aligned reads only.
-    --normalize_by_uniquely, -U
-                          Normalize by the number of uniquely aligned reads. By
-                          default the normalization is done based on the total
-                          number of aligned reads even if only uniquely aligned
-                          reads are used for the coverage calculation.
-    --processes PROCESSES, -p PROCESSES
-                          Number of processes that should be used (default 1).
-    --skip_read_count_splitting, -s
-                          Do not split the read counting between different
-                          alignings. Default is to do the splitting.
-    --non_strand_specific, -d
-                          Do not distict between the coverage of the forward and
-                          reverse strand but sum them to a single value for each
-                          base.
-    --first_base_only, -b
-                          Only the first bases 5' base of each read aligning is
-                          taken into account.
-    --check_for_existing_files, -f
-                          Check for existing files (e.g. from a interrupted
-                          previous run) and do not overwrite them if they exits.
-                          Attention! You have to take care that there are no
-                          partially generated files left!
+.. argparse::
+   :filename: ../bin/reademption
+   :prog: reademption
+   :func: create_parser
+   :path: coverage
 
 gene_quanti
 -----------
@@ -206,54 +104,16 @@ files. To specify the feature classes (the third column in the GFF3
 file e.g. CDS, gene, rRNA, tRNA) that should be quantified the
 parameter ``--features`` can be used. Otherwise countings for all
 annotation entries are generated. Per default sense and anti-sense
-overlaps are counted and separately listed.
+overlaps are counted and separately listed. ``gene_quanti`` provides, besides the
+raw read countings, Transcripts per Million (TPM) normalized read counts
+as well as Reads per Kilobase Million (RPKM) normalized read counts.
+The results of the different counting methods are provided in separate CSV-tables.
 
-::
-
-  usage: reademption gene_quanti [-h] [--min_overlap MIN_OVERLAP]
-                                 [--no_count_split_by_alignment_no]
-                                 [--no_count_splitting_by_gene_no]
-                                 [--skip_antisense] [--processes PROCESSES]
-                                 [--features ALLOWED_FEATURES] [--unique_only]
-                                 [--pseudocounts] [--check_for_existing_files]
-                                 [project_path]
-
-  positional arguments:
-    project_path          Path of the project folder. If none is given the
-                          current directory is used.
-  
-  optional arguments:
-    -h, --help            show this help message and exit
-    --min_overlap MIN_OVERLAP, -o MIN_OVERLAP
-                          Minimal read-annotation-overlap (in nt) (default 1).
-    --no_count_split_by_alignment_no, -n
-                          Do not split read countings by the number of
-                          alignments a read has. By default this count splitting
-                          is performed.
-    --no_count_splitting_by_gene_no, -l
-                          Do not split read countings by the number of genes it
-                          overlaps with. By default this count splitting is
-                          performed.
-    --skip_antisense, -a  Do not count anti-sense read-gene-overlaps. By default
-                          sense and anti-sense overlaps are counted and
-                          separately reported.
-    --non_strand_specific
-                          Use countings of reads overlapping with a gene on both
-                          strands and sum them up.
-    --processes PROCESSES, -p PROCESSES
-                          Number of processes that should be used (default 1).
-    --features ALLOWED_FEATURES, -t ALLOWED_FEATURES
-                          Comma separated list of features that should be
-                          considered (e.g. gene, cds, region, exon). Other
-                          feature will be skipped. If not specified all features
-                          will be considered.
-    --unique_only, -u     Use uniquely aligned reads only.
-    --pseudocounts, -c    Add a pseudocount of 1 to each gene.
-    --check_for_existing_files, -f
-                          Check for existing files (e.g. from a interrupted
-                          previous run) and do not overwrite them if they exits.
-                          Attention! You have to take care that there are no
-                          partially generated files left!
+.. argparse::
+   :filename: ../bin/reademption
+   :prog: reademption
+   :func: create_parser
+   :path: gene_quanti
 
 deseq
 -----
@@ -266,23 +126,11 @@ parameters (e.g. ``--libs
 SamA_R1.fa,SamA_R2.fa,SamB_R1.fa,SamB_R2.fa --conditions
 SamA,SamA,SamB,SamB``).
 
-::
-
-  usage: reademption deseq [-h] --libs LIBS --conditions CONDITIONS
-                           [--cooks_cutoff_off]
-                           [project_path]
-  
-  positional arguments:
-    project_path          Path of the project folder. If none is given the
-                          current directory is used.
-  
-  optional arguments:
-    -h, --help            show this help message and exit
-    --libs LIBS, -l LIBS  Comma separated list of libraries.
-    --conditions CONDITIONS, -c CONDITIONS
-                          Comma separated list of condition in the same order as
-                          their corresponding libraries.
-    --cooks_cutoff_off, -k
+.. argparse::
+   :filename: ../bin/reademption
+   :prog: reademption
+   :func: create_parser
+   :path: deseq
 
 
 viz_align
@@ -291,16 +139,11 @@ viz_align
 ``viz_align`` plots histograms of the read length distributions of the
 reads before and after the read clipping.
 
-::
-
-  usage: reademption viz_align [-h] [project_path]
-
-  positional arguments:
-    project_path  Path of the project folder. If none is given the current
-                  directory is used.
-
-  optional arguments:
-    -h, --help    show this help message and exit
+.. argparse::
+   :filename: ../bin/reademption
+   :prog: reademption
+   :func: create_parser
+   :path: viz_align
 
 viz_gene_quanti
 ---------------
@@ -313,16 +156,12 @@ quantification values are compared for each library pair
 distribution of the read counting of the different annotation classes
 are plotted.
 
-::
+.. argparse::
+   :filename: ../bin/reademption
+   :prog: reademption
+   :func: create_parser
+   :path: viz_gene_quanti
 
-  usage: reademption viz_gene_quanti [-h] [project_path]
-
-  positional arguments:
-    project_path  Path of the project folder. If none is given the current
-                  directory is used.
-
-  optional arguments:
-    -h, --help    show this help message and exit
 
 viz_deseq
 ---------
@@ -331,17 +170,8 @@ viz_deseq
 vs. the base mean) as well as volcano plots (log2 fold changes
 vs. p-values / adjusted p-values).
 
-::
-
-  usage: reademption viz_deseq [-h] [project_path]
-
-  positional arguments:
-    project_path  Path of the project folder. If none is given the current
-                  directory is used.
-
-  optional arguments:
-    -h, --help    show this help message and exit
-  --max_pvalue MAX_PVALUE
-                          Maximum adjusted p-value for genes considered to be
-                          regulated. Genes with adjusted p-values below will be
-                          marked red. (default 0.05)
+.. argparse::
+   :filename: ../bin/reademption
+   :prog: reademption
+   :func: create_parser
+   :path: viz_deseq

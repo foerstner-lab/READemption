@@ -20,9 +20,9 @@ Generating a project
 At first we have to create the analysis folder and its subfolder. For
 this we use the ``create`` subcommand::
 
-  $ reademption create READemption_analysis
-  Created folder "READemption_analysis2" and required subfolders.
-  Please copy read files into folder "READemption_analysis2/input/reads" and reference sequences files into folder "READemption_analysis2/input/reference_sequences".
+  $ reademption create -f READemption_analysis
+  Created folder "READemption_analysis" and required subfolders.
+  Please copy read files into folder "READemption_analysis/input/reads" and reference sequences files into folder "READemption_analysis/input/reference_sequences".
 
 This will result in a folder structure as shown here:
 ::
@@ -140,7 +140,7 @@ tell READemption to use 4 CPU (``-p 4``) and perform a poly-A-clipping
 
 ::
 
-   $ reademption align -p 4 --poly_a_clipping READemption_analysis
+   $ reademption align -p 4 --poly_a_clipping -f READemption_analysis
 
 Once this the mapping is done the file ``read_alignment_stats.csv`` is
 created which can be found in
@@ -161,7 +161,7 @@ normalizations we use the subcommand ``coverage``.
 
 ::
 
-   $ reademption coverage -p 4 READemption_analysis
+   $ reademption coverage -p 4 -f READemption_analysis
 
 The sets are stored in subfolder of
 ``READemption_analysis/output/coverage/``. The most oftenly used set
@@ -187,7 +187,7 @@ rRNA entries.
 
 ::
 
-   $ reademption gene_quanti -p 4 --features CDS,tRNA,rRNA READemption_analysis
+   $ reademption gene_quanti -p 4 --features CDS,tRNA,rRNA -f READemption_analysis
 
 After the quantification we find tables that contain the combined
 counting for all entries in
@@ -207,7 +207,7 @@ subcommand ``deseq`` which makes use of the R library `DESeq2
 
    $ reademption deseq \
       -l InSPI2_R1.fa.bz2,InSPI2_R2.fa.bz2,LSP_R1.fa.bz2,LSP_R2.fa.bz2 \
-      -c InSPI2,InSPI2,LSP,LSP READemption_analysis
+      -c InSPI2,InSPI2,LSP,LSP -f READemption_analysis
 
 We have to tell READemption which libraries are replicates of which
 condition. This is done by the parameter ``-l`` and ``-c``. ``-l``
@@ -239,7 +239,7 @@ distribution for the untreated and treated reads (saved in
 
 ::
    
-   $ reademption viz_align READemption_analysis
+   $ reademption viz_align -f READemption_analysis
 
 ``viz_gene_quanti`` visualizes the gene wise countings. In our example
 you will see that - as expected - the replicates are more similar to
@@ -249,11 +249,11 @@ classes.
 
 ::
 
-   $ reademption viz_gene_quanti READemption_analysis
+   $ reademption viz_gene_quanti -f READemption_analysis
 
 ``viz_deseq`` generates MA-plots as well as volcano plots.
 
 ::
 
-   $ reademption viz_deseq READemption_analysis
+   $ reademption viz_deseq -f READemption_analysis
 

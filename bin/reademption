@@ -13,6 +13,18 @@ __version__ = "0.6.0"
 
 
 def main():
+    parser = create_parser()
+    args = parser.parse_args()
+    if args.version is True:
+        print("READemption version " + __version__)
+    elif "func" in dir(args):
+        controller = Controller(args)
+        args.func(controller)
+    else:
+        parser.print_help()
+
+
+def create_parser():
     parser = argparse.ArgumentParser()
     parser.add_argument(
         "--version", "-v", default=False, action="store_true",
@@ -275,15 +287,7 @@ def main():
         "Genes with adjusted p-values below will be marked red. "
         "(default 0.05)")
     viz_deseq_parser.set_defaults(func=viz_deseq)
-
-    args = parser.parse_args()
-    if args.version is True:
-        print("READemption version " + __version__)
-    elif "func" in dir(args):
-        controller = Controller(args)
-        args.func(controller)
-    else:
-        parser.print_help()
+    return parser
 
 
 def create_project(controller):
@@ -317,4 +321,5 @@ def viz_gene_quanti(controller):
 def viz_deseq(controller):
     controller.viz_deseq()
 
-main()
+if __name__ == "__main__":
+    main()
