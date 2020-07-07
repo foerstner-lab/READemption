@@ -247,9 +247,8 @@ preprocessing.</p>
                          <span class="p">[</span><span class="o">--</span><span class="n">segemehl_accuracy</span> <span class="n">SEGEMEHL_ACCURACY</span><span class="p">]</span>
                          <span class="p">[</span><span class="o">--</span><span class="n">segemehl_evalue</span> <span class="n">SEGEMEHL_EVALUE</span><span class="p">]</span>
                          <span class="p">[</span><span class="o">--</span><span class="n">segemehl_bin</span> <span class="n">SEGEMEHL_BIN</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">paired_end</span><span class="p">]</span>
-                         <span class="p">[</span><span class="o">--</span><span class="n">split</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">poly_a_clipping</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">realign</span><span class="p">]</span>
-                         <span class="p">[</span><span class="o">--</span><span class="n">keep_original_alignments</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">lack_bin</span> <span class="n">LACK_BIN</span><span class="p">]</span>
-                         <span class="p">[</span><span class="o">--</span><span class="n">fastq</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">min_phred_score</span> <span class="n">MIN_PHRED_SCORE</span><span class="p">]</span>
+                         <span class="p">[</span><span class="o">--</span><span class="n">split</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">poly_a_clipping</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">fastq</span><span class="p">]</span>
+                         <span class="p">[</span><span class="o">--</span><span class="n">min_phred_score</span> <span class="n">MIN_PHRED_SCORE</span><span class="p">]</span>
                          <span class="p">[</span><span class="o">--</span><span class="n">adapter</span> <span class="n">ADAPTER</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">check_for_existing_files</span><span class="p">]</span>
                          <span class="p">[</span><span class="o">--</span><span class="n">reverse_complement</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">progress</span><span class="p">]</span>
                          <span class="p">[</span><span class="o">--</span><span class="n">crossalign_cleaning</span> <span class="n">CROSSALIGN_CLEANING_STRING</span><span class="p">]</span>
@@ -292,18 +291,6 @@ preprocessing.</p>
 <dt><kbd>--poly_a_clipping, -c</kbd></dt>
 <dd><p>Perform polyA tail clipping. This option cannot be used for paired-end reads.</p>
 <p>Default: False</p>
-</dd>
-<dt><kbd>--realign, -r</kbd></dt>
-<dd><p>Perform realignment of unmapped reads using ‘lack’.</p>
-<p>Default: False</p>
-</dd>
-<dt><kbd>--keep_original_alignments, -k</kbd></dt>
-<dd><p>Only used with –realign/-r. Keep the alignment file of the primary mapper (segemehl) and the realigner (lack) after merging.</p>
-<p>Default: False</p>
-</dd>
-<dt><kbd>--lack_bin, -L</kbd></dt>
-<dd><p>Lack’s binary path (default ‘lack.x’).</p>
-<p>Default: “lack.x”</p>
 </dd>
 <dt><kbd>--fastq, -q</kbd></dt>
 <dd><p>Input reads are in FASTQ not FASTA format.</p>
@@ -423,8 +410,9 @@ file e.g. CDS, gene, rRNA, tRNA) that should be quantified the
 parameter <code class="docutils literal notranslate"><span class="pre">--features</span></code> can be used. Otherwise countings for all
 annotation entries are generated. Per default sense and anti-sense
 overlaps are counted and separately listed. <code class="docutils literal notranslate"><span class="pre">gene_quanti</span></code> provides, besides the
-raw read countings, Transcripts per Million (TPM) normalized read counts
-as well as Reads per Kilobase Million (RPKM) normalized read counts.
+raw read countings, Transcripts per Million (TPM) normalized read counts,
+normalized by the total number of aligned reads of the given library (TNOAR),
+as well as Reads per Kilobase Million (RPKM) normalized read counts
 The results of the different counting methods are provided in separate CSV-tables.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">usage</span><span class="p">:</span> <span class="n">reademption</span> <span class="n">gene_quanti</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">project_path</span> <span class="n">PROJECT_PATH</span><span class="p">]</span>
                                <span class="p">[</span><span class="o">--</span><span class="n">min_overlap</span> <span class="n">MIN_OVERLAP</span><span class="p">]</span>

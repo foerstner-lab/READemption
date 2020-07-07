@@ -105,8 +105,9 @@ file e.g. CDS, gene, rRNA, tRNA) that should be quantified the
 parameter ``--features`` can be used. Otherwise countings for all
 annotation entries are generated. Per default sense and anti-sense
 overlaps are counted and separately listed. ``gene_quanti`` provides, besides the
-raw read countings, Transcripts per Million (TPM) normalized read counts
-as well as Reads per Kilobase Million (RPKM) normalized read counts.
+raw read countings, Transcripts per Million (TPM) normalized read counts,
+normalized by the total number of aligned reads of the given library (TNOAR),
+as well as Reads per Kilobase Million (RPKM) normalized read counts
 The results of the different counting methods are provided in separate CSV-tables.
 
 .. argparse::
