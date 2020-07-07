@@ -14,7 +14,6 @@ from reademptionlib.projectcreator import ProjectCreator
 from reademptionlib.rawstatdata import RawStatDataWriter, RawStatDataReader
 from reademptionlib.readaligner import ReadAligner
 from reademptionlib.readalignerstats import ReadAlignerStats
-from reademptionlib.readrealigner import ReadRealigner
 from reademptionlib.readalignerstatstable import ReadAlignerStatsTable
 from reademptionlib.readprocessor import ReadProcessor
 from reademptionlib.sambamconverter import SamToBamConverter
