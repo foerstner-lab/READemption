@@ -7,5 +7,6 @@ install:
   - "pip install biopython"
   - "pip install pysam"
   - "pip install pandas"
+  - "conda install -c bioconda segemehl"
 # command to run tests
 script: pytest
