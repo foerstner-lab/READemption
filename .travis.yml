@@ -15,4 +15,4 @@ install:
   - "conda update --yes conda"
   - "conda install -c bioconda/label/cf201901 segemehl --yes"
 # command to run tests
-script: pytest
+script: pytest -k 'not test_segemehl'
