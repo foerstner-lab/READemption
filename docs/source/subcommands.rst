@@ -18,7 +18,7 @@ annotation files in GFF3 format have to be put into
 ``input/annotations``.
 
 .. argparse::
-   :filename: ../bin/reademption
+   :filename: reademption
    :prog: reademption
    :func: create_parser
    :path: create
