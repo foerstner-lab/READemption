@@ -32,8 +32,11 @@ new_release:
 	@echo "* Change version in setup.py"
 	@echo "* Change version, release and date in docs/source/conf.py"
 	@echo "* Add description to CHANGELOG.txt"
+	@echo "* Refresh the two reademption links in docs and docs/source."
+	      "*  this is need for building the docu on 'read the docs'. See last point of this list."
+	@echo "cd docs && ln -s ../bin/reademption reademption && cd source && ../../bin/reademption reademption && cd ../.."
 	@echo "* Create new docs"
-	@echo "  make html_doc" # was this only needed for pythonhosted?
+	@echo "  make html_doc"
 	@echo "* Create package"
 	@echo " make package"
 	@echo "*delete old package"
