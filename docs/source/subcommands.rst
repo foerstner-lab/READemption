@@ -48,7 +48,7 @@ clipping. If this is not sufficient you can use the `FASTX toolkit
 preprocessing.
 
 .. argparse::
-   :filename: ../bin/reademption
+   :filename: reademption
    :prog: reademption
    :func: create_parser
    :path: align
@@ -87,7 +87,7 @@ positions. To turn off this behavior use
 ``--skip_read_count_splitting``.
 
 .. argparse::
-   :filename: ../bin/reademption
+   :filename: reademption
    :prog: reademption
    :func: create_parser
    :path: coverage
@@ -111,7 +111,7 @@ as well as Reads per Kilobase Million (RPKM) normalized read counts
 The results of the different counting methods are provided in separate CSV-tables.
 
 .. argparse::
-   :filename: ../bin/reademption
+   :filename: reademption
    :prog: reademption
    :func: create_parser
    :path: gene_quanti
@@ -128,7 +128,7 @@ SamA_R1.fa,SamA_R2.fa,SamB_R1.fa,SamB_R2.fa --conditions
 SamA,SamA,SamB,SamB``).
 
 .. argparse::
-   :filename: ../bin/reademption
+   :filename: reademption
    :prog: reademption
    :func: create_parser
    :path: deseq
@@ -141,7 +141,7 @@ viz_align
 reads before and after the read clipping.
 
 .. argparse::
-   :filename: ../bin/reademption
+   :filename: reademption
    :prog: reademption
    :func: create_parser
    :path: viz_align
@@ -158,7 +158,7 @@ distribution of the read counting of the different annotation classes
 are plotted.
 
 .. argparse::
-   :filename: ../bin/reademption
+   :filename: reademption
    :prog: reademption
    :func: create_parser
    :path: viz_gene_quanti
@@ -172,7 +172,7 @@ vs. the base mean) as well as volcano plots (log2 fold changes
 vs. p-values / adjusted p-values).
 
 .. argparse::
-   :filename: ../bin/reademption
+   :filename: reademption
    :prog: reademption
    :func: create_parser
    :path: viz_deseq
