@@ -2,8 +2,10 @@ import os
 import sys
 import unittest
 import shutil
+
 sys.path.append(".")
 from reademptionlib.controller import Controller
+
 
 class ArgMock(object):
     project_path = "a_test_project"
@@ -25,8 +27,8 @@ class ArgMock(object):
     adapter = None
     reverse_complement = False
 
-class TestController(unittest.TestCase):
 
+class TestController(unittest.TestCase):
     def setUp(self):
         arg_mock = ArgMock()
         self.test_project_name = arg_mock.project_path
@@ -38,12 +40,17 @@ class TestController(unittest.TestCase):
         self._remove_project_folder()
 
     def _generate_input_fasta_files(self):
-        genome_fh = open("%s/%s" % (
-                self.controller._paths.ref_seq_folder, "agenome.fa"), "w")
-        read_fh_1 = open("%s/%s" % (
-                self.controller._paths.read_fasta_folder, "libfoo.fa"), "w")
-        read_fh_2 = open("%s/%s" % (
-                self.controller._paths.read_fasta_folder, "libbar.fa"), "w")
+        genome_fh = open(
+            "%s/%s" % (self.controller._paths.ref_seq_folder, "agenome.fa"), "w"
+        )
+        read_fh_1 = open(
+            "%s/%s" % (self.controller._paths.read_fasta_folder, "libfoo.fa"),
+            "w",
+        )
+        read_fh_2 = open(
+            "%s/%s" % (self.controller._paths.read_fasta_folder, "libbar.fa"),
+            "w",
+        )
         genome_fh.write(self.example_data.genome_fasta)
         genome_fh.close()
         read_fh_1.write(self.example_data.read_fasta_1)
@@ -53,37 +60,38 @@ class TestController(unittest.TestCase):
 
     def _generate_mapping_files(self):
         for file_path, sam_content in zip(
-            self.controller._paths.read_mapping_result_sam_paths, 
-            [self.example_data.sam_content_1, 
-             self.example_data.sam_content_2]):
+            self.controller._paths.read_mapping_result_sam_paths,
+            [self.example_data.sam_content_1, self.example_data.sam_content_2],
+        ):
             mapping_fh = open(file_path, "w")
             mapping_fh.write(sam_content)
             mapping_fh.close()
 
     def _generate_annotation_files(self):
         annotation_fh = open(
-            "%s/some_annos.gff" % 
-            self.controller._paths.annotation_folder, "w")
+            "%s/some_annos.gff" % self.controller._paths.annotation_folder, "w"
+        )
         print(self.controller._paths.annotation_folder)
         annotation_fh.write(self.example_data.gff_content_1)
         annotation_fh.close()
-        
+
     def _remove_project_folder(self):
         if os.path.exists(self.test_project_name):
             shutil.rmtree(self.test_project_name)
 
-class TestControllerCreateProject(TestController):
 
+class TestControllerCreateProject(TestController):
     def test_create_project(self):
         self._version = 0.1
         self.controller.create_project(self._version)
         self.assertEqual(
-            set(list(os.listdir(self.test_project_name))), 
-            set(['input', 'output']))
+            set(list(os.listdir(self.test_project_name))),
+            set(["input", "output"]),
+        )
         self._remove_project_folder()
 
-class TestControllerReadAligning(TestController):
 
+class TestControllerReadAligning(TestController):
     def test_read_aligning(self):
         self._version = 0.1
         self.controller.create_project(self._version)
@@ -91,7 +99,8 @@ class TestControllerReadAligning(TestController):
         self._generate_input_fasta_files()
         self.controller.align_reads()
         self._remove_project_folder()
-    
+
+
 class ExampleData(object):
 
     genome_fasta = """>SL1344 genome sequence
@@ -111,7 +120,7 @@ ATGTCGATCGCGATTATGGCGGGACTTCTGGAGGCGCGTGGGCATCGCGTCACGGTGATC
 GATCCGGTAGAAAAATTGCTGGCGGTGGGCCATTACCTTGAATCTACCGTCGATATCGCG
 GAATCGACTCGCCGTATCGCCGCCAGCCAGATCCCGGCCGATCACATGATCCTGATGGCG
 GGCTTTACCGCCGGTAATGAAAAGGGTGAACTGGTGGTGCTGGGCCGTAATGGTTCCGAC
-""" 
+"""
 
     read_fasta_1 = """>read_01
 AACGGTGCGGGCTGACGCGTACAGGAAACACAGAAAAAAGCCCGCACCTGAACAGTGCGG
@@ -211,6 +220,6 @@ read_01	SL1344	500	509	+	1	SL1344	EMBL	gene	505	550	.	-	.	ID=SL1344:rumba;locus_
 read_01	SL1344	50	59	+	1	no_overlap
 """
 
+
 if __name__ == "__main__":
     unittest.main()
-

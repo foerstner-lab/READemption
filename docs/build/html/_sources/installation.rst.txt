@@ -23,11 +23,6 @@ installation of all these requirements will be covered.
 Installing on a fresh Ubuntu system
 -----------------------------------
 
-The following installation procedure was tested on a `Amazon AWS
-t1.micro
-<http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/concepts_micro_instances.html>`_
-instance with Ubuntu Server 14.04 LTS image.
-
 
 1. Installing all required Debian/Ubuntu packages
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -42,7 +37,7 @@ Now you can install the packages::
 
 Some comments:
 
-- Ubuntu 16.04 should have Python 3.5 already installed.
+- Python version 3.6 and higher is recommended
 - ``cython`` is required for ``pysam``
 - ``make``, ``libncurses5-dev`` and ``zlib1g-dev`` are needed for ``segemehl``
 - ``libxml2`` is required for the installation of some of the R-packages
@@ -52,24 +47,27 @@ Some comments:
 
 ::
 
-  curl www.bioinf.uni-leipzig.de/Software/segemehl/old/segemehl_0_2_0.tar.gz > segemehl_0_2_0.tar.gz
-  tar xzf segemehl_0_2_0.tar.gz
-  cd segemehl_*/segemehl/ && make && cd ../../
+  curl https://www.bioinf.uni-leipzig.de/Software/segemehl/downloads/segemehl-0.3.4.tar.gz > segemehl-0.3.4.tar.gz
+  tar segemehl-0.3.4.tar.gz
+  cd segemehl_*/segemehl*/ && make all && cd ../../
 
-In the future segemehl version 0.3.0 will be integrated into Reademption. For the time being we recommend using version 0.2.0.
 
 Copying the executable to a location that is part of the ``PATH`` e.g
 ``/usr/bin/`` ...
 
 ::
-
-  sudo cp segemehl_0_2_0/segemehl/segemehl.x /usr/bin/segemehl.x
-  sudo cp segemehl_0_2_0/segemehl/lack.x /usr/bin/lack.x
+  sudo cp segemehl-0.3.4/segemehl-0.3.4/segemehl.x /usr/bin/segemehl.x
 
 ... or the bin folder of your home directory::
 
   mkdir ~/bin
-  cp segemehl_0_2_0/segemehl/segemehl.x ~/bin
+  cp segemehl-0.3.4/segemehl-0.3.4/segemehl.x ~/bin
+
+
+Alternatively, segemehl can be installed via conda::
+
+  conda install -c bioconda segemehl
+
 
 3. Install DESeq2
 ~~~~~~~~~~~~~~~~~

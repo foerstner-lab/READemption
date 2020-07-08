@@ -1,38 +1,39 @@
 
 
 <!DOCTYPE html>
-<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
-<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<html class="writer-html5" lang="en" >
 <head>
   <meta charset="utf-8">
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Performing an example analysis &mdash; READemption 0.5.0 documentation</title>
+  <title>Performing an example analysis &mdash; READemption 1.0.0 documentation</title>
   
-
-  
-  
-  
-  
-
-  
-  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
-  
-    
-      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
-        <script type="text/javascript" src="_static/jquery.js"></script>
-        <script type="text/javascript" src="_static/underscore.js"></script>
-        <script type="text/javascript" src="_static/doctools.js"></script>
-        <script type="text/javascript" src="_static/language_data.js"></script>
-    
-    <script type="text/javascript" src="_static/js/theme.js"></script>
-
-    
 
   
   <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Troubleshooting" href="troubleshooting.html" />
     <link rel="prev" title="READemption’s subcommands" href="subcommands.html" /> 
@@ -49,7 +50,7 @@
           
 
           
-            <a href="index.html" class="icon icon-home"> READemption
+            <a href="index.html" class="icon icon-home" alt="Documentation Home"> READemption
           
 
           
@@ -62,7 +63,7 @@
             
             
               <div class="version">
-                0.5
+                1.0
               </div>
             
           
@@ -79,6 +80,7 @@
           
         </div>
 
+        
         <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
           
             
@@ -109,6 +111,7 @@
             
           
         </div>
+        
       </div>
     </nav>
 
@@ -147,7 +150,7 @@
 
   <ul class="wy-breadcrumbs">
     
-      <li><a href="index.html">Docs</a> &raquo;</li>
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
         
       <li>Performing an example analysis</li>
     
@@ -182,9 +185,9 @@ genome browser for example <a class="reference external" href="http://bioviz.org
 <h2>Generating a project<a class="headerlink" href="#generating-a-project" title="Permalink to this headline">¶</a></h2>
 <p>At first we have to create the analysis folder and its subfolder. For
 this we use the <code class="docutils literal notranslate"><span class="pre">create</span></code> subcommand:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ reademption create READemption_analysis
-Created folder &quot;READemption_analysis2&quot; and required subfolders.
-Please copy read files into folder &quot;READemption_analysis2/input/reads&quot; and reference sequences files into folder &quot;READemption_analysis2/input/reference_sequences&quot;.
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ reademption create -f READemption_analysis
+Created folder &quot;READemption_analysis&quot; and required subfolders.
+Please copy read files into folder &quot;READemption_analysis/input/reads&quot; and reference sequences files into folder &quot;READemption_analysis/input/reference_sequences&quot;.
 </pre></div>
 </div>
 <p>This will result in a folder structure as shown here:</p>
@@ -287,7 +290,7 @@ NC_016810.fa  NC_017718.fa  NC_017719.fa  NC_017720.fa
 <p>The first step it the read processing and mapping. Via parameters we
 tell READemption to use 4 CPU (<code class="docutils literal notranslate"><span class="pre">-p</span> <span class="pre">4</span></code>) and perform a poly-A-clipping
 (<code class="docutils literal notranslate"><span class="pre">--poly_a_clipping</span></code>) before the mapping.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ reademption align -p 4 --poly_a_clipping READemption_analysis
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ reademption align -p 4 --poly_a_clipping -f READemption_analysis
 </pre></div>
 </div>
 <p>Once this the mapping is done the file <code class="docutils literal notranslate"><span class="pre">read_alignment_stats.csv</span></code> is
@@ -304,7 +307,7 @@ into a genome browser but instead we continue with the next step.</p>
 <h2>Generating coverage files<a class="headerlink" href="#generating-coverage-files" title="Permalink to this headline">¶</a></h2>
 <p>In order to generate strand specific coverage files with different
 normalizations we use the subcommand <code class="docutils literal notranslate"><span class="pre">coverage</span></code>.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ reademption coverage -p 4 READemption_analysis
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ reademption coverage -p 4 -f READemption_analysis
 </pre></div>
 </div>
 <p>The sets are stored in subfolder of
@@ -325,7 +328,7 @@ adapt the scaling in some genome browsers.</p>
 the locations of the annotation entries. With the <code class="docutils literal notranslate"><span class="pre">--features</span></code>
 parameter we configure <code class="docutils literal notranslate"><span class="pre">reademption</span></code> to just quantify CDS, tRNA and
 rRNA entries.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ reademption gene_quanti -p 4 --features CDS,tRNA,rRNA READemption_analysis
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ reademption gene_quanti -p 4 --features CDS,tRNA,rRNA -f READemption_analysis
 </pre></div>
 </div>
 <p>After the quantification we find tables that contain the combined
@@ -341,7 +344,7 @@ countings normalized by the total number of reads and RPKM values.</p>
 subcommand <code class="docutils literal notranslate"><span class="pre">deseq</span></code> which makes use of the R library <a class="reference external" href="http://www.bioconductor.org/packages/release/bioc/html/DESeq2.html">DESeq2</a>.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ reademption deseq \
    -l InSPI2_R1.fa.bz2,InSPI2_R2.fa.bz2,LSP_R1.fa.bz2,LSP_R2.fa.bz2 \
-   -c InSPI2,InSPI2,LSP,LSP READemption_analysis
+   -c InSPI2,InSPI2,LSP,LSP -f READemption_analysis
 </pre></div>
 </div>
 <p>We have to tell READemption which libraries are replicates of which
@@ -368,7 +371,7 @@ stored in
 steps. <code class="docutils literal notranslate"><span class="pre">viz_align</span></code> creates histograms of the read length
 distribution for the untreated and treated reads (saved in
 <code class="docutils literal notranslate"><span class="pre">READemption_analysis/output/viz_align/</span></code>).</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ reademption viz_align READemption_analysis
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ reademption viz_align -f READemption_analysis
 </pre></div>
 </div>
 <p><code class="docutils literal notranslate"><span class="pre">viz_gene_quanti</span></code> visualizes the gene wise countings. In our example
@@ -376,11 +379,11 @@ you will see that - as expected - the replicates are more similar to
 each other than to the libs of the other condition. It also generates
 bar plots that show the distribution of reads inside the different RNA
 classes.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ reademption viz_gene_quanti READemption_analysis
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ reademption viz_gene_quanti -f READemption_analysis
 </pre></div>
 </div>
 <p><code class="docutils literal notranslate"><span class="pre">viz_deseq</span></code> generates MA-plots as well as volcano plots.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ reademption viz_deseq READemption_analysis
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ reademption viz_deseq -f READemption_analysis
 </pre></div>
 </div>
 </div>
@@ -406,11 +409,19 @@ classes.</p>
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2019, Konrad U. Förstner and Till Sauerwein
+        
+        &copy; Copyright 2020, Konrad U. Förstner and Till Sauerwein
 
     </p>
   </div>
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
 
@@ -421,7 +432,6 @@ classes.</p>
 
   </div>
   
-
 
   <script type="text/javascript">
       jQuery(function () {
@@ -434,8 +444,8 @@ classes.</p>
     
   
     <div class="footer">
-    This documention is licensed under the <a href="https://creativecommons.org/licenses/by/3.0/">Creative Commons Attribution license</a>, 2019, Konrad U. Förstner and Till Sauerwein.
-      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.8.5.
+    This documention is licensed under the <a href="https://creativecommons.org/licenses/by/3.0/">Creative Commons Attribution license</a>, 2020, Konrad U. Förstner and Till Sauerwein.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 3.0.3.
     </div>
 
 

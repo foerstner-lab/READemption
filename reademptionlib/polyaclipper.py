@@ -11,7 +11,8 @@ class PolyAClipper(object):
         length = 11
         if "AAAA" in sequence:
             for subseq, start_pos in self._aaaa_starting_substrings(
-                    sequence, length):
+                sequence, length
+            ):
                 # Tolerate one mismatch
                 if subseq.count("A") < length - 1:
                     continue
@@ -34,12 +35,16 @@ class PolyAClipper(object):
             else:
                 cur_start_pos = start_pos
                 start_pos = start_pos + 1
-                yield([sequence[cur_start_pos:cur_start_pos+length],
-                       cur_start_pos])
+                yield (
+                    [
+                        sequence[cur_start_pos : cur_start_pos + length],
+                        cur_start_pos,
+                    ]
+                )
 
     def remove_3_prime_a(self, sequence):
         """Remove 3' terminal As"""
-        if sequence == '':
+        if sequence == "":
             return sequence
         elif sequence[-1] == "A":
             sequence = self.remove_3_prime_a(sequence[:-1])

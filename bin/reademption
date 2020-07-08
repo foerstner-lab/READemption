@@ -9,10 +9,22 @@ __author__ = "Konrad Foerstner <konrad@foerstner.org>, Till Sauerwein <sauerwein
 __copyright__ = "2011-2020 by Konrad Foerstner <konrad@foerstner.org, , Till Sauerwein <sauerwein@zbmed.de>"
 __license__ = "ISC license"
 __email__ = "konrad@foerstner.org, sauerwein@zbmed.de"
-__version__ = "0.6.0"
+__version__ = "1.0.0"
 
 
 def main():
+    parser = create_parser()
+    args = parser.parse_args()
+    if args.version is True:
+        print("READemption version " + __version__)
+    elif "func" in dir(args):
+        controller = Controller(args)
+        args.func(controller)
+    else:
+        parser.print_help()
+
+
+def create_parser():
     parser = argparse.ArgumentParser()
     parser.add_argument(
         "--version", "-v", default=False, action="store_true",
@@ -61,16 +73,6 @@ def main():
         "--poly_a_clipping", "-c", default=False,
         action="store_true", help="Perform polyA tail clipping. This option "
         "cannot be used for paired-end reads.")
-    read_aligning_parser.add_argument(
-        "--realign", "-r", default=False, action="store_true",
-        help="Perform realignment of unmapped reads using 'lack'.")
-    read_aligning_parser.add_argument(
-        "--keep_original_alignments", "-k", default=False, action="store_true",
-        help="Only used with --realign/-r. Keep the alignment file of the "
-        "primary mapper (segemehl) and the realigner (lack) after merging.")
-    read_aligning_parser.add_argument(
-        "--lack_bin", "-L", default="lack.x",
-        help="Lack's binary path (default 'lack.x').")
     read_aligning_parser.add_argument(
         "--fastq", "-q", default=False, action="store_true",
         help="Input reads are in FASTQ not FASTA format.")
@@ -275,15 +277,7 @@ def main():
         "Genes with adjusted p-values below will be marked red. "
         "(default 0.05)")
     viz_deseq_parser.set_defaults(func=viz_deseq)
-
-    args = parser.parse_args()
-    if args.version is True:
-        print("READemption version " + __version__)
-    elif "func" in dir(args):
-        controller = Controller(args)
-        args.func(controller)
-    else:
-        parser.print_help()
+    return parser
 
 
 def create_project(controller):
@@ -317,4 +311,5 @@ def viz_gene_quanti(controller):
 def viz_deseq(controller):
     controller.viz_deseq()
 
-main()
+if __name__ == "__main__":
+    main()

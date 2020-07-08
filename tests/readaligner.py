@@ -1,11 +1,12 @@
 import unittest
 import sys
 from io import StringIO
+
 sys.path.append(".")
 from reademptionlib.readmapper import ReadMapper
 
-class TestReadMapper(unittest.TestCase):
 
+class TestReadMapper(unittest.TestCase):
     def setUp(self):
         self.read_mapper = ReadMapper("segemehl.x")
 
@@ -15,6 +16,7 @@ class TestReadMapper(unittest.TestCase):
 
     def test_run_mappings(self):
         pass
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -2,7 +2,6 @@ import json
 
 
 class RawStatDataWriter(object):
-
     def __init__(self, pretty=False):
         self._pretty = pretty
 
@@ -19,7 +18,6 @@ class RawStatDataWriter(object):
 
 
 class RawStatDataReader(object):
-            
     def read(self, input_file):
         with open(input_file) as input_fh:
             data = self._read(input_fh)

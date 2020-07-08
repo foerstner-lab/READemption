@@ -2,7 +2,8 @@ import csv
 from collections import defaultdict
 import numpy as np
 import matplotlib
-matplotlib.use('Agg')
+
+matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_pdf import PdfPages
 import matplotlib.colors as colors
@@ -10,9 +11,14 @@ import matplotlib.cm as cm
 
 
 class GeneQuantiViz(object):
-
-    def __init__(self, gene_wise_quanti_combined_path, lib_names,
-                 use_antisene=True, axis_min=None, axis_max=None):
+    def __init__(
+        self,
+        gene_wise_quanti_combined_path,
+        lib_names,
+        use_antisene=True,
+        axis_min=None,
+        axis_max=None,
+    ):
         self._gene_wise_quanti_combined_path = gene_wise_quanti_combined_path
         self._lib_names = lib_names
         self._use_antisene = use_antisene
@@ -25,16 +31,20 @@ class GeneQuantiViz(object):
         # lib name -> relative direction (sense/anti-sense)
         # -> annotation type (CDS, rRNA ..)
         self._lib_names_and_class_quanti = defaultdict(
-            lambda: defaultdict(lambda: defaultdict(float)))
+            lambda: defaultdict(lambda: defaultdict(float))
+        )
         for row in csv.reader(
-                open(self._gene_wise_quanti_combined_path), delimiter="\t"):
+            open(self._gene_wise_quanti_combined_path), delimiter="\t"
+        ):
             if row[0].startswith("Orientation"):
                 continue
             for index, cell in enumerate(row[10:]):
-                self._lib_names_and_countings[
-                    self._lib_names[index]].append(float(cell))
-                self._lib_names_and_class_quanti[
-                    self._lib_names[index]][row[0]][row[3]] += float(cell)
+                self._lib_names_and_countings[self._lib_names[index]].append(
+                    float(cell)
+                )
+                self._lib_names_and_class_quanti[self._lib_names[index]][
+                    row[0]
+                ][row[3]] += float(cell)
 
     def plot_correlations(self, plot_path):
         self._prepare_document(plot_path)
@@ -59,22 +69,32 @@ class GeneQuantiViz(object):
         fig = plt.figure()
         ax = fig.add_subplot(111)
         ax.set_aspect(1)
-        ax.set_yscale('log')
-        ax.set_xscale('log')
+        ax.set_yscale("log")
+        ax.set_xscale("log")
         # Draw line
-        plt.plot([self._axis_min, self._axis_max],
-                 [self._axis_min, self._axis_max],
-                 linestyle="solid", color="green", alpha=0.4)
+        plt.plot(
+            [self._axis_min, self._axis_max],
+            [self._axis_min, self._axis_max],
+            linestyle="solid",
+            color="green",
+            alpha=0.4,
+        )
         # Calculate the Pearson correlation coefficient
-        corr_coeff = np.corrcoef(self._lib_names_and_countings[lib_1],
-                                 self._lib_names_and_countings[lib_2])[0][1]
+        corr_coeff = np.corrcoef(
+            self._lib_names_and_countings[lib_1],
+            self._lib_names_and_countings[lib_2],
+        )[0][1]
         # Set axis ranges
-        plt.axis([self._axis_min, self._axis_max,
-                  self._axis_min, self._axis_max])
+        plt.axis(
+            [self._axis_min, self._axis_max, self._axis_min, self._axis_max]
+        )
         plt.title("%s vs. %s\n(r = %s)" % (lib_1, lib_2, corr_coeff))
-        plt.plot(self._lib_names_and_countings[lib_1],
-                 self._lib_names_and_countings[lib_2],
-                 "k.", alpha=0.2)
+        plt.plot(
+            self._lib_names_and_countings[lib_1],
+            self._lib_names_and_countings[lib_2],
+            "k.",
+            alpha=0.2,
+        )
         plt.xlabel("Expression %s" % lib_1)
         plt.ylabel("Expression %s" % lib_2)
         self._pp.savefig()
@@ -82,8 +102,11 @@ class GeneQuantiViz(object):
 
     def _set_axis_max(self):
         self._axis_max = max(
-            [max(counting)
-             for counting in self._lib_names_and_countings.values()])
+            [
+                max(counting)
+                for counting in self._lib_names_and_countings.values()
+            ]
+        )
 
     def plot_annotation_class_quantification(self, plot_path):
         all_classes_sorted = set()
@@ -96,34 +119,53 @@ class GeneQuantiViz(object):
         bottom = np.array([0] * no_of_libs)
         fig = plt.figure()
         ax = plt.subplot(111)
-        font = {'family': 'sans-serif', 'weight': 'normal', 'size': 6}
-        matplotlib.rc('font', **font)
+        font = {"family": "sans-serif", "weight": "normal", "size": 6}
+        matplotlib.rc("font", **font)
         plt.title("Number of reads per RNA classes")
-        color_map = plt.get_cmap('Set3')
-        cNorm  = colors.Normalize(vmin=0,
-                                  vmax=(len(all_classes_sorted) * len(
-                                      self._lib_names_and_class_quanti[
-                                          self._lib_names[0]].keys())) - 1)
+        color_map = plt.get_cmap("Set3")
+        cNorm = colors.Normalize(
+            vmin=0,
+            vmax=(
+                len(all_classes_sorted)
+                * len(
+                    self._lib_names_and_class_quanti[self._lib_names[0]].keys()
+                )
+            )
+            - 1,
+        )
         scalarMap = cm.ScalarMappable(norm=cNorm, cmap=color_map)
         color_index = 0
         for direction in self._lib_names_and_class_quanti[
-                self._lib_names[0]].keys():
+            self._lib_names[0]
+        ].keys():
             for anno_class in all_classes_sorted:
                 countings = [
-                    self._lib_names_and_class_quanti[lib][direction][
-                        anno_class] for lib in self._lib_names]
+                    self._lib_names_and_class_quanti[lib][direction][anno_class]
+                    for lib in self._lib_names
+                ]
                 color = scalarMap.to_rgba(color_index)
-                plt.bar(range(no_of_libs), countings, align="center",
-                        bottom=bottom, linewidth=0, color=color, width=0.5,
-                        label=anno_class+" "+direction)
+                plt.bar(
+                    range(no_of_libs),
+                    countings,
+                    align="center",
+                    bottom=bottom,
+                    linewidth=0,
+                    color=color,
+                    width=0.5,
+                    label=anno_class + " " + direction,
+                )
                 bottom = bottom + countings
                 color_index += 1
-        plt.xticks(np.array(range(no_of_libs)), self._lib_names, rotation=45,
-                   ha="right")
+        plt.xticks(
+            np.array(range(no_of_libs)),
+            self._lib_names,
+            rotation=45,
+            ha="right",
+        )
         plt.tight_layout()
-        ax.spines['top'].set_visible(False)
-        ax.spines['right'].set_visible(False)
-        ax.spines['left'].set_visible(False)
+        ax.spines["top"].set_visible(False)
+        ax.spines["right"].set_visible(False)
+        ax.spines["left"].set_visible(False)
         ax.xaxis.set_ticks_position("none")
         plt.legend(loc="upper right", frameon=False, ncol=4)
         fig.savefig(plot_path)
