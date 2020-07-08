@@ -20,6 +20,7 @@ import sys, os
 
 # Add the path of the READemption main folder relative to conf.py
 sys.path.append('..')
+sys.path.append('../..')
 
 # -- General configuration -----------------------------------------------------
 
