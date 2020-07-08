@@ -1,3 +1,6 @@
+v1.0.0 (2020-07-08)
+- Added calculation of TPM (transcripts per million)
+- Added automated integration of subcommands and parameters to the documentation
 v0.6.0 (2020-05-22)
 - changed behaviour of gene quantification regarding sense and anti-sense
   --add-antisense instead of --skip-antisense and added --antisense-only
