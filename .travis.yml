@@ -13,6 +13,6 @@ install:
   - "export PATH=/home/travis/miniconda2/bin:$PATH"
   - "ls /home/travis/"
   - "conda update --yes conda"
-  - "conda install -c bioconda segemehl"
+  - "conda install -c bioconda segemehl --yes"
 # command to run tests
 script: pytest
