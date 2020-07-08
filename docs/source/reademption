@@ -1,0 +1,315 @@
+#!/usr/bin/env python3
+
+"""READemption - A RNA-seq Analysis Pipeline"""
+
+import argparse
+from reademptionlib.controller import Controller
+
+__author__ = "Konrad Foerstner <konrad@foerstner.org>, Till Sauerwein <sauerwein@zbmed.de>"
+__copyright__ = "2011-2020 by Konrad Foerstner <konrad@foerstner.org, , Till Sauerwein <sauerwein@zbmed.de>"
+__license__ = "ISC license"
+__email__ = "konrad@foerstner.org, sauerwein@zbmed.de"
+__version__ = "1.0.0"
+
+
+def main():
+    parser = create_parser()
+    args = parser.parse_args()
+    if args.version is True:
+        print("READemption version " + __version__)
+    elif "func" in dir(args):
+        controller = Controller(args)
+        args.func(controller)
+    else:
+        parser.print_help()
+
+
+def create_parser():
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        "--version", "-v", default=False, action="store_true",
+        help="show version")
+    subparsers = parser.add_subparsers(help="commands")
+
+    # Arguments for project creation
+    create_project_parser = subparsers.add_parser(
+        "create", help="Create a project")
+    create_project_parser.add_argument(
+        "--project_path", "-f", help="Path of the project folder.")
+    create_project_parser.set_defaults(func=create_project)
+
+    # Parameters for read alignment
+    read_aligning_parser = subparsers.add_parser(
+        "align", help="Run read alignings")
+    read_aligning_parser.add_argument(
+        "--project_path", "-f", help="Path of the project folder.")
+    read_aligning_parser.add_argument(
+        "--min_read_length", "-l", default=12, type=int,
+        help="Minimal read length after clipping (default 12). Should be "
+        "higher for eukaryotic species.")
+    read_aligning_parser.add_argument(
+        "--processes", "-p", default=1, type=int,
+        help="Number of processes that should be used (default 1).")
+    read_aligning_parser.add_argument(
+        "--segemehl_accuracy", "-a", default=95.0, type=float,
+        help="Segemehl's minimal accuracy (in %%) (default 95).")
+    read_aligning_parser.add_argument(
+        "--segemehl_evalue", "-e", default=5.0, type=float,
+        help="Segemehl's maximal e-value (default 5.0).")
+    read_aligning_parser.add_argument(
+        "--segemehl_bin", "-s", default="segemehl.x",
+        help="Segemehl's binary path (default 'segemehl.x').")
+    read_aligning_parser.add_argument(
+        "--paired_end", "-P", default=False, action="store_true",
+        help="Use this if reads are originating from a paired-end sequencing. "
+        "The members of a pair must be marked with '_p1' and '_p2' in front "
+        "of the file type suffixes (e.g. 'my_sample_p1.fa' and "
+        "'my_sample_p2.fa' or 'my_sample_p1.fa.bz2' and 'my_sample_p2.fa.bz2'"
+        "). This option cannot be used with polyA tail clipping.")
+    read_aligning_parser.add_argument(
+        "--split", "-S", default=False, action="store_true",
+        help="Run segemehl with read splitting.")
+    read_aligning_parser.add_argument(
+        "--poly_a_clipping", "-c", default=False,
+        action="store_true", help="Perform polyA tail clipping. This option "
+        "cannot be used for paired-end reads.")
+    read_aligning_parser.add_argument(
+        "--fastq", "-q", default=False, action="store_true",
+        help="Input reads are in FASTQ not FASTA format.")
+    read_aligning_parser.add_argument(
+        "--min_phred_score", "-Q", default=None, type=int,
+        help="Minimal Phred score. Works only if read are given in FASTQ "
+        "format. As soon as a based drop below this value it and all the "
+        "nucleotides downstream of it will be trimmed off.")
+    read_aligning_parser.add_argument(
+        "--adapter", "-A", default=None, type=str,
+        help="Adapter sequence. If it is found in a read it and all the "
+        "nucleotides downstream will be trimmed off.")
+    read_aligning_parser.add_argument(
+        "--check_for_existing_files", "-F", default=False,
+        action="store_true", help="Check for existing files (e.g. from a "
+        "interrupted previous run) and do not overwrite them if they exits. "
+        "Attention! You have to take care that there are no partially "
+        "generated files left!")
+    read_aligning_parser.add_argument(
+        "--reverse_complement", "-R", default=False, action="store_true",
+        help="Map reverse complement of the input reads.")
+    read_aligning_parser.add_argument(
+        "--progress", "-g", default=False, action="store_true",
+        help="Show progress of the segemehl mapping.")
+    read_aligning_parser.add_argument(
+        "--crossalign_cleaning", "-x", default=None,
+        dest="crossalign_cleaning_str", metavar="CROSSALIGN_CLEANING_STRING",
+        help="Remove reads that are cross-mapped to replicons of different "
+        "species. To associated species and replicons give a string in the "
+        "following format: '<ORG_NAME_1>:<org_1_repl1>,<org_1_repl2>,..,"
+        "<org_1_repl_n>;<ORG_NAME_2>:<org_2_repl1>,<org_2_repl2>,..,"
+        "<org_2_repl_n>'")
+    read_aligning_parser.set_defaults(func=align_reads)
+
+    # Parameters for coverage file building
+    coverage_creation_parser = subparsers.add_parser(
+        "coverage", help="Create coverage (wiggle) files")
+    coverage_creation_parser.add_argument(
+        "--project_path", "-f", help="Path of the project folder.")
+    coverage_creation_parser.add_argument(
+        "--unique_only", "-u", default=False, action="store_true",
+        help="Use uniquely aligned reads only.")
+    coverage_creation_parser.add_argument(
+        "--normalize_by_uniquely", "-U", default=False, action="store_true",
+        help="Normalize by the number of uniquely aligned reads. By default "
+        "the normalization is done based on the total number of aligned reads "
+        "even if only uniquely aligned reads are used for the coverage "
+        "calculation.")
+    coverage_creation_parser.add_argument(
+        "--processes", "-p", default=1, type=int,
+        help="Number of processes that should be used (default 1).")
+    coverage_creation_parser.add_argument(
+        "--skip_read_count_splitting", "-s", default=False,
+        action="store_true", help="Do not split the read counting between "
+        "different alignings. Default is to do the splitting.")
+    coverage_creation_parser.add_argument(
+        "--non_strand_specific", "-d", default=False,
+        action="store_true", help="Do not distict between the coverage of the "
+        "forward and reverse strand but sum them to a single value for each "
+        "base.")
+    coverage_creation_parser.add_argument(
+        "--coverage_style", "-b", choices=["global", "first_base_only",
+                                           "last_base_only", "centered"],
+        default="global", help="Select for coverage generation if only the "
+        "first aligned base at the 5' end of each read ('first_base_only') or "
+        "the last aligned base at the 3' end of each read ('last_base_only') "
+        "is taken into account. The centered approach ('centered') clips a "
+        "predefined number of nts from each alignment end and adds to the "
+        "remaining genomic region a value divided by its length. By default "
+        "the coverage is generated using the whole range of each alignment "
+        "('global').")
+    coverage_creation_parser.add_argument(
+        "--clip_length", "-cl", type=int, default=11, help="Number of "
+        "nucleotides that are clipped from each alignment end for centered "
+        "approach.")
+    coverage_creation_parser.add_argument(
+        "--check_for_existing_files", "-F", default=False,
+        action="store_true", help="Check for existing files (e.g. from a "
+        "interrupted previous run) and do not overwrite them if they exits. "
+        "Attention! You have to take care that there are no partially "
+        "generated files left!")
+    coverage_creation_parser.set_defaults(func=create_coverage_files)
+
+    # Parameters for gene wise quantification
+    gene_wise_quanti_parser = subparsers.add_parser(
+        "gene_quanti", help="Quantify the expression gene wise")
+    gene_wise_quanti_parser.add_argument(
+        "--project_path", "-f", help="Path of the project folder.")
+    gene_wise_quanti_parser.add_argument(
+        "--min_overlap", "-o", default=1, type=int,
+        help="Minimal read-annotation-overlap (in nt) (default 1).")
+    gene_wise_quanti_parser.add_argument(
+        "--read_region", "-b", choices=["global", "first_base_only",
+                                        "last_base_only", "centered"],
+        default="global", help="Select for gene-wise quantification "
+        "if only the first aligned base at the 5' end of each read "
+        "('first_base_only') or the last aligned base at the 3' end of each "
+        "read ('last_base_only') is taken into account. The centered approach "
+        "('centered') clips a predefined number of nts from each alignment end "
+        "and calculates the overlap based on the remaining region. By default "
+        "the overlap is calculated based on the whole range of each alignment "
+        "('global').")
+    gene_wise_quanti_parser.add_argument(
+        "--clip_length", "-cl", type=int, default=11, help="Number of "
+        "nucleotides that are clipped from each alignment end for centered "
+        "approach.")
+    gene_wise_quanti_parser.add_argument(
+        "--no_count_split_by_alignment_no", "-n", default=False,
+        action="store_true", help="Do not split read countings by the number "
+        "of alignments a read has. By default this count splitting is "
+        "performed.")
+    gene_wise_quanti_parser.add_argument(
+        "--no_count_splitting_by_gene_no", "-l", default=False,
+        action="store_true", help="Do not split read countings by the number "
+        "of genes it overlaps with. By default this count splitting is "
+        "performed.")
+    gene_wise_quanti_parser.add_argument(
+        "--add_antisense", "-a", default=False, action="store_true",
+        help="Count anti-sense and sense read-gene-overlaps and report them separately. By default only sense "
+        "overlaps are counted.")
+    gene_wise_quanti_parser.add_argument(
+        "--antisense_only", "-x", default=False, action="store_true",
+        help="Count only anti-sense read-gene-overlaps and no sense overlaps. By default only sense "
+             "overlaps are counted.")
+    gene_wise_quanti_parser.add_argument(
+        "--non_strand_specific", default=False, action="store_true",
+        help="Use countings of reads overlapping with a gene on both strands "
+        "and sum them up.")
+    gene_wise_quanti_parser.add_argument(
+        "--processes", "-p", default=1, type=int,
+        help="Number of processes that should be used (default 1).")
+    gene_wise_quanti_parser.add_argument(
+        "--features", "-t", dest="allowed_features", default=None,
+        help="Comma separated list of features that should be considered "
+        "(e.g. gene, cds, region, exon). Other feature will be skipped. If "
+        "not specified all features will be considered.")
+    gene_wise_quanti_parser.add_argument(
+        "--unique_only", "-u", default=False, action="store_true",
+        help="Use uniquely aligned reads only.")
+    gene_wise_quanti_parser.add_argument(
+        "--pseudocounts", "-c", default=False, action="store_true",
+        help="Add a pseudocount of 1 to each gene.")
+    gene_wise_quanti_parser.add_argument(
+        "--check_for_existing_files", "-F", default=False,
+        action="store_true", help="Check for existing files (e.g. from a "
+        "interrupted previous run) and do not overwrite them if they exits. "
+        "Attention! You have to take care that there are no partially "
+        "generated files left!")
+    gene_wise_quanti_parser.set_defaults(func=run_gene_wise_quantification)
+
+    # Parameters for DESeq calling
+    deseq_parser = subparsers.add_parser(
+        "deseq", help="Compare expression pairwise using DESeq")
+    deseq_parser.add_argument(
+        "--project_path", "-f", help="Path of the project folder.")
+    deseq_parser.add_argument(
+        "--libs", "-l", required=True,
+        help="Comma separated list of libraries.")
+    deseq_parser.add_argument(
+        "--conditions", "-c", required=True,
+        help="Comma separated list of condition in the same order as "
+        "their corresponding libraries.")
+    deseq_parser.add_argument(
+        "--cooks_cutoff_off", "-k", default=False, action="store_true")
+    deseq_parser.add_argument(
+        "--fc_shrinkage_off", "-so", default=False, action="store_true",
+        help="turn off log2 fold change shrinkage")
+    deseq_parser.set_defaults(func=run_deseq)
+
+    # Parameters for viz_align
+    viz_align_parser = subparsers.add_parser(
+        "viz_align",
+        help="Generate read processing and alignment visualisations.")
+    viz_align_parser.add_argument(
+        "--paired_end", "-P", default=False, action="store_true",
+        help="Use this if reads are originating from a paired-end sequencing.")
+    viz_align_parser.add_argument(
+        "--project_path", "-f", help="Path of the project folder.")
+    viz_align_parser.set_defaults(func=viz_align)
+
+    # Parameters for viz_gene_quanti
+    viz_gene_quanti_parser = subparsers.add_parser(
+        "viz_gene_quanti",
+        help="Generate gene wise quantification visualisations.")
+    viz_gene_quanti_parser.add_argument(
+        "--paired_end", "-P", default=False, action="store_true",
+        help="Use this if reads are originating from a paired-end sequencing.")
+    viz_gene_quanti_parser.add_argument(
+        "--project_path", "-f", help="Path of the project folder.")
+    viz_gene_quanti_parser.set_defaults(func=viz_gene_quanti)
+
+    # Parameters for viz_deseq
+    viz_deseq_parser = subparsers.add_parser(
+        "viz_deseq",
+        help="Generate DESeq visualisations.")
+    viz_deseq_parser.add_argument(
+        "--project_path", "-f", help="Path of the project folder.")
+
+    viz_deseq_parser.add_argument(
+        "--max_pvalue", type=float, default="0.05",
+        help="Maximum adjusted p-value for genes considered to be regulated. "
+        "Genes with adjusted p-values below will be marked red. "
+        "(default 0.05)")
+    viz_deseq_parser.set_defaults(func=viz_deseq)
+    return parser
+
+
+def create_project(controller):
+    controller.create_project(__version__)
+
+
+def align_reads(controller):
+    controller.align_reads()
+
+
+def create_coverage_files(controller):
+    controller.create_coverage_files()
+
+
+def run_gene_wise_quantification(controller):
+    controller.quantify_gene_wise()
+
+
+def run_deseq(controller):
+    controller.compare_with_deseq()
+
+
+def viz_align(controller):
+    controller.viz_align()
+
+
+def viz_gene_quanti(controller):
+    controller.viz_gene_quanti()
+
+
+def viz_deseq(controller):
+    controller.viz_deseq()
+
+if __name__ == "__main__":
+    main()
