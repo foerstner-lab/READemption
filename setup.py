@@ -16,6 +16,7 @@ setup(
         "matplotlib >= 2.2.2",
         "pandas >= 0.24.2",
         "pysam >= 0.15.2",
+        "sphinx-argparse >=0.2.5"
     ],
     scripts=["bin/reademption"],
     license="ISC License (ISCL)",
