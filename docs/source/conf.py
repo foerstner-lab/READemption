@@ -19,12 +19,9 @@ import sys, os
 # sys.path.insert(0, os.path.abspath('.'))
 
 # Add the path of the READemption main folder relative to conf.py
-sys.path.append('..')
-sys.path.append('../..')
-sys.path.insert(0, os.path.abspath('.'))
-sys.path.insert(0, os.path.abspath('..'))
-sys.path.insert(0, os.path.abspath('../..'))
-print(sys.path)
+sys.path.insert(0, os.path.abspath('../../bin'))
+
+
 # -- General configuration -----------------------------------------------------
 
 # If your documentation needs a minimal Sphinx version, state it here.
