@@ -66,6 +66,7 @@ class Controller(object):
 
     def align_reads(self):
         """Perform the alignment of the reads."""
+        self._args.realign = False
         self._test_folder_existance(
             self._paths.required_read_alignment_folders()
         )
