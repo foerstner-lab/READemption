@@ -34,7 +34,7 @@ new_release:
 	@echo "* Add description to CHANGELOG.txt"
 	@echo "* Refresh the two reademption links in docs and docs/source."
 	      "*  this is need for building the docu on 'read the docs'. See last point of this list."
-	@echo "cd docs && ln -s ../bin/reademption reademption && cd source && ../../bin/reademption reademption && cd ../.."
+	@echo "rm docs/reademption && rm docs/source/reademption && cd docs && ln -s ../bin/reademption reademption && cd source && ln -s ../../bin/reademption reademption && cd ../.."
 	@echo "* Create new docs"
 	@echo "  make html_doc"
 	@echo "* Create package"

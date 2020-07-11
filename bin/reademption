@@ -9,7 +9,7 @@ __author__ = "Konrad Foerstner <konrad@foerstner.org>, Till Sauerwein <sauerwein
 __copyright__ = "2011-2020 by Konrad Foerstner <konrad@foerstner.org, , Till Sauerwein <sauerwein@zbmed.de>"
 __license__ = "ISC license"
 __email__ = "konrad@foerstner.org, sauerwein@zbmed.de"
-__version__ = "1.0.0"
+__version__ = "1.0.1"
 
 
 def main():

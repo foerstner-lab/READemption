@@ -1,3 +1,5 @@
+v1.0.1 (2020-07-11)
+- Hotfix of align error cause by realign arg still present
 v1.0.0 (2020-07-08)
 - Added calculation of TPM (transcripts per million)
 - Added automated integration of subcommands and parameters to the documentation
