@@ -10,8 +10,8 @@ class Paths(object):
 
     def _set_folder_names(self):
         """Set the name of folders used in a project."""
-        self.input_folder = "%s/input" % (self.base_path)
-        self.output_folder = "%s/output" % (self.base_path)
+        self.input_folder = f"{self.base_path}/input"
+        self.output_folder = f"{self.base_path}/output"
         self._set_input_folder_names()
         self._set_read_alignment_folder_names()
         self._set_coverage_folder_names()
@@ -22,139 +22,113 @@ class Paths(object):
         self._set_viz_deseq_folder_names()
 
     def _set_input_folder_names(self):
-        self.read_fasta_folder = "%s/reads" % self.input_folder
-        self.ref_seq_folder = "%s/reference_sequences" % self.input_folder
-        self.annotation_folder = "%s/annotations" % self.input_folder
+        self.read_fasta_folder = f"{self.input_folder}/reads"
+        self.ref_seq_folder = f"{self.input_folder}/reference_sequences"
+        self.annotation_folder = f"{self.input_folder}/annotations"
 
     def _set_read_alignment_folder_names(self):
-        self.align_base_folder = "%s/align" % self.output_folder
-        self.read_alignment_index_folder = "%s/index" % (self.align_base_folder)
-        self.read_alignments_folder = "%s/alignments" % (self.align_base_folder)
-        self.processed_reads_folder = "%s/processed_reads" % (
-            self.align_base_folder
+        self.align_base_folder = f"{self.output_folder}/align"
+        self.read_alignment_index_folder = f"{self.align_base_folder}/index"
+        self.read_alignments_folder = f"{self.align_base_folder}/alignments"
+        self.processed_reads_folder = (
+            f"{self.align_base_folder}/processed_reads"
         )
-        self.unaligned_reads_folder = "%s/unaligned_reads" % (
-            self.align_base_folder
+        self.unaligned_reads_folder = (
+            f"{self.align_base_folder}/unaligned_reads"
         )
-        self.align_report_folder = "%s/reports_and_stats" % (
-            self.align_base_folder
-        )
-        self.raw_stat_data_folder = "%s/stats_data_json" % (
-            self.align_report_folder
+        self.align_report_folder = f"{self.align_base_folder}/reports_and_stats"
+        self.raw_stat_data_folder = (
+            f"{self.align_report_folder}/stats_data_json"
         )
 
     def _set_coverage_folder_names(self):
-        self.coverage_base_folder = "%s/coverage" % self.output_folder
-        self.coverage_raw_folder = "%s/coverage-raw" % self.coverage_base_folder
+        self.coverage_base_folder = f"{self.output_folder}/coverage"
+        self.coverage_raw_folder = f"{self.coverage_base_folder}/coverage-raw"
         self.coverage_tnoar_min_norm_folder = (
-            "%s/coverage-tnoar_min_normalized" % (self.coverage_base_folder)
+            f"{self.coverage_base_folder}/coverage-tnoar_min_normalized"
         )
         self.coverage_tnoar_mil_norm_folder = (
-            "%s/coverage-tnoar_mil_normalized" % (self.coverage_base_folder)
+            f"{self.coverage_base_folder}/coverage-tnoar_mil_normalized"
         )
 
     def _set_gene_quanti_folder_names(self):
-        self.gene_quanti_base_folder = "%s/gene_quanti" % self.output_folder
-        self.gene_quanti_per_lib_folder = "%s/gene_quanti_per_lib" % (
-            self.gene_quanti_base_folder
+        self.gene_quanti_base_folder = f"{self.output_folder}/gene_quanti"
+        self.gene_quanti_per_lib_folder = (
+            f"{self.gene_quanti_base_folder}/gene_quanti_per_lib"
         )
-        self.gene_quanti_combined_folder = "%s/gene_quanti_combined" % (
-            self.gene_quanti_base_folder
+        self.gene_quanti_combined_folder = (
+            f"{self.gene_quanti_base_folder}/gene_quanti_combined"
         )
-        self.gene_wise_quanti_combined_path = (
-            "%s/gene_wise_quantifications_combined.csv"
-            % self.gene_quanti_combined_folder
-        )
-        self.gene_wise_quanti_combined_rpkm_path = (
-            "%s/gene_wise_quantifications_combined_rpkm.csv"
-            % self.gene_quanti_combined_folder
-        )
-        self.gene_wise_quanti_combined_tnoar_path = (
-            "%s/gene_wise_quantifications_combined_tnoar.csv"
-            % self.gene_quanti_combined_folder
-        )
-        self.gene_wise_quanti_combined_tpm_path = (
-            "%s/gene_wise_quantifications_combined_tpm.csv"
-            % self.gene_quanti_combined_folder
-        )
+        self.gene_wise_quanti_combined_path = f"{self.gene_quanti_combined_folder}/gene_wise_quantifications_combined.csv"
+        self.gene_wise_quanti_combined_rpkm_path = f"{self.gene_quanti_combined_folder}/gene_wise_quantifications_combined_rpkm.csv"
+        self.gene_wise_quanti_combined_tnoar_path = f"{self.gene_quanti_combined_folder}/gene_wise_quantifications_combined_tnoar.csv"
+        self.gene_wise_quanti_combined_tpm_path = f"{self.gene_quanti_combined_folder}/gene_wise_quantifications_combined_tpm.csv"
 
     def _set_deseq_folder_names(self):
-        self.deseq_base_folder = "%s/deseq" % self.output_folder
-        self.deseq_raw_folder = "%s/deseq_raw" % self.deseq_base_folder
+        self.deseq_base_folder = f"{self.output_folder}/deseq"
+        self.deseq_raw_folder = f"{self.deseq_base_folder}/deseq_raw"
         self.deseq_extended_folder = (
-            "%s/deseq_with_annotations" % self.deseq_base_folder
+            f"{self.deseq_base_folder}/deseq_with_annotations"
         )
 
     def _set_viz_align_folder_names(self):
-        self.viz_align_base_folder = "%s/viz_align" % self.output_folder
+        self.viz_align_base_folder = f"{self.output_folder}/viz_align"
         self.viz_align_input_read_length_plot_path = (
-            "%s/input_reads_length_distributions.pdf"
-            % self.viz_align_base_folder
+            f"{self.viz_align_base_folder}/input_reads_length_distributions.pdf"
         )
-        self.viz_align_processed_reads_length_plot_path = (
-            "%s/processed_reads_length_distributions.pdf"
-            % self.viz_align_base_folder
-        )
+        self.viz_align_processed_reads_length_plot_path = f"{self.viz_align_base_folder}/processed_reads_length_distributions.pdf"
 
     def _set_viz_gene_quanti_folder_names(self):
         self.viz_gene_quanti_base_folder = (
-            "%s/viz_gene_quanti" % self.output_folder
+            f"{self.output_folder}/viz_gene_quanti"
         )
         self.viz_gene_quanti_scatter_plot_path = (
-            "%s/expression_scatter_plots.pdf" % self.viz_gene_quanti_base_folder
+            f"{self.viz_gene_quanti_base_folder}/expression_scatter_plots.pdf"
         )
         self.viz_gene_quanti_rna_classes_plot_path = (
-            "%s/rna_class_sizes.pdf" % self.viz_gene_quanti_base_folder
+            f"{self.viz_gene_quanti_base_folder}/rna_class_sizes.pdf"
         )
 
     def _set_viz_deseq_folder_names(self):
-        self.viz_deseq_base_folder = "%s/viz_deseq" % self.output_folder
+        self.viz_deseq_base_folder = f"{self.output_folder}/viz_deseq"
         self.viz_deseq_scatter_plot_path = (
-            "%s/MA_plots.pdf" % self.viz_deseq_base_folder
+            f"{self.viz_deseq_base_folder}/MA_plots.pdf"
         )
-        self.viz_deseq_volcano_plot_path = (
-            "%s/volcano_plots_log2_fold_change_vs_p-value.pdf"
-            % self.viz_deseq_base_folder
-        )
-        self.viz_deseq_volcano_plot_adj_path = (
-            "%s/volcano_plots_log2_fold_change_vs_adjusted_p-value.pdf"
-            % self.viz_deseq_base_folder
-        )
+        self.viz_deseq_volcano_plot_path = f"{self.viz_deseq_base_folder}/volcano_plots_log2_fold_change_vs_p-value.pdf"
+        self.viz_deseq_volcano_plot_adj_path = f"{self.viz_deseq_base_folder}/volcano_plots_log2_fold_change_vs_adjusted_p-value.pdf"
 
     def _set_static_files(self):
         """Set name of common files."""
-        self.read_processing_stats_path = "%s/read_processing.json" % (
-            self.raw_stat_data_folder
+        self.read_processing_stats_path = (
+            f"{self.raw_stat_data_folder}/read_processing.json"
         )
         self.primary_read_aligner_stats_path = (
-            "%s/read_alignments_primary_aligner.json"
-            % (self.raw_stat_data_folder)
+            f"{self.raw_stat_data_folder}/read_alignments_primary_aligner.json"
         )
-        self.read_realigner_stats_path = "%s/read_alignments_realigner.json" % (
-            self.raw_stat_data_folder
+
+        self.read_realigner_stats_path = (
+            f"{self.raw_stat_data_folder}/read_alignments_realigner.json"
         )
-        self.read_alignments_stats_path = "%s/read_alignments_final.json" % (
-            self.raw_stat_data_folder
+        self.read_alignments_stats_path = (
+            f"{self.raw_stat_data_folder}/read_alignments_final.json"
         )
-        self.read_file_stats = "%s/input_read_stats.txt" % (
-            self.align_report_folder
+        self.read_file_stats = (
+            f"{self.align_report_folder}/input_read_stats.txt"
         )
-        self.ref_seq_file_stats = "%s/reference_sequences_stats.txt" % (
-            self.align_report_folder
+        self.ref_seq_file_stats = (
+            f"{self.align_report_folder}/reference_sequences_stats.txt"
         )
-        self.read_alignment_stats_table_path = "%s/read_alignment_stats.csv" % (
-            self.align_report_folder
+        self.read_alignment_stats_table_path = (
+            f"{self.align_report_folder}/read_alignment_stats.csv"
         )
-        self.index_path = "%s/index.idx" % self.read_alignment_index_folder
-        self.deseq_script_path = "%s/deseq.R" % self.deseq_raw_folder
-        self.deseq_pca_heatmap_path = "%s/sample_comparison_pca_heatmap.pdf" % (
-            self.deseq_raw_folder
+        self.index_path = f"{self.read_alignment_index_folder}/index.idx"
+        self.deseq_script_path = f"{self.deseq_raw_folder}/deseq.R"
+        self.deseq_pca_heatmap_path = (
+            f"{self.deseq_raw_folder}/sample_comparison_pca_heatmap.pdf"
         )
-        self.deseq_tmp_session_info_script = "%s/tmp.R" % self.deseq_raw_folder
-        self.deseq_session_info = "%s/R_session_info.txt" % (
-            self.deseq_raw_folder
-        )
-        self.version_path = "%s/version_log.txt" % (self.align_report_folder)
+        self.deseq_tmp_session_info_script = f"{self.deseq_raw_folder}/tmp.R"
+        self.deseq_session_info = f"{self.deseq_raw_folder}/R_session_info.txt"
+        self.version_path = f"{self.align_report_folder}/version_log.txt"
 
     def _get_sorted_folder_content(self, folder):
         """Return the sorted file list of a folder"""
@@ -184,7 +158,7 @@ class Paths(object):
             if not ("_p1" in read_file or "_p2" in read_file):
                 sys.stderr.write(
                     "Error: You specified this as paired end run data but the "
-                    "file name '%s' does not contain '_p1' or '_p2'.\n"
+                    "file name '{}' does not contain '_p1' or '_p2'.\n"
                 )
                 sys.exit(1)
         read_file_pairs = list(
@@ -221,9 +195,9 @@ class Paths(object):
         for p1_name in p1_names:
             if not p1_name.endswith("_p1"):
                 sys.stderr.write(
-                    "Error: File '%s' should end with '_p1' but "
+                    f"Error: File '{p1_name}' should end with '_p1' but "
                     "does not. Please check file name convention "
-                    "for paired end reads.\n" % p1_name
+                    "for paired end reads.\n"
                 )
                 sys.exit(1)
         return [p1_name[:-3] for p1_name in p1_names]
@@ -435,14 +409,10 @@ class Paths(object):
         )
 
     def _path_list(self, folder, files, appendix=""):
-        return ["%s/%s%s" % (folder, file, appendix) for file in files]
+        return [f"{folder}/{file}{appendix}" for file in files]
 
     def gene_quanti_path(self, read_file, annotation_file):
-        return "%s/%s_to_%s.csv" % (
-            self.gene_quanti_per_lib_folder,
-            read_file,
-            annotation_file,
-        )
+        return f"{self.gene_quanti_per_lib_folder}/{read_file}_to_{annotation_file}.csv"
 
     def wiggle_file_raw_path(self, read_file, strand, multi=None, div=None):
         return self._wiggle_file_path(
@@ -466,10 +436,10 @@ class Paths(object):
     def _wiggle_file_path(
         self, folder, read_file, strand, multi=None, div=None
     ):
-        path = "%s/%s" % (folder, read_file)
+        path = f"{folder}/{read_file}"
         if not div is None:
-            path += "_div_by_%.1f" % (div)
+            path += f"_div_by_{div}.1f"
         if not multi is None:
-            path += "_multi_by_%.1f" % (multi)
-        path += "_%s.wig" % strand
+            path += f"_multi_by_{multi}.1f"
+        path += f"_{strand}.wig"
         return path
