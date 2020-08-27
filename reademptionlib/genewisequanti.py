@@ -46,8 +46,9 @@ class GeneWiseQuantification(object):
         gff3_parser = Gff3Parser()
         self.alignments_and_no_of_overlaps = {}
         for annotation_path in annotation_paths:
+            annotation_name = annotation_path.split("/")[-1]
             sam = pysam.Samfile(read_alignment_path)
-            for entry in gff3_parser.entries(open(annotation_path)):
+            for entry in gff3_parser.entries(open(annotation_path), annotation_name):
                 if _entry_to_use(entry, self._allowed_features) is False:
                     continue
                 for alignment in self._overlapping_alignments(sam, entry):
@@ -78,8 +79,9 @@ class GeneWiseQuantification(object):
         annotation_path,
         output_path,
         fraction_calc_method,
-        pseudocounts=False,
+        pseudocounts=False
     ):
+
         sam = pysam.Samfile(read_alignment_path)
         gff3_parser = Gff3Parser()
         output_fh = open(output_path, "w")
@@ -88,7 +90,8 @@ class GeneWiseQuantification(object):
             + "\t".join(_gff_field_descriptions() + ["sense", "antisense"])
             + "\n"
         )
-        for entry in gff3_parser.entries(open(annotation_path)):
+        annotation_name = annotation_path.split("/")[-1]
+        for entry in gff3_parser.entries(open(annotation_path), annotation_name):
             if _entry_to_use(entry, self._allowed_features) is False:
                 continue
             if pseudocounts is False:
@@ -422,7 +425,8 @@ class GeneWiseOverview(object):
             table_columns = []
             entries = []
             seq_lengths = []
-            for entry in gff3_parser.entries(open(annotation_path)):
+            annotation_name = annotation_path.split("/")[-1]
+            for entry in gff3_parser.entries(open(annotation_path), annotation_name):
                 if _entry_to_use(entry, self._allowed_features) is False:
                     continue
                 entries.append(direction + "\t" + str(entry))
@@ -473,7 +477,8 @@ class GeneWiseOverview(object):
             table_columns = []
             entries = []
             seq_lengths = []
-            for entry in gff3_parser.entries(open(annotation_path)):
+            annotation_name = annotation_path.split("/")[-1]
+            for entry in gff3_parser.entries(open(annotation_path), annotation_name):
                 if _entry_to_use(entry, self._allowed_features) is False:
                     continue
                 entries.append(direction + "\t" + str(entry))

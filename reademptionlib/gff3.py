@@ -12,9 +12,10 @@ class Gff3Parser(object):
     http://modencode.oicr.on.ca/cgi-bin/validate_gff3_online
     """
 
-    def entries(self, input_gff_fh):
+    def entries(self, input_gff_fh, annotation_name):
         """
         """
+        gff_line_number = 0
         for entry_dict in csv.DictReader(
             input_gff_fh,
             delimiter="\t",
@@ -30,17 +31,20 @@ class Gff3Parser(object):
                 "attributes",
             ],
         ):
+            gff_line_number += 1
             if entry_dict["seq_id"].startswith("#"):
                 continue
             try:
                 yield (self._dict_to_entry(entry_dict))
-            except:
+            except Exception as exception:
                 sys.stderr.write(
-                    "Error! Please make sure that you use GFF3 formated "
+                    f"Error in line number {gff_line_number} of {annotation_name}! Please make sure that you use GFF3 formated "
                     "annotation files. GTF2/GTF is not valid and the usage "
                     "of that format is not recommended anymore (see "
                     "http://www.sequenceontology.org/gff3.shtml for more "
                     "information).\n"
+                    f"The line that caused the error was read in as: {entry_dict}"
+                    f"The error message that occurred is: {exception} "
                 )
                 sys.exit(0)
 
