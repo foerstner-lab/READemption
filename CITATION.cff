@@ -1,0 +1,18 @@
+cff-version: 1.0.1
+message: If you use this software, please cite it as below.
+authors:
+  - family-names: Förstner
+    given-names: Konrad Ulrich 
+    orcid: https://orcid.org/0000-0002-1481-2996
+  - family-names: Sauerwein
+    given-names: Till David 
+    orcid: https://orcid.org/0000-0001-5830-4208
+  - family-names: Bischler
+    given-names: Thorsten 
+    orcid: https://orcid.org/0000-0001-9288-9481
+  - family-names: Tobin
+    given-names: Diarmaid         
+title: "READemption"
+version: 1.0.1
+doi: 10.5281/zenodo.3940386
+date-released: 2020-07-11
