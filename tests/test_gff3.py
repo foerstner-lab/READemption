@@ -14,7 +14,7 @@ class TestGff3Parser(unittest.TestCase):
     def test_entries(self):
         gff_fh = StringIO(self.example_data.gff_content_1)
         entry_seq_ids = [
-            entry.seq_id for entry in self.gff3parser.entries(gff_fh)
+            entry.seq_id for entry in self.gff3parser.entries(gff_fh,"human")
         ]
         self.assertListEqual(
             ["foo01", "foo01", "foo02", "foo02"], entry_seq_ids
