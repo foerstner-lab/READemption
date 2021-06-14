@@ -90,8 +90,8 @@ class TestSegemehlAligning(TestSegemehl):
             + "\n"
         )
         self.assertEqual(
-            self._align_reads_and_give_result(read_file_content),
-            self.large_output.sam_result_aligned_1,
+            self._remove_header_lines(self._align_reads_and_give_result(read_file_content)),
+            self._remove_header_lines(self.large_output.sam_result_aligned_1),
         )
 
     def test_map_reads_single_read_not_matching(self):
@@ -106,8 +106,8 @@ class TestSegemehlAligning(TestSegemehl):
             + "\n"
         )
         self.assertEqual(
-            self._align_reads_and_give_result(read_file_content),
-            self.large_output.sam_result_no_aligned_1,
+            self._remove_header_lines(self._align_reads_and_give_result(read_file_content)),
+            self._remove_header_lines(self.large_output.sam_result_no_aligned_1),
         )
 
     def test_map_reads_single_read_one_mismatch(self):
@@ -120,8 +120,8 @@ class TestSegemehlAligning(TestSegemehl):
         """
         read_file_content = ">read_03\nGCTTTTTTTTCGACCAGACA\n"
         self.assertEqual(
-            self._align_reads_and_give_result(read_file_content),
-            self.large_output.sam_result_aligned_2,
+            self._remove_header_lines(self._align_reads_and_give_result(read_file_content)),
+            self._remove_header_lines(self.large_output.sam_result_aligned_2),
         )
 
     def test_map_reads_single_read_two_mismatches_95(self):
@@ -134,8 +134,8 @@ class TestSegemehlAligning(TestSegemehl):
         """
         read_file_content = ">read_04\nGCTTTTTTTTCGACCAGTCA\n"
         self.assertEqual(
-            self._align_reads_and_give_result(read_file_content),
-            self.large_output.sam_result_no_aligned_1,
+            self._remove_header_lines(self._align_reads_and_give_result(read_file_content)),
+            self._remove_header_lines(self.large_output.sam_result_no_aligned_1),
         )
 
     def test_map_reads_single_read_two_mismatches_90(self):
@@ -147,9 +147,11 @@ class TestSegemehlAligning(TestSegemehl):
         GCTTTTTTTTCGACCAGTCA
         """
         read_file_content = ">read_05\nGCTTTTTTTTCGACCAGTCA\n"
+        print(self._remove_header_lines(self._align_reads_and_give_result(read_file_content, accuracy=90)))
+        print(self._remove_header_lines(self._align_reads_and_give_result(read_file_content, accuracy=90)))
         self.assertEqual(
-            self._align_reads_and_give_result(read_file_content, accuracy=90),
-            self.large_output.sam_result_aligned_3,
+            self._remove_header_lines(self._align_reads_and_give_result(read_file_content, accuracy=90)),
+            self._remove_header_lines(self._align_reads_and_give_result(read_file_content, accuracy=90)),
         )
 
     def test_map_reads_single_read_three_mismatches(self):
@@ -162,8 +164,8 @@ class TestSegemehlAligning(TestSegemehl):
 
         read_file_content = ">read_06\nGCTTTTTTTTCGACCAGTCA\n"
         self.assertEqual(
-            self._align_reads_and_give_result(read_file_content),
-            self.large_output.sam_result_no_aligned_1,
+            self._remove_header_lines(self._align_reads_and_give_result(read_file_content)),
+            self._remove_header_lines(self.large_output.sam_result_no_aligned_1),
         )
 
     def test_map_reads_single_too_short_read(self):
@@ -171,8 +173,8 @@ class TestSegemehlAligning(TestSegemehl):
         """
         read_file_content = ">read_07\nGCTTTTTTT\n"
         self.assertEqual(
-            self._align_reads_and_give_result(read_file_content),
-            self.large_output.sam_result_no_aligned_1,
+            self._remove_header_lines(self._align_reads_and_give_result(read_file_content)),
+            self._remove_header_lines(self.large_output.sam_result_no_aligned_1),
         )
 
     def _align_reads_and_give_result(self, read_file_content, **kwargs):
@@ -208,6 +210,14 @@ class TestSegemehlAligning(TestSegemehl):
             catch_stdout=False,
         )
 
+    def _remove_header_lines(self, alignment):
+        alignment_without_header = ""
+        for line in alignment.splitlines():
+            if line.startswith("@"):
+                continue
+            else:
+                alignment_without_header += line + "\n"
+        return alignment_without_header
 
 class ExampleData(object):
 
