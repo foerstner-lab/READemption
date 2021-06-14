@@ -345,6 +345,13 @@ class GeneWiseOverview(object):
          The simplified formula is implemented below
         """
         for lib in libs:
+            gene_quanti[lib] = gene_quanti[lib].astype(float)
+            if (gene_quanti[lib] == 0).all():
+                print(f"Warning: Calculating TPM values for genes that have no "
+                      f"other values than zero is not possible. Skipping the "
+                      f"creation of the TPM gene quantification for library {lib}.")
+                gene_quanti.drop(lib, inplace=True, axis=1)
+                continue
             # calculate A
             gene_quanti["transcript_count"] = gene_quanti.apply(
                 lambda df: (int(df[lib]))
