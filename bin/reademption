@@ -33,7 +33,23 @@ def create_parser():
 
     # Arguments for project creation
     create_project_parser = subparsers.add_parser(
-        "create", help="Create a project")
+        "create", help="Create a project", formatter_class=argparse.RawTextHelpFormatter)
+    create_project_parser.add_argument(
+        "--species", "-s", nargs="+", metavar="SUB_FOLDER_NAME=DISPLAY_NAME",
+        required=True,
+        help="One key-value pair for each species.\n"
+             "Key-value "
+             "pairs consist of a 'sub folder name' (key) and a "
+             "'display name' (value) and are separated by an '='-sign.\n"
+             "The 'sub folder name' will be used to create input -and output "
+             "folders for the given species.\n"
+             "The 'display name' will be used for output files "
+             "and figures. \n"
+             "Syntax example: \n"
+             "$ reademption create --species "
+             "human=\"Homo sapiens\" "
+             "staphylococcus=\"Staphylococcus aureus\" "
+             "--project_path READemption_analysis")
     create_project_parser.add_argument(
         "--project_path", "-f", help="Path of the project folder.")
     create_project_parser.set_defaults(func=create_project)
