@@ -423,7 +423,8 @@ class Controller(object):
                 self._args.split,
                 paired_end=True,
             )
-
+"""
+# realign is no feature of segemehl 0.3.4 and can be deleted
     def _realign_unmapped_reads(self):
         read_realigner = ReadRealigner(self._args.lack_bin, self._args.progress)
         for (
@@ -447,7 +448,7 @@ class Controller(object):
                 int(self._args.segemehl_accuracy),
             )
             os.remove(query_sam_path)
-
+"""
     def _sam_to_bam(self, sam_paths, bam_prefixes_paths, bam_paths):
         """Manage the conversion of mapped read from SAM to BAM format."""
         sam_to_bam_converter = SamToBamConverter()
