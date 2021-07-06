@@ -67,10 +67,11 @@ class ProjectCreator(object):
         return species_dict
 
     def create_version_file(self, version_file_path, version):
+        python_version = sys.version.replace("\n", " ")
         with open(version_file_path, "w") as fh:
-            fh.write("READemption version: %s\n" % version)
-            fh.write("Python version: %s\n" % sys.version.replace("\n", " "))
-            fh.write("Biopython version: %s\n" % Bio.__version__)
-            fh.write("pysam version: %s\n" % pysam.__version__)
-            fh.write("matplotlib version: %s\n" % matplotlib.__version__)
-            fh.write("pandas version: %s\n" % pd.__version__)
+            fh.write(f"READemption version: {version}\n")
+            fh.write(f"Python version: {python_version}\n")
+            fh.write(f"Biopython version: {Bio.__version__}\n")
+            fh.write(f"pysam version: {pysam.__version__}\n")
+            fh.write(f"matplotlib version: {matplotlib.__version__}\n")
+            fh.write(f"pandas version: {pd.__version__}\n")
