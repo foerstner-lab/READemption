@@ -10,7 +10,7 @@ import pysam
 class ProjectCreator(object):
     def create_root_folder(self, project_name):
         """Create the root folder of a new project with the given name.
-        
+
         Arguments:
         - `project_name`: Name of the project root folder
 
@@ -26,7 +26,7 @@ class ProjectCreator(object):
 
     def create_subfolders(self, subfolders):
         """Create required subfolders in the given folder.
-        
+
         Arguments:
         - `project_name`: Name of the project root folder
 
@@ -35,12 +35,31 @@ class ProjectCreator(object):
             if not os.path.exists(folder):
                 os.mkdir(folder)
 
-    def create_species_file(self, species_file_path, species):
+    def create_species_file(
+        self, species_file_path: str, species: list
+    ) -> None:
+        """
+        Creates a json text file that contains the species information
+        for each species, which is:
+        - a name for the species' subfolders
+        - a display name for figures and output files
+        :param species_file_path: path of json file that holds
+         the species information
+        :param species: a list containing species information give by the user
+         when creating a new project via the parameter --species
+        """
         species_dict = self._get_species_dictionary(species)
         with open(species_file_path, "w") as species_json:
             json.dump(species_dict, species_json)
 
-    def _get_species_dictionary(self, species):
+    def _get_species_dictionary(self, species: list) -> dict:
+        """
+        makes a dictionary from the species argument list
+        :param species: a list containing species information give by the user
+         when creating a new project via the parameter --species
+        :return: dictionary containing the species sub folder name as keys and
+        the species display name as values
+        """
         species_dict = {}
         for sp in species:
             sub_folder_name, display_name = sp.split("=")
