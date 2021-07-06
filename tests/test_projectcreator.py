@@ -2,6 +2,11 @@ import unittest
 import os
 import sys
 import shutil
+import subprocess
+import Bio
+import matplotlib
+import pandas as pd
+import pysam
 
 sys.path.append(".")
 from reademptionlib.projectcreator import ProjectCreator
@@ -11,6 +16,7 @@ class TestProjectCreator(unittest.TestCase):
     def setUp(self):
         self.root_folder_name = "a_test_project"
         self.species_file_path = ".species.json"
+        self.version_file_path = ".version_log.txt"
         self.projectcreator = ProjectCreator()
 
     def tearDown(self):
@@ -18,6 +24,8 @@ class TestProjectCreator(unittest.TestCase):
             shutil.rmtree(self.root_folder_name)
         if os.path.exists(self.species_file_path):
             os.remove(self.species_file_path)
+        if os.path.exists(self.version_file_path):
+            os.remove(self.version_file_path)
 
     def test_create_root_folder(self):
         self.projectcreator.create_root_folder(self.root_folder_name)
@@ -36,13 +44,46 @@ class TestProjectCreator(unittest.TestCase):
 
     def test_create_species_file(self):
         species_json_content = (
-            "{\"human\": \"Homo sapiens\", "
-            "\"staph\": \"Staphylococcus aureus\"}")
-        self.projectcreator.create_species_file(self.species_file_path,
-            ['human=Homo sapiens',
-             'staph=Staphylococcus aureus'])
-        with open(self.species_file_path ,"r") as species_file:
+            '{"human": "Homo sapiens", ' '"staph": "Staphylococcus aureus"}'
+        )
+        self.projectcreator.create_species_file(
+            self.species_file_path,
+            ["human=Homo sapiens", "staph=Staphylococcus aureus"],
+        )
+        with open(self.species_file_path, "r") as species_file:
             self.assertEqual(species_file.read(), species_json_content)
+
+    def test_create_version_file(self):
+        # Get READemption version
+        reademption_output = subprocess.run(
+            ["reademption", "--version"], stdout=subprocess.PIPE
+        ).stdout.decode("utf-8")
+        reademption_version_not_cleaned = reademption_output.split(" ")[-1]
+        reademption_version = reademption_version_not_cleaned.replace("\n", " ")
+        # Get Python version
+        python_version = sys.version.replace("\n", " ")
+
+        # Create the version file
+        self.projectcreator.create_version_file(
+            self.version_file_path, reademption_version
+        )
+        # The expected content of the version file. The version number of the
+        # modules are retrieved from the actual system where testing happens
+        expected_version_file_content = (
+            f"READemption version: {reademption_version}\n"
+            f"Python version: {python_version}\n"
+            f"Biopython version: {Bio.__version__}\n"
+            f"pysam version: {pysam.__version__}\n"
+            f"matplotlib version: {matplotlib.__version__}\n"
+            f"pandas version: {pd.__version__}\n"
+        )
+        # Compare the version file with the expected content
+        with open(self.version_file_path, "r") as version_file:
+            version_file_content = version_file.read()
+            self.assertMultiLineEqual(
+                version_file_content, expected_version_file_content
+            )
+
 
 if __name__ == "__main__":
     unittest.main()
