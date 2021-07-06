@@ -1,3 +1,4 @@
+import json
 import os
 import sys
 import Bio
@@ -33,6 +34,18 @@ class ProjectCreator(object):
         for folder in subfolders:
             if not os.path.exists(folder):
                 os.mkdir(folder)
+
+    def create_species_file(self, species_file_path, species):
+        species_dict = self._get_species_dictionary(species)
+        with open(species_file_path, "w") as species_json:
+            json.dump(species_dict, species_json)
+
+    def _get_species_dictionary(self, species):
+        species_dict = {}
+        for sp in species:
+            sub_folder_name, display_name = sp.split("=")
+            species_dict[sub_folder_name] = display_name
+        return species_dict
 
     def create_version_file(self, version_file_path, version):
         with open(version_file_path, "w") as fh:

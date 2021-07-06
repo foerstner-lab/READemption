@@ -53,6 +53,8 @@ class Controller(object):
         project_creator = ProjectCreator()
         project_creator.create_root_folder(self._args.project_path)
         project_creator.create_subfolders(self._paths.required_folders())
+        project_creator.create_species_file(self._paths.species_file,
+                                            self._args.species)
         project_creator.create_version_file(self._paths.version_path, version)
         sys.stdout.write(
             'Created folder "%s" and required subfolders.\n'
