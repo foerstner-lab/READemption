@@ -3,8 +3,10 @@ import sys
 
 
 class Paths(object):
-    def __init__(self, base_path="."):
+    def __init__(self, base_path, config_path, species):
         self.base_path = base_path
+        self.config_file = config_path
+        self.species = species
         self._set_folder_names()
         self._set_static_files()
 
@@ -12,7 +14,6 @@ class Paths(object):
         """Set the name of folders used in a project."""
         self.input_folder = f"{self.base_path}/input"
         self.output_folder = f"{self.base_path}/output"
-        self.config_file = f"{self.base_path}/config.json"
         self._set_input_folder_names()
         self._set_read_alignment_folder_names()
         self._set_coverage_folder_names()
