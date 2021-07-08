@@ -48,9 +48,11 @@ class ProjectCreator(object):
         :param species: a list containing species information give by the user
          when creating a new project via the parameter --species
         """
+        configuration = {}
         species_dict = self._get_species_dictionary(species)
+        configuration["species"] = species_dict
         with open(config_file_path, "w") as config_json:
-            json.dump(species_dict, config_json)
+            json.dump(configuration, config_json)
 
     def _get_species_dictionary(self, species: list) -> dict:
         """
