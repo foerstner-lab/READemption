@@ -32,9 +32,31 @@ class Controller(object):
     def __init__(self, args):
         """Create an instance."""
         self._args = args
-        self._paths = Paths(args.project_path)
+        self._args.config_file_path = f"{self._args.project_path}/config.json"
+        # The species-"sub folder name" and the species-"display name" have to
+        # be provided only when creating a new project with
+        # the subcommand "create". The information is written to
+        # the file "config.json", during the creation of a new project.
+        # All subcommands other than "create" get the species information from
+        # the "config.json" file.
+        # If the species argument was not provided read the config file:
+        if not "species" in self._args:
+            try:
+                self._args.species = self._get_species_from_config(
+                    self._args.config_file_path
+                )
+            except FileNotFoundError:
+                print("Error! Config file not found!")
+        self._paths = Paths(
+            args.project_path, self._args.config_file_path, self._args.species
+        )
         self._read_files = None
         self._ref_seq_files = None
+
+    def _get_species_from_config(self, config_file_path):
+        with open(config_file_path, "r") as config_file:
+            config = json.loads(config_file.read())
+            return config["species"]
 
     def create_project(self, version):
         """Create a new project."""
@@ -52,9 +74,10 @@ class Controller(object):
         )
         project_creator = ProjectCreator()
         project_creator.create_root_folder(self._args.project_path)
+        project_creator.create_config_file(
+            self._paths.config_file, self._args.species
+        )
         project_creator.create_subfolders(self._paths.required_folders())
-        project_creator.create_config_file(self._paths.config_file,
-                                           self._args.species)
         project_creator.create_version_file(self._paths.version_path, version)
         sys.stdout.write(
             'Created folder "%s" and required subfolders.\n'
