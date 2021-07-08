@@ -35,22 +35,22 @@ class ProjectCreator(object):
             if not os.path.exists(folder):
                 os.mkdir(folder)
 
-    def create_species_file(
-        self, species_file_path: str, species: list
+    def create_config_file(
+        self, config_file_path: str, species: list
     ) -> None:
         """
         Creates a json text file that contains the species information
         for each species, which is:
         - a name for the species' subfolders
         - a display name for figures and output files
-        :param species_file_path: path of json file that holds
-         the species information
+        :param config_file_path: path of json file that holds
+         the species information and other configurations
         :param species: a list containing species information give by the user
          when creating a new project via the parameter --species
         """
         species_dict = self._get_species_dictionary(species)
-        with open(species_file_path, "w") as species_json:
-            json.dump(species_dict, species_json)
+        with open(config_file_path, "w") as config_json:
+            json.dump(species_dict, config_json)
 
     def _get_species_dictionary(self, species: list) -> dict:
         """

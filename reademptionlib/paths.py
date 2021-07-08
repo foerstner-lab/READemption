@@ -12,7 +12,7 @@ class Paths(object):
         """Set the name of folders used in a project."""
         self.input_folder = f"{self.base_path}/input"
         self.output_folder = f"{self.base_path}/output"
-        self.species_file = f"{self.base_path}/.species.json"
+        self.config_file = f"{self.base_path}/config.json"
         self._set_input_folder_names()
         self._set_read_alignment_folder_names()
         self._set_coverage_folder_names()
