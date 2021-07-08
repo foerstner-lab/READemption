@@ -62,7 +62,7 @@ def create_parser():
         "--project_path READemption_analysis",
     )
     create_project_parser.add_argument(
-        "--project_path", "-f", help="Path of the project folder."
+        "--project_path", "-f", required=True, help="Path of the project folder."
     )
     create_project_parser.set_defaults(func=create_project)
 
@@ -71,7 +71,7 @@ def create_parser():
         "align", help="Run read alignings"
     )
     read_aligning_parser.add_argument(
-        "--project_path", "-f", help="Path of the project folder."
+        "--project_path", "-f", default=".", help="Path of the project folder."
     )
     read_aligning_parser.add_argument(
         "--min_read_length",
@@ -201,7 +201,7 @@ def create_parser():
         "coverage", help="Create coverage (wiggle) files"
     )
     coverage_creation_parser.add_argument(
-        "--project_path", "-f", help="Path of the project folder."
+        "--project_path", "-f", default=".", help="Path of the project folder."
     )
     coverage_creation_parser.add_argument(
         "--unique_only",
@@ -284,7 +284,7 @@ def create_parser():
         "gene_quanti", help="Quantify the expression gene wise"
     )
     gene_wise_quanti_parser.add_argument(
-        "--project_path", "-f", help="Path of the project folder."
+        "--project_path", "-f", default=".", help="Path of the project folder."
     )
     gene_wise_quanti_parser.add_argument(
         "--min_overlap",
@@ -404,7 +404,7 @@ def create_parser():
         "deseq", help="Compare expression pairwise using DESeq"
     )
     deseq_parser.add_argument(
-        "--project_path", "-f", help="Path of the project folder."
+        "--project_path", "-f", default=".", help="Path of the project folder."
     )
     deseq_parser.add_argument(
         "--libs", "-l", required=True, help="Comma separated list of libraries."
@@ -441,7 +441,7 @@ def create_parser():
         help="Use this if reads are originating from a paired-end sequencing.",
     )
     viz_align_parser.add_argument(
-        "--project_path", "-f", help="Path of the project folder."
+        "--project_path", "-f", default=".", help="Path of the project folder."
     )
     viz_align_parser.set_defaults(func=viz_align)
 
@@ -458,7 +458,7 @@ def create_parser():
         help="Use this if reads are originating from a paired-end sequencing.",
     )
     viz_gene_quanti_parser.add_argument(
-        "--project_path", "-f", help="Path of the project folder."
+        "--project_path", "-f", default=".", help="Path of the project folder."
     )
     viz_gene_quanti_parser.set_defaults(func=viz_gene_quanti)
 
@@ -467,7 +467,7 @@ def create_parser():
         "viz_deseq", help="Generate DESeq visualisations."
     )
     viz_deseq_parser.add_argument(
-        "--project_path", "-f", help="Path of the project folder."
+        "--project_path", "-f", default=".", help="Path of the project folder."
     )
 
     viz_deseq_parser.add_argument(
