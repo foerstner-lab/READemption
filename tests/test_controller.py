@@ -7,26 +7,31 @@ sys.path.append(".")
 from reademptionlib.controller import Controller
 
 
-class ArgMock(object):
-    project_path = "a_test_project"
-    min_read_length = 12
-    segemehl_bin = "segemehl.x"
-    threads = 1
-    segemehl_accuracy = 95
-    segemehl_evalue = 5.0
-    paired_end = False
-    processes = 1
-    check_for_existing_files = False
-    poly_a_clipping = True
-    progress = False
-    split = False
-    realign = False
-    crossalign_cleaning_str = None
-    fastq = False
-    min_phred_score = None
-    adapter = None
-    reverse_complement = False
+class ArgMock():
+    def __init__(self):
+        self.project_path = "a_test_project"
+        self.species = ["human=Homo sapiens","staph=Staphylococcus aureus"]
+        self.min_read_length = 12
+        self.segemehl_bin = "segemehl.x"
+        self.threads = 1
+        self.segemehl_accuracy = 95
+        self.segemehl_evalue = 5.0
+        self.paired_end = False
+        self.processes = 1
+        self.check_for_existing_files = False
+        self.poly_a_clipping = True
+        self.progress = False
+        self.split = False
+        self.realign = False
+        self.crossalign_cleaning_str = None
+        self.fastq = False
+        self.min_phred_score = None
+        self.adapter = None
+        self.reverse_complement = False
 
+    # make mock argument object iterable like argpars.Namespace()
+    def __iter__(self):
+        return (i for i in [self.project_path, self.species, self.min_read_length])
 
 class TestController(unittest.TestCase):
     def setUp(self):
@@ -86,7 +91,7 @@ class TestControllerCreateProject(TestController):
         self.controller.create_project(self._version)
         self.assertEqual(
             set(list(os.listdir(self.test_project_name))),
-            set(["input", "output"]),
+            set(["input", "output", "config.json"]),
         )
         self._remove_project_folder()
 

@@ -43,14 +43,14 @@ class TestProjectCreator(unittest.TestCase):
             assert os.path.exists(subfolder)
 
     def test_create_species_file(self):
-        species_json_content = (
-            '{"human": "Homo sapiens", ' '"staph": "Staphylococcus aureus"}'
+        config_json_content = (
+            '{"species": {"human": "Homo sapiens", ' '"staph": "Staphylococcus aureus"}}'
         )
         self.projectcreator.create_config_file(self.config_file_path,
                                                ["human=Homo sapiens",
                                                 "staph=Staphylococcus aureus"])
         with open(self.config_file_path, "r") as config_file:
-            self.assertEqual(config_file.read(), species_json_content)
+            self.assertEqual(config_file.read(), config_json_content)
 
     def test_create_version_file(self):
         # Get READemption version

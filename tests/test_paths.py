@@ -10,11 +10,13 @@ from reademptionlib.paths import Paths
 class TestPaths(unittest.TestCase):
 
     test_folder = "/tmp/test"
+    test_config = "tmp/config.json"
+    test_species = {"human": "Homo sapiens", ' '"staph": "Staphylococcus aureus"}
     test_files = ["foo.fa", "bar.fa"]
     test_lib_names = ["foo", "bar"]
 
     def setUp(self):
-        self.paths = Paths(base_path=self.test_folder)
+        self.paths = Paths(self.test_folder, self.test_config, self.test_species)
         self.folder_names = [
             self.paths.input_folder,
             self.paths.output_folder,
