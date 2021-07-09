@@ -2,13 +2,28 @@ import os
 import sys
 
 
-class Paths(object):
-    def __init__(self, base_path, config_path, species):
+class Paths:
+    def __init__(
+        self, base_path, config_path, species_folder_and_display_names
+    ):
         self.base_path = base_path
         self.config_file = config_path
-        self.species = species
+        self.species_folder_and_display_names = species_folder_and_display_names
+        (
+            self.species_sub_folder_names,
+            self.species_display_names,
+        ) = self._set_species_sub_folder_and_display_names(
+            self.species_folder_and_display_names
+        )
         self._set_folder_names()
         self._set_static_files()
+
+    def _set_species_sub_folder_and_display_names(
+        self, species_folder_and_display_names
+    ):
+        species_sub_folder_names = species_folder_and_display_names.keys()
+        species_display_names = species_folder_and_display_names.values()
+        return species_sub_folder_names, species_display_names
 
     def _set_folder_names(self):
         """Set the name of folders used in a project."""
@@ -26,7 +41,13 @@ class Paths(object):
     def _set_input_folder_names(self):
         self.read_fasta_folder = f"{self.input_folder}/reads"
         self.ref_seq_folder = f"{self.input_folder}/reference_sequences"
+        self.ref_seq_species_folders = self._set_species_sub_folder_paths(
+            self.ref_seq_folder, self.species_sub_folder_names
+        )
         self.annotation_folder = f"{self.input_folder}/annotations"
+        self.annotation_species_folder = self._set_species_sub_folder_paths(
+            self.annotation_folder, self.species_sub_folder_names
+        )
 
     def _set_read_alignment_folder_names(self):
         self.align_base_folder = f"{self.output_folder}/align"
@@ -131,6 +152,15 @@ class Paths(object):
         self.deseq_tmp_session_info_script = f"{self.deseq_raw_folder}/tmp.R"
         self.deseq_session_info = f"{self.deseq_raw_folder}/R_session_info.txt"
         self.version_path = f"{self.align_report_folder}/version_log.txt"
+
+    def _set_species_sub_folder_paths(
+        self, base_folder: str, species_sub_folder_names: list
+    ) -> list:
+        species_sub_folder_paths = []
+        for species_sub_folder_name in species_sub_folder_names:
+            species_sub_folder_path = f"{base_folder}/{species_sub_folder_name}"
+            species_sub_folder_paths.append(species_sub_folder_path)
+        return species_sub_folder_paths
 
     def _get_sorted_folder_content(self, folder):
         """Return the sorted file list of a folder"""
@@ -252,7 +282,9 @@ class Paths(object):
         return [
             self.read_fasta_folder,
             self.ref_seq_folder,
+            *self.ref_seq_species_folders,
             self.annotation_folder,
+            *self.annotation_species_folder,
         ]
 
     def required_read_alignment_folders(self):

@@ -47,8 +47,14 @@ class Controller(object):
                 )
             except FileNotFoundError:
                 print("Error! Config file not found!")
+
+        self._args.species_folder_and_display_names = (
+            self._get_species_folder_and_display_names(self._args.species)
+        )
         self._paths = Paths(
-            args.project_path, self._args.config_file_path, self._args.species
+            args.project_path,
+            self._args.config_file_path,
+            self._args.species_folder_and_display_names,
         )
         self._read_files = None
         self._ref_seq_files = None
@@ -57,6 +63,13 @@ class Controller(object):
         with open(config_file_path, "r") as config_file:
             config = json.loads(config_file.read())
             return config["species"]
+
+    def _get_species_folder_and_display_names(self, species):
+        species_folder_and_display_names = {}
+        for sp in species:
+            sub_folder_name, display_name = sp.split("=")
+            species_folder_and_display_names[sub_folder_name] = display_name
+        return species_folder_and_display_names
 
     def create_project(self, version):
         """Create a new project."""
