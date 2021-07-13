@@ -66,13 +66,22 @@ class Paths:
 
     def _set_coverage_folder_names(self):
         self.coverage_base_folder = f"{self.output_folder}/coverage"
-        self.coverage_raw_folder = f"{self.coverage_base_folder}/coverage-raw"
-        self.coverage_tnoar_min_norm_folder = (
-            f"{self.coverage_base_folder}/coverage-tnoar_min_normalized"
-        )
-        self.coverage_tnoar_mil_norm_folder = (
-            f"{self.coverage_base_folder}/coverage-tnoar_mil_normalized"
-        )
+        self.coverage_folders_by_species = {}
+        for species_sub_folder_name in self.species_sub_folder_names:
+            coverage_species_folders = {}
+            coverage_species_folders[
+                "coverage_species_base_folder"
+            ] = f"{self.coverage_base_folder}/{species_sub_folder_name}"
+            coverage_species_folders[
+                "coverage_raw_folder"
+            ] = f"{coverage_species_folders['coverage_species_base_folder']}/coverage-raw"
+            coverage_species_folders[
+                "coverage_tnoar_min_norm_folder"
+            ] = f"{coverage_species_folders['coverage_species_base_folder']}/coverage-tnoar_min_normalized"
+            coverage_species_folders[
+                "coverage_tnoar_mil_norm_folder"
+            ] = f"{coverage_species_folders['coverage_species_base_folder']}/coverage-tnoar_mil_normalized"
+            self.coverage_folders_by_species[species_sub_folder_name] = coverage_species_folders
 
     def _set_gene_quanti_folder_names(self):
         self.gene_quanti_base_folder = f"{self.output_folder}/gene_quanti"
@@ -301,16 +310,22 @@ class Paths:
     def required_coverage_folders(self):
         return [
             self.coverage_base_folder,
-            self.coverage_raw_folder,
-            self.coverage_tnoar_min_norm_folder,
-            self.coverage_tnoar_mil_norm_folder,
+            *self._unpack_folder_paths(self.coverage_folders_by_species)
         ]
+
+    def _unpack_folder_paths(self, folders_by_species):
+        folder_paths = []
+        for species_folders in folders_by_species.values():
+            for path in species_folders.values():
+                folder_paths.append(path)
+        return folder_paths
 
     def required_gene_quanti_folders(self):
         return [
             self.gene_quanti_base_folder,
             self.gene_quanti_per_lib_folder,
             self.gene_quanti_combined_folder,
+            # TODO return all sub folders
         ]
 
     def required_deseq_folders(self):
@@ -459,6 +474,7 @@ class Paths:
         return self._wiggle_file_path(
             self.coverage_tnoar_min_norm_folder, read_file, strand, multi, div
         )
+        # TODO return wiggle_file_tnoar_norm_min_path for each species
 
     def wiggle_file_tnoar_norm_mil_path(
         self, read_file, strand, multi=None, div=None
