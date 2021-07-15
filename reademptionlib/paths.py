@@ -1,14 +1,24 @@
+import json
 import os
 import sys
 
 
 class Paths:
-    def __init__(
-        self, base_path, config_path, species_folder_and_display_names
-    ):
+    def __init__(self, base_path, species_information):
         self.base_path = base_path
-        self.config_file = config_path
-        self.species_folder_and_display_names = species_folder_and_display_names
+        self.config_file = f"{self.base_path}/config.json"
+        self.species_information = species_information
+        # The species information is either taken from a command line argument
+        # or if that argument was not given ("None"), the speces information
+        # is retrieved from the config file
+        if self.species_information:
+            self.species_folder_and_display_names = (
+                self._get_species_from_cml_argument(self.species_information)
+            )
+        else:
+            self.species_folder_and_display_names = (
+                self._get_species_from_config(self.config_file)
+            )
         (
             self.species_sub_folder_names,
             self.species_display_names,
@@ -17,6 +27,27 @@ class Paths:
         )
         self._set_folder_names()
         self._set_static_files()
+
+    def _get_species_from_cml_argument(self, species_information: str) -> dict:
+        """
+        :param species_information: The argument regarding the species
+        information that was provided by the user
+        :return: Dictionary containing the species information
+        """
+        species_folder_and_display_names = {}
+        for sp in species_information:
+            sub_folder_name, display_name = sp.split("=")
+            species_folder_and_display_names[sub_folder_name] = display_name
+        return species_folder_and_display_names
+
+    def _get_species_from_config(self, config_file: str) -> dict:
+        """
+        :param config_file: The path of the config file
+        :return: Dictionary containing the species information
+        """
+        with open(config_file, "r") as config_file:
+            config = json.loads(config_file.read())
+            return config["species"]
 
     def _set_species_sub_folder_and_display_names(
         self, species_folder_and_display_names
@@ -67,11 +98,17 @@ class Paths:
     def _set_coverage_folder_names(self):
         self.coverage_base_folder = f"{self.output_folder}/coverage"
         self.coverage_folders_by_species = {}
+        # check if only one species exists for the current project
         for species_sub_folder_name in self.species_sub_folder_names:
             coverage_species_folders = {}
-            coverage_species_folders[
-                "coverage_species_base_folder"
-            ] = f"{self.coverage_base_folder}/{species_sub_folder_name}"
+            if len(self.species_sub_folder_names) == 1:
+                coverage_species_folders[
+                    "coverage_species_base_folder"
+                ] = f"{self.coverage_base_folder}"
+            else:
+                coverage_species_folders[
+                    "coverage_species_base_folder"
+                ] = f"{self.coverage_base_folder}/{species_sub_folder_name}"
             coverage_species_folders[
                 "coverage_raw_folder"
             ] = f"{coverage_species_folders['coverage_species_base_folder']}/coverage-raw"
@@ -81,7 +118,9 @@ class Paths:
             coverage_species_folders[
                 "coverage_tnoar_mil_norm_folder"
             ] = f"{coverage_species_folders['coverage_species_base_folder']}/coverage-tnoar_mil_normalized"
-            self.coverage_folders_by_species[species_sub_folder_name] = coverage_species_folders
+            self.coverage_folders_by_species[
+                species_sub_folder_name
+            ] = coverage_species_folders
 
     def _set_gene_quanti_folder_names(self):
         self.gene_quanti_base_folder = f"{self.output_folder}/gene_quanti"
@@ -310,7 +349,7 @@ class Paths:
     def required_coverage_folders(self):
         return [
             self.coverage_base_folder,
-            *self._unpack_folder_paths(self.coverage_folders_by_species)
+            *self._unpack_folder_paths(self.coverage_folders_by_species),
         ]
 
     def _unpack_folder_paths(self, folders_by_species):
