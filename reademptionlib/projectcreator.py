@@ -36,7 +36,7 @@ class ProjectCreator(object):
                 os.mkdir(folder)
 
     def create_config_file(
-        self, config_file_path: str, species_folder_and_display_names: dict
+        self, config_file_path: str, species_folder_suffixes_and_display_names: dict
     ) -> None:
         """
         Creates a json text file that contains the species information
@@ -45,11 +45,11 @@ class ProjectCreator(object):
         - a display name for figures and output files
         :param config_file_path: path of json file that holds
          the species information and other configurations
-        :param species_folder_and_display_names: a dictionary containing
+        :param species_folder_suffixes_and_display_names: a dictionary containing
         species information keys are folder names and values are display names
         """
         configuration = {}
-        configuration["species"] = species_folder_and_display_names
+        configuration["species"] = species_folder_suffixes_and_display_names
         with open(config_file_path, "w") as config_json:
             json.dump(configuration, config_json)
 

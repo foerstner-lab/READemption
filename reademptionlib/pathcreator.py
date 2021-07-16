@@ -12,18 +12,18 @@ class PathCreator:
         # or if that argument was not given ("None"), the speces information
         # is retrieved from the config file
         if self.species_information:
-            self.species_folder_and_display_names = (
+            self.species_folder_suffixes_and_display_names = (
                 self._get_species_from_cml_argument(self.species_information)
             )
         else:
-            self.species_folder_and_display_names = (
+            self.species_folder_suffixes_and_display_names = (
                 self._get_species_from_config(self.config_file)
             )
         (
-            self.species_sub_folder_names,
+            self.species_folder_suffixes,
             self.species_display_names,
-        ) = self._set_species_sub_folder_and_display_names(
-            self.species_folder_and_display_names
+        ) = self._set_species_folder_suffixes_and_display_names(
+            self.species_folder_suffixes_and_display_names
         )
         self._set_folder_names()
         self._set_static_files()
@@ -34,11 +34,13 @@ class PathCreator:
         information that was provided by the user
         :return: Dictionary containing the species information
         """
-        species_folder_and_display_names = {}
+        species_folder_suffixes_and_display_names = {}
         for sp in species_information:
-            sub_folder_name, display_name = sp.split("=")
-            species_folder_and_display_names[sub_folder_name] = display_name
-        return species_folder_and_display_names
+            species_folder_suffix, display_name = sp.split("=")
+            species_folder_suffixes_and_display_names[
+                species_folder_suffix
+            ] = display_name
+        return species_folder_suffixes_and_display_names
 
     def _get_species_from_config(self, config_file: str) -> dict:
         """
@@ -49,18 +51,24 @@ class PathCreator:
             config = json.loads(config_file.read())
             return config["species"]
 
-    def _set_species_sub_folder_and_display_names(
-        self, species_folder_and_display_names
+    def _set_species_folder_suffixes_and_display_names(
+        self, species_folder_suffixes_and_display_names
     ):
-        species_sub_folder_names = species_folder_and_display_names.keys()
-        species_display_names = species_folder_and_display_names.values()
-        return species_sub_folder_names, species_display_names
+        species_folder_suffixes = (
+            species_folder_suffixes_and_display_names.keys()
+        )
+        species_display_names = (
+            species_folder_suffixes_and_display_names.values()
+        )
+        return species_folder_suffixes, species_display_names
 
     def _set_folder_names(self):
         """Set the name of folders used in a project."""
         self.input_folder = f"{self.base_path}/input"
         self.output_folder = f"{self.base_path}/output"
         self._set_input_folder_names()
+        print(self.ref_seq_folders_by_species)
+        print(self.annotation_folders_by_species)
         self._set_read_alignment_folder_names()
         self._set_coverage_folder_names()
         self._set_gene_quanti_folder_names()
@@ -70,15 +78,31 @@ class PathCreator:
         self._set_viz_deseq_folder_names()
 
     def _set_input_folder_names(self):
+        self.input_folder
         self.read_fasta_folder = f"{self.input_folder}/reads"
-        self.ref_seq_folder = f"{self.input_folder}/reference_sequences"
-        self.ref_seq_species_folders = self._set_species_sub_folder_paths(
-            self.ref_seq_folder, self.species_sub_folder_names
-        )
-        self.annotation_folder = f"{self.input_folder}/annotations"
-        self.annotation_species_folder = self._set_species_sub_folder_paths(
-            self.annotation_folder, self.species_sub_folder_names
-        )
+        self._set_ref_seq_folders()
+        self._set_annotation_folders()
+        #self.ref_seq_folders = self._set_species_folders(
+        #    self.input_folder, self.species_folder_suffixes, ""
+        #)
+
+        # self.ref_seq_folder = f"{self.input_folder}/reference_sequences"
+        # self.ref_seq_species_folders = self._set_species_suffix_folder_paths(
+        #    self.ref_seq_folder, self.species_folder_suffixes
+        # )
+        # self.annotation_folder = f"{self.input_folder}/annotations"
+        # self.annotation_species_folder = self._set_species_suffix_folder_paths(
+        #    self.annotation_folder, self.species_folder_suffixes
+        # )
+    def _set_ref_seq_folders(self):
+        self.ref_seq_folders_by_species = {}
+        for suffix in self.species_folder_suffixes:
+            self.ref_seq_folders_by_species[suffix] = f"{self.input_folder}/{suffix}_reference_sequences"
+
+    def _set_annotation_folders(self):
+        self.annotation_folders_by_species = {}
+        for suffix in self.species_folder_suffixes:
+            self.annotation_folders_by_species[suffix] = f"{self.input_folder}/{suffix}_annotations"
 
     def _set_read_alignment_folder_names(self):
         self.align_base_folder = f"{self.output_folder}/align"
@@ -99,16 +123,16 @@ class PathCreator:
         self.coverage_base_folder = f"{self.output_folder}/coverage"
         self.coverage_folders_by_species = {}
         # check if only one species exists for the current project
-        for species_sub_folder_name in self.species_sub_folder_names:
+        for species_sub_folder_suffix in self.species_folder_suffixes:
             coverage_species_folders = {}
-            if len(self.species_sub_folder_names) == 1:
+            if len(self.species_folder_suffixes) == 1:
                 coverage_species_folders[
                     "coverage_species_base_folder"
                 ] = f"{self.coverage_base_folder}"
             else:
                 coverage_species_folders[
                     "coverage_species_base_folder"
-                ] = f"{self.coverage_base_folder}/{species_sub_folder_name}"
+                ] = f"{self.coverage_base_folder}/{species_sub_folder_suffix}"
             coverage_species_folders[
                 "coverage_raw_folder"
             ] = f"{coverage_species_folders['coverage_species_base_folder']}/coverage-raw"
@@ -119,7 +143,7 @@ class PathCreator:
                 "coverage_tnoar_mil_norm_folder"
             ] = f"{coverage_species_folders['coverage_species_base_folder']}/coverage-tnoar_mil_normalized"
             self.coverage_folders_by_species[
-                species_sub_folder_name
+                species_sub_folder_suffix
             ] = coverage_species_folders
 
     def _set_gene_quanti_folder_names(self):
@@ -201,14 +225,14 @@ class PathCreator:
         self.deseq_session_info = f"{self.deseq_raw_folder}/R_session_info.txt"
         self.version_path = f"{self.align_report_folder}/version_log.txt"
 
-    def _set_species_sub_folder_paths(
-        self, base_folder: str, species_sub_folder_names: list
-    ) -> list:
-        species_sub_folder_paths = []
-        for species_sub_folder_name in species_sub_folder_names:
-            species_sub_folder_path = f"{base_folder}/{species_sub_folder_name}"
-            species_sub_folder_paths.append(species_sub_folder_path)
-        return species_sub_folder_paths
+    #    def _set_species_suffix_folder_paths(
+    #        self, base_folder: str, species_folder_suffixes: list
+    #    ) -> list:
+    #        species_sub_folder_paths = []
+    #        for species_sub_folder_suffix in species_folder_suffixes:
+    #            species_sub_folder_path = f"{base_folder}/{species_sub_folder_suffix}"
+    #            species_sub_folder_paths.append(species_sub_folder_path)
+    #        return species_sub_folder_paths
 
     def _get_sorted_folder_content(self, folder):
         """Return the sorted file list of a folder"""
@@ -305,12 +329,15 @@ class PathCreator:
     def get_ref_seq_files(self):
         """Read the names of reference sequence files."""
         return self._get_sorted_folder_content(self.ref_seq_folder)
+    # TODO return ref seq files by species
 
     def get_annotation_files(self):
         """Read the names of annotation files."""
         return self._get_sorted_folder_content(self.annotation_folder)
+    # TODO return annotation files by species
 
     def required_folders(self):
+        # TODO can be deleted?, because no subcommand creates all folders
         return (
             self.required_base_folders()
             + self.required_input_folders()
@@ -326,13 +353,13 @@ class PathCreator:
     def required_base_folders(self):
         return [self.input_folder, self.output_folder]
 
-    def required_input_folders(self):
+    def required_new_project_folders(self):
         return [
+            *self.required_base_folders(),
             self.read_fasta_folder,
-            self.ref_seq_folder,
-            *self.ref_seq_species_folders,
-            self.annotation_folder,
-            *self.annotation_species_folder,
+            *self.ref_seq_folders_by_species.values(),
+            *self.annotation_folders_by_species.values(),
+            *self.required_read_alignment_folders()
         ]
 
     def required_read_alignment_folders(self):

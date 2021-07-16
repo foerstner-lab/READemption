@@ -43,10 +43,10 @@ class Controller(object):
         if not "species" in self._args:
             self._args.species = None
         self._pathcreator = PathCreator(args.project_path, self._args.species)
-        self._species_folder_and_display_names = (
-            self._pathcreator.species_folder_and_display_names
+        self._species_folder_suffixes_and_display_names = (
+            self._pathcreator.species_folder_suffixes_and_display_names
         )
-        self._species_sub_folder_names = self._pathcreator.species_sub_folder_names
+        self._species_folder_suffixes = self._pathcreator.species_folder_suffixes
         self._species_display_names = self._pathcreator.species_display_names
         self._read_files = None
         self._ref_seq_files = None
@@ -68,19 +68,18 @@ class Controller(object):
         project_creator = ProjectCreator()
         project_creator.create_root_folder(self._args.project_path)
         project_creator.create_config_file(
-            self._pathcreator.config_file, self._species_folder_and_display_names
+            self._pathcreator.config_file, self._species_folder_suffixes_and_display_names
         )
-        project_creator.create_subfolders(self._pathcreator.required_folders())
+        project_creator.create_subfolders(self._pathcreator.required_new_project_folders())
         project_creator.create_version_file(self._pathcreator.version_path, version)
         sys.stdout.write(
             'Created folder "%s" and required subfolders.\n'
             % (self._args.project_path)
         )
+        ref_seq_folders = ", ".join((f'"{folder}"' for folder in self._pathcreator.ref_seq_folders_by_species.values()))
         sys.stdout.write(
-            'Please copy read files into folder "%s" and '
-            'reference sequences files into folder "%s".\n'
-            % (self._pathcreator.read_fasta_folder, self._pathcreator.ref_seq_folder)
-        )
+            f'Please copy read files into folder "{self._pathcreator.read_fasta_folder}" and '
+            f'reference sequences files into folder/s {ref_seq_folders}.\n')
 
     def align_reads(self):
         """Perform the alignment of the reads."""
