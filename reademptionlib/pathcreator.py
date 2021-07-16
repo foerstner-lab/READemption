@@ -3,7 +3,7 @@ import os
 import sys
 
 
-class Paths:
+class PathCreator:
     def __init__(self, base_path, species_information):
         self.base_path = base_path
         self.config_file = f"{self.base_path}/config.json"
