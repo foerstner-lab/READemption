@@ -46,7 +46,9 @@ class Controller(object):
         self._species_folder_suffixes_and_display_names = (
             self._pathcreator.species_folder_suffixes_and_display_names
         )
-        self._species_folder_suffixes = self._pathcreator.species_folder_suffixes
+        self._species_folder_suffixes = (
+            self._pathcreator.species_folder_suffixes
+        )
         self._species_display_names = self._pathcreator.species_display_names
         self._read_files = None
         self._ref_seq_files = None
@@ -68,18 +70,29 @@ class Controller(object):
         project_creator = ProjectCreator()
         project_creator.create_root_folder(self._args.project_path)
         project_creator.create_config_file(
-            self._pathcreator.config_file, self._species_folder_suffixes_and_display_names
+            self._pathcreator.config_file,
+            self._species_folder_suffixes_and_display_names,
         )
-        project_creator.create_subfolders(self._pathcreator.required_new_project_folders())
-        project_creator.create_version_file(self._pathcreator.version_path, version)
+        project_creator.create_subfolders(
+            self._pathcreator.required_new_project_folders()
+        )
+        project_creator.create_version_file(
+            self._pathcreator.version_path, version
+        )
         sys.stdout.write(
             'Created folder "%s" and required subfolders.\n'
             % (self._args.project_path)
         )
-        ref_seq_folders = ", ".join((f'"{folder}"' for folder in self._pathcreator.ref_seq_folders_by_species.values()))
+        ref_seq_folders = ", ".join(
+            (
+                f'"{folder}"'
+                for folder in self._pathcreator.ref_seq_folders_by_species.values()
+            )
+        )
         sys.stdout.write(
             f'Please copy read files into folder "{self._pathcreator.read_fasta_folder}" and '
-            f'reference sequences files into folder/s {ref_seq_folders}.\n')
+            f"reference sequences files into folder/s {ref_seq_folders}.\n"
+        )
 
     def align_reads(self):
         """Perform the alignment of the reads."""
@@ -568,10 +581,18 @@ class Controller(object):
         too large when working with large reference sequences.
 
         """
-        self._test_folder_existance(self._pathcreator.required_coverage_folders())
+        project_creator = ProjectCreator()
+        project_creator.create_subfolders(
+            self._pathcreator.required_coverage_folders()
+        )
+        self._test_folder_existance(
+            self._pathcreator.required_coverage_folders()
+        )
         raw_stat_data_reader = RawStatDataReader()
         alignment_stats = [
-            raw_stat_data_reader.read(self._pathcreator.read_alignments_stats_path)
+            raw_stat_data_reader.read(
+                self._pathcreator.read_alignments_stats_path
+            )
         ]
         lib_names = list(alignment_stats[0].keys())
         was_paired_end_alignment = self._was_paired_end_alignment(lib_names)
@@ -626,7 +647,9 @@ class Controller(object):
         """Test the existance of all coverage files of a library"""
         files = []
         for strand in strands:
-            files.append(self._pathcreator.wiggle_file_raw_path(lib_name, strand))
+            files.append(
+                self._pathcreator.wiggle_file_raw_path(lib_name, strand)
+            )
             files.append(
                 self._pathcreator.wiggle_file_tnoar_norm_min_path(
                     lib_name,
@@ -714,7 +737,9 @@ class Controller(object):
                     WiggleWriter(
                         "%s_%s" % (lib_name, strand),
                         open(
-                            self._pathcreator.wiggle_file_raw_path(lib_name, strand),
+                            self._pathcreator.wiggle_file_raw_path(
+                                lib_name, strand
+                            ),
                             "w",
                         ),
                     ),
@@ -776,7 +801,13 @@ class Controller(object):
 
     def quantify_gene_wise(self):
         """Manage the counting of aligned reads per gene."""
-        self._test_folder_existance(self._pathcreator.required_gene_quanti_folders())
+        project_creator = ProjectCreator()
+        project_creator.create_subfolders(
+            self._pathcreator.required_gene_quanti_folders()
+        )
+        self._test_folder_existance(
+            self._pathcreator.required_gene_quanti_folders()
+        )
         norm_by_alignment_freq = True
         norm_by_overlap_freq = True
         if self._args.no_count_split_by_alignment_no:
@@ -785,7 +816,9 @@ class Controller(object):
             norm_by_overlap_freq = False
         raw_stat_data_reader = RawStatDataReader()
         alignment_stats = [
-            raw_stat_data_reader.read(self._pathcreator.read_alignments_stats_path)
+            raw_stat_data_reader.read(
+                self._pathcreator.read_alignments_stats_path
+            )
         ]
         lib_names = sorted(list(alignment_stats[0].keys()))
         annotation_files = self._pathcreator.get_annotation_files()
@@ -1013,7 +1046,9 @@ class Controller(object):
             )
         raw_stat_data_reader = RawStatDataReader()
         alignment_stats = [
-            raw_stat_data_reader.read(self._pathcreator.read_alignments_stats_path)
+            raw_stat_data_reader.read(
+                self._pathcreator.read_alignments_stats_path
+            )
         ]
         lib_names = list(alignment_stats[0].keys())
         if len(lib_names) != len(arg_libs):
@@ -1084,7 +1119,9 @@ class Controller(object):
             deseq_path_template,
             max_pvalue=self._args.max_pvalue,
         )
-        deseq_viz.create_scatter_plots(self._pathcreator.viz_deseq_scatter_plot_path)
+        deseq_viz.create_scatter_plots(
+            self._pathcreator.viz_deseq_scatter_plot_path
+        )
         deseq_viz.create_volcano_plots(
             self._pathcreator.viz_deseq_volcano_plot_path,
             self._pathcreator.viz_deseq_volcano_plot_adj_path,

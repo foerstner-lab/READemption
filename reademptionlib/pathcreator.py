@@ -25,6 +25,7 @@ class PathCreator:
         ) = self._set_species_folder_suffixes_and_display_names(
             self.species_folder_suffixes_and_display_names
         )
+        self.suffix_folder_name_connector = "_"
         self._set_folder_names()
         self._set_static_files()
 
@@ -67,8 +68,6 @@ class PathCreator:
         self.input_folder = f"{self.base_path}/input"
         self.output_folder = f"{self.base_path}/output"
         self._set_input_folder_names()
-        print(self.ref_seq_folders_by_species)
-        print(self.annotation_folders_by_species)
         self._set_read_alignment_folder_names()
         self._set_coverage_folder_names()
         self._set_gene_quanti_folder_names()
@@ -82,27 +81,26 @@ class PathCreator:
         self.read_fasta_folder = f"{self.input_folder}/reads"
         self._set_ref_seq_folders()
         self._set_annotation_folders()
-        #self.ref_seq_folders = self._set_species_folders(
-        #    self.input_folder, self.species_folder_suffixes, ""
-        #)
 
-        # self.ref_seq_folder = f"{self.input_folder}/reference_sequences"
-        # self.ref_seq_species_folders = self._set_species_suffix_folder_paths(
-        #    self.ref_seq_folder, self.species_folder_suffixes
-        # )
-        # self.annotation_folder = f"{self.input_folder}/annotations"
-        # self.annotation_species_folder = self._set_species_suffix_folder_paths(
-        #    self.annotation_folder, self.species_folder_suffixes
-        # )
     def _set_ref_seq_folders(self):
         self.ref_seq_folders_by_species = {}
         for suffix in self.species_folder_suffixes:
-            self.ref_seq_folders_by_species[suffix] = f"{self.input_folder}/{suffix}_reference_sequences"
+            suffix_and_connector = suffix + self.suffix_folder_name_connector
+            if len(self.species_folder_suffixes) and suffix == " ":
+                suffix_and_connector = ""
+            self.ref_seq_folders_by_species[
+                suffix
+            ] = f"{self.input_folder}/{suffix_and_connector}reference_sequences"
 
     def _set_annotation_folders(self):
         self.annotation_folders_by_species = {}
         for suffix in self.species_folder_suffixes:
-            self.annotation_folders_by_species[suffix] = f"{self.input_folder}/{suffix}_annotations"
+            suffix_and_connector = suffix + self.suffix_folder_name_connector
+            if len(self.species_folder_suffixes) and suffix == " ":
+                suffix_and_connector = ""
+            self.annotation_folders_by_species[
+                suffix
+            ] = f"{self.input_folder}/{suffix_and_connector}annotations"
 
     def _set_read_alignment_folder_names(self):
         self.align_base_folder = f"{self.output_folder}/align"
@@ -120,44 +118,60 @@ class PathCreator:
         )
 
     def _set_coverage_folder_names(self):
-        self.coverage_base_folder = f"{self.output_folder}/coverage"
         self.coverage_folders_by_species = {}
-        # check if only one species exists for the current project
-        for species_sub_folder_suffix in self.species_folder_suffixes:
+        for suffix in self.species_folder_suffixes:
+            suffix_and_connector = suffix + self.suffix_folder_name_connector
+            if len(self.species_folder_suffixes) and suffix == " ":
+                suffix_and_connector = ""
             coverage_species_folders = {}
-            if len(self.species_folder_suffixes) == 1:
-                coverage_species_folders[
-                    "coverage_species_base_folder"
-                ] = f"{self.coverage_base_folder}"
-            else:
-                coverage_species_folders[
-                    "coverage_species_base_folder"
-                ] = f"{self.coverage_base_folder}/{species_sub_folder_suffix}"
             coverage_species_folders[
                 "coverage_raw_folder"
-            ] = f"{coverage_species_folders['coverage_species_base_folder']}/coverage-raw"
+            ] = f"{self.output_folder}/{suffix_and_connector}coverage-raw"
             coverage_species_folders[
                 "coverage_tnoar_min_norm_folder"
-            ] = f"{coverage_species_folders['coverage_species_base_folder']}/coverage-tnoar_min_normalized"
+            ] = f"{self.output_folder}/{suffix_and_connector}coverage-tnoar_min_normalized"
             coverage_species_folders[
                 "coverage_tnoar_mil_norm_folder"
-            ] = f"{coverage_species_folders['coverage_species_base_folder']}/coverage-tnoar_mil_normalized"
-            self.coverage_folders_by_species[
-                species_sub_folder_suffix
-            ] = coverage_species_folders
+            ] = f"{self.output_folder}/{suffix_and_connector}coverage-tnoar_mil_normalized"
+            self.coverage_folders_by_species[suffix] = coverage_species_folders
 
     def _set_gene_quanti_folder_names(self):
-        self.gene_quanti_base_folder = f"{self.output_folder}/gene_quanti"
-        self.gene_quanti_per_lib_folder = (
-            f"{self.gene_quanti_base_folder}/gene_quanti_per_lib"
-        )
-        self.gene_quanti_combined_folder = (
-            f"{self.gene_quanti_base_folder}/gene_quanti_combined"
-        )
-        self.gene_wise_quanti_combined_path = f"{self.gene_quanti_combined_folder}/gene_wise_quantifications_combined.csv"
-        self.gene_wise_quanti_combined_rpkm_path = f"{self.gene_quanti_combined_folder}/gene_wise_quantifications_combined_rpkm.csv"
-        self.gene_wise_quanti_combined_tnoar_path = f"{self.gene_quanti_combined_folder}/gene_wise_quantifications_combined_tnoar.csv"
-        self.gene_wise_quanti_combined_tpm_path = f"{self.gene_quanti_combined_folder}/gene_wise_quantifications_combined_tpm.csv"
+        self.gene_quanti_folders_by_species = {}
+        self.gene_quanti_files_by_species = {}
+        for suffix in self.species_folder_suffixes:
+            suffix_and_connector = suffix + self.suffix_folder_name_connector
+            if len(self.species_folder_suffixes) and suffix == " ":
+                suffix_and_connector = ""
+            gene_quanti_species_folders = {}
+            gene_quanti_species_folders[
+                "gene_quanti_base_folder"
+            ] = f"{self.output_folder}/{suffix_and_connector}gene_quanti"
+            gene_quanti_species_folders[
+                "gene_quanti_per_lib_folder"
+            ] = f"{self.output_folder}/{suffix_and_connector}gene_quanti_per_lib"
+            gene_quanti_species_folders[
+                "gene_quanti_combined_folder"
+            ] = f"{self.output_folder}/{suffix_and_connector}gene_quanti_combined"
+            self.gene_quanti_folders_by_species[
+                suffix
+            ] = gene_quanti_species_folders
+
+            gene_quanti_species_files = {}
+            gene_quanti_species_files[
+                "gene_wise_quanti_combined_path"
+            ] = f"{gene_quanti_species_folders['gene_quanti_combined_folder']}/gene_wise_quantifications_combined.csv"
+            gene_quanti_species_files[
+                "gene_wise_quanti_combined_rpkm_path"
+            ] = f"{gene_quanti_species_folders['gene_quanti_combined_folder']}/gene_wise_quantifications_combined_rpkm.csv"
+            gene_quanti_species_files[
+                "gene_wise_quanti_combined_tnoar_path"
+            ] = f"{gene_quanti_species_folders['gene_quanti_combined_folder']}/gene_wise_quantifications_combined_tnoar.csv"
+            gene_quanti_species_files[
+                "gene_wise_quanti_combined_tpm_path"
+            ] = f"{gene_quanti_species_folders['gene_quanti_combined_folder']}/gene_wise_quantifications_combined_tpm.csv"
+            self.gene_quanti_files_by_species[
+                suffix
+            ] = gene_quanti_species_files
 
     def _set_deseq_folder_names(self):
         self.deseq_base_folder = f"{self.output_folder}/deseq"
@@ -329,11 +343,13 @@ class PathCreator:
     def get_ref_seq_files(self):
         """Read the names of reference sequence files."""
         return self._get_sorted_folder_content(self.ref_seq_folder)
+
     # TODO return ref seq files by species
 
     def get_annotation_files(self):
         """Read the names of annotation files."""
         return self._get_sorted_folder_content(self.annotation_folder)
+
     # TODO return annotation files by species
 
     def required_folders(self):
@@ -359,7 +375,7 @@ class PathCreator:
             self.read_fasta_folder,
             *self.ref_seq_folders_by_species.values(),
             *self.annotation_folders_by_species.values(),
-            *self.required_read_alignment_folders()
+            *self.required_read_alignment_folders(),
         ]
 
     def required_read_alignment_folders(self):
@@ -374,10 +390,7 @@ class PathCreator:
         ]
 
     def required_coverage_folders(self):
-        return [
-            self.coverage_base_folder,
-            *self._unpack_folder_paths(self.coverage_folders_by_species),
-        ]
+        return [*self._unpack_folder_paths(self.coverage_folders_by_species)]
 
     def _unpack_folder_paths(self, folders_by_species):
         folder_paths = []
@@ -387,12 +400,22 @@ class PathCreator:
         return folder_paths
 
     def required_gene_quanti_folders(self):
-        return [
-            self.gene_quanti_base_folder,
-            self.gene_quanti_per_lib_folder,
-            self.gene_quanti_combined_folder,
-            # TODO return all sub folders
-        ]
+        return [*self._get_gene_quanti_start_up_folders()]
+
+    def _get_gene_quanti_start_up_folders(self):
+        gene_quanti_folders = []
+        for sp in self.species_folder_suffixes:
+            gene_quanti_folders.append(
+                self.gene_quanti_folders_by_species[sp][
+                    "gene_quanti_per_lib_folder"
+                ]
+            )
+            gene_quanti_folders.append(
+                self.gene_quanti_folders_by_species[sp][
+                    "gene_quanti_combined_folder"
+                ]
+            )
+        return gene_quanti_folders
 
     def required_deseq_folders(self):
         return [
