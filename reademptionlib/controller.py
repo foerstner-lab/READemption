@@ -102,7 +102,8 @@ class Controller(object):
         )
         assert self._args.paired_end in [True, False]
         self._ref_seq_files = self._pathcreator.get_ref_seq_files()
-        self._pathcreator.set_ref_seq_paths(self._ref_seq_files)
+        self._pathcreator.set_ref_seq_paths()
+        self._pathcreator.set_ref_seq_path_list()
         self._test_align_file_existance()
         if not self._args.paired_end:
             # Single end reads
@@ -400,7 +401,7 @@ class Controller(object):
         read_aligner = ReadAligner(self._args.segemehl_bin, self._args.progress)
         if self._file_needs_to_be_created(self._pathcreator.index_path):
             read_aligner.build_index(
-                self._pathcreator.ref_seq_paths, self._pathcreator.index_path
+                self._pathcreator.ref_seq_path_list, self._pathcreator.index_path
             )
         for read_path, output_path, nomatch_path, bam_path in zip(
             self._pathcreator.processed_read_paths,
@@ -415,7 +416,7 @@ class Controller(object):
             read_aligner.run_alignment(
                 read_path,
                 self._pathcreator.index_path,
-                self._pathcreator.ref_seq_paths,
+                self._pathcreator.ref_seq_path_list,
                 output_path,
                 nomatch_path,
                 int(self._args.processes),
@@ -430,7 +431,7 @@ class Controller(object):
         read_aligner = ReadAligner(self._args.segemehl_bin, self._args.progress)
         if self._file_needs_to_be_created(self._pathcreator.index_path):
             read_aligner.build_index(
-                self._pathcreator.ref_seq_paths, self._pathcreator.index_path
+                self._pathcreator.ref_seq_path_list, self._pathcreator.index_path
             )
         for read_path_pair, output_path, nomatch_path in zip(
             self._pathcreator.processed_read_path_pairs,
@@ -444,7 +445,7 @@ class Controller(object):
             read_aligner.run_alignment(
                 read_path_pair,
                 self._pathcreator.index_path,
-                self._pathcreator.ref_seq_paths,
+                self._pathcreator.ref_seq_path_list,
                 output_path,
                 nomatch_path,
                 int(self._args.processes),
@@ -559,18 +560,19 @@ class Controller(object):
         )
         read_aligner_stats_table.write()
 
-    def _ref_ids_to_file(self, ref_seq_paths):
-        """Translate the reference ID to file paths."""
-        ref_ids_to_file = {}
-        fasta_parser = FastaParser()
-        for ref_seq_path in ref_seq_paths:
-            ref_seq_file = os.path.basename(ref_seq_path)
-            with open(ref_seq_path) as ref_seq_fh:
-                ref_seq_id = fasta_parser.header_id(
-                    fasta_parser.single_entry_file_header(ref_seq_fh)
-                )
-                ref_ids_to_file[ref_seq_id] = ref_seq_file
-        return ref_ids_to_file
+    # never used, can be deleted
+    #def _ref_ids_to_file(self, ref_seq_paths):
+    #    """Translate the reference ID to file paths."""
+    #    ref_ids_to_file = {}
+    #    fasta_parser = FastaParser()
+    #    for ref_seq_path in ref_seq_paths:
+    #        ref_seq_file = os.path.basename(ref_seq_path)
+    #        with open(ref_seq_path) as ref_seq_fh:
+    #            ref_seq_id = fasta_parser.header_id(
+    #                fasta_parser.single_entry_file_header(ref_seq_fh)
+    #            )
+    #            ref_ids_to_file[ref_seq_id] = ref_seq_file
+    #    return ref_ids_to_file
 
     def create_coverage_files(self):
         """Create coverage files based on the read alignments.

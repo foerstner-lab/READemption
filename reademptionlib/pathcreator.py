@@ -342,9 +342,17 @@ class PathCreator:
 
     def get_ref_seq_files(self):
         """Read the names of reference sequence files."""
-        return self._get_sorted_folder_content(self.ref_seq_folder)
+        ref_seq_files = []
+        for ref_seq_folder in self.ref_seq_folders_by_species.values():
+            for ref_seq in self._get_sorted_folder_content(ref_seq_folder):
+                ref_seq_files.append(ref_seq)
+        return ref_seq_files
 
-    # TODO return ref seq files by species
+    def set_ref_seq_path_list(self):
+        self.ref_seq_path_list = []
+        for ref_seq_paths in self.ref_seq_paths_by_species.values():
+            for ref_seq_path in ref_seq_paths:
+                self.ref_seq_path_list.append(ref_seq_path)
 
     def get_annotation_files(self):
         """Read the names of annotation files."""
@@ -538,8 +546,16 @@ class PathCreator:
             self.read_alignments_folder, lib_names, appendix="_alignments_final"
         )
 
-    def set_ref_seq_paths(self, ref_seq_files):
-        self.ref_seq_paths = self._path_list(self.ref_seq_folder, ref_seq_files)
+    def set_ref_seq_paths(self):
+        self.ref_seq_paths_by_species = {}
+        for (
+            sp,
+            species_ref_seq_folder,
+        ) in self.ref_seq_folders_by_species.items():
+            self.ref_seq_paths_by_species[sp] = self._path_list(
+                species_ref_seq_folder,
+                self._get_sorted_folder_content(species_ref_seq_folder),
+            )
 
     def set_annotation_paths(self, annotation_files):
         self.annotation_paths = self._path_list(
