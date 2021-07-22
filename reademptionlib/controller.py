@@ -101,8 +101,8 @@ class Controller(object):
             self._pathcreator.required_read_alignment_folders()
         )
         assert self._args.paired_end in [True, False]
+        self._pathcreator.set_ref_seq_paths_by_species()
         self._ref_seq_files = self._pathcreator.get_ref_seq_files()
-        self._pathcreator.set_ref_seq_paths()
         self._pathcreator.set_ref_seq_path_list()
         self._test_align_file_existance()
         if not self._args.paired_end:

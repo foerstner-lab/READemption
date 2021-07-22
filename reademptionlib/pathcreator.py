@@ -5,6 +5,7 @@ import sys
 
 class PathCreator:
     def __init__(self, base_path, species_information):
+        self.ref_seq_paths_by_species = None
         self.base_path = base_path
         self.config_file = f"{self.base_path}/config.json"
         self.species_information = species_information
@@ -340,15 +341,53 @@ class PathCreator:
                 file_name = file_name[: -len(suffix)]
         return file_name
 
-    def get_ref_seq_files(self):
-        """Read the names of reference sequence files."""
+    def set_ref_seq_paths_by_species(self) -> None:
+        """
+        sets the attribute ref_seq_paths_by_species that is a dictionary
+        containing the reference sequence paths sorted by species.
+        E.g.:
+        {'human':
+        ['reademption_analysis_dual/input/human_reference_sequences/human.fa',
+        'reademption_analysis_dual/input/human_reference_sequences/human_contig.fa],
+
+        'e_coli':
+        ['reademption_analysis_dual/input/e_coli_reference_sequences/e_coli.fa]}
+        """
+        self.ref_seq_paths_by_species = {}
+        for (
+                sp,
+                species_ref_seq_folder,
+        ) in self.ref_seq_folders_by_species.items():
+            self.ref_seq_paths_by_species[sp] = self._path_list(
+                species_ref_seq_folder,
+                self._get_sorted_folder_content(species_ref_seq_folder),
+            )
+
+    def get_ref_seq_files(self) -> list:
+        """
+        extracts the names of the reference sequenc files from the dictionary
+        self.ref_seq_folders_by_species and writes them to a list.
+        E.g.:
+        ['human.fa, e_coli.fa]
+        :return: a list containing all reference sequences
+        """
+        if not self.ref_seq_paths_by_species:
+            self.set_ref_seq_paths_by_species()
         ref_seq_files = []
         for ref_seq_folder in self.ref_seq_folders_by_species.values():
             for ref_seq in self._get_sorted_folder_content(ref_seq_folder):
                 ref_seq_files.append(ref_seq)
         return ref_seq_files
 
-    def set_ref_seq_path_list(self):
+    def set_ref_seq_path_list(self) -> None:
+        """
+        sets an attribute that holds a list of all reference sequence paths.
+        E.g.:
+        ['reademption_analysis_dual/input/human_reference_sequences/human.fa',
+        'reademption_analysis_dual/input/e_coli_reference_sequences/e_coli.fa]
+        """
+        if not self.ref_seq_paths_by_species:
+            self.set_ref_seq_paths_by_species()
         self.ref_seq_path_list = []
         for ref_seq_paths in self.ref_seq_paths_by_species.values():
             for ref_seq_path in ref_seq_paths:
@@ -545,17 +584,6 @@ class PathCreator:
         self.read_alignment_bam_prefix_paths = self._path_list(
             self.read_alignments_folder, lib_names, appendix="_alignments_final"
         )
-
-    def set_ref_seq_paths(self):
-        self.ref_seq_paths_by_species = {}
-        for (
-            sp,
-            species_ref_seq_folder,
-        ) in self.ref_seq_folders_by_species.items():
-            self.ref_seq_paths_by_species[sp] = self._path_list(
-                species_ref_seq_folder,
-                self._get_sorted_folder_content(species_ref_seq_folder),
-            )
 
     def set_annotation_paths(self, annotation_files):
         self.annotation_paths = self._path_list(
