@@ -579,7 +579,7 @@ class PathCreator:
         self.read_alignment_bam_paths = self._path_list(
             self.read_alignments_folder,
             lib_names,
-            appendix="_alignments_final.bam",
+            appendix="_alignments_final.bam", # needs to be "_alignments_final" because segemehl adds .bam ending?
         )
         self.read_alignment_bam_prefix_paths = self._path_list(
             self.read_alignments_folder, lib_names, appendix="_alignments_final"

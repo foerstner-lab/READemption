@@ -272,21 +272,21 @@ class Controller(object):
                 for bam_file in bam_file_list:
                     os.remove(bam_file)
                     os.remove("%s.bai" % bam_file)
-
-    def _run_realigner_and_process_alignments(self):
-        # As the realigner needs a *sorted* SAM file
-        self._generate_sorted_tmp_sam_file()
-        self._realign_unmapped_reads()
-        # self._sam_to_bam(
-        #    self._pathcreator.read_realigner_sam_paths,
-        #    self._pathcreator.read_realigner_bam_prefixes_paths,
-        #    self._pathcreator.read_realigner_sam_paths)
-        self._generate_read_alignment_stats(
-            self._lib_names,
-            self._pathcreator.read_realigner_bam_paths,
-            self._pathcreator.realigned_unaligned_reads_paths,
-            self._pathcreator.read_realigner_stats_path,
-        )
+   # realign not used anymore. obsolete.
+   # def _run_realigner_and_process_alignments(self):
+   #     # As the realigner needs a *sorted* SAM file
+   #     self._generate_sorted_tmp_sam_file()
+   #     self._realign_unmapped_reads()
+   #     # self._sam_to_bam(
+   #     #    self._pathcreator.read_realigner_sam_paths,
+   #     #    self._pathcreator.read_realigner_bam_prefixes_paths,
+   #     #    self._pathcreator.read_realigner_sam_paths)
+   #     self._generate_read_alignment_stats(
+   #         self._lib_names,
+   #         self._pathcreator.read_realigner_bam_paths,
+   #         self._pathcreator.realigned_unaligned_reads_paths,
+   #         self._pathcreator.read_realigner_stats_path,
+   #     )
 
     def _test_align_file_existance(self):
         """Test if the input file for the the align subcommand exist."""
@@ -454,46 +454,48 @@ class Controller(object):
                 self._args.split,
                 paired_end=True,
             )
+    # bam is now the default output of segemehl. no need for conversion from
+    # sam to bam anymore. obsolete
+    #def _sam_to_bam(self, sam_paths, bam_prefixes_paths, bam_paths):
+    #    """Manage the conversion of mapped read from SAM to BAM format."""
+    #    sam_to_bam_converter = SamToBamConverter()
+    #    jobs = []
+    #    with concurrent.futures.ProcessPoolExecutor(
+    #        max_workers=self._args.processes
+    #    ) as executor:
+    #        for sam_path, bam_prefix_path, bam_path in zip(
+    #            sam_paths, bam_prefixes_paths, bam_paths
+    #        ):
+    #            if not self._file_needs_to_be_created(bam_path):
+    #                continue
+    #            jobs.append(
+    #                executor.submit(
+    #                    sam_to_bam_converter.sam_to_bam,
+    #                    sam_path,
+    #                    bam_prefix_path,
+    #                )
+    #            )
+    #    # Evaluate thread outcome
+    #    self._check_job_completeness(jobs)
 
-    def _sam_to_bam(self, sam_paths, bam_prefixes_paths, bam_paths):
-        """Manage the conversion of mapped read from SAM to BAM format."""
-        sam_to_bam_converter = SamToBamConverter()
-        jobs = []
-        with concurrent.futures.ProcessPoolExecutor(
-            max_workers=self._args.processes
-        ) as executor:
-            for sam_path, bam_prefix_path, bam_path in zip(
-                sam_paths, bam_prefixes_paths, bam_paths
-            ):
-                if not self._file_needs_to_be_created(bam_path):
-                    continue
-                jobs.append(
-                    executor.submit(
-                        sam_to_bam_converter.sam_to_bam,
-                        sam_path,
-                        bam_prefix_path,
-                    )
-                )
-        # Evaluate thread outcome
-        self._check_job_completeness(jobs)
-
-    def _generate_sorted_tmp_sam_file(self):
-        sam_to_bam_converter = SamToBamConverter()
-        jobs = []
-        with concurrent.futures.ProcessPoolExecutor(
-            max_workers=self._args.processes
-        ) as executor:
-            for bam_path, sam_path in zip(
-                self._pathcreator.primary_read_aligner_bam_paths,
-                self._pathcreator.read_realigner_tmp_sam_paths,
-            ):
-                jobs.append(
-                    executor.submit(
-                        sam_to_bam_converter.bam_to_sam, bam_path, sam_path
-                    )
-                )
-        # Evaluate thread outcome
-        self._check_job_completeness(jobs)
+    # only used for realigning. obsolete
+    #def _generate_sorted_tmp_sam_file(self):
+    #    sam_to_bam_converter = SamToBamConverter()
+    #    jobs = []
+    #    with concurrent.futures.ProcessPoolExecutor(
+    #        max_workers=self._args.processes
+    #    ) as executor:
+    #        for bam_path, sam_path in zip(
+    #            self._pathcreator.primary_read_aligner_bam_paths,
+    #            self._pathcreator.read_realigner_tmp_sam_paths,
+    #        ):
+    #            jobs.append(
+    #                executor.submit(
+    #                    sam_to_bam_converter.bam_to_sam, bam_path, sam_path
+    #                )
+    #            )
+    #    # Evaluate thread outcome
+    #    self._check_job_completeness(jobs)
 
     def _generate_read_alignment_stats(
         self,
