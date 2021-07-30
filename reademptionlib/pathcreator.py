@@ -13,20 +13,20 @@ class PathCreator:
         # or if that argument was not given ("None"), the speces information
         # is retrieved from the config file
         if self.species_information:
-            self.species_folder_suffixes_and_display_names = (
+            self.species_folder_prefixes_and_display_names = (
                 self._get_species_from_cml_argument(self.species_information)
             )
         else:
-            self.species_folder_suffixes_and_display_names = (
+            self.species_folder_prefixes_and_display_names = (
                 self._get_species_from_config(self.config_file)
             )
         (
-            self.species_folder_suffixes,
+            self.species_folder_prefixes,
             self.species_display_names,
-        ) = self._set_species_folder_suffixes_and_display_names(
-            self.species_folder_suffixes_and_display_names
+        ) = self._set_species_folder_prefixes_and_display_names(
+            self.species_folder_prefixes_and_display_names
         )
-        self.suffix_folder_name_connector = "_"
+        self.prefix_folder_name_connector = "_"
         self._set_folder_names()
         self._set_static_files()
 
@@ -36,13 +36,13 @@ class PathCreator:
         information that was provided by the user
         :return: Dictionary containing the species information
         """
-        species_folder_suffixes_and_display_names = {}
+        species_folder_prefixes_and_display_names = {}
         for sp in species_information:
-            species_folder_suffix, display_name = sp.split("=")
-            species_folder_suffixes_and_display_names[
-                species_folder_suffix
+            species_folder_prefix, display_name = sp.split("=")
+            species_folder_prefixes_and_display_names[
+                species_folder_prefix
             ] = display_name
-        return species_folder_suffixes_and_display_names
+        return species_folder_prefixes_and_display_names
 
     def _get_species_from_config(self, config_file: str) -> dict:
         """
@@ -53,16 +53,16 @@ class PathCreator:
             config = json.loads(config_file.read())
             return config["species"]
 
-    def _set_species_folder_suffixes_and_display_names(
-        self, species_folder_suffixes_and_display_names
+    def _set_species_folder_prefixes_and_display_names(
+        self, species_folder_prefixes_and_display_names
     ):
-        species_folder_suffixes = (
-            species_folder_suffixes_and_display_names.keys()
+        species_folder_prefixes = (
+            species_folder_prefixes_and_display_names.keys()
         )
         species_display_names = (
-            species_folder_suffixes_and_display_names.values()
+            species_folder_prefixes_and_display_names.values()
         )
-        return species_folder_suffixes, species_display_names
+        return species_folder_prefixes, species_display_names
 
     def _set_folder_names(self):
         """Set the name of folders used in a project."""
@@ -85,23 +85,23 @@ class PathCreator:
 
     def _set_ref_seq_folders(self):
         self.ref_seq_folders_by_species = {}
-        for suffix in self.species_folder_suffixes:
-            suffix_and_connector = suffix + self.suffix_folder_name_connector
-            if len(self.species_folder_suffixes) and suffix == " ":
-                suffix_and_connector = ""
+        for prefix in self.species_folder_prefixes:
+            prefix_and_connector = prefix + self.prefix_folder_name_connector
+            if len(self.species_folder_prefixes) and prefix == " ":
+                prefix_and_connector = ""
             self.ref_seq_folders_by_species[
-                suffix
-            ] = f"{self.input_folder}/{suffix_and_connector}reference_sequences"
+                prefix
+            ] = f"{self.input_folder}/{prefix_and_connector}reference_sequences"
 
     def _set_annotation_folders(self):
         self.annotation_folders_by_species = {}
-        for suffix in self.species_folder_suffixes:
-            suffix_and_connector = suffix + self.suffix_folder_name_connector
-            if len(self.species_folder_suffixes) and suffix == " ":
-                suffix_and_connector = ""
+        for prefix in self.species_folder_prefixes:
+            prefix_and_connector = prefix + self.prefix_folder_name_connector
+            if len(self.species_folder_prefixes) and prefix == " ":
+                prefix_and_connector = ""
             self.annotation_folders_by_species[
-                suffix
-            ] = f"{self.input_folder}/{suffix_and_connector}annotations"
+                prefix
+            ] = f"{self.input_folder}/{prefix_and_connector}annotations"
 
     def _set_read_alignment_folder_names(self):
         self.align_base_folder = f"{self.output_folder}/align"
@@ -120,41 +120,41 @@ class PathCreator:
 
     def _set_coverage_folder_names(self):
         self.coverage_folders_by_species = {}
-        for suffix in self.species_folder_suffixes:
-            suffix_and_connector = suffix + self.suffix_folder_name_connector
-            if len(self.species_folder_suffixes) and suffix == " ":
-                suffix_and_connector = ""
+        for prefix in self.species_folder_prefixes:
+            prefix_and_connector = prefix + self.prefix_folder_name_connector
+            if len(self.species_folder_prefixes) and prefix == " ":
+                prefix_and_connector = ""
             coverage_species_folders = {}
             coverage_species_folders[
                 "coverage_raw_folder"
-            ] = f"{self.output_folder}/{suffix_and_connector}coverage-raw"
+            ] = f"{self.output_folder}/{prefix_and_connector}coverage-raw"
             coverage_species_folders[
                 "coverage_tnoar_min_norm_folder"
-            ] = f"{self.output_folder}/{suffix_and_connector}coverage-tnoar_min_normalized"
+            ] = f"{self.output_folder}/{prefix_and_connector}coverage-tnoar_min_normalized"
             coverage_species_folders[
                 "coverage_tnoar_mil_norm_folder"
-            ] = f"{self.output_folder}/{suffix_and_connector}coverage-tnoar_mil_normalized"
-            self.coverage_folders_by_species[suffix] = coverage_species_folders
+            ] = f"{self.output_folder}/{prefix_and_connector}coverage-tnoar_mil_normalized"
+            self.coverage_folders_by_species[prefix] = coverage_species_folders
 
     def _set_gene_quanti_folder_names(self):
         self.gene_quanti_folders_by_species = {}
         self.gene_quanti_files_by_species = {}
-        for suffix in self.species_folder_suffixes:
-            suffix_and_connector = suffix + self.suffix_folder_name_connector
-            if len(self.species_folder_suffixes) and suffix == " ":
-                suffix_and_connector = ""
+        for prefix in self.species_folder_prefixes:
+            prefix_and_connector = prefix + self.prefix_folder_name_connector
+            if len(self.species_folder_prefixes) and prefix == " ":
+                prefix_and_connector = ""
             gene_quanti_species_folders = {}
             gene_quanti_species_folders[
                 "gene_quanti_base_folder"
-            ] = f"{self.output_folder}/{suffix_and_connector}gene_quanti"
+            ] = f"{self.output_folder}/{prefix_and_connector}gene_quanti"
             gene_quanti_species_folders[
                 "gene_quanti_per_lib_folder"
-            ] = f"{self.output_folder}/{suffix_and_connector}gene_quanti_per_lib"
+            ] = f"{self.output_folder}/{prefix_and_connector}gene_quanti_per_lib"
             gene_quanti_species_folders[
                 "gene_quanti_combined_folder"
-            ] = f"{self.output_folder}/{suffix_and_connector}gene_quanti_combined"
+            ] = f"{self.output_folder}/{prefix_and_connector}gene_quanti_combined"
             self.gene_quanti_folders_by_species[
-                suffix
+                prefix
             ] = gene_quanti_species_folders
 
             gene_quanti_species_files = {}
@@ -171,7 +171,7 @@ class PathCreator:
                 "gene_wise_quanti_combined_tpm_path"
             ] = f"{gene_quanti_species_folders['gene_quanti_combined_folder']}/gene_wise_quantifications_combined_tpm.csv"
             self.gene_quanti_files_by_species[
-                suffix
+                prefix
             ] = gene_quanti_species_files
 
     def _set_deseq_folder_names(self):
@@ -212,13 +212,13 @@ class PathCreator:
         self.read_processing_stats_path = (
             f"{self.raw_stat_data_folder}/read_processing.json"
         )
-        self.primary_read_aligner_stats_path = (
-            f"{self.raw_stat_data_folder}/read_alignments_primary_aligner.json"
-        )
+        #self.primary_read_aligner_stats_path = (
+        #    f"{self.raw_stat_data_folder}/read_alignments_primary_aligner.json"
+        #)
 
-        self.read_realigner_stats_path = (
-            f"{self.raw_stat_data_folder}/read_alignments_realigner.json"
-        )
+        #self.read_realigner_stats_path = (
+        #    f"{self.raw_stat_data_folder}/read_alignments_realigner.json"
+        #)
         self.read_alignments_stats_path = (
             f"{self.raw_stat_data_folder}/read_alignments_final.json"
         )
@@ -240,12 +240,12 @@ class PathCreator:
         self.deseq_session_info = f"{self.deseq_raw_folder}/R_session_info.txt"
         self.version_path = f"{self.align_report_folder}/version_log.txt"
 
-    #    def _set_species_suffix_folder_paths(
-    #        self, base_folder: str, species_folder_suffixes: list
+    #    def _set_species_prefix_folder_paths(
+    #        self, base_folder: str, species_folder_prefixes: list
     #    ) -> list:
     #        species_sub_folder_paths = []
-    #        for species_sub_folder_suffix in species_folder_suffixes:
-    #            species_sub_folder_path = f"{base_folder}/{species_sub_folder_suffix}"
+    #        for species_sub_folder_prefix in species_folder_prefixes:
+    #            species_sub_folder_path = f"{base_folder}/{species_sub_folder_prefix}"
     #            species_sub_folder_paths.append(species_sub_folder_path)
     #        return species_sub_folder_paths
 
@@ -451,7 +451,7 @@ class PathCreator:
 
     def _get_gene_quanti_start_up_folders(self):
         gene_quanti_folders = []
-        for sp in self.species_folder_suffixes:
+        for sp in self.species_folder_prefixes:
             gene_quanti_folders.append(
                 self.gene_quanti_folders_by_species[sp][
                     "gene_quanti_per_lib_folder"

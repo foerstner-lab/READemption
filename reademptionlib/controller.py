@@ -43,11 +43,11 @@ class Controller(object):
         if not "species" in self._args:
             self._args.species = None
         self._pathcreator = PathCreator(args.project_path, self._args.species)
-        self._species_folder_suffixes_and_display_names = (
-            self._pathcreator.species_folder_suffixes_and_display_names
+        self._species_folder_prefixes_and_display_names = (
+            self._pathcreator.species_folder_prefixes_and_display_names
         )
-        self._species_folder_suffixes = (
-            self._pathcreator.species_folder_suffixes
+        self._species_folder_prefixes = (
+            self._pathcreator.species_folder_prefixes
         )
         self._species_display_names = self._pathcreator.species_display_names
         self._read_files = None
@@ -71,7 +71,7 @@ class Controller(object):
         project_creator.create_root_folder(self._args.project_path)
         project_creator.create_config_file(
             self._pathcreator.config_file,
-            self._species_folder_suffixes_and_display_names,
+            self._species_folder_prefixes_and_display_names,
         )
         project_creator.create_subfolders(
             self._pathcreator.required_new_project_folders()
@@ -96,7 +96,7 @@ class Controller(object):
 
     def align_reads(self):
         """Perform the alignment of the reads."""
-        self._args.realign = False
+        # self._args.realign = False
         self._test_folder_existance(
             self._pathcreator.required_read_alignment_folders()
         )
@@ -112,8 +112,8 @@ class Controller(object):
             self._pathcreator.set_read_files_dep_file_lists_single_end(
                 self._read_files, self._lib_names
             )
-            if not self._args.realign:
-                self._set_primary_aligner_paths_to_final_paths()
+            #if not self._args.realign:
+            #    self._set_primary_aligner_paths_to_final_paths()
             self._prepare_reads_single_end()
             self._align_single_end_reads()
         else:
@@ -123,33 +123,43 @@ class Controller(object):
             self._pathcreator.set_read_files_dep_file_lists_paired_end(
                 self._read_file_pairs, self._lib_names
             )
-            if not self._args.realign:
-                self._set_primary_aligner_paths_to_final_paths()
+            #if not self._args.realign:
+            #    self._set_primary_aligner_paths_to_final_paths()
             self._prepare_reads_paired_end()
             self._align_paired_end_reads()
         # self._sam_to_bam(
         #    self._pathcreator.primary_read_aligner_sam_paths,
         #    self._pathcreator.primary_read_aligner_bam_prefix_paths,
         #    self._pathcreator.primary_read_aligner_bam_paths)
+        #self._generate_read_alignment_stats(
+        #    self._lib_names,
+        #    #self._pathcreator.primary_read_aligner_bam_paths,
+        #    self._pathcreator.read_alignment_bam_paths,
+        #    self._pathcreator.unaligned_reads_paths,
+        #    #self._pathcreator.primary_read_aligner_stats_path,
+        #    self._pathcreator.read_alignments_stats_path,
+        #)
+        #final_unaligned_reads_paths = self._pathcreator.unaligned_reads_paths
+        #if self._args.realign:
+        #    self._run_realigner_and_process_alignments()
+        #    self._merge_bam_files()
+        #    final_unaligned_reads_paths = (
+        #        self._pathcreator.realigned_unaligned_reads_paths
+        #    )
+        #if self._args.crossalign_cleaning_str is not None:
+        #    self._remove_crossaligned_reads()
+        #self._generate_read_alignment_stats(
+        #    self._lib_names,
+        #    self._pathcreator.read_alignment_bam_paths,
+        #    final_unaligned_reads_paths,
+        #    self._pathcreator.read_alignments_stats_path,
+        #)
         self._generate_read_alignment_stats(
             self._lib_names,
-            self._pathcreator.primary_read_aligner_bam_paths,
-            self._pathcreator.unaligned_reads_paths,
-            self._pathcreator.primary_read_aligner_stats_path,
-        )
-        final_unaligned_reads_paths = self._pathcreator.unaligned_reads_paths
-        if self._args.realign:
-            self._run_realigner_and_process_alignments()
-            self._merge_bam_files()
-            final_unaligned_reads_paths = (
-                self._pathcreator.realigned_unaligned_reads_paths
-            )
-        if self._args.crossalign_cleaning_str is not None:
-            self._remove_crossaligned_reads()
-        self._generate_read_alignment_stats(
-            self._lib_names,
+            #self._pathcreator.primary_read_aligner_bam_paths,
             self._pathcreator.read_alignment_bam_paths,
-            final_unaligned_reads_paths,
+            self._pathcreator.unaligned_reads_paths,
+            #self._pathcreator.primary_read_aligner_stats_path,
             self._pathcreator.read_alignments_stats_path,
         )
         self._write_alignment_stat_table()
@@ -231,47 +241,48 @@ class Controller(object):
                 )
             self._species_and_sequence_ids[org] = seq_ids
 
-    def _set_primary_aligner_paths_to_final_paths(self):
-        # If no remapping is performed the paths of the final bam files
-        # is the paths of the primary mapper
-        self._pathcreator.primary_read_aligner_bam_prefix_paths = (
-            self._pathcreator.read_alignment_bam_prefix_paths
-        )
-        self._pathcreator.primary_read_aligner_bam_paths = (
-            self._pathcreator.read_alignment_bam_paths
-        )
-        self._pathcreator.primary_read_aligner_stats_path = (
-            self._pathcreator.read_alignments_stats_path
-        )
-
-    def _merge_bam_files(self):
-        jobs = []
-        with concurrent.futures.ProcessPoolExecutor(
-            max_workers=self._args.processes
-        ) as executor:
-            for merged_bam, primary_aligner_bam, realigner_bam in zip(
-                self._pathcreator.read_alignment_bam_paths,
-                self._pathcreator.primary_read_aligner_bam_paths,
-                self._pathcreator.read_realigner_bam_paths,
-            ):
-                bam_merger = BamMerger()
-                jobs.append(
-                    executor.submit(
-                        bam_merger.merge,
-                        merged_bam,
-                        primary_aligner_bam,
-                        realigner_bam,
-                    )
-                )
-        self._check_job_completeness(jobs)
-        if not self._args.keep_original_alignments:
-            for bam_file_list in [
-                self._pathcreator.primary_read_aligner_bam_paths,
-                self._pathcreator.read_realigner_bam_paths,
-            ]:
-                for bam_file in bam_file_list:
-                    os.remove(bam_file)
-                    os.remove("%s.bai" % bam_file)
+    # Used for realigning. obsolete
+   # def _set_primary_aligner_paths_to_final_paths(self):
+   #     # If no remapping is performed the paths of the final bam files
+   #     # is the paths of the primary mapper
+   #     self._pathcreator.primary_read_aligner_bam_prefix_paths = (
+   #         self._pathcreator.read_alignment_bam_prefix_paths
+   #     )
+   #     self._pathcreator.primary_read_aligner_bam_paths = (
+   #         self._pathcreator.read_alignment_bam_paths
+   #     )
+   #     self._pathcreator.primary_read_aligner_stats_path = (
+   #         self._pathcreator.read_alignments_stats_path
+   #     )
+    # used for realign. obsolete
+    #def _merge_bam_files(self):
+    #    jobs = []
+    #    with concurrent.futures.ProcessPoolExecutor(
+    #        max_workers=self._args.processes
+    #    ) as executor:
+    #        for merged_bam, primary_aligner_bam, realigner_bam in zip(
+    #            self._pathcreator.read_alignment_bam_paths,
+    #            self._pathcreator.primary_read_aligner_bam_paths,
+    #            self._pathcreator.read_realigner_bam_paths,
+    #        ):
+    #            bam_merger = BamMerger()
+    #            jobs.append(
+    #                executor.submit(
+    #                    bam_merger.merge,
+    #                    merged_bam,
+    #                    primary_aligner_bam,
+    #                    realigner_bam,
+    #                )
+    #            )
+    #    self._check_job_completeness(jobs)
+    #    if not self._args.keep_original_alignments:
+    #        for bam_file_list in [
+    #            self._pathcreator.primary_read_aligner_bam_paths,
+    #            self._pathcreator.read_realigner_bam_paths,
+    #        ]:
+    #            for bam_file in bam_file_list:
+    #                os.remove(bam_file)
+    #                os.remove("%s.bai" % bam_file)
    # realign not used anymore. obsolete.
    # def _run_realigner_and_process_alignments(self):
    #     # As the realigner needs a *sorted* SAM file
@@ -403,16 +414,19 @@ class Controller(object):
             read_aligner.build_index(
                 self._pathcreator.ref_seq_path_list, self._pathcreator.index_path
             )
-        for read_path, output_path, nomatch_path, bam_path in zip(
+        for read_path, output_path, nomatch_path in zip(
             self._pathcreator.processed_read_paths,
-            self._pathcreator.primary_read_aligner_bam_paths,
-            self._pathcreator.unaligned_reads_paths,
+            #self._pathcreator.primary_read_aligner_bam_paths,
             self._pathcreator.read_alignment_bam_paths,
+            self._pathcreator.unaligned_reads_paths,
         ):
+            #if not self._file_needs_to_be_created(output_path):
+            #    continue
+            #elif not self._file_needs_to_be_created(bam_path):
+            #    continue
             if not self._file_needs_to_be_created(output_path):
                 continue
-            elif not self._file_needs_to_be_created(bam_path):
-                continue
+
             read_aligner.run_alignment(
                 read_path,
                 self._pathcreator.index_path,
@@ -544,18 +558,18 @@ class Controller(object):
         )
         realignment_stats = None
         primary_aligner_stats = None
-        if self._args.realign:
-            primary_aligner_stats = raw_stat_data_reader.read(
-                self._pathcreator.primary_read_aligner_stats_path
-            )
-            realignment_stats = raw_stat_data_reader.read(
-                self._pathcreator.read_realigner_stats_path
-            )
+        #if self._args.realign:
+        #    primary_aligner_stats = raw_stat_data_reader.read(
+        #        self._pathcreator.primary_read_aligner_stats_path
+        #    )
+        #    realignment_stats = raw_stat_data_reader.read(
+        #        self._pathcreator.read_realigner_stats_path
+        #    )
         read_aligner_stats_table = ReadAlignerStatsTable(
             read_processing_stats,
             final_alignment_stats,
-            primary_aligner_stats,
-            realignment_stats,
+            #primary_aligner_stats,
+            #realignment_stats,
             self._lib_names,
             self._pathcreator.read_alignment_stats_table_path,
             self._args.paired_end,
