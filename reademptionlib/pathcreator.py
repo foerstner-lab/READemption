@@ -532,11 +532,11 @@ class PathCreator:
         # self.primary_read_aligner_sam_paths = self._path_list(
         #    self.read_alignments_folder, lib_names,
         #    appendix="_alignments_primary_aligner.sam")
-        self.primary_read_aligner_bam_paths = self._path_list(
-            self.read_alignments_folder,
-            lib_names,
-            appendix="_alignments_primary_aligner.bam",
-        )
+        #self.primary_read_aligner_bam_paths = self._path_list(
+        #    self.read_alignments_folder,
+        #    lib_names,
+        #    appendix="_alignments_primary_aligner.bam",
+        #)
         # samtool appends ".bam" so only the prefix is required
         # self.primary_read_aligner_bam_prefix_paths = self._path_list(
         #    self.read_alignments_folder,
@@ -549,11 +549,11 @@ class PathCreator:
         # self.read_realigner_sam_paths = self._path_list(
         #    self.read_alignments_folder, lib_names,
         #    appendix="_alignments_realigner.sam")
-        self.read_realigner_bam_paths = self._path_list(
-            self.read_alignments_folder,
-            lib_names,
-            appendix="_alignments_realigner.bam",
-        )
+        #self.read_realigner_bam_paths = self._path_list(
+        #    self.read_alignments_folder,
+        #    lib_names,
+        #    appendix="_alignments_realigner.bam",
+        #)
         # self.read_realigner_bam_prefixes_paths = self._path_list(
         #    self.read_alignments_folder,
         #    lib_names, appendix="_alignments_realigner")

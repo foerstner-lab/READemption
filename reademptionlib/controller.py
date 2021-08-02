@@ -449,13 +449,24 @@ class Controller(object):
             )
         for read_path_pair, output_path, nomatch_path in zip(
             self._pathcreator.processed_read_path_pairs,
-            self._pathcreator.primary_read_aligner_bam_paths,
+            self._pathcreator.read_alignment_bam_paths,
             self._pathcreator.unaligned_reads_paths,
         ):
             if not self._file_needs_to_be_created(output_path):
                 continue
             # elif not self._file_needs_to_be_created(bam_path):
             #    continue
+            print(
+                read_path_pair,
+                self._pathcreator.index_path,
+                self._pathcreator.ref_seq_path_list,
+                output_path,
+                nomatch_path,
+                int(self._args.processes),
+                int(self._args.segemehl_accuracy),
+                float(self._args.segemehl_evalue),
+                self._args.split,
+)
             read_aligner.run_alignment(
                 read_path_pair,
                 self._pathcreator.index_path,
