@@ -212,13 +212,6 @@ class PathCreator:
         self.read_processing_stats_path = (
             f"{self.raw_stat_data_folder}/read_processing.json"
         )
-        #self.primary_read_aligner_stats_path = (
-        #    f"{self.raw_stat_data_folder}/read_alignments_primary_aligner.json"
-        #)
-
-        #self.read_realigner_stats_path = (
-        #    f"{self.raw_stat_data_folder}/read_alignments_realigner.json"
-        #)
         self.read_alignments_stats_path = (
             f"{self.raw_stat_data_folder}/read_alignments_final.json"
         )
@@ -239,15 +232,6 @@ class PathCreator:
         self.deseq_tmp_session_info_script = f"{self.deseq_raw_folder}/tmp.R"
         self.deseq_session_info = f"{self.deseq_raw_folder}/R_session_info.txt"
         self.version_path = f"{self.align_report_folder}/version_log.txt"
-
-    #    def _set_species_prefix_folder_paths(
-    #        self, base_folder: str, species_folder_prefixes: list
-    #    ) -> list:
-    #        species_sub_folder_paths = []
-    #        for species_sub_folder_prefix in species_folder_prefixes:
-    #            species_sub_folder_path = f"{base_folder}/{species_sub_folder_prefix}"
-    #            species_sub_folder_paths.append(species_sub_folder_path)
-    #        return species_sub_folder_paths
 
     def _get_sorted_folder_content(self, folder):
         """Return the sorted file list of a folder"""
@@ -295,14 +279,14 @@ class PathCreator:
         return read_file_pairs
 
     def get_lib_names_single_end(self):
-        """Extract the suffux free name of single end libraries"""
+        """Extract the suffix free name of single end libraries"""
         return [
             self._clean_file_name(file_name)
             for file_name in self.get_read_files()
         ]
 
     def get_lib_names_paired_end(self):
-        """Extract the suffux free name of paired end libraries
+        """Extract the suffix free name of paired end libraries
 
         For each pair of read files one library name is returned.
 
@@ -528,36 +512,6 @@ class PathCreator:
 
     def _set_alignment_paths(self, lib_names):
         ###
-        # For the primary mapper
-        # self.primary_read_aligner_sam_paths = self._path_list(
-        #    self.read_alignments_folder, lib_names,
-        #    appendix="_alignments_primary_aligner.sam")
-        #self.primary_read_aligner_bam_paths = self._path_list(
-        #    self.read_alignments_folder,
-        #    lib_names,
-        #    appendix="_alignments_primary_aligner.bam",
-        #)
-        # samtool appends ".bam" so only the prefix is required
-        # self.primary_read_aligner_bam_prefix_paths = self._path_list(
-        #    self.read_alignments_folder,
-        #    lib_names, appendix="_alignments_primary_aligner")
-        ###
-        # For the remapper
-        # self.read_realigner_tmp_sam_paths = self._path_list(
-        #    self.read_alignments_folder, lib_names,
-        #    appendix="_alignments_tmp_for_realigner.sam")
-        # self.read_realigner_sam_paths = self._path_list(
-        #    self.read_alignments_folder, lib_names,
-        #    appendix="_alignments_realigner.sam")
-        #self.read_realigner_bam_paths = self._path_list(
-        #    self.read_alignments_folder,
-        #    lib_names,
-        #    appendix="_alignments_realigner.bam",
-        #)
-        # self.read_realigner_bam_prefixes_paths = self._path_list(
-        #    self.read_alignments_folder,
-        #    lib_names, appendix="_alignments_realigner")
-        ###
         # For the cross-aligned cleaned
         self.read_alignment_bam_cross_cleaned_tmp_paths = self._path_list(
             self.read_alignments_folder,
@@ -579,7 +533,7 @@ class PathCreator:
         self.read_alignment_bam_paths = self._path_list(
             self.read_alignments_folder,
             lib_names,
-            appendix="_alignments_final.bam", # needs to be "_alignments_final" because segemehl adds .bam ending?
+            appendix="_alignments_final.bam",
         )
         self.read_alignment_bam_prefix_paths = self._path_list(
             self.read_alignments_folder, lib_names, appendix="_alignments_final"

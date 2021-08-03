@@ -3,8 +3,6 @@ class ReadAlignerStatsTable(object):
         self,
         read_processing_stats,
         alignment_stats,
-        #primary_read_aligner_stats, # never used
-        #realigner_stats, # never used
         libs,
         output_path,
         paired_end,
@@ -12,8 +10,6 @@ class ReadAlignerStatsTable(object):
         self._table = []
         self._read_processing_stats = read_processing_stats
         self._alignment_stats = alignment_stats
-        #self._primary_read_aligner_stats = primary_read_aligner_stats # never used
-        #self._realigner_stats = realigner_stats # never used
         self._libs = libs
         self._output_path = output_path
         self._paired_end = paired_end
