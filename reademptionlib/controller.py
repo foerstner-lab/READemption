@@ -119,6 +119,8 @@ class Controller(object):
             )
             self._prepare_reads_paired_end()
             self._align_paired_end_reads()
+        if self._args.crossalign_cleaning_str is not None:
+            self._remove_crossaligned_reads()
         self._generate_read_alignment_stats(
             self._lib_names,
             self._pathcreator.read_alignment_bam_paths,
