@@ -5,6 +5,7 @@ import json
 from reademptionlib.coveragecalculator import CoverageCalculator
 from reademptionlib.crossalignfilter import CrossAlignFilter
 from reademptionlib.deseq import DESeqRunner
+from reademptionlib.fasta import FastaParser
 from reademptionlib.genewisequanti import GeneWiseQuantification
 from reademptionlib.genewisequanti import GeneWiseOverview
 from reademptionlib.pathcreator import PathCreator
@@ -90,6 +91,32 @@ class Controller(object):
             f'Please copy read files into folder "{self._pathcreator.read_fasta_folder}" and '
             f"reference sequences files into folder/s {ref_seq_folders}.\n"
         )
+
+    def _get_references_by_species(self) -> dict:
+        """
+        Reads the reference sequence fasta files in the species folders and
+        creates a dictionary containing the species as keys and a list
+        containing the reference ids for each species as values:
+        Example:
+        {'human': ['GL000008.2', 'chr1', 'chr2', 'chr3', 'chr19', 'chr20',
+                   'chr21', 'chr22', 'chr23', 'chrX', 'KQ031388.1'],
+        'staphylococcus': ['NC_007795.1'],
+        'influenza': ['NC_007373.1', 'NC_007372.1']}
+        :return: the reference ids for each species
+        """
+        fasta_parser = FastaParser()
+        references_by_species = {}
+        for (
+            species,
+            reference_files,
+        ) in self._pathcreator.ref_seq_paths_by_species.items():
+            references_by_species[species] = []
+            for reference_file in reference_files:
+                with open(reference_file, "r") as fasta_fh:
+                    for header, sequence in fasta_parser.entries(fasta_fh):
+                        header_id = fasta_parser.header_id(header)
+                        references_by_species[species].append(header_id)
+        return references_by_species
 
     def align_reads(self):
         """Perform the alignment of the reads."""
@@ -319,7 +346,8 @@ class Controller(object):
         read_aligner = ReadAligner(self._args.segemehl_bin, self._args.progress)
         if self._file_needs_to_be_created(self._pathcreator.index_path):
             read_aligner.build_index(
-                self._pathcreator.ref_seq_path_list, self._pathcreator.index_path
+                self._pathcreator.ref_seq_path_list,
+                self._pathcreator.index_path,
             )
         for read_path, output_path, nomatch_path in zip(
             self._pathcreator.processed_read_paths,
@@ -347,7 +375,8 @@ class Controller(object):
         read_aligner = ReadAligner(self._args.segemehl_bin, self._args.progress)
         if self._file_needs_to_be_created(self._pathcreator.index_path):
             read_aligner.build_index(
-                self._pathcreator.ref_seq_path_list, self._pathcreator.index_path
+                self._pathcreator.ref_seq_path_list,
+                self._pathcreator.index_path,
             )
         for read_path_pair, output_path, nomatch_path in zip(
             self._pathcreator.processed_read_path_pairs,
@@ -378,6 +407,7 @@ class Controller(object):
     ):
         """Manage the generation of alingment statistics."""
         raw_stat_data_writer = RawStatDataWriter(pretty=True)
+        references_by_species = self._get_references_by_species()
         read_files_and_jobs = {}
         if not self._file_needs_to_be_created(output_stats_path):
             return
@@ -389,7 +419,7 @@ class Controller(object):
                 read_alignment_bam_path,
                 unaligned_reads_path,
             ) in zip(lib_names, result_bam_paths, unaligned_reads_paths):
-                read_aligner_stats = ReadAlignerStats()
+                read_aligner_stats = ReadAlignerStats(references_by_species)
                 read_files_and_jobs[lib_name] = executor.submit(
                     read_aligner_stats.count,
                     read_alignment_bam_path,
