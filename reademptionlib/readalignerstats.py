@@ -1,9 +1,10 @@
 import sys
 from collections import defaultdict
+from collections import Counter
 from functools import reduce
 from reademptionlib.fasta import FastaParser
 import pysam
-
+import pprint
 
 class ReadAlignerStats(object):
     def __init__(self, references_by_speies):
@@ -24,10 +25,14 @@ class ReadAlignerStats(object):
 
     def count(self, read_alignment_result_bam_path, unaligned_reads_path):
         self._stats = {}
+        # Set up total stats
         self._stats["stats_total"] = defaultdict(float)
+        self._init_stats_total()
+        # Set up species stats
         self._stats["species_stats"] = defaultdict()
         for sp in self.references_by_species.keys():
             self._stats["species_stats"][sp] = defaultdict(float)
+            self._init_species_dict(sp)
         self._count_aligned_reads_and_alignments(read_alignment_result_bam_path)
         self._count_unaligned_reads(unaligned_reads_path)
         return self._stats
@@ -57,7 +62,7 @@ class ReadAlignerStats(object):
         stats_per_ref = defaultdict(dict)
         no_of_hits_per_read_freq = {}
         for ref_id in bam.references:
-            #print(ref_id)
+            # Set up reference stats
             self._init_counting_dict(stats_per_ref, ref_id)
         for entry in bam.fetch():
             ref_id = bam.getrname(entry.tid)
@@ -111,12 +116,38 @@ class ReadAlignerStats(object):
             (no_of_hits_per_read, freq / no_of_hits_per_read)
             for no_of_hits_per_read, freq in no_of_hits_per_read_freq.items()
         )
+    def _init_stats_total(self):
+        self._stats["stats_total"]["no_of_alignments"]
+        self._stats["stats_total"]["no_of_aligned_reads"]
+        #self._stats["stats_total"]["fractions_of_aligned_reads"] # deprecated
+        self._stats["stats_total"]["no_of_split_alignments"]
+        self._stats["stats_total"]["no_of_split_aligned_reads"]
+        self._stats["stats_total"]["no_of_uniquely_aligned_reads"]
+        self._stats["stats_total"]["no_of_multiple_aligned_reads"]
+        self._stats["stats_total"]["alignment_length_and_freqs"] = defaultdict(int)
+        self._stats["stats_total"]["no_of_hits_per_read_and_freqs"] = defaultdict(
+            int
+        )
+
+    def _init_species_dict(self, species):
+        sp = species
+        self._stats["species_stats"][sp]["no_of_alignments"]
+        self._stats["species_stats"][sp]["no_of_aligned_reads"]
+        # self._stats["species_stats"][sp]["fractions_of_aligned_reads"] # deprecated
+        self._stats["species_stats"][sp]["no_of_split_alignments"]
+        self._stats["species_stats"][sp]["no_of_split_aligned_reads"]
+        self._stats["species_stats"][sp]["no_of_uniquely_aligned_reads"]
+        self._stats["species_stats"][sp]["no_of_multiple_aligned_reads"]
+        self._stats["species_stats"][sp]["alignment_length_and_freqs"]  = defaultdict(int)
+        self._stats["species_stats"][sp]["no_of_hits_per_read_and_freqs"] = defaultdict(
+            int
+        )
 
     def _init_counting_dict(self, stats_per_ref, ref_id):
         stats_per_ref[ref_id] = defaultdict(float)
         stats_per_ref[ref_id]["no_of_alignments"]
         stats_per_ref[ref_id]["no_of_aligned_reads"]
-        stats_per_ref[ref_id]["fractions_of_aligned_reads"]
+        # stats_per_ref[ref_id]["fractions_of_aligned_reads"] # deprecated
         stats_per_ref[ref_id]["no_of_split_alignments"]
         stats_per_ref[ref_id]["no_of_split_aligned_reads"]
         stats_per_ref[ref_id]["no_of_uniquely_aligned_reads"]
@@ -141,14 +172,18 @@ class ReadAlignerStats(object):
             split_alignment = True
         else:
             split_alignment = False
+        # Add the alignment length frequencies to the chromosome
+        stats_per_ref[ref_id]["alignment_length_and_freqs"][entry.reference_length] += 1
         # Add to total stats if the alignment is primary (=not secondary)
         if not entry.is_secondary:
             # is primary alignment
-            # add the number of hits to number of freqs and hits
             # get the species by ref_id
             for sp, ref_ids in self.references_by_species.items():
                 if ref_id in ref_ids:
                      ref_sp = sp
+
+            # Count number of hits and frequencies for the library
+            self._stats["stats_total"]["no_of_hits_per_read_and_freqs"][no_of_hits] +=1
 
 
             # TODO maybe changing the order to the case that happens the most
@@ -176,6 +211,7 @@ class ReadAlignerStats(object):
                 self._stats["species_stats"][ref_sp]["no_of_aligned_reads"] += 1
                 # Add to number of alignments of species
                 self._stats["species_stats"][ref_sp]["no_of_alignments"] += 1
+
 
             # Count uniquely aligned read
             elif (unique_alignment and not split_alignment):
@@ -235,7 +271,6 @@ class ReadAlignerStats(object):
                         self._stats["species_stats"][ref_sp]["no_of_alignments"] += 1
                     # Add to number of cross aligned reads of library
                     self._stats["stats_total"]["no_of_cross_aligned_reads"] += 1
-                    print(set(aligned_species))
                     for ref in set(alignments_ref_seqs):
                         # Add to number of cross aligned reads of chromosome.
                         # A set is used to ensure that a read that maps multiple
@@ -249,7 +284,6 @@ class ReadAlignerStats(object):
 
                 else:
                     # multiple aligned
-                    print("read is multiple aligned")
                     ref_sp = aligned_species[0]
                     # Add to number of aligned reads of species
                     self._stats["species_stats"][ref_sp]["no_of_aligned_reads"] += 1

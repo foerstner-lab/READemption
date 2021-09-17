@@ -1,3 +1,7 @@
+import pandas as pd
+import pprint
+
+
 class ReadAlignerStatsTable(object):
     def __init__(
         self,
@@ -13,6 +17,180 @@ class ReadAlignerStatsTable(object):
         self._libs = libs
         self._output_path = output_path
         self._paired_end = paired_end
+        self._create_statistics_table()
+
+    def _create_statistics_table(self):
+        # print(self._alignment_stats)
+        pprint.pprint(self._read_processing_stats)
+        for lib in self._libs:
+            stats_total = pd.DataFrame(columns=[lib])
+            stats_total = self._append_to_df(
+                stats_total,
+                lib,
+                self._get_read_process_number(lib, "total_no_of_reads"),
+                "No. of input reads",
+            )
+
+            stats_total = self._append_to_df(
+                stats_total,
+                lib,
+                self._get_read_process_number(lib, "polya_removed"),
+                "No. of reads - PolyA detected and removed",
+            )
+
+            stats_total = self._append_to_df(
+                stats_total,
+                lib,
+                self._get_read_process_number(lib, "single_a_removed"),
+                "No. of reads - Single 3' A removed",
+            )
+
+            stats_total = self._append_to_df(
+                stats_total,
+                lib,
+                self._get_read_process_number(lib, "unmodified"),
+                "No. of reads - Unmodified",
+            )
+            stats_total = self._append_to_df(
+                stats_total,
+                lib,
+                self._get_read_process_number(lib, "too_short"),
+                "No. of reads - Removed as too short",
+            )
+            stats_total = self._append_to_df(
+                stats_total,
+                lib,
+                self._get_read_process_number(lib, "long_enough"),
+                "No. of reads - Long enough and used for alignment",
+            )
+            stats_total = self._append_to_df(
+                stats_total,
+                lib,
+                int(
+                    self._alignment_stats[lib]["stats_total"][
+                        "no_of_aligned_reads"
+                    ]
+                ),
+                "Total no. of aligned reads",
+            )
+            stats_total = self._append_to_df(
+                stats_total,
+                lib,
+                int(
+                    self._alignment_stats[lib]["stats_total"][
+                        "no_of_unaligned_reads"
+                    ]
+                ),
+                "Total no. of unaligned reads",
+            )
+            stats_total = self._append_to_df(
+                stats_total,
+                lib,
+                int(
+                    self._alignment_stats[lib]["stats_total"][
+                        "no_of_uniquely_aligned_reads"
+                    ]
+                ),
+                "Total no. of uniquely aligned reads",
+            )
+            stats_total = self._append_to_df(
+                stats_total,
+                lib,
+                int(
+                    self._alignment_stats[lib]["stats_total"][
+                        "no_of_split_aligned_reads"
+                    ]
+                ),
+                "Total no. of split aligned reads",
+            )
+            stats_total = self._append_to_df(
+                stats_total,
+                lib,
+                int(
+                    self._alignment_stats[lib]["stats_total"][
+                        "no_of_multiple_aligned_reads"
+                    ]
+                ),
+                "Total no. of multiple aligned reads",
+            )
+            stats_total = self._append_to_df(
+                stats_total,
+                lib,
+                int(
+                    self._alignment_stats[lib]["stats_total"][
+                        "no_of_cross_aligned_reads"
+                    ]
+                ),
+                "Total no. of cross aligned reads",
+            )
+            stats_total = self._append_to_df(
+                stats_total,
+                lib,
+                int(
+                    self._alignment_stats[lib]["stats_total"][
+                        "no_of_alignments"
+                    ]
+                ),
+                "Total no. of alignments",
+            )
+            stats_total = self._append_to_df(
+                stats_total,
+                lib,
+                round(
+                    self._calc_percentage(
+                        (
+                            self._alignment_stats[lib]["stats_total"][
+                                "no_of_aligned_reads"
+                            ]
+                        ),
+                        self._get_read_process_number(lib, "total_no_of_reads"),
+                    ),
+                    2,
+                ),
+                "Percentage of aligned reads (compared to no. of input reads)",
+            )
+            stats_total = self._append_to_df(
+                stats_total,
+                lib,
+                round(
+                    self._calc_percentage(
+                        (
+                            self._alignment_stats[lib]["stats_total"][
+                                "no_of_aligned_reads"
+                            ]
+                        ),
+                        self._get_read_process_number(lib, "long_enough"),
+                    ),
+                    2,
+                ),
+                "Percentage of aligned reads (compared to no. of long enough reads)",
+            )
+            stats_total = self._append_to_df(
+                stats_total,
+                lib,
+                round(
+                    self._calc_percentage(
+                        (
+                            self._alignment_stats[lib]["stats_total"][
+                                "no_of_uniquely_aligned_reads"
+                            ]
+                        ),
+                        (
+                            self._alignment_stats[lib]["stats_total"][
+                                "no_of_aligned_reads"
+                            ]
+                        ),
+                    ),
+                    2,
+                ),
+                "Percentage of uniquely aligned reads (in relation to all aligned reads)",
+            )
+
+        print(stats_total)
+
+    def _append_to_df(self, df, lib, stat, value):
+        df = df.append(pd.Series({lib: stat}, name=value))
+        return df
 
     def write(self):
         self._add_global_countings()
@@ -79,7 +257,9 @@ class ReadAlignerStatsTable(object):
             ),
             (
                 "Total no. of multiple aligned reads",
-                self._total_alignment_stat_numbers("no_of_multiple_aligned_reads"),
+                self._total_alignment_stat_numbers(
+                    "no_of_multiple_aligned_reads"
+                ),
             ),
             (
                 "Percentage of aligned reads (compared to no. of input reads)",
@@ -120,7 +300,6 @@ class ReadAlignerStatsTable(object):
                         ref_id, "no_of_uniquely_aligned_reads"
                     ),
                 ),
-
                 (
                     "%s - No. of split aligned reads",
                     self._alignment_number_per_ref_seq(
@@ -128,16 +307,16 @@ class ReadAlignerStatsTable(object):
                     ),
                 ),
                 (
-                        "%s - No. of multiple aligned reads",
-                        self._alignment_number_per_ref_seq(
-                            ref_id, "no_of_multiple_aligned_reads"
-                        ),
+                    "%s - No. of multiple aligned reads",
+                    self._alignment_number_per_ref_seq(
+                        ref_id, "no_of_multiple_aligned_reads"
+                    ),
                 ),
                 (
-                        "%s - No. of alignments",
-                        self._alignment_number_per_ref_seq(
-                            ref_id, "no_of_alignments"
-                        ),
+                    "%s - No. of alignments",
+                    self._alignment_number_per_ref_seq(
+                        ref_id, "no_of_alignments"
+                    ),
                 ),
             ]:
                 self._table.append([title_template % ref_id] + data)
@@ -162,6 +341,7 @@ class ReadAlignerStatsTable(object):
         else:
             return countings
 
+    # TODO remove _get_read_process_numbers
     def _get_read_process_numbers(self, attribute):
         factor = 1
         if self._paired_end:
@@ -170,6 +350,12 @@ class ReadAlignerStatsTable(object):
             self._read_processing_stats[lib][attribute] * factor
             for lib in self._libs
         ]
+
+    def _get_read_process_number(self, lib, attribute):
+        factor = 1
+        if self._paired_end:
+            factor = 2
+        return self._read_processing_stats[lib][attribute] * factor
 
     def _perc_aligned_reads_all_input(self):
         return [
