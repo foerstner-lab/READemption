@@ -453,6 +453,7 @@ class Controller(object):
             self._lib_names,
             self._pathcreator.read_alignment_stats_table_path,
             self._args.paired_end,
+            self._species_folder_prefixes_and_display_names
         )
         read_aligner_stats_table.write()
 

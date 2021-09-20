@@ -10,6 +10,7 @@ class ReadAlignerStatsTable(object):
         libs,
         output_path,
         paired_end,
+        species_folder_prefixes_and_display_names
     ):
         self._table = []
         self._read_processing_stats = read_processing_stats
@@ -17,9 +18,13 @@ class ReadAlignerStatsTable(object):
         self._libs = libs
         self._output_path = output_path
         self._paired_end = paired_end
-        self._create_statistics_table()
+        self._species_folder_prefixes_and_display_names = species_folder_prefixes_and_display_names
 
-    def _create_statistics_table(self):
+
+        self._create_statistics_table_total()
+        self._create_statistics_table_species()
+
+    def _create_statistics_table_total(self):
         # print(self._alignment_stats)
         pprint.pprint(self._read_processing_stats)
         for lib in self._libs:
@@ -185,8 +190,263 @@ class ReadAlignerStatsTable(object):
                 ),
                 "Percentage of uniquely aligned reads (in relation to all aligned reads)",
             )
+            stats_total = self._append_to_df(
+                stats_total,
+                lib,
+                round(
+                    self._calc_percentage(
+                        (
+                            self._alignment_stats[lib]["stats_total"][
+                                "no_of_split_aligned_reads"
+                            ]
+                        ),
+                        (
+                            self._alignment_stats[lib]["stats_total"][
+                                "no_of_aligned_reads"
+                            ]
+                        ),
+                    ),
+                    2,
+                ),
+                "Percentage of split aligned reads (in relation to all aligned reads)",
+            )
+            stats_total = self._append_to_df(
+                stats_total,
+                lib,
+                round(
+                    self._calc_percentage(
+                        (
+                            self._alignment_stats[lib]["stats_total"][
+                                "no_of_multiple_aligned_reads"
+                            ]
+                        ),
+                        (
+                            self._alignment_stats[lib]["stats_total"][
+                                "no_of_aligned_reads"
+                            ]
+                        ),
+                    ),
+                    2,
+                ),
+                "Percentage of multiple aligned reads (in relation to all aligned reads)",
+            )
+            stats_total = self._append_to_df(
+                stats_total,
+                lib,
+                round(
+                    self._calc_percentage(
+                        (
+                            self._alignment_stats[lib]["stats_total"][
+                                "no_of_cross_aligned_reads"
+                            ]
+                        ),
+                        (
+                            self._alignment_stats[lib]["stats_total"][
+                                "no_of_aligned_reads"
+                            ]
+                        ),
+                    ),
+                    2,
+                ),
+                "Percentage of cross aligned reads (in relation to all aligned reads)",
+            )
+            stats_total.insert(0, 'Species', "all")
+            stats_total['Statistic'] = stats_total.index
+            stats_total.reset_index(drop=True, inplace=True)
+            stats_total = stats_total[["Species", "Statistic", lib]]
 
-        print(stats_total)
+        #print(stats_total)
+
+    def _create_statistics_table_species(self):
+        species_tables = []
+        for sp, sp_display_name in self._species_folder_prefixes_and_display_names.items():
+            for lib in self._libs:
+                stats = self._create_overview_stats(lib, sp, sp_display_name)
+                species_tables.append(stats)
+        combined_species_table = pd.concat(species_tables)
+        print(combined_species_table)
+
+
+    def _create_overview_stats(self, lib, species, species_display_name):
+        stats_total = pd.DataFrame(columns=[lib])
+        stats_total = self._append_to_df(
+            stats_total,
+            lib,
+            int(
+                self._alignment_stats[lib]["species_stats"][species][
+                    "no_of_aligned_reads"
+                ]
+            ),
+            "Total no. of aligned reads",
+        )
+        stats_total = self._append_to_df(
+            stats_total,
+            lib,
+            int(
+                self._alignment_stats[lib]["species_stats"][species][
+                    "no_of_uniquely_aligned_reads"
+                ]
+            ),
+            "Total no. of uniquely aligned reads",
+        )
+        stats_total = self._append_to_df(
+            stats_total,
+            lib,
+            int(
+                self._alignment_stats[lib]["species_stats"][species][
+                    "no_of_split_aligned_reads"
+                ]
+            ),
+            "Total no. of split aligned reads",
+        )
+        stats_total = self._append_to_df(
+            stats_total,
+            lib,
+            int(
+                self._alignment_stats[lib]["species_stats"][species][
+                    "no_of_multiple_aligned_reads"
+                ]
+            ),
+            "Total no. of multiple aligned reads",
+        )
+        stats_total = self._append_to_df(
+            stats_total,
+            lib,
+            int(
+                self._alignment_stats[lib]["species_stats"][species][
+                    "no_of_cross_aligned_reads"
+                ]
+            ),
+            "Total no. of cross aligned reads",
+        )
+        stats_total = self._append_to_df(
+            stats_total,
+            lib,
+            int(
+                self._alignment_stats[lib]["species_stats"][species][
+                    "no_of_alignments"
+                ]
+            ),
+            "Total no. of alignments",
+        )
+        stats_total = self._append_to_df(
+            stats_total,
+            lib,
+            round(
+                self._calc_percentage(
+                    (
+                        self._alignment_stats[lib]["species_stats"][species][
+                            "no_of_aligned_reads"
+                        ]
+                    ),
+                    self._get_read_process_number(lib, "total_no_of_reads"),
+                ),
+                2,
+            ),
+            "Percentage of aligned reads (compared to no. of input reads)",
+        )
+        stats_total = self._append_to_df(
+            stats_total,
+            lib,
+            round(
+                self._calc_percentage(
+                    (
+                        self._alignment_stats[lib]["species_stats"][species][
+                            "no_of_aligned_reads"
+                        ]
+                    ),
+                    self._get_read_process_number(lib, "long_enough"),
+                ),
+                2,
+            ),
+            "Percentage of aligned reads (compared to no. of long enough reads)",
+        )
+        stats_total = self._append_to_df(
+            stats_total,
+            lib,
+            round(
+                self._calc_percentage(
+                    (
+                        self._alignment_stats[lib]["species_stats"][species][
+                            "no_of_uniquely_aligned_reads"
+                        ]
+                    ),
+                    (
+                        self._alignment_stats[lib]["species_stats"][species][
+                            "no_of_aligned_reads"
+                        ]
+                    ),
+                ),
+                2,
+            ),
+            "Percentage of uniquely aligned reads (in relation to all aligned reads)",
+        )
+        stats_total = self._append_to_df(
+            stats_total,
+            lib,
+            round(
+                self._calc_percentage(
+                    (
+                        self._alignment_stats[lib]["species_stats"][species][
+                            "no_of_split_aligned_reads"
+                        ]
+                    ),
+                    (
+                        self._alignment_stats[lib]["species_stats"][species][
+                            "no_of_aligned_reads"
+                        ]
+                    ),
+                ),
+                2,
+            ),
+            "Percentage of split aligned reads (in relation to all aligned reads)",
+        )
+        stats_total = self._append_to_df(
+            stats_total,
+            lib,
+            round(
+                self._calc_percentage(
+                    (
+                        self._alignment_stats[lib]["species_stats"][species][
+                            "no_of_multiple_aligned_reads"
+                        ]
+                    ),
+                    (
+                        self._alignment_stats[lib]["species_stats"][species][
+                            "no_of_aligned_reads"
+                        ]
+                    ),
+                ),
+                2,
+            ),
+            "Percentage of multiple aligned reads (in relation to all aligned reads)",
+        )
+        stats_total = self._append_to_df(
+            stats_total,
+            lib,
+            round(
+                self._calc_percentage(
+                    (
+                        self._alignment_stats[lib]["species_stats"][species][
+                            "no_of_cross_aligned_reads"
+                        ]
+                    ),
+                    (
+                        self._alignment_stats[lib]["species_stats"][species][
+                            "no_of_aligned_reads"
+                        ]
+                    ),
+                ),
+                2,
+            ),
+            "Percentage of cross aligned reads (in relation to all aligned reads)",
+        )
+        stats_total.insert(0, 'Species', species_display_name)
+        stats_total['Statistic'] = stats_total.index
+        stats_total.reset_index(drop=True, inplace=True)
+        stats_total = stats_total[["Species", "Statistic", lib]]
+        return stats_total
+
 
     def _append_to_df(self, df, lib, stat, value):
         df = df.append(pd.Series({lib: stat}, name=value))
