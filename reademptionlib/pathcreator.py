@@ -224,6 +224,9 @@ class PathCreator:
         self.read_alignment_stats_table_path = (
             f"{self.align_report_folder}/read_alignment_stats.csv"
         )
+        self.read_alignment_stats_table_transposed_path = (
+            f"{self.align_report_folder}/read_alignment_stats_transposed.csv"
+        )
         self.index_path = f"{self.read_alignment_index_folder}/index.idx"
         self.deseq_script_path = f"{self.deseq_raw_folder}/deseq.R"
         self.deseq_pca_heatmap_path = (

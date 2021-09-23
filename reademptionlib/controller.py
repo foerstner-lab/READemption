@@ -17,8 +17,6 @@ from reademptionlib.readalignerstatstable import ReadAlignerStatsTable
 from reademptionlib.readprocessor import ReadProcessor
 from reademptionlib.wiggle import WiggleWriter
 
-import pprint
-
 
 class Controller(object):
 
@@ -435,7 +433,6 @@ class Controller(object):
                 for lib_name, job in read_files_and_jobs.items()
             ]
         )
-        pprint.pprint(read_files_and_stats)
         raw_stat_data_writer.write(read_files_and_stats, output_stats_path)
 
     def _write_alignment_stat_table(self):
@@ -447,13 +444,16 @@ class Controller(object):
         final_alignment_stats = raw_stat_data_reader.read(
             self._pathcreator.read_alignments_stats_path
         )
+        references_by_species = self._get_references_by_species()
         read_aligner_stats_table = ReadAlignerStatsTable(
             read_processing_stats,
             final_alignment_stats,
             self._lib_names,
             self._pathcreator.read_alignment_stats_table_path,
+            self._pathcreator.read_alignment_stats_table_transposed_path,
             self._args.paired_end,
-            self._species_folder_prefixes_and_display_names
+            self._species_folder_prefixes_and_display_names,
+            references_by_species
         )
         read_aligner_stats_table.write()
 
