@@ -36,7 +36,6 @@ class ReadAlignerStats(object):
             self._init_species_dict(sp)
         self._count_aligned_reads_and_alignments(read_alignment_result_bam_path)
         self._count_unaligned_reads(unaligned_reads_path)
-        pprint.pprint(self._stats)
         return self._stats
 
     def _count_unaligned_reads(self, unaligned_read_paths):
