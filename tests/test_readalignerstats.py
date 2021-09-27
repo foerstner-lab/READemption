@@ -49,7 +49,7 @@ class ReadalignerStats(unittest.TestCase):
                             "no_of_alignments": 11.0,
                             "no_of_cross_aligned_reads": 2.0,
                             "no_of_hits_per_read_and_freqs": defaultdict(
-                                int, {1: 6, 2: 1, 3: 4}
+                                int, {1: 6, 2: 1, 3: 2}
                             ),
                             "no_of_multiple_aligned_reads": 1.0,
                             "no_of_split_aligned_reads": 3.0,
@@ -100,7 +100,9 @@ class ReadalignerStats(unittest.TestCase):
                             "alignment_length_and_freqs": defaultdict(int, {}),
                             "no_of_aligned_reads": 0.0,
                             "no_of_alignments": 0.0,
-                            "no_of_hits_per_read_and_freqs": {},
+                            "no_of_hits_per_read_and_freqs": defaultdict(
+                                int, {}
+                            ),
                             "no_of_multiple_aligned_reads": 0.0,
                             "no_of_split_aligned_reads": 0.0,
                             "no_of_split_alignments": 0.0,
@@ -113,7 +115,9 @@ class ReadalignerStats(unittest.TestCase):
                             "alignment_length_and_freqs": defaultdict(int, {}),
                             "no_of_aligned_reads": 0.0,
                             "no_of_alignments": 0.0,
-                            "no_of_hits_per_read_and_freqs": {},
+                            "no_of_hits_per_read_and_freqs": defaultdict(
+                                int, {}
+                            ),
                             "no_of_multiple_aligned_reads": 0.0,
                             "no_of_split_aligned_reads": 0.0,
                             "no_of_split_alignments": 0.0,
@@ -129,7 +133,9 @@ class ReadalignerStats(unittest.TestCase):
                             "no_of_aligned_reads": 1.0,
                             "no_of_alignments": 1.0,
                             "no_of_cross_aligned_reads": 1.0,
-                            "no_of_hits_per_read_and_freqs": {},
+                            "no_of_hits_per_read_and_freqs": defaultdict(
+                                int, {3: 1}
+                            ),
                             "no_of_multiple_aligned_reads": 0.0,
                             "no_of_split_aligned_reads": 0.0,
                             "no_of_split_alignments": 0.0,
@@ -145,7 +151,9 @@ class ReadalignerStats(unittest.TestCase):
                             "no_of_aligned_reads": 2.0,
                             "no_of_alignments": 2.0,
                             "no_of_cross_aligned_reads": 1.0,
-                            "no_of_hits_per_read_and_freqs": {},
+                            "no_of_hits_per_read_and_freqs": defaultdict(
+                                int, {2: 1, 1: 1}
+                            ),
                             "no_of_multiple_aligned_reads": 0.0,
                             "no_of_split_aligned_reads": 0.0,
                             "no_of_split_alignments": 0.0,
@@ -161,7 +169,9 @@ class ReadalignerStats(unittest.TestCase):
                             "no_of_aligned_reads": 5.0,
                             "no_of_alignments": 5.0,
                             "no_of_cross_aligned_reads": 3.0,
-                            "no_of_hits_per_read_and_freqs": {},
+                            "no_of_hits_per_read_and_freqs": defaultdict(
+                                int, {1: 2, 2: 2, 3: 1}
+                            ),
                             "no_of_multiple_aligned_reads": 0.0,
                             "no_of_split_aligned_reads": 0.0,
                             "no_of_split_alignments": 0.0,
@@ -177,7 +187,9 @@ class ReadalignerStats(unittest.TestCase):
                             "no_of_aligned_reads": 3.0,
                             "no_of_alignments": 3.0,
                             "no_of_cross_aligned_reads": 1.0,
-                            "no_of_hits_per_read_and_freqs": {},
+                            "no_of_hits_per_read_and_freqs": defaultdict(
+                                int, {1: 2, 3: 1}
+                            ),
                             "no_of_multiple_aligned_reads": 0.0,
                             "no_of_split_aligned_reads": 0.0,
                             "no_of_split_alignments": 0.0,
@@ -192,7 +204,9 @@ class ReadalignerStats(unittest.TestCase):
                             ),
                             "no_of_aligned_reads": 2.0,
                             "no_of_alignments": 2.0,
-                            "no_of_hits_per_read_and_freqs": {},
+                            "no_of_hits_per_read_and_freqs": defaultdict(
+                                int, {1: 2}
+                            ),
                             "no_of_multiple_aligned_reads": 0.0,
                             "no_of_split_aligned_reads": 2.0,
                             "no_of_split_alignments": 0.0,
@@ -207,7 +221,9 @@ class ReadalignerStats(unittest.TestCase):
                             ),
                             "no_of_aligned_reads": 2.0,
                             "no_of_alignments": 3.0,
-                            "no_of_hits_per_read_and_freqs": {},
+                            "no_of_hits_per_read_and_freqs": defaultdict(
+                                int, {1: 1, 3: 1}
+                            ),
                             "no_of_multiple_aligned_reads": 1.0,
                             "no_of_split_aligned_reads": 0.0,
                             "no_of_split_alignments": 0.0,
@@ -223,7 +239,9 @@ class ReadalignerStats(unittest.TestCase):
                             "no_of_aligned_reads": 1.0,
                             "no_of_alignments": 1.0,
                             "no_of_cross_aligned_reads": 1.0,
-                            "no_of_hits_per_read_and_freqs": {},
+                            "no_of_hits_per_read_and_freqs": defaultdict(
+                                int, {2: 1}
+                            ),
                             "no_of_multiple_aligned_reads": 0.0,
                             "no_of_split_aligned_reads": 0.0,
                             "no_of_split_alignments": 0.0,
@@ -236,7 +254,9 @@ class ReadalignerStats(unittest.TestCase):
                             "alignment_length_and_freqs": defaultdict(int, {}),
                             "no_of_aligned_reads": 0.0,
                             "no_of_alignments": 0.0,
-                            "no_of_hits_per_read_and_freqs": {},
+                            "no_of_hits_per_read_and_freqs": defaultdict(
+                                int, {}
+                            ),
                             "no_of_multiple_aligned_reads": 0.0,
                             "no_of_split_aligned_reads": 0.0,
                             "no_of_split_alignments": 0.0,
@@ -251,7 +271,9 @@ class ReadalignerStats(unittest.TestCase):
                             ),
                             "no_of_aligned_reads": 1.0,
                             "no_of_alignments": 1.0,
-                            "no_of_hits_per_read_and_freqs": {},
+                            "no_of_hits_per_read_and_freqs": defaultdict(
+                                int, {1: 1}
+                            ),
                             "no_of_multiple_aligned_reads": 0.0,
                             "no_of_split_aligned_reads": 1.0,
                             "no_of_split_alignments": 0.0,
@@ -264,7 +286,9 @@ class ReadalignerStats(unittest.TestCase):
                             "alignment_length_and_freqs": defaultdict(int, {}),
                             "no_of_aligned_reads": 0.0,
                             "no_of_alignments": 0.0,
-                            "no_of_hits_per_read_and_freqs": {},
+                            "no_of_hits_per_read_and_freqs": defaultdict(
+                                int, {}
+                            ),
                             "no_of_multiple_aligned_reads": 0.0,
                             "no_of_split_aligned_reads": 0.0,
                             "no_of_split_alignments": 0.0,
@@ -279,7 +303,9 @@ class ReadalignerStats(unittest.TestCase):
                             ),
                             "no_of_aligned_reads": 1.0,
                             "no_of_alignments": 1.0,
-                            "no_of_hits_per_read_and_freqs": {},
+                            "no_of_hits_per_read_and_freqs": defaultdict(
+                                int, {3: 1}
+                            ),
                             "no_of_multiple_aligned_reads": 1.0,
                             "no_of_split_aligned_reads": 0.0,
                             "no_of_split_alignments": 0.0,
@@ -292,7 +318,9 @@ class ReadalignerStats(unittest.TestCase):
                             "alignment_length_and_freqs": defaultdict(int, {}),
                             "no_of_aligned_reads": 0.0,
                             "no_of_alignments": 0.0,
-                            "no_of_hits_per_read_and_freqs": {},
+                            "no_of_hits_per_read_and_freqs": defaultdict(
+                                int, {}
+                            ),
                             "no_of_multiple_aligned_reads": 0.0,
                             "no_of_split_aligned_reads": 0.0,
                             "no_of_split_alignments": 0.0,

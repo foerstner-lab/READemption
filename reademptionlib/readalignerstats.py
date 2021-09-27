@@ -4,7 +4,6 @@ from collections import Counter
 from functools import reduce
 from reademptionlib.fasta import FastaParser
 import pysam
-import pprint
 
 
 class ReadAlignerStats(object):
@@ -59,7 +58,6 @@ class ReadAlignerStats(object):
         indexed_bam.build()
 
         stats_per_ref = defaultdict(dict)
-        no_of_hits_per_read_freq = {}
         for ref_id in bam.references:
             # Set up reference stats
             self._init_counting_dict(stats_per_ref, ref_id)
@@ -75,7 +73,6 @@ class ReadAlignerStats(object):
                         entry,
                         ref_id,
                         stats_per_ref,
-                        no_of_hits_per_read_freq,
                         indexed_bam,
                     )
                 except KeyError:
@@ -84,40 +81,9 @@ class ReadAlignerStats(object):
                     )
                     sys.exit(2)
         self._stats["stats_per_reference"] = stats_per_ref
-        for ref_id, stats in stats_per_ref.items():
-            stats_per_ref[ref_id][
-                "no_of_hits_per_read_and_freqs"
-            ] = self._calc_down_to_read(
-                stats_per_ref[ref_id]["no_of_hits_per_read_and_freqs"]
-            )
-        # self._stats["stats_total"] = self._sum_countings(stats_per_ref)
 
     def _bam_to_sam(self, bam_path, sam_path):
         pysam.view("-ho{}".format(sam_path), bam_path, catch_stdout=False)
-
-    def _sum_countings(self, stats_per_ref):
-        total_stats = {}
-        for ref_id, stats in stats_per_ref.items():
-            for attribute, value in stats.items():
-                if type(value) is int or type(value) is float:
-                    total_stats.setdefault(attribute, 0)
-                    total_stats[attribute] += value
-                elif type(value) is dict:
-                    total_stats.setdefault(attribute, {})
-                    for value_int, freq in value.items():
-                        total_stats[attribute].setdefault(value_int, 0)
-                        total_stats[attribute][value_int] += freq
-        return total_stats
-
-    def _calc_down_to_read(self, no_of_hits_per_read_freq):
-        """As the frequencies were determined via the alignments we need
-        to normalized each frequency value down to the read by
-        dividing the frequencig by the number of hits per read.
-        """
-        return dict(
-            (no_of_hits_per_read, freq / no_of_hits_per_read)
-            for no_of_hits_per_read, freq in no_of_hits_per_read_freq.items()
-        )
 
     def _init_stats_total(self):
         self._stats["stats_total"]["no_of_alignments"]
@@ -169,7 +135,6 @@ class ReadAlignerStats(object):
         entry,
         ref_id,
         stats_per_ref,
-        no_of_hits_per_read_freq,
         indexed_bam,
     ):
         entry_tags_dict = dict(entry.tags)
@@ -200,10 +165,6 @@ class ReadAlignerStats(object):
             self._stats["stats_total"]["no_of_hits_per_read_and_freqs"][
                 no_of_hits
             ] += 1
-
-            # TODO maybe changing the order to the case that happens the most
-            # makes the program faster
-            # Count split aligned read
             if unique_alignment and split_alignment:
                 # Add to chromosome
                 # Add to number of split aligned reads of chromosome
@@ -212,6 +173,10 @@ class ReadAlignerStats(object):
                 stats_per_ref[ref_id]["no_of_aligned_reads"] += 1
                 # Add to number of alignments of chromosome
                 stats_per_ref[ref_id]["no_of_alignments"] += 1
+                # Count number of hits and frequencies of chromosome
+                stats_per_ref[ref_id]["no_of_hits_per_read_and_freqs"][
+                    no_of_hits
+                ] += 1
                 # Add to library
                 # Add to number of split aligned reads of library
                 self._stats["stats_total"]["no_of_split_aligned_reads"] += 1
@@ -242,6 +207,10 @@ class ReadAlignerStats(object):
                 stats_per_ref[ref_id]["no_of_aligned_reads"] += 1
                 # Add to number of alignments of chromosome
                 stats_per_ref[ref_id]["no_of_alignments"] += 1
+                # Count number of hits and frequencies of chromosome
+                stats_per_ref[ref_id]["no_of_hits_per_read_and_freqs"][
+                    no_of_hits
+                ] += 1
                 # Add to library
                 # Add to number of uniquely aligned reads of library
                 self._stats["stats_total"]["no_of_uniquely_aligned_reads"] += 1
@@ -317,6 +286,10 @@ class ReadAlignerStats(object):
                         stats_per_ref[ref]["no_of_cross_aligned_reads"] += 1
                         # Add to number of aligned reads of chromosome
                         stats_per_ref[ref]["no_of_aligned_reads"] += 1
+                        # Count number of hits and frequencies of chromosome
+                        stats_per_ref[ref]["no_of_hits_per_read_and_freqs"][
+                            no_of_hits
+                        ] += 1
 
                 else:
                     # multiple aligned
@@ -342,11 +315,16 @@ class ReadAlignerStats(object):
                         stats_per_ref[ref]["no_of_multiple_aligned_reads"] += 1
                         # Add to number of aligned reads of chromosome
                         stats_per_ref[ref]["no_of_aligned_reads"] += 1
+                        # Count number of hits and frequencies of chromosome
+                        stats_per_ref[ref]["no_of_hits_per_read_and_freqs"][
+                            no_of_hits
+                        ] += 1
                     for ref_sp in aligned_species:
                         # Add to number of alignments to species
                         self._stats["species_stats"][ref_sp][
                             "no_of_alignments"
                         ] += 1
+                    for ref_sp in set(aligned_species):
                         # Count number of hits and frequencies for the species
                         self._stats["species_stats"][ref_sp][
                             "no_of_hits_per_read_and_freqs"
