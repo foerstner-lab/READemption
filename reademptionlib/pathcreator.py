@@ -352,7 +352,7 @@ class PathCreator:
 
     def get_ref_seq_files(self) -> list:
         """
-        extracts the names of the reference sequenc files from the dictionary
+        extracts the names of the reference sequence files from the dictionary
         self.ref_seq_folders_by_species and writes them to a list.
         E.g.:
         ['human.fa, e_coli.fa]
