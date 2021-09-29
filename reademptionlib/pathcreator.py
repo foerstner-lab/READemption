@@ -182,11 +182,11 @@ class PathCreator:
         )
 
     def _set_viz_align_folder_names(self):
-        self.viz_align_base_folder = f"{self.output_folder}/viz_align"
-        self.viz_align_input_read_length_plot_path = (
-            f"{self.viz_align_base_folder}/input_reads_length_distributions.pdf"
+        self.viz_align_read_lengths_folder = (
+            f"{self.output_folder}/viz_align_read_lengths"
         )
-        self.viz_align_processed_reads_length_plot_path = f"{self.viz_align_base_folder}/processed_reads_length_distributions.pdf"
+        self.viz_align_input_read_length_plot_path = f"{self.viz_align_read_lengths_folder}/input_reads_length_distributions.pdf"
+        self.viz_align_processed_reads_length_plot_path = f"{self.viz_align_read_lengths_folder}/processed_reads_length_distributions.pdf"
 
     def _set_viz_gene_quanti_folder_names(self):
         self.viz_gene_quanti_base_folder = (
@@ -342,8 +342,8 @@ class PathCreator:
         """
         self.ref_seq_paths_by_species = {}
         for (
-                sp,
-                species_ref_seq_folder,
+            sp,
+            species_ref_seq_folder,
         ) in self.ref_seq_folders_by_species.items():
             self.ref_seq_paths_by_species[sp] = self._path_list(
                 species_ref_seq_folder,
@@ -459,7 +459,7 @@ class PathCreator:
         ]
 
     def required_viz_align_folders(self):
-        return [self.viz_align_base_folder]
+        return [self.viz_align_read_lengths_folder]
 
     def required_viz_gene_quanti_folders(self):
         return [self.viz_gene_quanti_base_folder]

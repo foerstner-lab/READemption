@@ -15,6 +15,7 @@ from reademptionlib.readaligner import ReadAligner
 from reademptionlib.readalignerstats import ReadAlignerStats
 from reademptionlib.readalignerstatstable import ReadAlignerStatsTable
 from reademptionlib.readprocessor import ReadProcessor
+from reademptionlib.vizalign import AlignViz
 from reademptionlib.wiggle import WiggleWriter
 
 
@@ -453,7 +454,7 @@ class Controller(object):
             self._pathcreator.read_alignment_stats_table_transposed_path,
             self._args.paired_end,
             self._species_folder_prefixes_and_display_names,
-            references_by_species
+            references_by_species,
         )
         read_aligner_stats_table.write()
 
@@ -957,7 +958,10 @@ class Controller(object):
 
     def viz_align(self):
         """Generate plots based on the read processing and mapping"""
-        from reademptionlib.vizalign import AlignViz
+        # Create the output folders
+        viz_align_folders = self._pathcreator.required_viz_align_folders()
+        project_creator = ProjectCreator()
+        project_creator.create_subfolders(viz_align_folders)
 
         align_viz = AlignViz(
             self._pathcreator.get_lib_names_single_end()
