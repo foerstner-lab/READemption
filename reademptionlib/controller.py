@@ -48,7 +48,30 @@ class Controller(object):
         self._species_folder_prefixes = (
             self._pathcreator.species_folder_prefixes
         )
+        # Some words are used for creating specific folders or files.
+        # These words can not be used as species folder or display names.
+        # If one word of the forbidden list below is used READemption exits and
+        # will not create any folders
+        self.forbidden_species_folder_prefixes = ["all", "read_lengths"]
         self._species_display_names = self._pathcreator.species_display_names
+        if (
+            not set(self.forbidden_species_folder_prefixes).isdisjoint(
+                set(self._species_folder_prefixes)
+            )
+        ) or (
+            not set(self.forbidden_species_folder_prefixes).isdisjoint(
+                set(self._species_display_names)
+            )
+        ):
+            error_message = (
+                "The following words are not allowed as a SUB_FOLDER_NAME or "
+                "DISPLAY_NAME: "
+                f"{self.forbidden_species_folder_prefixes} \n"
+                "Please rerun the command with SUB_FOLDER_NAMES and "
+                "DISPLAY_NAMES that are not in the list. \n"
+            )
+            self._write_err_msg_and_quit(error_message)
+
         self._read_files = None
         self._ref_seq_files = None
 
