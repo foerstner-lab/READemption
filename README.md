@@ -1,6 +1,7 @@
 [![Latest Version](https://img.shields.io/pypi/v/reademption.svg)](https://pypi.python.org/pypi/READemption/)
 [![License](https://img.shields.io/pypi/l/reademption.svg)](https://pypi.python.org/pypi/READemption/)
 [![Build Status](https://travis-ci.org/foerstner-lab/READemption.svg?branch=main)](https://travis-ci.org/foerstner-lab/READemption)
+[![example_workflow](https://github.com/foerstner-lab/READemption/blob/main/.github/workflows/main.yml/badge.svg)
 [![Documentation Status](https://readthedocs.org/projects/reademption/badge/?version=latest)](https://reademption.readthedocs.io/en/latest/?badge=latest)
 [![DOI](https://zenodo.org/badge/18210971.svg)](https://zenodo.org/badge/latestdoi/18210971)
 
