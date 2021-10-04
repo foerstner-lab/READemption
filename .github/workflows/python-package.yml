@@ -35,10 +35,6 @@ jobs:
         python -m pip install pandas
         if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
         
-      
-    - name: List conda bin
-      run: ls $CONDA/bin
-    
     - name: Conda info
       shell: bash
       run: conda info
@@ -50,6 +46,13 @@ jobs:
     - name: Conda list
       shell: bash
       run: conda list
+      
+    - name: List conda bin
+      run: ls $CONDA/bin
+      
+    - name: Add conda to PATH
+      shell: bash
+      run: export PATH=$CONDA/bin:$PATH
 
     - name: Test with pytest
       run: |
