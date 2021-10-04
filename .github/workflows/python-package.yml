@@ -40,7 +40,7 @@ jobs:
       
     - name: Conda install segemehl
       shell: bash
-      run: conda install -c bioconda/label/cf201901 segemehl=0.3.4 --yes  
+      run: conda install -c bioconda/label/h39379e4_4  
       
     - name: Conda list
       shell: bash
