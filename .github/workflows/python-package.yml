@@ -20,10 +20,11 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
+    - uses: conda-incubator/setup-miniconda@v2
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v2
       with:
-        python-version: ${{ matrix.python-version }}
+        python-version: ${{ matrix.python-version }}                  
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
@@ -33,6 +34,19 @@ jobs:
         python -m pip install pysam
         python -m pip install pandas
         if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+    - name: Conda info
+      shell: bash
+      run: conda info
+    - name: Conda list
+      shell: pwsh
+      run: conda list
+      #wget http://repo.continuum.io/miniconda/Miniconda-latest-Linux-x86_64.sh -O miniconda.sh
+      #chmod +x miniconda.sh"
+      #./miniconda.sh -b"
+      #export PATH=/home/travis/miniconda2/bin:$PATH"
+      #ls /home/travis/"
+      #conda update --yes conda"
+      #conda install -c bioconda/label/cf201901 segemehl --yes"
     - name: Test with pytest
       run: |
         pytest
