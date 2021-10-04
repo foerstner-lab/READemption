@@ -52,7 +52,8 @@ jobs:
       
     - name: Add conda to PATH
       shell: bash
-      run: export PATH=$CONDA/bin:$PATH
+      run: echo "$CONDA/bin" >> $GITHUB_PATH
+
 
     - name: Test with pytest
       run: |
