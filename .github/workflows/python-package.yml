@@ -34,6 +34,13 @@ jobs:
         python -m pip install pysam
         python -m pip install pandas
         if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+        
+    - name: Include $CONDA in $PATH
+      run: echo ::add-path::$CONDA/bin
+      
+    - name: List conda bin
+      run: ls $CONDA/bin
+    
     - name: Conda info
       shell: bash
       run: conda info
