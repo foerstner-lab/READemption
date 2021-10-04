@@ -38,23 +38,17 @@ jobs:
     - name: Conda info
       shell: bash
       run: conda info
-      
     - name: Conda install segemehl
       shell: bash
       run: conda install -c bioconda segemehl=0.3.4 
-      
     - name: Conda list
       shell: bash
       run: conda list
-      
     - name: List conda bin
       run: ls $CONDA/bin
-      
-    - name: Add conda to PATH
+    - name: Add conda bin (segemehl.x) to PATH
       shell: bash
       run: echo "$CONDA/bin" >> $GITHUB_PATH
-
-
     - name: Test with pytest
       run: |
         pytest -k 'not test_segemehl'
