@@ -985,13 +985,14 @@ class Controller(object):
         viz_align_folders = self._pathcreator.required_viz_align_folders()
         project_creator = ProjectCreator()
         project_creator.create_subfolders(viz_align_folders)
-
         align_viz = AlignViz(
             self._pathcreator.get_lib_names_single_end()
             if not self._args.paired_end
             else self._pathcreator.get_lib_names_paired_end(),
             self._pathcreator.read_processing_stats_path,
             self._pathcreator.read_alignments_stats_path,
+            self._pathcreator.read_alignment_stats_table_path,
+            self._species_folder_prefixes_and_display_names
         )
         align_viz.read_stat_files()
         align_viz.plot_input_read_length(
@@ -1000,6 +1001,8 @@ class Controller(object):
         align_viz.plot_processed_read_length(
             self._pathcreator.viz_align_processed_reads_length_plot_path
         )
+        align_viz.plot_total_number_of_aligned_reads(self._pathcreator.get_viz_align_folders_by_species(),
+                                                     self._pathcreator.viz_align_all_folder)
 
     def viz_gene_quanti(self):
         """Generate plots based on the gene-wise read countings"""
