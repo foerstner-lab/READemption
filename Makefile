@@ -51,7 +51,7 @@ new_release:
 	@echo " make package_to_pypi"
 	@echo "* Test doc creation"
 	@echo "* git add CHANGELOG.txt bin/reademption docs/source/conf.py setup.py"
-	@echo " Also add the changed html pages of the docu"
+	@echo " Also add the changed html pages of the docu e.g.: git add -u    (adds all modified files to repo)"
 	@echo "* Commit changes e.g. 'git commit -m \"Set version to 0.4.X\"'"
 	@echo "* Tag the commit e.g. 'git tag -a v0.4.X -m \"version v0.4.X\"'"
 	@echo "* Merge release into dev and master"
