@@ -51,4 +51,4 @@ jobs:
       run: echo "$CONDA/bin" >> $GITHUB_PATH
     - name: Test with pytest
       run: |
-        pytest -k 'not test_segemehl'
+        pytest

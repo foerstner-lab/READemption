@@ -1,74 +1,37 @@
-
-
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8">
-  
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  
-  <title>Performing an example analysis &mdash; READemption 1.0.1 documentation</title>
-  
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-  
-  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-
-  
-  
-  
-  
-
-  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Performing an example analysis &mdash; READemption 1.0.2 documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
     <script src="_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-    
-      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
         <script src="_static/jquery.js"></script>
         <script src="_static/underscore.js"></script>
         <script src="_static/doctools.js"></script>
-        <script src="_static/language_data.js"></script>
-    
-    <script type="text/javascript" src="_static/js/theme.js"></script>
-
-    
+    <script src="_static/js/theme.js"></script>
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Troubleshooting" href="troubleshooting.html" />
     <link rel="prev" title="READemption’s subcommands" href="subcommands.html" /> 
 </head>
 
-<body class="wy-body-for-nav">
-
-   
+<body class="wy-body-for-nav"> 
   <div class="wy-grid-for-nav">
-    
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-          
-
-          
-            <a href="index.html" class="icon icon-home" alt="Documentation Home"> READemption
-          
-
-          
-            
+            <a href="index.html" class="icon icon-home"> READemption
             <img src="_static/READemption_logo.png" class="logo" alt="Logo"/>
-          
           </a>
-
-          
-            
-            
               <div class="version">
                 1.0
               </div>
-            
-          
-
-          
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
     <input type="text" name="q" placeholder="Search docs" />
@@ -76,18 +39,7 @@
     <input type="hidden" name="area" value="default" />
   </form>
 </div>
-
-          
-        </div>
-
-        
-        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
-          
-            
-            
-              
-            
-            
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="installation.html">Installation and updating</a></li>
 <li class="toctree-l1"><a class="reference internal" href="live_and_installation_image.html">Live system and installation image</a></li>
@@ -108,69 +60,31 @@
 <li class="toctree-l1"><a class="reference internal" href="versions.html">Versions/Change log</a></li>
 </ul>
 
-            
-          
         </div>
-        
       </div>
     </nav>
 
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
-
-      
-      <nav class="wy-nav-top" aria-label="top navigation">
-        
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
           <a href="index.html">READemption</a>
-        
       </nav>
 
-
       <div class="wy-nav-content">
-        
         <div class="rst-content">
-        
-          
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<div role="navigation" aria-label="breadcrumbs navigation">
-
+          <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-    
       <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
-        
       <li>Performing an example analysis</li>
-    
-    
       <li class="wy-breadcrumbs-aside">
-        
-            
-        
       </li>
-    
   </ul>
-
-  
   <hr/>
 </div>
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
-            
-  <div class="section" id="performing-an-example-analysis">
-<h1>Performing an example analysis<a class="headerlink" href="#performing-an-example-analysis" title="Permalink to this headline">¶</a></h1>
+             
+  <section id="performing-an-example-analysis">
+<h1>Performing an example analysis<a class="headerlink" href="#performing-an-example-analysis" title="Permalink to this headline"></a></h1>
 <p>Here you will be guided trough a small example analysis using a
 publicly available RNA-Seq from NCBI GEO that was part of a
 publication by <a class="reference external" href="http://www.ncbi.nlm.nih.gov/pubmed/24331466">Kröger et
@@ -181,8 +95,8 @@ formats. The CSV (tabular separated plain text files) files can be
 opened with any spreadsheet program like <a class="reference external" href="https://www.libreoffice.org/">LibreOffice</a> or Excel. For inspecting the mappings
 (in BAM format) and coverage files (wiggle format) you can use a
 genome browser for example <a class="reference external" href="http://bioviz.org/igb/">IGB</a> or <a class="reference external" href="https://www.broadinstitute.org/igv/home">IGV</a>.</p>
-<div class="section" id="generating-a-project">
-<h2>Generating a project<a class="headerlink" href="#generating-a-project" title="Permalink to this headline">¶</a></h2>
+<section id="generating-a-project">
+<h2>Generating a project<a class="headerlink" href="#generating-a-project" title="Permalink to this headline"></a></h2>
 <p>At first we have to create the analysis folder and its subfolder. For
 this we use the <code class="docutils literal notranslate"><span class="pre">create</span></code> subcommand:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ reademption create -f READemption_analysis
@@ -220,9 +134,9 @@ Please copy read files into folder &quot;READemption_analysis/input/reads&quot; 
    └── viz_gene_quanti
 </pre></div>
 </div>
-</div>
-<div class="section" id="retrieving-the-input-data">
-<h2>Retrieving the input data<a class="headerlink" href="#retrieving-the-input-data" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="retrieving-the-input-data">
+<h2>Retrieving the input data<a class="headerlink" href="#retrieving-the-input-data" title="Permalink to this headline"></a></h2>
 <p>We have to download the reference sequence (FASTA format) as well as
 the annotation file (GFF3 format) for <em>Salmonella</em> from NCBI. As we
 will use the URL of <em>Salmonella</em> Typhimurium SL1344’s source FTP
@@ -284,9 +198,9 @@ READemption_analysis/input/reference_sequences:
 NC_016810.fa  NC_017718.fa  NC_017719.fa  NC_017720.fa
 </pre></div>
 </div>
-</div>
-<div class="section" id="processing-and-aligning-the-reads">
-<h2>Processing and aligning the reads<a class="headerlink" href="#processing-and-aligning-the-reads" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="processing-and-aligning-the-reads">
+<h2>Processing and aligning the reads<a class="headerlink" href="#processing-and-aligning-the-reads" title="Permalink to this headline"></a></h2>
 <p>The first step it the read processing and mapping. Via parameters we
 tell READemption to use 4 CPU (<code class="docutils literal notranslate"><span class="pre">-p</span> <span class="pre">4</span></code>) and perform a poly-A-clipping
 (<code class="docutils literal notranslate"><span class="pre">--poly_a_clipping</span></code>) before the mapping.</p>
@@ -302,9 +216,9 @@ that more than 98 % of the reads are mapped for each library. Sorted
 and indexed alignements in BAM format are stored in
 <code class="docutils literal notranslate"><span class="pre">READemption_analysis/output/align/alignments</span></code>. We could load them
 into a genome browser but instead we continue with the next step.</p>
-</div>
-<div class="section" id="generating-coverage-files">
-<h2>Generating coverage files<a class="headerlink" href="#generating-coverage-files" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="generating-coverage-files">
+<h2>Generating coverage files<a class="headerlink" href="#generating-coverage-files" title="Permalink to this headline"></a></h2>
 <p>In order to generate strand specific coverage files with different
 normalizations we use the subcommand <code class="docutils literal notranslate"><span class="pre">coverage</span></code>.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ reademption coverage -p 4 -f READemption_analysis
@@ -321,9 +235,9 @@ Exonuclease treatment) data in order to determine transcriptional
 start sites. They can be loaded in common genome browsers like <a class="reference external" href="http://bioviz.org/igb/">IGB</a> or <a class="reference external" href="https://www.broadinstitute.org/igv/home">IGV</a>. Keep in mind that the
 coverages of the reverse strand have negative values so you have to
 adapt the scaling in some genome browsers.</p>
-</div>
-<div class="section" id="performing-gene-wise-quantification">
-<h2>Performing gene wise quantification<a class="headerlink" href="#performing-gene-wise-quantification" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="performing-gene-wise-quantification">
+<h2>Performing gene wise quantification<a class="headerlink" href="#performing-gene-wise-quantification" title="Permalink to this headline"></a></h2>
 <p>In this step we want to quantify the number of reads overlapping with
 the locations of the annotation entries. With the <code class="docutils literal notranslate"><span class="pre">--features</span></code>
 parameter we configure <code class="docutils literal notranslate"><span class="pre">reademption</span></code> to just quantify CDS, tRNA and
@@ -337,9 +251,9 @@ counting for all entries in
 countings for mappings in sense and anti-sense are separately
 listed. Besides the raw countings there are also tables for
 countings normalized by the total number of reads and RPKM values.</p>
-</div>
-<div class="section" id="performing-differential-gene-expression-analysis">
-<h2>Performing differential gene expression analysis<a class="headerlink" href="#performing-differential-gene-expression-analysis" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="performing-differential-gene-expression-analysis">
+<h2>Performing differential gene expression analysis<a class="headerlink" href="#performing-differential-gene-expression-analysis" title="Permalink to this headline"></a></h2>
 <p>To compare the gene expression of different conditions we apply the
 subcommand <code class="docutils literal notranslate"><span class="pre">deseq</span></code> which makes use of the R library <a class="reference external" href="http://www.bioconductor.org/packages/release/bioc/html/DESeq2.html">DESeq2</a>.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ reademption deseq \
@@ -364,9 +278,9 @@ and you can pick the comparison that you need. The raw <code class="docutils lit
 results are enriched with the original annotation information and are
 stored in
 <code class="docutils literal notranslate"><span class="pre">READemption_analysis/output/deseq/deseq_with_annotations/</span></code></p>
-</div>
-<div class="section" id="create-plots">
-<h2>Create plots<a class="headerlink" href="#create-plots" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="create-plots">
+<h2>Create plots<a class="headerlink" href="#create-plots" title="Permalink to this headline"></a></h2>
 <p>Finally we generate plots that visualize the results of the different
 steps. <code class="docutils literal notranslate"><span class="pre">viz_align</span></code> creates histograms of the read length
 distribution for the untreated and treated reads (saved in
@@ -386,66 +300,41 @@ classes.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ reademption viz_deseq -f READemption_analysis
 </pre></div>
 </div>
-</div>
-</div>
+</section>
+</section>
 
 
            </div>
-           
           </div>
-          <footer>
-  
-    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-      
-        <a href="troubleshooting.html" class="btn btn-neutral float-right" title="Troubleshooting" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
-      
-      
-        <a href="subcommands.html" class="btn btn-neutral float-left" title="READemption’s subcommands" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
-      
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="subcommands.html" class="btn btn-neutral float-left" title="READemption’s subcommands" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="troubleshooting.html" class="btn btn-neutral float-right" title="Troubleshooting" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
-  
 
   <hr/>
 
   <div role="contentinfo">
-    <p>
-        
-        &copy; Copyright 2020, Konrad U. Förstner and Till Sauerwein
-
-    </p>
+    <p>&#169; Copyright 2021, Konrad U. Förstner and Till Sauerwein.</p>
   </div>
-    
-    
-    
-    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
-    
-    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
-    
-    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
 
 </footer>
-
         </div>
       </div>
-
     </section>
-
   </div>
-  
-
-  <script type="text/javascript">
+  <script>
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });
   </script>
-
-  
-  
-    
-  
     <div class="footer">
-    This documention is licensed under the <a href="https://creativecommons.org/licenses/by/3.0/">Creative Commons Attribution license</a>, 2020, Konrad U. Förstner and Till Sauerwein.
-      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 3.0.3.
+    This documention is licensed under the <a href="https://creativecommons.org/licenses/by/3.0/">Creative Commons Attribution license</a>, 2021, Konrad U. Förstner and Till Sauerwein.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 4.2.0.
     </div>
 
 
