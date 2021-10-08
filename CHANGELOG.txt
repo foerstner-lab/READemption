@@ -1,3 +1,5 @@
+v1.0.3 (2021-10-08)
+- Bugfix in gff3 parser
 v1.0.2 (2021-10-08)
 - Fixed segemehl tests
 - Gene quantification: Removed normalization by number of splits
