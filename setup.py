@@ -12,7 +12,7 @@ setup(
     description="A RNA-Seq Analysis Pipeline",
     url="",
     install_requires=[
-        "biopython >= 1.73",
+        "biopython == 1.78",
         "matplotlib >= 2.2.2",
         "pandas >= 0.24.2",
         "pysam >= 0.15.2",
