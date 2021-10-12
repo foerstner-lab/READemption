@@ -1,3 +1,5 @@
+v1.0.5 (2021-10-12)
+- Fixed a bug of package creation, where the old build was not removed prior to cration
 v1.0.4 (2021-10-12)
 - Set biopython install requirements to v1.78
 - Bugfix wheel package
