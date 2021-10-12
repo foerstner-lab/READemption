@@ -1,3 +1,6 @@
+v1.0.4 (2021-10-12)
+- Set biopython install requirements to v1.78
+- Bugfix wheel package
 v1.0.3 (2021-10-08)
 - Bugfix in gff3 parser
 v1.0.2 (2021-10-08)
