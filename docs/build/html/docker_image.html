@@ -77,29 +77,28 @@
   <section id="docker-image">
 <h1>Docker image<a class="headerlink" href="#docker-image" title="Permalink to this headline"></a></h1>
 <p><a class="reference external" href="https://docker.com/">Docker</a> is a light-weight way to deploy
-applications. We offer an <a class="reference external" href="https://registry.hub.docker.com/u/konradfoerstner/reademption/">image for READemption</a>
+applications. We offer an <a class="reference external" href="https://hub.docker.com/r/tillsauerwein/reademption">image for READemption</a>
 that can be easily retrieved and used once you have <a class="reference external" href="https://docs.docker.com/installation/">Docker installed</a>. To get the image run</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ sudo docker pull konradfoerstner/reademption
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ sudo docker pull tillsauerwein/reademption
 </pre></div>
 </div>
 <p>Now you have the image READempmtion image and should see it shown
 in your list of docker images:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ sudo docker images
 REPOSITORY                    TAG                 IMAGE ID            CREATED             VIRTUAL SIZE
-reademption_0.3.3             latest              416dbb001c6b        2 weeks ago         802.5 MB
-konradfoerstner/reademption   0.3.3               416dbb001c6b        2 weeks ago         802.5 MB
-ubuntu                        14.04               ba5877dc9bec        4 weeks ago         192.7 MB
-ubuntu                        latest              ba5877dc9bec        4 weeks ago         192.7 MB
+tillsauerwein/reademption     1.0.5               6ca6b40723c0        3 hours ago         1.91GB
+tillsauerwein/reademption     latest              6ca6b40723c0        3 hours ago         1.91GB
 </pre></div>
 </div>
 <p>You can simply start the contains by running the following command:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ sudo docker run -i -t reademption_0.3.3
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ sudo docker run -i -t reademption_1.0.5
 root@3b9e7fd860ee:/# reademption -v
-READemption version 0.3.3
+READemption version 1.0.5
 </pre></div>
 </div>
 <p>Inside of this environment you have access to the local installation
 of READemption.</p>
+<p>You can find a detailed tutorial of using READemption with docker at <a class="reference external" href="https://github.com/Tillsa/READemption_Docker_Tutorial">https://github.com/Tillsa/READemption_Docker_Tutorial</a>.</p>
 </section>
 
 

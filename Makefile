@@ -65,6 +65,10 @@ new_release:
 	@echo "  https://github.com/foerstner-lab/READemption/releases/new"
 	@echo "Update the documentation on read the docs"
 	      " -  login and hit 'build'"
+	@echo "*Create Docker image with tags latest and the current version:"
+	@echo " docker build -f Dockerfile -t tillsauerwein/reademption:1.0.X -t tillsauerwein/reademption:latest ."
+	@echo "*push all docker images to dockerhub:"
+	@echo " docker push -a tillsauerwein/reademption"
 	# @echo "* Upload new docs using 'make upload_doc'"
 
 # Todo: docker_images: docker build -t konradfoerstner/reademption:0.4.1 -t konradfoerstner/reademption:latest .
