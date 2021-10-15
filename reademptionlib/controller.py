@@ -992,6 +992,7 @@ class Controller(object):
             self._pathcreator.read_processing_stats_path,
             self._pathcreator.read_alignments_stats_path,
             self._pathcreator.read_alignment_stats_table_path,
+            self._pathcreator.viz_align_aligned_reads_by_species_paths,
             self._species_folder_prefixes_and_display_names
         )
         align_viz.read_stat_files()

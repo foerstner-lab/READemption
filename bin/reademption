@@ -49,9 +49,9 @@ def create_parser():
         required=True,
         help="One key-value pair for each species.\n"
         "Key-value "
-        "pairs consist of a 'folder suffix' (key) and a "
+        "pairs consist of a 'folder prefix' (key) and a "
         "'display name' (value) and are separated by an '='-sign.\n"
-        "The 'folder suffix' will be used to create input -and output "
+        "The 'folder prefix' will be used to create input -and output "
         "folders for the given species.\n"
         "The 'display name' will be used for output files "
         "and figures. \n"

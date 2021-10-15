@@ -194,6 +194,7 @@ class PathCreator:
 
     def _set_viz_align_folders_by_species(self):
         self.viz_align_folders_by_species = {}
+        self.viz_align_aligned_reads_by_species_paths = {}
         for prefix in self.species_folder_prefixes:
             prefix_and_connector = prefix + self.prefix_folder_name_connector
             if len(self.species_folder_prefixes) and prefix == " ":
@@ -201,6 +202,10 @@ class PathCreator:
             self.viz_align_folders_by_species[
                 prefix
             ] = f"{self.output_folder}/{prefix_and_connector}viz_align"
+
+            self.viz_align_aligned_reads_by_species_paths[
+                prefix
+            ] = f"{self.output_folder}/{prefix_and_connector}viz_align/{prefix_and_connector}aligned_reads"
 
     def get_viz_align_folders_by_species(self):
         self._set_viz_align_folders_by_species()

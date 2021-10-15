@@ -1,3 +1,4 @@
+from collections import defaultdict
 import json
 import numpy as np
 import matplotlib
@@ -18,12 +19,14 @@ class AlignViz(object):
         read_processing_stats_path,
         read_aligner_stats_path,
         read_alignment_stats_table_path,
+        viz_align_aligned_reads_by_species_paths,
         species_folder_prefixes_and_display_names,
     ):
         self._lib_names = lib_names
         self._read_processing_stats_path = read_processing_stats_path
         self._read_aligner_stats_path = read_aligner_stats_path
         self._read_alignment_stats_table_path = read_alignment_stats_table_path
+        self._viz_align_aligned_reads_by_species_paths = viz_align_aligned_reads_by_species_paths
         self._species_folder_prefixes_and_display_names = (
             species_folder_prefixes_and_display_names
         )
@@ -90,8 +93,9 @@ class AlignViz(object):
 
         all_stats_selection.set_index("Statistic", inplace=True)
         all_stats_selection = all_stats_selection.drop(columns=["Species"])
-
         all_libs = []
+        # make and empty dict that will store a list with the library stats for each species
+        aligned_reads_by_species = defaultdict(list)
         for lib in self._lib_names:
             # get the alignment stats for a single lib
             read_alignment_stats_single_lib = read_alignment_stats[
@@ -109,6 +113,28 @@ class AlignViz(object):
                     read_alignment_stats_single_lib["Species"]
                     == sp_display_name
                 ]
+
+                ## Create Dataframes for single species
+                # select all kind of aligned reads of a species
+                species_aligned_reads = sp_stats[
+                    sp_stats["Statistic"].isin(
+                        [
+                            "Total no. of uniquely aligned reads",
+                            "Total no. of split aligned reads",
+                            "Total no. of multiple aligned reads",
+                            "Total no. of cross aligned reads",
+                        ]
+                    )
+                ]
+                # Drop the 'Species' column
+                species_aligned_reads = species_aligned_reads.drop("Species", axis=1)
+                # Move the 'Statistic' column to indes
+                species_aligned_reads.set_index("Statistic", inplace=True)
+                # Add the library stats to the species stats
+                aligned_reads_by_species[sp].append(species_aligned_reads)
+
+
+                ## Create Dataframe for the combined species
                 # select the statistics that only contain exclusively aligned
                 # reads for the given species
                 species_exclusive_aligned_reads = sp_stats[
@@ -144,7 +170,7 @@ class AlignViz(object):
                 # dataframe and set 'Species' and 'Statistic' columns as index
                 #                                                      library_two
                 # Species     Statistic
-                #homo sapiens Total no. of uniquely aligned reads             6.0
+                # homo sapiens Total no. of uniquely aligned reads             6.0
                 #             Total no. of split aligned reads                6.0
                 #             Total no. of multiple aligned reads             2.0
                 #             Total no. of species exclusively aligned reads  14.0
@@ -163,6 +189,7 @@ class AlignViz(object):
             all_species = pd.concat(all_species_exclusive_aligned_reads, axis=0)
             # safe all dataframes of a lib to a list
             all_libs.append(all_species)
+        ## Create Dataframe for the combined species
         # combine all dataframes of all libs (all species)
         all_libs_all_species = pd.concat(all_libs, axis=1)
         # select only the sum of the species exclusively aligned reads
@@ -173,9 +200,9 @@ class AlignViz(object):
         ]
         # reset index and return species to columns:
         #                 Species                                       Statistic  library_one  library_two
-        #0           homo sapiens  Total no. of species exclusively aligned reads          7.0         14.0
-        #1  Staphylococcus aureus  Total no. of species exclusively aligned reads          2.0          4.0
-        #2            Influenza A  Total no. of species exclusively aligned reads          1.0          2.0
+        # 0           homo sapiens  Total no. of species exclusively aligned reads          7.0         14.0
+        # 1  Staphylococcus aureus  Total no. of species exclusively aligned reads          2.0          4.0
+        # 2            Influenza A  Total no. of species exclusively aligned reads          1.0          2.0
 
         total_no_of_species_exclusive_reads.reset_index(inplace=True)
         # Make new Series with 'Species' and 'Statistic' connected with ' - ':
@@ -190,9 +217,9 @@ class AlignViz(object):
         )
 
         #####
-        #total_no_of_species_exclusive_reads["Species Statistic"] = total_no_of_species_exclusive_reads["Species"] + " - " + total_no_of_species_exclusive_reads["Statistic"]
-        #print(total_no_of_species_exclusive_reads["Species Statistic"])
-        #print(total_no_of_species_exclusive_reads)
+        # total_no_of_species_exclusive_reads["Species Statistic"] = total_no_of_species_exclusive_reads["Species"] + " - " + total_no_of_species_exclusive_reads["Statistic"]
+        # print(total_no_of_species_exclusive_reads["Species Statistic"])
+        # print(total_no_of_species_exclusive_reads)
         #####
 
         # Add the new Series as a column
@@ -224,7 +251,6 @@ class AlignViz(object):
         )
         total_no_of_species_exclusive_reads.set_index("Statistic", inplace=True)
 
-
         # Combine the species exclusive stats and the combined stats for
         # all species:
         #                                                     library_one  library_two
@@ -250,6 +276,29 @@ class AlignViz(object):
         fig.savefig(
             f"{viz_align_all_folder}/stacked_species.pdf", bbox_inches="tight"
         )
+
+        ## Create Dataframes for single species
+        for sp, lib_stats, in aligned_reads_by_species.items():
+            species_aligned_reads = pd.concat(lib_stats, axis=1)
+            species_aligned_reads_transposed = species_aligned_reads.transpose()
+            output_path = self._viz_align_aligned_reads_by_species_paths[sp]
+            self._plot_species_align_stats(species_aligned_reads_transposed, output_path)
+            self._write_species_align_stats(species_aligned_reads_transposed, output_path)
+
+    def _write_species_align_stats(self, species_aligned_reads_transposed, output_path):
+        species_aligned_reads_transposed.to_csv(f"{output_path}.csv", sep="\t")
+
+    def _plot_species_align_stats(
+        self, species_aligned_reads_transposed, output_path
+    ):
+        sns.set()
+        ax = species_aligned_reads_transposed.plot(
+            kind="bar", stacked=True
+        )
+        fig = ax.get_figure()
+        fig.savefig(
+            f"{output_path}.pdf", bbox_inches="tight"
+    )
 
     def _read_in_read_alignment_stats_table(self):
         read_alignment_stats = pd.read_csv(
