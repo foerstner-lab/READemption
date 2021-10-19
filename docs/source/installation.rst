@@ -42,8 +42,8 @@ Some comments:
 - ``make``, ``libncurses5-dev`` and ``zlib1g-dev`` are needed for ``segemehl``
 - ``libxml2`` is required for the installation of some of the R-packages
 
-2. Install segemehl
-~~~~~~~~~~~~~~~~~~~
+2. Install segemehl (version 0.3.4)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 ::
 
@@ -53,9 +53,8 @@ Some comments:
 
 
 Copying the executable to a location that is part of the ``PATH`` e.g
-``/usr/bin/`` ...
+``/usr/bin/`` ... ::
 
-::
   sudo cp segemehl-0.3.4/segemehl-0.3.4/segemehl.x /usr/bin/segemehl.x
 
 ... or the bin folder of your home directory::
@@ -66,7 +65,7 @@ Copying the executable to a location that is part of the ``PATH`` e.g
 
 Alternatively, segemehl can be installed via conda::
 
-  conda install -c bioconda segemehl
+  conda install -c bioconda segemehl=0.3.4
 
 
 3. Install DESeq2
@@ -80,8 +79,9 @@ Start ``R``::
 and install the DESeq2 package inside of the interactive command line
 interface. You might be asked to confirm the installation path::
 
-  source("http://bioconductor.org/biocLite.R")
-  biocLite("DESeq2")
+  if (!requireNamespace("BiocManager", quietly = TRUE))
+    install.packages("BiocManager")
+  BiocManager::install("DESeq2")
 
 Leave ``R``::
 

@@ -45,7 +45,7 @@
 <li class="toctree-l2"><a class="reference internal" href="#requirements">Requirements</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#installing-on-a-fresh-ubuntu-system">Installing on a fresh Ubuntu system</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#installing-all-required-debian-ubuntu-packages">1. Installing all required Debian/Ubuntu packages</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#install-segemehl">2. Install segemehl</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#install-segemehl-version-0-3-4">2. Install segemehl (version 0.3.4)</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#install-deseq2">3. Install DESeq2</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#install-reademption-and-it-s-dependcies">Install  READemption and it’s dependcies</a></li>
 </ul>
@@ -126,8 +126,8 @@ installation of all these requirements will be covered.</p>
 <li><p><code class="docutils literal notranslate"><span class="pre">libxml2</span></code> is required for the installation of some of the R-packages</p></li>
 </ul>
 </section>
-<section id="install-segemehl">
-<h3>2. Install segemehl<a class="headerlink" href="#install-segemehl" title="Permalink to this headline"></a></h3>
+<section id="install-segemehl-version-0-3-4">
+<h3>2. Install segemehl (version 0.3.4)<a class="headerlink" href="#install-segemehl-version-0-3-4" title="Permalink to this headline"></a></h3>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">curl</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">www</span><span class="o">.</span><span class="n">bioinf</span><span class="o">.</span><span class="n">uni</span><span class="o">-</span><span class="n">leipzig</span><span class="o">.</span><span class="n">de</span><span class="o">/</span><span class="n">Software</span><span class="o">/</span><span class="n">segemehl</span><span class="o">/</span><span class="n">downloads</span><span class="o">/</span><span class="n">segemehl</span><span class="o">-</span><span class="mf">0.3.4</span><span class="o">.</span><span class="n">tar</span><span class="o">.</span><span class="n">gz</span> <span class="o">&gt;</span> <span class="n">segemehl</span><span class="o">-</span><span class="mf">0.3.4</span><span class="o">.</span><span class="n">tar</span><span class="o">.</span><span class="n">gz</span>
 <span class="n">tar</span> <span class="n">segemehl</span><span class="o">-</span><span class="mf">0.3.4</span><span class="o">.</span><span class="n">tar</span><span class="o">.</span><span class="n">gz</span>
 <span class="n">cd</span> <span class="n">segemehl_</span><span class="o">*/</span><span class="n">segemehl</span><span class="o">*/</span> <span class="o">&amp;&amp;</span> <span class="n">make</span> <span class="nb">all</span> <span class="o">&amp;&amp;</span> <span class="n">cd</span> <span class="o">../../</span>
@@ -135,17 +135,16 @@ installation of all these requirements will be covered.</p>
 </div>
 <p>Copying the executable to a location that is part of the <code class="docutils literal notranslate"><span class="pre">PATH</span></code> e.g
 <code class="docutils literal notranslate"><span class="pre">/usr/bin/</span></code> …</p>
-<dl class="simple">
-<dt>::</dt><dd><p>sudo cp segemehl-0.3.4/segemehl-0.3.4/segemehl.x /usr/bin/segemehl.x</p>
-</dd>
-</dl>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sudo</span> <span class="n">cp</span> <span class="n">segemehl</span><span class="o">-</span><span class="mf">0.3.4</span><span class="o">/</span><span class="n">segemehl</span><span class="o">-</span><span class="mf">0.3.4</span><span class="o">/</span><span class="n">segemehl</span><span class="o">.</span><span class="n">x</span> <span class="o">/</span><span class="n">usr</span><span class="o">/</span><span class="nb">bin</span><span class="o">/</span><span class="n">segemehl</span><span class="o">.</span><span class="n">x</span>
+</pre></div>
+</div>
 <p>… or the bin folder of your home directory:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">mkdir</span> <span class="o">~/</span><span class="nb">bin</span>
 <span class="n">cp</span> <span class="n">segemehl</span><span class="o">-</span><span class="mf">0.3.4</span><span class="o">/</span><span class="n">segemehl</span><span class="o">-</span><span class="mf">0.3.4</span><span class="o">/</span><span class="n">segemehl</span><span class="o">.</span><span class="n">x</span> <span class="o">~/</span><span class="nb">bin</span>
 </pre></div>
 </div>
 <p>Alternatively, segemehl can be installed via conda:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">conda</span> <span class="n">install</span> <span class="o">-</span><span class="n">c</span> <span class="n">bioconda</span> <span class="n">segemehl</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">conda</span> <span class="n">install</span> <span class="o">-</span><span class="n">c</span> <span class="n">bioconda</span> <span class="n">segemehl</span><span class="o">=</span><span class="mf">0.3.4</span>
 </pre></div>
 </div>
 </section>
@@ -157,8 +156,9 @@ installation of all these requirements will be covered.</p>
 </div>
 <p>and install the DESeq2 package inside of the interactive command line
 interface. You might be asked to confirm the installation path:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">source</span><span class="p">(</span><span class="s2">&quot;http://bioconductor.org/biocLite.R&quot;</span><span class="p">)</span>
-<span class="n">biocLite</span><span class="p">(</span><span class="s2">&quot;DESeq2&quot;</span><span class="p">)</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>if (!requireNamespace(&quot;BiocManager&quot;, quietly = TRUE))
+  install.packages(&quot;BiocManager&quot;)
+BiocManager::install(&quot;DESeq2&quot;)
 </pre></div>
 </div>
 <p>Leave <code class="docutils literal notranslate"><span class="pre">R</span></code>:</p>
