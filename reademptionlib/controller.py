@@ -1002,8 +1002,7 @@ class Controller(object):
         align_viz.plot_processed_read_length(
             self._pathcreator.viz_align_processed_reads_length_plot_path
         )
-        align_viz.plot_total_number_of_aligned_reads(self._pathcreator.get_viz_align_folders_by_species(),
-                                                     self._pathcreator.viz_align_all_folder)
+        align_viz.plot_total_number_of_aligned_reads(self._pathcreator.viz_align_all_folder)
         align_viz.plot_species_exclusive_reads_for_each_species()
 
     def viz_gene_quanti(self):

@@ -57,17 +57,11 @@ class AlignViz(object):
         )
 
     def plot_total_number_of_aligned_reads(
-        self, viz_align_folders_by_species: dict, viz_align_all_folder: str
+        self, viz_align_all_folder: str
     ) -> None:
         """
         Creates a stacked bar plot of the alignment stats by species and saves
         it as a pdf.
-        :param viz_align_folders_by_species: A dict containing the
-                outputfolders of viz align for each species e.g.:
-                {'human': 'reademption_analysis_dual/output/human_viz_align',
-                'staphylococcus': 'reademption_analysis_dual/output/staphylococcus_viz_align',
-                'influenza': 'reademption_analysis_dual/output/influenza_viz_align'}
-
         :param viz_align_all_folder: path of the output folder where the
                 pdf for all species will be saved
         """
@@ -76,82 +70,14 @@ class AlignViz(object):
         # get statistics for all species combined and
         # select 'Total no. of cross aligned reads' and
         # 'Total no. of unaligned reads'
-        all_stats = read_alignment_stats[
-            read_alignment_stats["Species"] == "all"
-        ]
-        all_stats_selection = all_stats[
-            all_stats["Statistic"].isin(
-                [
-                    "Total no. of cross aligned reads",
-                    "Total no. of unaligned reads",
-                ]
-            )
-        ]
-        # move statistic column to index and remove species information:
-        #                                              library_one  library_two
-        #    Statistic
-        #    Total no. of unaligned reads              1.0          2.0
-        #    Total no. of cross aligned reads          3.0          6.0
-
-        all_stats_selection.set_index("Statistic", inplace=True)
-        all_stats_selection = all_stats_selection.drop(columns=["Species"])
+        all_stats_selection = self._get_all_stats_selection(
+            read_alignment_stats
+        )
         # get the sums of all species exclusively aligned reads in
         # a combined dataframe.
         total_no_of_species_exclusive_reads = (
             self._get_species_exclusive_reads_combined(read_alignment_stats)
         )
-
-        # reset index and return species to columns:
-        #                 Species                                       Statistic  library_one  library_two
-        # 0           homo sapiens  Total no. of species exclusively aligned reads          7.0         14.0
-        # 1  Staphylococcus aureus  Total no. of species exclusively aligned reads          2.0          4.0
-        # 2            Influenza A  Total no. of species exclusively aligned reads          1.0          2.0
-        total_no_of_species_exclusive_reads.reset_index(inplace=True)
-        # Make new Series with 'Species' and 'Statistic' connected with ' - ':
-        # 0    homo sapiens - Total no. of species exclusivel...
-        # 1    Staphylococcus aureus - Total no. of species e...
-        # 2    Influenza A - Total no. of species exclusively...
-
-        species_and_statistics_column = (
-            total_no_of_species_exclusive_reads["Species"]
-            + " - "
-            + total_no_of_species_exclusive_reads["Statistic"].copy()
-        )
-
-        #####
-        # total_no_of_species_exclusive_reads["Species Statistic"] = total_no_of_species_exclusive_reads["Species"] + " - " + total_no_of_species_exclusive_reads["Statistic"]
-        # print(total_no_of_species_exclusive_reads["Species Statistic"])
-        # print(total_no_of_species_exclusive_reads)
-        #####
-
-        # Add the new Series as a column
-        #                  Species                                       Statistic  library_one  library_two                                                  0
-        # 0           homo sapiens  Total no. of species exclusively aligned reads          7.0         14.0  homo sapiens - Total no. of species exclusivel...
-        # 1  Staphylococcus aureus  Total no. of species exclusively aligned reads          2.0          4.0  Staphylococcus aureus - Total no. of species e...
-        # 2            Influenza A  Total no. of species exclusively aligned reads          1.0          2.0  Influenza A - Total no. of species exclusively...
-
-        total_no_of_species_exclusive_reads = pd.concat(
-            [
-                total_no_of_species_exclusive_reads,
-                species_and_statistics_column,
-            ],
-            axis=1,
-        )
-        # Drop the 'Species' and 'Statistic' columns and rename the combined
-        # column to 'Statistic'. Then set it as index:
-        #                                                     library_one  library_two
-        # Statistic
-        # homo sapiens - Total no. of species exclusively...          7.0         14.0
-        # Staphylococcus aureus - Total no. of species ex...          2.0          4.0
-        # Influenza A - Total no. of species exclusively ...          1.0          2.0
-
-        total_no_of_species_exclusive_reads.drop(
-            ["Species", "Statistic"], axis=1, inplace=True
-        )
-        total_no_of_species_exclusive_reads.rename(
-            columns={0: "Statistic"}, inplace=True
-        )
-        total_no_of_species_exclusive_reads.set_index("Statistic", inplace=True)
 
         # Combine the species exclusive stats and the combined stats for
         # all species:
@@ -175,28 +101,43 @@ class AlignViz(object):
             f"{viz_align_all_folder}/stacked_species",
         )
 
-    def _plot_combined_species_align_stats(
-        self,
-        species_and_cross_aligned_and_unaligned_transposed: pd.core.frame.DataFrame,
-        output_path: str,
-    ) -> None:
+    def _get_all_stats_selection(
+        self, read_alignment_stats: pd.core.frame.DataFrame
+    ) -> pd.core.frame.DataFrame:
         """
-        :param species_and_cross_aligned_and_unaligned_transposed: Dataframe
-        that contains the species aligned, cross aligned and unaligned reads
-        for all species
-        :param output_path: the path where to save the figure
+        Make a pandas Dataframe with the "Total no. of cross aligend reads" and
+        the "Total no. of unaligned reads" for the combined species
+        :param read_alignment_stats:
+        :return: DataFrame e.g.:
+                                                      library_one  library_two
+            Statistic
+            Total no. of unaligned reads              1.0          2.0
+            Total no. of cross aligned reads          3.0          6.0
         """
-        sns.set()
-        ax = species_and_cross_aligned_and_unaligned_transposed.plot(
-            kind="bar", stacked=True
-        )
-        ax.legend(loc="center left", bbox_to_anchor=(1, 0.5))
-        fig = ax.get_figure()
-        fig.savefig(f"{output_path}.pdf", bbox_inches="tight")
+        all_stats = read_alignment_stats[
+            read_alignment_stats["Species"] == "all"
+        ]
+        all_stats_selection = all_stats[
+            all_stats["Statistic"].isin(
+                [
+                    "Total no. of cross aligned reads",
+                    "Total no. of unaligned reads",
+                ]
+            )
+        ]
+        # move statistic column to index and remove species information:
+        #                                              library_one  library_two
+        #    Statistic
+        #    Total no. of unaligned reads              1.0          2.0
+        #    Total no. of cross aligned reads          3.0          6.0
+
+        all_stats_selection.set_index("Statistic", inplace=True)
+        all_stats_selection = all_stats_selection.drop(columns=["Species"])
+        return all_stats_selection
 
     def _get_species_exclusive_reads_combined(
-        self, read_alignment_stats: pandas.DataFrame
-    ) -> pandas.DataFrame:
+        self, read_alignment_stats: pd.core.frame.DataFrame
+    ) -> pd.core.frame.DataFrame:
         """
         create and return a dataframe that contains the sums of the species
         exclusively aligned reads of each species
@@ -286,7 +227,77 @@ class AlignViz(object):
                 ["Total no. of species exclusively aligned reads"], level=1
             )
         ]
+        # reset index and return species to columns:
+        #                 Species                                       Statistic  library_one  library_two
+        # 0           homo sapiens  Total no. of species exclusively aligned reads          7.0         14.0
+        # 1  Staphylococcus aureus  Total no. of species exclusively aligned reads          2.0          4.0
+        # 2            Influenza A  Total no. of species exclusively aligned reads          1.0          2.0
+        total_no_of_species_exclusive_reads.reset_index(inplace=True)
+        # Make new Series with 'Species' and 'Statistic' connected with ' - ':
+        # 0    homo sapiens - Total no. of species exclusivel...
+        # 1    Staphylococcus aureus - Total no. of species e...
+        # 2    Influenza A - Total no. of species exclusively...
+
+        species_and_statistics_column = (
+            total_no_of_species_exclusive_reads["Species"]
+            + " - "
+            + total_no_of_species_exclusive_reads["Statistic"].copy()
+        )
+
+        #####
+        # total_no_of_species_exclusive_reads["Species Statistic"] = total_no_of_species_exclusive_reads["Species"] + " - " + total_no_of_species_exclusive_reads["Statistic"]
+        # print(total_no_of_species_exclusive_reads["Species Statistic"])
+        # print(total_no_of_species_exclusive_reads)
+        #####
+
+        # Add the new Series as a column
+        #                  Species                                       Statistic  library_one  library_two                                                  0
+        # 0           homo sapiens  Total no. of species exclusively aligned reads          7.0         14.0  homo sapiens - Total no. of species exclusivel...
+        # 1  Staphylococcus aureus  Total no. of species exclusively aligned reads          2.0          4.0  Staphylococcus aureus - Total no. of species e...
+        # 2            Influenza A  Total no. of species exclusively aligned reads          1.0          2.0  Influenza A - Total no. of species exclusively...
+
+        total_no_of_species_exclusive_reads = pd.concat(
+            [
+                total_no_of_species_exclusive_reads,
+                species_and_statistics_column,
+            ],
+            axis=1,
+        )
+        # Drop the 'Species' and 'Statistic' columns and rename the combined
+        # column to 'Statistic'. Then set it as index:
+        #                                                     library_one  library_two
+        # Statistic
+        # homo sapiens - Total no. of species exclusively...          7.0         14.0
+        # Staphylococcus aureus - Total no. of species ex...          2.0          4.0
+        # Influenza A - Total no. of species exclusively ...          1.0          2.0
+
+        total_no_of_species_exclusive_reads.drop(
+            ["Species", "Statistic"], axis=1, inplace=True
+        )
+        total_no_of_species_exclusive_reads.rename(
+            columns={0: "Statistic"}, inplace=True
+        )
+        total_no_of_species_exclusive_reads.set_index("Statistic", inplace=True)
         return total_no_of_species_exclusive_reads
+
+    def _plot_combined_species_align_stats(
+        self,
+        species_and_cross_aligned_and_unaligned_transposed: pd.core.frame.DataFrame,
+        output_path: str,
+    ) -> None:
+        """
+        :param species_and_cross_aligned_and_unaligned_transposed: Dataframe
+        that contains the species aligned, cross aligned and unaligned reads
+        for all species
+        :param output_path: the path where to save the figure
+        """
+        sns.set()
+        ax = species_and_cross_aligned_and_unaligned_transposed.plot(
+            kind="bar", stacked=True
+        )
+        ax.legend(loc="center left", bbox_to_anchor=(1, 0.5))
+        fig = ax.get_figure()
+        fig.savefig(f"{output_path}.pdf", bbox_inches="tight")
 
     def plot_species_exclusive_reads_for_each_species(self) -> None:
         """
