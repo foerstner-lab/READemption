@@ -10,7 +10,7 @@ from reademptionlib.controller import Controller
 class ArgMock():
     def __init__(self):
         self.project_path = "a_test_project"
-        self.species = ["human=Homo sapiens","staph=Staphylococcus aureus"]
+        self.species = ["human=Homo sapiens", "staph=Staphylococcus aureus"]
         self.min_read_length = 12
         self.segemehl_bin = "segemehl.x"
         self.threads = 1
@@ -28,10 +28,11 @@ class ArgMock():
         self.min_phred_score = None
         self.adapter = None
         self.reverse_complement = False
+        self.items = [self.project_path, self.species, self.min_read_length]
 
     # make mock argument object iterable like argpars.Namespace()
     def __iter__(self):
-        return (i for i in [self.project_path, self.species, self.min_read_length])
+        return (i for i in ["project_path", "species", "min_read_length"])
 
 class TestController(unittest.TestCase):
     def setUp(self):
@@ -46,14 +47,14 @@ class TestController(unittest.TestCase):
 
     def _generate_input_fasta_files(self):
         genome_fh = open(
-            "%s/%s" % (self.controller._paths.ref_seq_folder, "agenome.fa"), "w"
+            "%s/%s" % (self.controller._pathcreator.ref_seq_folder, "agenome.fa"), "w"
         )
         read_fh_1 = open(
-            "%s/%s" % (self.controller._paths.read_fasta_folder, "libfoo.fa"),
+            "%s/%s" % (self.controller._pathcreator.read_fasta_folder, "libfoo.fa"),
             "w",
         )
         read_fh_2 = open(
-            "%s/%s" % (self.controller._paths.read_fasta_folder, "libbar.fa"),
+            "%s/%s" % (self.controller._pathcreator.read_fasta_folder, "libbar.fa"),
             "w",
         )
         genome_fh.write(self.example_data.genome_fasta)
@@ -65,7 +66,7 @@ class TestController(unittest.TestCase):
 
     def _generate_mapping_files(self):
         for file_path, sam_content in zip(
-            self.controller._paths.read_mapping_result_sam_paths,
+            self.controller._pathcreator.read_mapping_result_sam_pathcreator,
             [self.example_data.sam_content_1, self.example_data.sam_content_2],
         ):
             mapping_fh = open(file_path, "w")
@@ -74,9 +75,9 @@ class TestController(unittest.TestCase):
 
     def _generate_annotation_files(self):
         annotation_fh = open(
-            "%s/some_annos.gff" % self.controller._paths.annotation_folder, "w"
+            "%s/some_annos.gff" % self.controller._pathcreator.annotation_folder, "w"
         )
-        print(self.controller._paths.annotation_folder)
+        print(self.controller._pathcreator.annotation_folder)
         annotation_fh.write(self.example_data.gff_content_1)
         annotation_fh.close()
 
@@ -100,7 +101,7 @@ class TestControllerReadAligning(TestController):
     def test_read_aligning(self):
         self._version = 0.1
         self.controller.create_project(self._version)
-        self.controller._paths._set_folder_names()
+        self.controller._pathcreator._set_folder_names()
         self._generate_input_fasta_files()
         self.controller.align_reads()
         self._remove_project_folder()

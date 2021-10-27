@@ -37,9 +37,9 @@ class Controller(object):
         # When creating a new project the information is written into the
         # config file.
         # For all other subcommands the information is not provided via an
-        # argument and but will be retrieved by path_creator from the
+        # argument but will be retrieved by path_creator from the
         # config file
-        if not "species" in self._args:
+        if "species" not in self._args:
             self._args.species = None
         self._pathcreator = PathCreator(args.project_path, self._args.species)
         self._species_folder_prefixes_and_display_names = (
