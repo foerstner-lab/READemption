@@ -1,0 +1,15 @@
+##gff-version 3								
+#!gff-spec-version 1.21								
+#!processor NCBI annotwriter								
+#!genome-build ASM1342v1								
+#!genome-build-accession NCBI_Assembly:GCF_000013425.1								
+##sequence-region NC_007795.1 1 2821361								
+##species https://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?id=93061								
+NC_007795.1	RefSeq	gene	1	80	.	+	.	ID=gene-SAOUHSC_00001;Dbxref=GeneID:3919798;Name=dnaA;gbkey=Gene;gene=dnaA;gene_biotype=protein_coding;locus_tag=SAOUHSC_00001;sequence=CGATTAAAGATAGAAATACACGATGCGAGCAATCAAATTTCATAACATCACCATGAGTTTGGTCCGAAGCATGAGTGTTT
+NC_007795.1	RefSeq	CDS	1	80	.	+	0	ID=cds-YP_498609.1;Parent=gene-SAOUHSC_00001;Dbxref=Genbank:YP_498609.1,GeneID:3919798;Name=YP_498609.1;Note=binds to the dnaA-box as an ATP-bound complex at the origin of replication during the initiation of chromosomal replication%3B can also affect transcription of multiple genes including itself.;gbkey=CDS;gene=dnaA;locus_tag=SAOUHSC_00001;product=chromosomal replication initiation protein;protein_id=YP_498609.1;transl_table=11;sequence=ACAATGTTCGAACACCTTATACAGTTCTTATACATACTTTATAAATTATTTCCCAAACTGTTTTGATACACTCACTAACA
+NC_007795.1	RefSeq	gene	81	160	.	+	.	ID=gene-SAOUHSC_00002;Dbxref=GeneID:3919799;Name=SAOUHSC_00002;gbkey=Gene;gene_biotype=protein_coding;locus_tag=SAOUHSC_00002
+NC_007795.1	RefSeq	CDS	2156	3289	.	+	0	ID=cds-YP_498610.1;Parent=gene-SAOUHSC_00002;Dbxref=Genbank:YP_498610.1,GeneID:3919799;Name=YP_498610.1;Note=binds the polymerase to DNA and acts as a sliding clamp;gbkey=CDS;locus_tag=SAOUHSC_00002;product=DNA polymerase III subunit beta;protein_id=YP_498610.1;transl_table=11
+NC_007795.1	RefSeq	gene	3670	3915	.	+	.	ID=gene-SAOUHSC_00003;Dbxref=GeneID:3919176;Name=SAOUHSC_00003;gbkey=Gene;gene_biotype=protein_coding;locus_tag=SAOUHSC_00003
+NC_007795.1	RefSeq	CDS	3670	3915	.	+	0	ID=cds-YP_498611.1;Parent=gene-SAOUHSC_00003;Dbxref=Genbank:YP_498611.1,GeneID:3919176;Name=YP_498611.1;Note=conserved hypothetical protein;gbkey=CDS;locus_tag=SAOUHSC_00003;product=hypothetical protein;protein_id=YP_498611.1;transl_table=11
+NC_007795.1	RefSeq	gene	3912	5024	.	+	.	ID=gene-SAOUHSC_00004;Dbxref=GeneID:3919177;Name=recF;gbkey=Gene;gene=recF;gene_biotype=protein_coding;locus_tag=SAOUHSC_00004
+NC_007795.1	RefSeq	CDS	3912	5024	.	+	0	ID=cds-YP_498612.1;Parent=gene-SAOUHSC_00004;Dbxref=Genbank:YP_498612.1,GeneID:3919177;Name=YP_498612.1;Note=Required for DNA replication%3B binds preferentially to single-stranded%2C linear DNA;gbkey=CDS;gene=recF;locus_tag=SAOUHSC_00004;product=recombination protein F;protein_id=YP_498612.1;transl_table=11
