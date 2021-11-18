@@ -2,11 +2,8 @@ from collections import defaultdict
 import json
 import numpy as np
 import matplotlib
-import pandas
 import pandas as pd
-
 import seaborn as sns
-import matplotlib.patches as mpatches
 
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
@@ -99,6 +96,17 @@ class AlignViz(object):
         self._plot_combined_species_align_stats(
             species_and_cross_aligned_and_unaligned_transposed,
             f"{viz_align_all_folder}/stacked_species",
+        )
+        self._write_combined_species_align_stats(
+            species_and_cross_aligned_and_unaligned_transposed,
+            f"{viz_align_all_folder}/stacked_species",
+        )
+
+    def _write_combined_species_align_stats(
+        self, combined_species_aligned_reads_transposed, output_path
+    ) -> None:
+        combined_species_aligned_reads_transposed.to_csv(
+            f"{output_path}.csv", sep="\t"
         )
 
     def _get_all_stats_selection(
