@@ -403,11 +403,83 @@ class PathCreator:
             for ref_seq_path in ref_seq_paths:
                 self.ref_seq_path_list.append(ref_seq_path)
 
-    def get_annotation_files(self):
+    def get_annotation_files_by_species(self):
         """Read the names of annotation files."""
         return self._get_sorted_folder_content(self.annotation_folder)
 
-    # TODO return annotation files by species
+    def set_annotation_paths_by_species(self) -> None:
+        """
+        sets the attribute annotation_paths_by_species that is a dictionary
+        containing the annotation paths sorted by species.
+        E.g.:
+        {'human':
+        ['reademption_analysis_dual/input/human_annotations/human.gff',
+        'reademption_analysis_dual/input/human_annotations/sRNA.gff],
+
+        'e_coli':
+        ['reademption_analysis_dual/input/e_coli_annotations/e_coli.gff]}
+        """
+        self.annotation_paths_by_species = {}
+        for (
+            sp,
+            species_annotation_folder,
+        ) in self.annotation_folders_by_species.items():
+            self.annotation_paths_by_species[sp] = self._path_list(
+                species_annotation_folder,
+                self._get_sorted_folder_content(species_annotation_folder),
+            )
+
+    def set_annotation_files_by_species(self) -> None:
+        """
+        sets the attribute annotation_files_by_species that is a dictionary
+        containing the annotation files sorted by species.
+        E.g.:
+        {'human':
+            ['human.gff',
+            'sRNA.gff',
+        'e_coli':
+            ['e_coli.gff']}
+        """
+        self.annotation_files_by_species = {}
+        for (
+            sp,
+            species_annotation_folder,
+        ) in self.annotation_folders_by_species.items():
+            self.annotation_files_by_species[
+                sp
+            ] = self._get_sorted_folder_content(species_annotation_folder)
+
+    def get_annotation_files(self) -> list:
+        """
+        extracts the names of the reference sequence files from the dictionary
+        self.annotation_folders_by_species and writes them to a list.
+        E.g.:
+        ['human.fa, e_coli.fa]
+        :return: a list containing all reference sequences
+        """
+        if not self.annotation_paths_by_species:
+            self.set_annotation_paths_by_species()
+        annotation_files = []
+        for annotation_folder in self.annotation_folders_by_species.values():
+            for annotation in self._get_sorted_folder_content(
+                annotation_folder
+            ):
+                annotation_files.append(annotation)
+        return annotation_files
+
+    def set_annotation_path_list(self) -> None:
+        """
+        sets an attribute that holds a list of all reference sequence paths.
+        E.g.:
+        ['reademption_analysis_dual/input/human_reference_sequences/human.fa',
+        'reademption_analysis_dual/input/e_coli_reference_sequences/e_coli.fa]
+        """
+        if not self.annotation_paths_by_species:
+            self.set_annotation_paths_by_species()
+        self.annotation_path_list = []
+        for annotation_paths in self.annotation_paths_by_species.values():
+            for annotation_path in annotation_paths:
+                self.annotation_path_list.append(annotation_path)
 
     def required_folders(self):
         # TODO can be deleted?, because no subcommand creates all folders
@@ -482,10 +554,11 @@ class PathCreator:
         ]
 
     def required_viz_align_folders(self):
-        return [self.viz_align_read_lengths_folder,
-                self.viz_align_all_folder,
-                *self.viz_align_folders_by_species.values(),
-         ]
+        return [
+            self.viz_align_read_lengths_folder,
+            self.viz_align_all_folder,
+            *self.viz_align_folders_by_species.values(),
+        ]
 
     def required_viz_gene_quanti_folders(self):
         return [self.viz_gene_quanti_base_folder]
@@ -568,6 +641,7 @@ class PathCreator:
             self.read_alignments_folder, lib_names, appendix="_alignments_final"
         )
 
+    # TODO annotation_folder needs to be the annotation folder for the current species
     def set_annotation_paths(self, annotation_files):
         self.annotation_paths = self._path_list(
             self.annotation_folder, annotation_files
@@ -576,8 +650,11 @@ class PathCreator:
     def _path_list(self, folder, files, appendix=""):
         return [f"{folder}/{file}{appendix}" for file in files]
 
-    def gene_quanti_path(self, read_file, annotation_file):
-        return f"{self.gene_quanti_per_lib_folder}/{read_file}_to_{annotation_file}.csv"
+    #def gene_quanti_path(self, read_file, annotation_file):
+    #    return f"{self.gene_quanti_per_lib_folder}/{read_file}_to_{annotation_file}.csv"
+
+    def gene_quanti_paths_by_species(self, gene_quanti_per_lib_species_folder, read_file, annotation_file):
+        return f"{gene_quanti_per_lib_species_folder}/{read_file}_to_{annotation_file}.csv"
 
     def wiggle_file_raw_path(self, read_file, strand, multi=None, div=None):
         return self._wiggle_file_path(

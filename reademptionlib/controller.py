@@ -18,6 +18,7 @@ from reademptionlib.readprocessor import ReadProcessor
 from reademptionlib.vizalign import AlignViz
 from reademptionlib.wiggle import WiggleWriter
 
+import pprint
 
 class Controller(object):
 
@@ -74,6 +75,8 @@ class Controller(object):
 
         self._read_files = None
         self._ref_seq_files = None
+
+
 
     def create_project(self, version):
         """Create a new project."""
@@ -635,6 +638,7 @@ class Controller(object):
         for strand in strands:
             coverage_writers_raw[strand].close_file()
 
+
     def _wiggle_writers(
         self, lib_name, strands, no_of_aligned_reads, min_no_of_aligned_reads
     ):
@@ -730,8 +734,9 @@ class Controller(object):
             )
         ]
         lib_names = sorted(list(alignment_stats[0].keys()))
-        annotation_files = self._pathcreator.get_annotation_files()
-        self._pathcreator.set_annotation_paths(annotation_files)
+        self._pathcreator.set_annotation_paths_by_species()
+        #annotation_files = self._pathcreator.get_annotation_files()
+        #self._pathcreator.set_annotation_paths(annotation_files)
         was_paired_end_alignment = self._was_paired_end_alignment(lib_names)
         if not was_paired_end_alignment:
             self._pathcreator.set_read_files_dep_file_lists_single_end(
@@ -741,28 +746,78 @@ class Controller(object):
             self._pathcreator.set_read_files_dep_file_lists_paired_end(
                 self._pathcreator.get_read_files(), lib_names
             )
+        self._pathcreator.set_annotation_files_by_species()
+        """
+        # worked
+        for sp, annotation_files in self._pathcreator.annotation_files_by_species.items():
+            for lib_name, read_alignment_path in zip(
+                    lib_names, self._pathcreator.read_alignment_bam_paths
+            ):
+            
+                self._quantify_gene_wise(
+                sp,
+                lib_name,
+                read_alignment_path,
+                norm_by_alignment_freq,
+                norm_by_overlap_freq,
+                annotation_files)
+        """
+        """
         jobs = []
         with concurrent.futures.ProcessPoolExecutor(
-            max_workers=self._args.processes
+                max_workers=self._args.processes
         ) as executor:
             for lib_name, read_alignment_path in zip(
-                lib_names, self._pathcreator.read_alignment_bam_paths
+                    lib_names, self._pathcreator.read_alignment_bam_paths
             ):
-                jobs.append(
-                    executor.submit(
-                        self._quantify_gene_wise,
-                        lib_name,
-                        read_alignment_path,
-                        norm_by_alignment_freq,
-                        norm_by_overlap_freq,
-                        annotation_files,
-                    )
-                )
+                print(lib_name)
+                print(read_alignment_path)
+   
+                print(f"lib_name: {lib_name} and read_alignment_path: {read_alignment_path}")
+                for sp, annotation_files in self._pathcreator.annotation_files_by_species.items():
+                    print(f"species: {sp} and annotation_files: {annotation_files}")
+                    jobs.append(
+                        executor.submit(
+                            self._quantify_gene_wise_mock,
+                            sp,
+                            lib_name,
+                            read_alignment_path,
+                            norm_by_alignment_freq,
+                            norm_by_overlap_freq,
+                            annotation_files))
         # Evaluate thread outcome
         self._check_job_completeness(jobs)
-        self._gene_quanti_create_overview(
-            annotation_files, self._pathcreator.annotation_paths, lib_names
-        )
+        """
+
+
+
+        names = ["till", "sauerwein"]
+        self.run_parallel_jobs()
+
+    def run_parallel_jobs(self):
+        #task_function = self._task
+        task_numbers = [1, 2]
+        jobs = []
+        with concurrent.futures.ProcessPoolExecutor(
+                max_workers=self._args.processes
+        ) as executor:
+            for task_number in task_numbers:
+                jobs.append(executor.submit(self._task, task_number))
+
+    def _task(self, task_number):
+        print(f"Executing our Task number {task_number} on Process: {os.getpid()}")
+
+
+    #def mock_print(self, name):
+    #    print(f"I am printing the name: {name}")
+
+        #self._gene_quanti_create_overview(
+        #    annotation_files, self._pathcreator.annotation_paths, lib_names
+        #)
+    #def mock_print(self, name):
+    #    print(f"I am printing the name: {name}")
+
+
 
     def _was_paired_end_alignment(self, lib_names):
         """Check if the mapping was done in paired- or single-end mode"""
@@ -770,17 +825,33 @@ class Controller(object):
             return True
         return False
 
+    def _quantify_gene_wise_mock(
+            self,
+            sp,
+            lib_name,
+            read_alignment_path,
+            norm_by_alignment_freq,
+            norm_by_overlap_freq,
+            annotation_files,
+    ):
+        print("Quantify gene wise mock is running")
+        print(sp, lib_name, read_alignment_path, norm_by_alignment_freq, norm_by_overlap_freq, annotation_files)
+
     def _quantify_gene_wise(
         self,
+        sp,
         lib_name,
         read_alignment_path,
         norm_by_alignment_freq,
         norm_by_overlap_freq,
         annotation_files,
     ):
+        print("Quantify gene wise is running")
         """Perform the gene wise quantification for a given library."""
+        gene_quanti_per_lib_species_folder = self._pathcreator.gene_quanti_folders_by_species[sp]["gene_quanti_per_lib_folder"]
         gene_quanti_paths = [
-            self._pathcreator.gene_quanti_path(lib_name, annotation_file)
+            self._pathcreator.gene_quanti_paths_by_species(gene_quanti_per_lib_species_folder,
+                                               lib_name, annotation_file)
             for annotation_file in annotation_files
         ]
         # Check if all output files for this library exist - if so
@@ -811,17 +882,19 @@ class Controller(object):
             strand_specific=strand_specific,
             unique_only=self._args.unique_only,
         )
+
         if norm_by_overlap_freq:
             gene_wise_quantification.calc_overlaps_per_alignment(
-                read_alignment_path, self._pathcreator.annotation_paths
+                read_alignment_path, self._pathcreator.annotation_paths_by_species[sp]
             )
         for annotation_file, annotation_path in zip(
-            annotation_files, self._pathcreator.annotation_paths
+            annotation_files, self._pathcreator.annotation_paths_by_species[sp]
         ):
             gene_wise_quantification.quantify(
                 read_alignment_path,
                 annotation_path,
-                self._pathcreator.gene_quanti_path(lib_name, annotation_file),
+                self._pathcreator.gene_quanti_paths_by_species(gene_quanti_per_lib_species_folder,
+                                                               lib_name, annotation_file),
                 self._args.pseudocounts,
             )
 
@@ -1042,3 +1115,6 @@ class Controller(object):
             self._pathcreator.viz_deseq_volcano_plot_path,
             self._pathcreator.viz_deseq_volcano_plot_adj_path,
         )
+
+def _task(task_number):
+    print(f"Executing our Task number {task_number} on Process: {os.getpid()}")
