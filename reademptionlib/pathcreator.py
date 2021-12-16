@@ -403,9 +403,10 @@ class PathCreator:
             for ref_seq_path in ref_seq_paths:
                 self.ref_seq_path_list.append(ref_seq_path)
 
-    def get_annotation_files_by_species(self):
-        """Read the names of annotation files."""
-        return self._get_sorted_folder_content(self.annotation_folder)
+    # TODO remove
+    #def get_annotation_files_by_species(self):
+    #    """Read the names of annotation files."""
+    #    return self._get_sorted_folder_content(self.annotation_folder)
 
     def set_annotation_paths_by_species(self) -> None:
         """

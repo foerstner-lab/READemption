@@ -344,7 +344,7 @@ def create_parser():
     )
     gene_wise_quanti_parser.add_argument(
         "--antisense_only",
-        "-x",
+        "-ao",
         default=False,
         action="store_true",
         help="Count only anti-sense read-gene-overlaps and no sense overlaps. By default only sense "
@@ -396,6 +396,13 @@ def create_parser():
         "interrupted previous run) and do not overwrite them if they exits. "
         "Attention! You have to take care that there are no partially "
         "generated files left!",
+    )
+    gene_wise_quanti_parser.add_argument(
+        "--remove_cross_aligned_reads",
+        "-x",
+        default=False,
+        action="store_true",
+        help="Do NOT count species-cross-aligned reads for the gene quantification",
     )
     gene_wise_quanti_parser.set_defaults(func=run_gene_wise_quantification)
 

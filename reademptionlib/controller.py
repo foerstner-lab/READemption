@@ -18,7 +18,6 @@ from reademptionlib.readprocessor import ReadProcessor
 from reademptionlib.vizalign import AlignViz
 from reademptionlib.wiggle import WiggleWriter
 
-import pprint
 
 class Controller(object):
 
@@ -735,8 +734,6 @@ class Controller(object):
         ]
         lib_names = sorted(list(alignment_stats[0].keys()))
         self._pathcreator.set_annotation_paths_by_species()
-        #annotation_files = self._pathcreator.get_annotation_files()
-        #self._pathcreator.set_annotation_paths(annotation_files)
         was_paired_end_alignment = self._was_paired_end_alignment(lib_names)
         if not was_paired_end_alignment:
             self._pathcreator.set_read_files_dep_file_lists_single_end(
@@ -747,75 +744,79 @@ class Controller(object):
                 self._pathcreator.get_read_files(), lib_names
             )
         self._pathcreator.set_annotation_files_by_species()
-        """
-        # worked
-        for sp, annotation_files in self._pathcreator.annotation_files_by_species.items():
-            for lib_name, read_alignment_path in zip(
-                    lib_names, self._pathcreator.read_alignment_bam_paths
-            ):
-            
-                self._quantify_gene_wise(
-                sp,
-                lib_name,
-                read_alignment_path,
-                norm_by_alignment_freq,
-                norm_by_overlap_freq,
-                annotation_files)
-        """
-        """
         jobs = []
         with concurrent.futures.ProcessPoolExecutor(
                 max_workers=self._args.processes
         ) as executor:
-            for lib_name, read_alignment_path in zip(
-                    lib_names, self._pathcreator.read_alignment_bam_paths
-            ):
-                print(lib_name)
-                print(read_alignment_path)
-   
-                print(f"lib_name: {lib_name} and read_alignment_path: {read_alignment_path}")
-                for sp, annotation_files in self._pathcreator.annotation_files_by_species.items():
-                    print(f"species: {sp} and annotation_files: {annotation_files}")
-                    jobs.append(
-                        executor.submit(
-                            self._quantify_gene_wise_mock,
-                            sp,
-                            lib_name,
+            for sp, annotation_files in self._pathcreator.annotation_files_by_species.items():
+                for lib_name, read_alignment_path in zip(
+                        lib_names, self._pathcreator.read_alignment_bam_paths
+                ):
+                    # Perform the gene wise quantification for a given library.
+                    gene_quanti_per_lib_species_folder = self._pathcreator.gene_quanti_folders_by_species[sp]["gene_quanti_per_lib_folder"]
+                    gene_quanti_paths = [
+                        self._pathcreator.gene_quanti_paths_by_species(gene_quanti_per_lib_species_folder,
+                                                                       lib_name, annotation_file)
+                        for annotation_file in annotation_files
+                    ]
+                    # Check if all output files for this library exist - if so
+                    # skip their creation
+                    if not any(
+                            [
+                                self._file_needs_to_be_created(gene_quanti_path, quiet=True)
+                                for gene_quanti_path in gene_quanti_paths
+                            ]
+                    ):
+                        sys.stderr.write(
+                            "The file(s) %s exist(s). Skipping their/its generation.\n"
+                            % ", ".join(gene_quanti_paths)
+                        )
+                        return
+                    strand_specific = True
+                    if self._args.non_strand_specific:
+                        strand_specific = False
+                    gene_wise_quantification = GeneWiseQuantification(
+                        min_overlap=self._args.min_overlap,
+                        read_region=self._args.read_region,
+                        clip_length=self._args.clip_length,
+                        norm_by_alignment_freq=norm_by_alignment_freq,
+                        norm_by_overlap_freq=norm_by_overlap_freq,
+                        allowed_features_str=self._args.allowed_features,
+                        add_antisense=self._args.add_antisense,
+                        antisense_only=self._args.antisense_only,
+                        strand_specific=strand_specific,
+                        unique_only=self._args.unique_only,
+                    )
+
+                    if norm_by_overlap_freq:
+                        gene_wise_quantification.calc_overlaps_per_alignment(
+                            read_alignment_path, self._pathcreator.annotation_paths_by_species[sp]
+                        )
+                    for annotation_file, annotation_path in zip(
+                            annotation_files, self._pathcreator.annotation_paths_by_species[sp]
+                    ):
+                        gene_wise_quantification.quantify(
                             read_alignment_path,
-                            norm_by_alignment_freq,
-                            norm_by_overlap_freq,
-                            annotation_files))
+                            annotation_path,
+                            self._pathcreator.gene_quanti_paths_by_species(gene_quanti_per_lib_species_folder,
+                                                                           lib_name, annotation_file),
+                            self._args.pseudocounts,
+                        )
+                        output_path = self._pathcreator.gene_quanti_paths_by_species(gene_quanti_per_lib_species_folder, lib_name, annotation_file)
+                        jobs.append(
+                            executor.submit(gene_wise_quantification.quantify,
+                                            read_alignment_path,
+                                            annotation_path,
+                                            output_path,
+                                            self._args.pseudocounts))
         # Evaluate thread outcome
         self._check_job_completeness(jobs)
-        """
 
 
-
-        names = ["till", "sauerwein"]
-        self.run_parallel_jobs()
-
-    def run_parallel_jobs(self):
-        #task_function = self._task
-        task_numbers = [1, 2]
-        jobs = []
-        with concurrent.futures.ProcessPoolExecutor(
-                max_workers=self._args.processes
-        ) as executor:
-            for task_number in task_numbers:
-                jobs.append(executor.submit(self._task, task_number))
-
-    def _task(self, task_number):
-        print(f"Executing our Task number {task_number} on Process: {os.getpid()}")
-
-
-    #def mock_print(self, name):
-    #    print(f"I am printing the name: {name}")
-
-        #self._gene_quanti_create_overview(
-        #    annotation_files, self._pathcreator.annotation_paths, lib_names
-        #)
-    #def mock_print(self, name):
-    #    print(f"I am printing the name: {name}")
+        for sp, annotation_files in self._pathcreator.annotation_files_by_species.items():
+            self._gene_quanti_create_overview(sp,
+                annotation_files, self._pathcreator.annotation_paths_by_species[sp], lib_names
+            )
 
 
 
@@ -825,81 +826,10 @@ class Controller(object):
             return True
         return False
 
-    def _quantify_gene_wise_mock(
-            self,
-            sp,
-            lib_name,
-            read_alignment_path,
-            norm_by_alignment_freq,
-            norm_by_overlap_freq,
-            annotation_files,
-    ):
-        print("Quantify gene wise mock is running")
-        print(sp, lib_name, read_alignment_path, norm_by_alignment_freq, norm_by_overlap_freq, annotation_files)
 
-    def _quantify_gene_wise(
-        self,
-        sp,
-        lib_name,
-        read_alignment_path,
-        norm_by_alignment_freq,
-        norm_by_overlap_freq,
-        annotation_files,
-    ):
-        print("Quantify gene wise is running")
-        """Perform the gene wise quantification for a given library."""
-        gene_quanti_per_lib_species_folder = self._pathcreator.gene_quanti_folders_by_species[sp]["gene_quanti_per_lib_folder"]
-        gene_quanti_paths = [
-            self._pathcreator.gene_quanti_paths_by_species(gene_quanti_per_lib_species_folder,
-                                               lib_name, annotation_file)
-            for annotation_file in annotation_files
-        ]
-        # Check if all output files for this library exist - if so
-        # skip their creation
-        if not any(
-            [
-                self._file_needs_to_be_created(gene_quanti_path, quiet=True)
-                for gene_quanti_path in gene_quanti_paths
-            ]
-        ):
-            sys.stderr.write(
-                "The file(s) %s exist(s). Skipping their/its generation.\n"
-                % ", ".join(gene_quanti_paths)
-            )
-            return
-        strand_specific = True
-        if self._args.non_strand_specific:
-            strand_specific = False
-        gene_wise_quantification = GeneWiseQuantification(
-            min_overlap=self._args.min_overlap,
-            read_region=self._args.read_region,
-            clip_length=self._args.clip_length,
-            norm_by_alignment_freq=norm_by_alignment_freq,
-            norm_by_overlap_freq=norm_by_overlap_freq,
-            allowed_features_str=self._args.allowed_features,
-            add_antisense=self._args.add_antisense,
-            antisense_only=self._args.antisense_only,
-            strand_specific=strand_specific,
-            unique_only=self._args.unique_only,
-        )
-
-        if norm_by_overlap_freq:
-            gene_wise_quantification.calc_overlaps_per_alignment(
-                read_alignment_path, self._pathcreator.annotation_paths_by_species[sp]
-            )
-        for annotation_file, annotation_path in zip(
-            annotation_files, self._pathcreator.annotation_paths_by_species[sp]
-        ):
-            gene_wise_quantification.quantify(
-                read_alignment_path,
-                annotation_path,
-                self._pathcreator.gene_quanti_paths_by_species(gene_quanti_per_lib_species_folder,
-                                                               lib_name, annotation_file),
-                self._args.pseudocounts,
-            )
 
     def _gene_quanti_create_overview(
-        self, annotation_files, annotation_paths, lib_names
+        self, sp, annotation_files, annotation_paths, lib_names
     ):
         """Create an overview table of all gene quantification for all libs."""
         strand_specific = True
@@ -911,66 +841,78 @@ class Controller(object):
             antisense_only=self._args.antisense_only,
             strand_specific=strand_specific,
         )
+
+        gene_quanti_per_lib_species_folder = self._pathcreator.gene_quanti_folders_by_species[sp]["gene_quanti_per_lib_folder"]
+
         path_and_name_combos = {}
         for annotation_file, annotation_path in zip(
             annotation_files, annotation_paths
         ):
             path_and_name_combos[annotation_path] = []
-            for read_file in lib_names:
+            for lib in lib_names:
                 path_and_name_combos[annotation_path].append(
                     [
-                        read_file,
-                        self._pathcreator.gene_quanti_path(
-                            read_file, annotation_file
-                        ),
+                        lib,
+                        self._pathcreator.gene_quanti_paths_by_species(gene_quanti_per_lib_species_folder,
+                                                                       lib, annotation_file),
                     ]
                 )
+
+
         if self._file_needs_to_be_created(
-            self._pathcreator.gene_wise_quanti_combined_path
+                self._pathcreator.gene_quanti_files_by_species[sp]["gene_wise_quanti_combined_path"]
         ):
             gene_wise_overview.create_overview_raw_countings(
                 path_and_name_combos,
                 lib_names,
-                self._pathcreator.gene_wise_quanti_combined_path,
+                self._pathcreator.gene_quanti_files_by_species[sp]["gene_wise_quanti_combined_path"],
             )
         if self._file_needs_to_be_created(
-            self._pathcreator.gene_wise_quanti_combined_rpkm_path
+                self._pathcreator.gene_quanti_files_by_species[sp]["gene_wise_quanti_combined_rpkm_path"]
         ):
             gene_wise_overview.create_overview_rpkm(
                 path_and_name_combos,
                 lib_names,
-                self._pathcreator.gene_wise_quanti_combined_rpkm_path,
-                self._libs_and_total_num_of_aligned_reads(),
+                self._pathcreator.gene_quanti_files_by_species[sp]["gene_wise_quanti_combined_rpkm_path"],
+                self._libs_and_total_num_of_aligned_reads(sp, self._args.remove_cross_aligned_reads),
             )
         if self._file_needs_to_be_created(
-            self._pathcreator.gene_wise_quanti_combined_tnoar_path
+            self._pathcreator.gene_quanti_files_by_species[sp]["gene_wise_quanti_combined_tnoar_path"]
         ):
             gene_wise_overview.create_overview_norm_by_tnoar(
                 path_and_name_combos,
                 lib_names,
-                self._pathcreator.gene_wise_quanti_combined_tnoar_path,
-                self._libs_and_total_num_of_aligned_reads(),
+                self._pathcreator.gene_quanti_files_by_species[sp]["gene_wise_quanti_combined_tnoar_path"],
+                self._libs_and_total_num_of_aligned_reads(sp, self._args.remove_cross_aligned_reads),
             )
         if self._file_needs_to_be_created(
-            self._pathcreator.gene_wise_quanti_combined_tpm_path
+            self._pathcreator.gene_quanti_files_by_species[sp]["gene_wise_quanti_combined_tpm_path"]
         ):
             gene_wise_overview.create_overview_tpm(
-                self._pathcreator.gene_wise_quanti_combined_path,
-                self._pathcreator.gene_wise_quanti_combined_tpm_path,
+                self._pathcreator.gene_quanti_files_by_species[sp]["gene_wise_quanti_combined_path"],
+                self._pathcreator.gene_quanti_files_by_species[sp]["gene_wise_quanti_combined_tpm_path"],
             )
 
-    def _libs_and_total_num_of_aligned_reads(self):
-        """Read the total number of reads per library."""
+    def _libs_and_total_num_of_aligned_reads(self, sp, remove_cross_aligned_reads=False):
+        """Read the total number of reads per library for a selected species."""
         with open(
             self._pathcreator.read_alignments_stats_path
         ) as read_aligner_stats_fh:
             read_aligner_stats = json.loads(read_aligner_stats_fh.read())
-        return dict(
-            [
-                (lib, values["stats_total"]["no_of_aligned_reads"])
-                for lib, values in read_aligner_stats.items()
-            ]
-        )
+        if remove_cross_aligned_reads:
+            return dict(
+                [
+                    (lib, values["species_stats"][sp]["no_of_aligned_reads"] - values["species_stats"][sp]["no_of_cross_aligned_reads"])
+                    for lib, values in read_aligner_stats.items()
+                ]
+            )
+        else:
+            return dict(
+                [
+                    (lib, values["species_stats"][sp]["no_of_aligned_reads"])
+                    for lib, values in read_aligner_stats.items()
+                ]
+            )
 
     def _libs_and_total_num_of_uniquely_aligned_reads(self):
         """Read the total number of reads per library."""
