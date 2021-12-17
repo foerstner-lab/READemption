@@ -351,14 +351,14 @@ class GeneWiseOverview(object):
                 continue
             # calculate A
             gene_quanti["transcript_count"] = gene_quanti.apply(
-                lambda df: (int(df[lib]))
+                lambda df: (float(df[lib]))
                 / (int(df["End"]) - int(df["Start"]) + 1),
                 axis=1,
             )
             A = gene_quanti["transcript_count"].sum()
             # calculate TPM per gene and replace the raw read counts in the gene quanti table
             gene_quanti[lib] = gene_quanti.apply(
-                lambda df: (int(df[lib]) * 1000000)
+                lambda df: (float(df[lib]) * 1000000)
                 / ((int(df["End"]) - int(df["Start"]) + 1) * A),
                 axis=1,
             )
