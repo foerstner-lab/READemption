@@ -79,10 +79,6 @@ class CrossAlignFilter(object):
             raise RepliconIdNotInBam
 
     def _write_crossmapping_free_bam(self):
-        print("writing_crossmapping_free_bam")
-        print(self._input_bam)
-        print(self._output_bam)
-        print(self._crossmapped_reads)
         with pysam.Samfile(self._input_bam) as input_bam:
             with pysam.Samfile(
                 self._output_bam, "wb", header=input_bam.header
