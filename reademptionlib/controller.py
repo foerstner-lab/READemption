@@ -183,13 +183,6 @@ class Controller(object):
     def _remove_crossaligned_reads(self):
         # self._string_to_species_and_sequence_ids()
         references_by_species = self._get_references_by_species()
-        print(
-            self._pathcreator.read_alignment_bam_paths,
-            self._pathcreator.read_alignment_bam_with_crossmappings_paths,
-            self._pathcreator.read_alignment_bam_cross_cleaned_tmp_paths,
-            self._pathcreator.crossmapped_reads_paths,
-        )
-
         # Determine cross-mapped reads
         jobs = []
         with concurrent.futures.ProcessPoolExecutor(

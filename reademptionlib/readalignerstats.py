@@ -99,6 +99,7 @@ class ReadAlignerStats(object):
         self._stats["stats_total"][
             "no_of_hits_per_read_and_freqs"
         ] = defaultdict(int)
+        self._stats["stats_total"]["no_of_cross_aligned_reads"]
 
     def _init_species_dict(self, species):
         sp = species
@@ -115,6 +116,7 @@ class ReadAlignerStats(object):
         self._stats["species_stats"][sp][
             "no_of_hits_per_read_and_freqs"
         ] = defaultdict(int)
+        self._stats["species_stats"][sp]["no_of_cross_aligned_reads"]
 
     def _init_counting_dict(self, stats_per_ref, ref_id):
         stats_per_ref[ref_id] = defaultdict(float)
