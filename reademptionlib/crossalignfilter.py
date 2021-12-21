@@ -17,7 +17,11 @@ class CrossAlignFilter(object):
         self._crossmapped_reads = set()
         self.no_of_crossmapped_reads = None
 
-    def determine_crossmapped_reads(self):
+    def filter_crossmapped_reads(self):
+        self._determine_crossmapped_reads()
+        self._write_crossmapping_free_bam()
+
+    def _determine_crossmapped_reads(self):
         """Find reads that are mapped to sequences of different species.
 
         The comparison is performed replicon wise in order to reduce
@@ -74,7 +78,11 @@ class CrossAlignFilter(object):
         if not found_all:
             raise RepliconIdNotInBam
 
-    def write_crossmapping_free_bam(self):
+    def _write_crossmapping_free_bam(self):
+        print("writing_crossmapping_free_bam")
+        print(self._input_bam)
+        print(self._output_bam)
+        print(self._crossmapped_reads)
         with pysam.Samfile(self._input_bam) as input_bam:
             with pysam.Samfile(
                 self._output_bam, "wb", header=input_bam.header

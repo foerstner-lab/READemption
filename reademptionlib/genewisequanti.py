@@ -52,7 +52,8 @@ class GeneWiseQuantification(object):
                 if _entry_to_use(entry, self._allowed_features) is False:
                     continue
                 for alignment in self._overlapping_alignments(sam, entry):
-                    alignment_id = self._alignment_id(alignment)
+                    alignment_id = self._alignment_id(alignment) # does alignment_id contain the the read qname
+                    # TODO test if the read id of the alignment is in the cross mapped read ids set
                     self.alignments_and_no_of_overlaps.setdefault(
                         alignment_id, 0
                     )
@@ -101,6 +102,7 @@ class GeneWiseQuantification(object):
                 sum_sense = 1
                 sum_antisense = 1
             for alignment in self._overlapping_alignments(sam, entry):
+                # TODO test if the read id of the alignment is in the cross mapped read ids set. alignment.qname = read id?
                 fraction = fraction_calc_method(alignment)
                 if self._same_strand(entry, alignment):
                     sum_sense += fraction

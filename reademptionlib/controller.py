@@ -75,8 +75,6 @@ class Controller(object):
         self._read_files = None
         self._ref_seq_files = None
 
-
-
     def create_project(self, version):
         """Create a new project."""
         sys.stdout.write(
@@ -172,8 +170,6 @@ class Controller(object):
             )
             self._prepare_reads_paired_end()
             self._align_paired_end_reads()
-        if self._args.crossalign_cleaning_str is not None:
-            self._remove_crossaligned_reads()
         self._generate_read_alignment_stats(
             self._lib_names,
             self._pathcreator.read_alignment_bam_paths,
@@ -181,9 +177,20 @@ class Controller(object):
             self._pathcreator.read_alignments_stats_path,
         )
         self._write_alignment_stat_table()
+        if self._args.crossalign_cleaning:
+            self._remove_crossaligned_reads()
 
     def _remove_crossaligned_reads(self):
-        self._string_to_species_and_sequence_ids()
+        # self._string_to_species_and_sequence_ids()
+        references_by_species = self._get_references_by_species()
+        print(
+            self._pathcreator.read_alignment_bam_paths,
+            self._pathcreator.read_alignment_bam_with_crossmappings_paths,
+            self._pathcreator.read_alignment_bam_cross_cleaned_tmp_paths,
+            self._pathcreator.crossmapped_reads_paths,
+        )
+
+        # Determine cross-mapped reads
         jobs = []
         with concurrent.futures.ProcessPoolExecutor(
             max_workers=self._args.processes
@@ -199,65 +206,38 @@ class Controller(object):
                 self._pathcreator.read_alignment_bam_cross_cleaned_tmp_paths,
                 self._pathcreator.crossmapped_reads_paths,
             ):
+                # Perform the removal or cross aligned reads
+                cross_align_filter = CrossAlignFilter(
+                    bam_path,
+                    bam_cleaned_tmp_path,
+                    crossmapped_reads_path,
+                    references_by_species,
+                )
                 jobs.append(
-                    executor.submit(
-                        self._remove_crossaligned_reads_for_lib,
-                        bam_path,
-                        bam_with_crossmappings_path,
-                        bam_cleaned_tmp_path,
-                        crossmapped_reads_path,
-                    )
+                    executor.submit(cross_align_filter.filter_crossmapped_reads)
                 )
         # Evaluate thread outcome
         self._check_job_completeness(jobs)
 
-    def _remove_crossaligned_reads_for_lib(
-        self,
-        bam_path,
-        bam_with_crossmappings_path,
-        bam_cleaned_tmp_path,
-        crossmapped_reads_path,
-    ):
-        # Perform the removal or cross aligned reads
-        cross_align_filter = CrossAlignFilter(
+        for (
             bam_path,
+            bam_with_crossmappings_path,
             bam_cleaned_tmp_path,
             crossmapped_reads_path,
-            self._species_and_sequence_ids,
-        )
-        cross_align_filter.determine_crossmapped_reads()
-        cross_align_filter.write_crossmapping_free_bam()
-        # Rename the original mapping file that potentially
-        # contains cross aligned reads
-        os.rename(bam_path, bam_with_crossmappings_path)
-        os.rename(bam_path + ".bai", bam_with_crossmappings_path + ".bai")
-        # Move the cross aligned filtered file to the final mapping
-        # path
-        os.rename(bam_cleaned_tmp_path, bam_path)
-        os.rename(bam_cleaned_tmp_path + ".bai", bam_path + ".bai")
-
-    def _string_to_species_and_sequence_ids(self):
-        self._species_and_sequence_ids = {}
-        orgs_and_seq_ids_strs = self._args.crossalign_cleaning_str.split(";")
-        if len(orgs_and_seq_ids_strs) < 2:
-            self._write_err_msg_and_quit(
-                "Error! Only one organism is defined for the cross align "
-                "removal. This does not make sense.\nYou gave the "
-                "following input:\n%s\n" % self._args.crossalign_cleaning_str
-            )
-        for org_and_seq_ids_str in orgs_and_seq_ids_strs:
-            org, seq_ids_str = org_and_seq_ids_str.strip().split(":")
-            seq_ids = [seq_id.strip() for seq_id in seq_ids_str.split(",")]
-            if "" in seq_ids:
-                seq_ids.remove("")
-            if len(seq_ids) < 1:
-                self._write_err_msg_and_quit(
-                    "Error! No sequence ID was given for the species '%s'. "
-                    "This does not make sense.\nYou gave the "
-                    "following input:\n%s\n"
-                    % (org, self._args.crossalign_cleaning_str)
-                )
-            self._species_and_sequence_ids[org] = seq_ids
+        ) in zip(
+            self._pathcreator.read_alignment_bam_paths,
+            self._pathcreator.read_alignment_bam_with_crossmappings_paths,
+            self._pathcreator.read_alignment_bam_cross_cleaned_tmp_paths,
+            self._pathcreator.crossmapped_reads_paths,
+        ):
+            # Rename the original mapping file that potentially
+            # contains cross aligned reads
+            os.rename(bam_path, bam_with_crossmappings_path)
+            os.rename(bam_path + ".bai", bam_with_crossmappings_path + ".bai")
+            # Move the cross aligned filtered file to the final mapping
+            # path
+            os.rename(bam_cleaned_tmp_path, bam_path)
+            os.rename(bam_cleaned_tmp_path + ".bai", bam_path + ".bai")
 
     def _test_align_file_existance(self):
         """Test if the input file for the the align subcommand exist."""
@@ -637,7 +617,6 @@ class Controller(object):
         for strand in strands:
             coverage_writers_raw[strand].close_file()
 
-
     def _wiggle_writers(
         self, lib_name, strands, no_of_aligned_reads, min_no_of_aligned_reads
     ):
@@ -746,26 +725,38 @@ class Controller(object):
         self._pathcreator.set_annotation_files_by_species()
         jobs = []
         with concurrent.futures.ProcessPoolExecutor(
-                max_workers=self._args.processes
+            max_workers=self._args.processes
         ) as executor:
-            for sp, annotation_files in self._pathcreator.annotation_files_by_species.items():
+            for (
+                sp,
+                annotation_files,
+            ) in self._pathcreator.annotation_files_by_species.items():
                 for lib_name, read_alignment_path in zip(
-                        lib_names, self._pathcreator.read_alignment_bam_paths
+                    lib_names, self._pathcreator.read_alignment_bam_paths
                 ):
                     # Perform the gene wise quantification for a given library.
-                    gene_quanti_per_lib_species_folder = self._pathcreator.gene_quanti_folders_by_species[sp]["gene_quanti_per_lib_folder"]
+                    gene_quanti_per_lib_species_folder = (
+                        self._pathcreator.gene_quanti_folders_by_species[sp][
+                            "gene_quanti_per_lib_folder"
+                        ]
+                    )
                     gene_quanti_paths = [
-                        self._pathcreator.gene_quanti_paths_by_species(gene_quanti_per_lib_species_folder,
-                                                                       lib_name, annotation_file)
+                        self._pathcreator.gene_quanti_paths_by_species(
+                            gene_quanti_per_lib_species_folder,
+                            lib_name,
+                            annotation_file,
+                        )
                         for annotation_file in annotation_files
                     ]
                     # Check if all output files for this library exist - if so
                     # skip their creation
                     if not any(
-                            [
-                                self._file_needs_to_be_created(gene_quanti_path, quiet=True)
-                                for gene_quanti_path in gene_quanti_paths
-                            ]
+                        [
+                            self._file_needs_to_be_created(
+                                gene_quanti_path, quiet=True
+                            )
+                            for gene_quanti_path in gene_quanti_paths
+                        ]
                     ):
                         sys.stderr.write(
                             "The file(s) %s exist(s). Skipping their/its generation.\n"
@@ -790,43 +781,58 @@ class Controller(object):
 
                     if norm_by_overlap_freq:
                         gene_wise_quantification.calc_overlaps_per_alignment(
-                            read_alignment_path, self._pathcreator.annotation_paths_by_species[sp]
+                            read_alignment_path,
+                            self._pathcreator.annotation_paths_by_species[sp],
                         )
                     for annotation_file, annotation_path in zip(
-                            annotation_files, self._pathcreator.annotation_paths_by_species[sp]
+                        annotation_files,
+                        self._pathcreator.annotation_paths_by_species[sp],
                     ):
                         gene_wise_quantification.quantify(
                             read_alignment_path,
                             annotation_path,
-                            self._pathcreator.gene_quanti_paths_by_species(gene_quanti_per_lib_species_folder,
-                                                                           lib_name, annotation_file),
+                            self._pathcreator.gene_quanti_paths_by_species(
+                                gene_quanti_per_lib_species_folder,
+                                lib_name,
+                                annotation_file,
+                            ),
                             self._args.pseudocounts,
                         )
-                        output_path = self._pathcreator.gene_quanti_paths_by_species(gene_quanti_per_lib_species_folder, lib_name, annotation_file)
+                        output_path = (
+                            self._pathcreator.gene_quanti_paths_by_species(
+                                gene_quanti_per_lib_species_folder,
+                                lib_name,
+                                annotation_file,
+                            )
+                        )
                         jobs.append(
-                            executor.submit(gene_wise_quantification.quantify,
-                                            read_alignment_path,
-                                            annotation_path,
-                                            output_path,
-                                            self._args.pseudocounts))
+                            executor.submit(
+                                gene_wise_quantification.quantify,
+                                read_alignment_path,
+                                annotation_path,
+                                output_path,
+                                self._args.pseudocounts,
+                            )
+                        )
         # Evaluate thread outcome
         self._check_job_completeness(jobs)
 
-
-        for sp, annotation_files in self._pathcreator.annotation_files_by_species.items():
-            self._gene_quanti_create_overview(sp,
-                annotation_files, self._pathcreator.annotation_paths_by_species[sp], lib_names
+        for (
+            sp,
+            annotation_files,
+        ) in self._pathcreator.annotation_files_by_species.items():
+            self._gene_quanti_create_overview(
+                sp,
+                annotation_files,
+                self._pathcreator.annotation_paths_by_species[sp],
+                lib_names,
             )
-
-
 
     def _was_paired_end_alignment(self, lib_names):
         """Check if the mapping was done in paired- or single-end mode"""
         if len(lib_names) * 2 == len(self._pathcreator.get_read_files()):
             return True
         return False
-
-
 
     def _gene_quanti_create_overview(
         self, sp, annotation_files, annotation_paths, lib_names
@@ -842,7 +848,11 @@ class Controller(object):
             strand_specific=strand_specific,
         )
 
-        gene_quanti_per_lib_species_folder = self._pathcreator.gene_quanti_folders_by_species[sp]["gene_quanti_per_lib_folder"]
+        gene_quanti_per_lib_species_folder = (
+            self._pathcreator.gene_quanti_folders_by_species[sp][
+                "gene_quanti_per_lib_folder"
+            ]
+        )
 
         path_and_name_combos = {}
         for annotation_file, annotation_path in zip(
@@ -853,47 +863,73 @@ class Controller(object):
                 path_and_name_combos[annotation_path].append(
                     [
                         lib,
-                        self._pathcreator.gene_quanti_paths_by_species(gene_quanti_per_lib_species_folder,
-                                                                       lib, annotation_file),
+                        self._pathcreator.gene_quanti_paths_by_species(
+                            gene_quanti_per_lib_species_folder,
+                            lib,
+                            annotation_file,
+                        ),
                     ]
                 )
 
-
         if self._file_needs_to_be_created(
-                self._pathcreator.gene_quanti_files_by_species[sp]["gene_wise_quanti_combined_path"]
+            self._pathcreator.gene_quanti_files_by_species[sp][
+                "gene_wise_quanti_combined_path"
+            ]
         ):
             gene_wise_overview.create_overview_raw_countings(
                 path_and_name_combos,
                 lib_names,
-                self._pathcreator.gene_quanti_files_by_species[sp]["gene_wise_quanti_combined_path"],
+                self._pathcreator.gene_quanti_files_by_species[sp][
+                    "gene_wise_quanti_combined_path"
+                ],
             )
         if self._file_needs_to_be_created(
-                self._pathcreator.gene_quanti_files_by_species[sp]["gene_wise_quanti_combined_rpkm_path"]
+            self._pathcreator.gene_quanti_files_by_species[sp][
+                "gene_wise_quanti_combined_rpkm_path"
+            ]
         ):
             gene_wise_overview.create_overview_rpkm(
                 path_and_name_combos,
                 lib_names,
-                self._pathcreator.gene_quanti_files_by_species[sp]["gene_wise_quanti_combined_rpkm_path"],
-                self._libs_and_total_num_of_aligned_reads(sp, self._args.remove_cross_aligned_reads),
+                self._pathcreator.gene_quanti_files_by_species[sp][
+                    "gene_wise_quanti_combined_rpkm_path"
+                ],
+                self._libs_and_total_num_of_aligned_reads(
+                    sp, self._args.remove_cross_aligned_reads
+                ),
             )
         if self._file_needs_to_be_created(
-            self._pathcreator.gene_quanti_files_by_species[sp]["gene_wise_quanti_combined_tnoar_path"]
+            self._pathcreator.gene_quanti_files_by_species[sp][
+                "gene_wise_quanti_combined_tnoar_path"
+            ]
         ):
             gene_wise_overview.create_overview_norm_by_tnoar(
                 path_and_name_combos,
                 lib_names,
-                self._pathcreator.gene_quanti_files_by_species[sp]["gene_wise_quanti_combined_tnoar_path"],
-                self._libs_and_total_num_of_aligned_reads(sp, self._args.remove_cross_aligned_reads),
+                self._pathcreator.gene_quanti_files_by_species[sp][
+                    "gene_wise_quanti_combined_tnoar_path"
+                ],
+                self._libs_and_total_num_of_aligned_reads(
+                    sp, self._args.remove_cross_aligned_reads
+                ),
             )
         if self._file_needs_to_be_created(
-            self._pathcreator.gene_quanti_files_by_species[sp]["gene_wise_quanti_combined_tpm_path"]
+            self._pathcreator.gene_quanti_files_by_species[sp][
+                "gene_wise_quanti_combined_tpm_path"
+            ]
         ):
             gene_wise_overview.create_overview_tpm(
-                self._pathcreator.gene_quanti_files_by_species[sp]["gene_wise_quanti_combined_path"],
-                self._pathcreator.gene_quanti_files_by_species[sp]["gene_wise_quanti_combined_tpm_path"],
+                self._pathcreator.gene_quanti_files_by_species[sp][
+                    "gene_wise_quanti_combined_path"
+                ],
+                self._pathcreator.gene_quanti_files_by_species[sp][
+                    "gene_wise_quanti_combined_tpm_path"
+                ],
             )
 
-    def _libs_and_total_num_of_aligned_reads(self, sp, remove_cross_aligned_reads=False):
+    def _libs_and_total_num_of_aligned_reads(
+        self, sp, remove_cross_aligned_reads=False
+    ):
         """Read the total number of reads per library for a selected species."""
         with open(
             self._pathcreator.read_alignments_stats_path
@@ -902,7 +938,13 @@ class Controller(object):
         if remove_cross_aligned_reads:
             return dict(
                 [
-                    (lib, values["species_stats"][sp]["no_of_aligned_reads"] - values["species_stats"][sp]["no_of_cross_aligned_reads"])
+                    (
+                        lib,
+                        values["species_stats"][sp]["no_of_aligned_reads"]
+                        - values["species_stats"][sp][
+                            "no_of_cross_aligned_reads"
+                        ],
+                    )
                     for lib, values in read_aligner_stats.items()
                 ]
             )
@@ -1008,7 +1050,7 @@ class Controller(object):
             self._pathcreator.read_alignments_stats_path,
             self._pathcreator.read_alignment_stats_table_path,
             self._pathcreator.viz_align_aligned_reads_by_species_paths,
-            self._species_folder_prefixes_and_display_names
+            self._species_folder_prefixes_and_display_names,
         )
         align_viz.read_stat_files()
         align_viz.plot_input_read_length(
@@ -1017,7 +1059,9 @@ class Controller(object):
         align_viz.plot_processed_read_length(
             self._pathcreator.viz_align_processed_reads_length_plot_path
         )
-        align_viz.plot_total_number_of_aligned_reads(self._pathcreator.viz_align_all_folder)
+        align_viz.plot_total_number_of_aligned_reads(
+            self._pathcreator.viz_align_all_folder
+        )
         align_viz.plot_species_exclusive_reads_for_each_species()
 
     def viz_gene_quanti(self):
@@ -1058,5 +1102,3 @@ class Controller(object):
             self._pathcreator.viz_deseq_volcano_plot_adj_path,
         )
 
-def _task(task_number):
-    print(f"Executing our Task number {task_number} on Process: {os.getpid()}")
