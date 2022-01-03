@@ -67,7 +67,7 @@ class CrossAlignFilter(object):
 
     def _check_replicon_existance(self):
         found_all = True
-        with pysam.Samfile(self._input_bam) as bam:
+        with pysam.AlignmentFile(self._input_bam) as bam:
             for replicon_ids in self._orgs_and_replicon_ids.values():
                 for replicon_id in replicon_ids:
                     if not replicon_id in bam.references:
