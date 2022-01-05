@@ -24,7 +24,7 @@ class ArgMock:
         self.progress = False
         self.split = True
         self.realign = False
-        self.crossalign_cleaning_str = None
+        self.crossalign_cleaning = None
         self.fastq = True
         self.min_phred_score = None
         self.adapter = None

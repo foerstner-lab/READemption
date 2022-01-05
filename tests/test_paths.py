@@ -28,12 +28,15 @@ class TestPaths(unittest.TestCase):
             "input",
             "input/reads",
             "input/human_annotations",
+            "input/human_annotations/human.gff",
             "input/human_reference_sequences",
             "input/human_reference_sequences/human.fa",
             "input/influenza_annotations",
+            "input/influenza_annotations/influenza.gff",
             "input/influenza_reference_sequences",
             "input/influenza_reference_sequences/influenza.fa",
             "input/staphylococcus_annotations",
+            "input/staphylococcus_annotations/staphylococcus.gff",
             "input/staphylococcus_reference_sequences",
             "input/staphylococcus_reference_sequences/staphylococcus.fa",
             "output",
@@ -46,7 +49,7 @@ class TestPaths(unittest.TestCase):
         ]
         for folder in project_folders:
             os.mkdir(os.path.join(self.test_dir, folder))
-        self.pathcreator = PathCreator(self.test_folder, self.test_species)
+        self.pathcreator = PathCreator(self.test_dir, self.test_species)
         self.folder_names = [
             self.pathcreator.input_folder,
             self.pathcreator.output_folder,
@@ -72,6 +75,14 @@ class TestPaths(unittest.TestCase):
             "influenza": f"{self.test_dir}/input/influenza_reference_sequences",
             "staphylococcus": f"{self.test_dir}/input/staphylococcus_reference_sequences",
         }
+
+        self.pathcreator.annotation_paths_by_species = {
+            "human": f"{self.test_dir}/input/human_annotations",
+            "influenza": f"{self.test_dir}/input/influenza_annotations",
+            "staphylococcus": f"{self.test_dir}/input/staphylococcus_annotations",
+        }
+
+
         self.static_files = [
             self.pathcreator.read_processing_stats_path,
             self.pathcreator.read_alignments_stats_path,
@@ -125,10 +136,9 @@ class TestPaths(unittest.TestCase):
     # first the annotation files need to be returned by species. Then this
     # test has to be adjusted
     def test_get_annotation_files(self):
-        self.pathcreator.annotation_folder = self.test_folder
-        self._create_folder_with_files(self.test_folder, self.test_lib_names)
+        expected_annoation_files = ['human.gff', 'staphylococcus.gff', 'influenza.gff']
         self.assertEqual(
-            self.pathcreator.get_annotation_files(), sorted(self.test_lib_names)
+            self.pathcreator.get_annotation_files(), expected_annoation_files
         )
         self._remove_folder_if_exists(self.test_folder)
 
