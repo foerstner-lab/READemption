@@ -7,6 +7,7 @@ import pandas as pd
 class GeneWiseQuantification(object):
     def __init__(
         self,
+        references_by_species,
         min_overlap=1,
         read_region="global",
         clip_length=11,
@@ -17,6 +18,8 @@ class GeneWiseQuantification(object):
         antisense_only=False,
         strand_specific=True,
         unique_only=False,
+        remove_cross_aligned_reads=False,
+        crossmapped_reads = None
     ):
         """
         - normalize_by_alignment: consider that some reads are aligned at
@@ -25,6 +28,7 @@ class GeneWiseQuantification(object):
           overlap with more than on gene
 
         """
+        self._references_by_species = references_by_species
         self._min_overlap = min_overlap
         self._read_region = read_region
         self._clip_length = clip_length
@@ -35,6 +39,9 @@ class GeneWiseQuantification(object):
         self._antisense_only = antisense_only
         self._strand_specific = strand_specific
         self._unique_only = unique_only
+        self._remove_cross_aligned_reads = remove_cross_aligned_reads
+        self._crossmapped_reads = crossmapped_reads
+
 
     def calc_overlaps_per_alignment(
         self, read_alignment_path, annotation_paths
@@ -52,12 +59,17 @@ class GeneWiseQuantification(object):
                 if _entry_to_use(entry, self._allowed_features) is False:
                     continue
                 for alignment in self._overlapping_alignments(sam, entry):
-                    alignment_id = self._alignment_id(alignment) # does alignment_id contain the the read qname
-                    # TODO test if the read id of the alignment is in the cross mapped read ids set
+                    alignment_id = self._alignment_id(alignment)
+                    # check if species cross aligned reads should be removed
+                    if self._remove_cross_aligned_reads:
+                        # skip alignment if it is cross aligned
+                        if alignment.qname in self._crossmapped_reads:
+                            continue
                     self.alignments_and_no_of_overlaps.setdefault(
                         alignment_id, 0
                     )
                     self.alignments_and_no_of_overlaps[alignment_id] += 1
+
 
     def quantify(
         self,
@@ -102,7 +114,11 @@ class GeneWiseQuantification(object):
                 sum_sense = 1
                 sum_antisense = 1
             for alignment in self._overlapping_alignments(sam, entry):
-                # TODO test if the read id of the alignment is in the cross mapped read ids set. alignment.qname = read id?
+                # check if species cross aligned reads should be removed
+                if self._remove_cross_aligned_reads:
+                    # skip alignment if it is cross aligned
+                    if alignment.qname in self._crossmapped_reads:
+                        continue
                 fraction = fraction_calc_method(alignment)
                 if self._same_strand(entry, alignment):
                     sum_sense += fraction

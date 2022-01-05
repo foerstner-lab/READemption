@@ -2,6 +2,7 @@ import concurrent.futures
 import os
 import sys
 import json
+import pysam
 from reademptionlib.coveragecalculator import CoverageCalculator
 from reademptionlib.crossalignfilter import CrossAlignFilter
 from reademptionlib.deseq import DESeqRunner
@@ -683,6 +684,50 @@ class Controller(object):
             if job.exception():
                 raise (job.exception())
 
+    def determine_crossmapped_reads(self, read_alignment_path):
+        """Find reads that are mapped to sequences of different species.
+
+        The comparison is performed replicon wise in order to reduce
+        the memory footprint.
+        """
+        references_by_species = self._get_references_by_species()
+        crossmapped_reads = set()
+        done_replicon_comparison = []
+        with pysam.AlignmentFile(read_alignment_path) as bam:
+            for org, replicon_ids in references_by_species.items():
+                for replicon_id in replicon_ids:
+                    self._read_ids = set()
+                    # First, collect the ids of the aligned reads of
+                    # this replicon
+                    for alignment in bam.fetch(reference=replicon_id):
+                        self._read_ids.add(alignment.qname)
+                    # Then compare them to the alignments of each
+                    # replicon of the other organism(s)
+                    for (
+                            comp_org,
+                            comp_replicon_ids,
+                    ) in references_by_species.items():
+                        # Only compare replicons of different species
+                        if org == comp_org:
+                            continue
+                        for comp_replicon_id in comp_replicon_ids:
+                            comparison = sorted([replicon_id, comp_replicon_id])
+                            # Check if comparison of the two replicons
+                            # has been done already
+                            if comparison in done_replicon_comparison:
+                                continue
+                            done_replicon_comparison.append(comparison)
+                            # Compare all read ids of the comparison
+                            # replicon to the query replicon read ids
+                            for alignment in bam.fetch(
+                                    reference=comp_replicon_id
+                            ):
+                                if alignment.qname in self._read_ids:
+                                    crossmapped_reads.add(alignment.qname)
+        no_of_crossmapped_reads = len(crossmapped_reads)
+        return crossmapped_reads
+
+
     def quantify_gene_wise(self):
         """Manage the counting of aligned reads per gene."""
         project_creator = ProjectCreator()
@@ -694,6 +739,8 @@ class Controller(object):
         )
         norm_by_alignment_freq = True
         norm_by_overlap_freq = True
+        self._pathcreator.set_ref_seq_paths_by_species()
+        references_by_species = self._get_references_by_species()
         if self._args.no_count_split_by_alignment_no:
             norm_by_alignment_freq = False
         if self._args.no_count_splitting_by_gene_no:
@@ -716,6 +763,13 @@ class Controller(object):
                 self._pathcreator.get_read_files(), lib_names
             )
         self._pathcreator.set_annotation_files_by_species()
+        # determine species cross mapped reads
+        if self._args.remove_cross_aligned_reads:
+            self._crossmapped_reads_by_lib = {}
+            for lib_name, read_alignment_path in zip(
+                    lib_names, self._pathcreator.read_alignment_bam_paths
+            ):
+                self._crossmapped_reads_by_lib[lib_name] = self.determine_crossmapped_reads(read_alignment_path)
         jobs = []
         with concurrent.futures.ProcessPoolExecutor(
             max_workers=self._args.processes
@@ -759,7 +813,14 @@ class Controller(object):
                     strand_specific = True
                     if self._args.non_strand_specific:
                         strand_specific = False
+
+                    if self._args.remove_cross_aligned_reads:
+                        crossmapped_reads = self._crossmapped_reads_by_lib[lib_name]
+                    else:
+                        crossmapped_reads = None
+
                     gene_wise_quantification = GeneWiseQuantification(
+                        references_by_species=references_by_species,
                         min_overlap=self._args.min_overlap,
                         read_region=self._args.read_region,
                         clip_length=self._args.clip_length,
@@ -770,8 +831,9 @@ class Controller(object):
                         antisense_only=self._args.antisense_only,
                         strand_specific=strand_specific,
                         unique_only=self._args.unique_only,
+                        remove_cross_aligned_reads=self._args.remove_cross_aligned_reads,
+                        crossmapped_reads=crossmapped_reads
                     )
-
                     if norm_by_overlap_freq:
                         gene_wise_quantification.calc_overlaps_per_alignment(
                             read_alignment_path,
