@@ -212,6 +212,35 @@ class PathCreator:
         return self.viz_align_folders_by_species
 
     def _set_viz_gene_quanti_folder_names(self):
+        self.viz_gene_quanti_folders_by_species = {}
+        self.viz_gene_quanti_files_by_species = {}
+        for prefix in self.species_folder_prefixes:
+            prefix_and_connector = prefix + self.prefix_folder_name_connector
+            if len(self.species_folder_prefixes) and prefix == " ":
+                prefix_and_connector = ""
+            viz_gene_quanti_species_folders = {}
+            viz_gene_quanti_species_folders[
+                "viz_gene_quanti_base_folder"
+            ] = f"{self.output_folder}/{prefix_and_connector}viz_gene_quanti"
+            self.viz_gene_quanti_folders_by_species[
+                prefix
+            ] = viz_gene_quanti_species_folders
+
+            viz_gene_quanti_species_files = {}
+            viz_gene_quanti_species_files[
+                "viz_gene_quanti_scatter_plot_path"
+            ] = f"{viz_gene_quanti_species_folders['viz_gene_quanti_base_folder']}/expression_scatter_plots.pdf"
+            viz_gene_quanti_species_files[
+                "rna_classes_plot_path"
+            ] = f"{viz_gene_quanti_species_folders['viz_gene_quanti_base_folder']}/rna_class_sizes.pdf"
+
+            self.viz_gene_quanti_files_by_species[
+                prefix
+            ] = viz_gene_quanti_species_files
+
+
+
+    """def _set_viz_gene_quanti_folder_names(self):
         self.viz_gene_quanti_base_folder = (
             f"{self.output_folder}/viz_gene_quanti"
         )
@@ -220,7 +249,7 @@ class PathCreator:
         )
         self.viz_gene_quanti_rna_classes_plot_path = (
             f"{self.viz_gene_quanti_base_folder}/rna_class_sizes.pdf"
-        )
+        )"""
 
     def _set_viz_deseq_folder_names(self):
         self.viz_deseq_base_folder = f"{self.output_folder}/viz_deseq"
@@ -522,6 +551,9 @@ class PathCreator:
     def required_coverage_folders(self):
         return [*self._unpack_folder_paths(self.coverage_folders_by_species)]
 
+    def required_viz_gene_quanti_folders(self):
+        return [*self._unpack_folder_paths(self.viz_gene_quanti_folders_by_species)]
+
     def _unpack_folder_paths(self, folders_by_species):
         folder_paths = []
         for species_folders in folders_by_species.values():
@@ -560,9 +592,6 @@ class PathCreator:
             self.viz_align_all_folder,
             *self.viz_align_folders_by_species.values(),
         ]
-
-    def required_viz_gene_quanti_folders(self):
-        return [self.viz_gene_quanti_base_folder]
 
     def required_viz_deseq_folders(self):
         return [self.viz_deseq_base_folder]
@@ -643,16 +672,13 @@ class PathCreator:
         )
 
     # TODO annotation_folder needs to be the annotation folder for the current species
-    def set_annotation_paths(self, annotation_files):
-        self.annotation_paths = self._path_list(
-            self.annotation_folder, annotation_files
-        )
+    #def set_annotation_paths(self, annotation_files):
+    #    self.annotation_paths = self._path_list(
+    #        self.annotation_folder, annotation_files
+    #    )
 
     def _path_list(self, folder, files, appendix=""):
         return [f"{folder}/{file}{appendix}" for file in files]
-
-    #def gene_quanti_path(self, read_file, annotation_file):
-    #    return f"{self.gene_quanti_per_lib_folder}/{read_file}_to_{annotation_file}.csv"
 
     def gene_quanti_paths_by_species(self, gene_quanti_per_lib_species_folder, read_file, annotation_file):
         return f"{gene_quanti_per_lib_species_folder}/{read_file}_to_{annotation_file}.csv"

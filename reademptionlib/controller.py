@@ -17,8 +17,10 @@ from reademptionlib.readalignerstats import ReadAlignerStats
 from reademptionlib.readalignerstatstable import ReadAlignerStatsTable
 from reademptionlib.readprocessor import ReadProcessor
 from reademptionlib.vizalign import AlignViz
+from reademptionlib.vizgenequanti import GeneQuantiViz
 from reademptionlib.wiggle import WiggleWriter
 
+import pprint
 
 class Controller(object):
 
@@ -1121,21 +1123,32 @@ class Controller(object):
 
     def viz_gene_quanti(self):
         """Generate plots based on the gene-wise read countings"""
-        from reademptionlib.vizgenequanti import GeneQuantiViz
+        # Create output folders for each species
+        project_creator = ProjectCreator()
+        project_creator.create_subfolders(self._pathcreator.required_viz_gene_quanti_folders())
 
-        gene_quanti_viz = GeneQuantiViz(
-            self._pathcreator.gene_wise_quanti_combined_path,
-            self._pathcreator.get_lib_names_single_end()
-            if not self._args.paired_end
-            else self._pathcreator.get_lib_names_paired_end(),
-        )
-        gene_quanti_viz.parse_input_table()
-        gene_quanti_viz.plot_correlations(
-            self._pathcreator.viz_gene_quanti_scatter_plot_path
-        )
-        gene_quanti_viz.plot_annotation_class_quantification(
-            self._pathcreator.viz_gene_quanti_rna_classes_plot_path
-        )
+        for sp in self._species_folder_prefixes:
+            # Set output folder and files paths for each species
+            gene_wise_quanti_combined_path = self._pathcreator.gene_quanti_files_by_species[sp][
+                "gene_wise_quanti_combined_path"
+            ]
+            viz_gene_quanti_scatter_plot_path = self._pathcreator.viz_gene_quanti_files_by_species[sp]["viz_gene_quanti_scatter_plot_path"]
+            rna_classes_plot_path = self._pathcreator.viz_gene_quanti_files_by_species[sp]["rna_classes_plot_path"]
+
+            # Create plots
+            gene_quanti_viz = GeneQuantiViz(
+                gene_wise_quanti_combined_path,
+                self._pathcreator.get_lib_names_single_end()
+                if not self._args.paired_end
+                else self._pathcreator.get_lib_names_paired_end(),
+            )
+            gene_quanti_viz.parse_input_table()
+            gene_quanti_viz.plot_correlations(
+                viz_gene_quanti_scatter_plot_path
+            )
+            gene_quanti_viz.plot_annotation_class_quantification(
+                rna_classes_plot_path
+            )
 
     def viz_deseq(self):
         """Generate plots based on the DESeq analysis"""
