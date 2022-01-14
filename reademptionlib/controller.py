@@ -17,10 +17,12 @@ from reademptionlib.readalignerstats import ReadAlignerStats
 from reademptionlib.readalignerstatstable import ReadAlignerStatsTable
 from reademptionlib.readprocessor import ReadProcessor
 from reademptionlib.vizalign import AlignViz
+from reademptionlib.vizdeseq import DESeqViz
 from reademptionlib.vizgenequanti import GeneQuantiViz
 from reademptionlib.wiggle import WiggleWriter
 
 import pprint
+
 
 class Controller(object):
 
@@ -706,8 +708,8 @@ class Controller(object):
                     # Then compare them to the alignments of each
                     # replicon of the other organism(s)
                     for (
-                            comp_org,
-                            comp_replicon_ids,
+                        comp_org,
+                        comp_replicon_ids,
                     ) in references_by_species.items():
                         # Only compare replicons of different species
                         if org == comp_org:
@@ -722,13 +724,12 @@ class Controller(object):
                             # Compare all read ids of the comparison
                             # replicon to the query replicon read ids
                             for alignment in bam.fetch(
-                                    reference=comp_replicon_id
+                                reference=comp_replicon_id
                             ):
                                 if alignment.qname in self._read_ids:
                                     crossmapped_reads.add(alignment.qname)
         no_of_crossmapped_reads = len(crossmapped_reads)
         return crossmapped_reads
-
 
     def quantify_gene_wise(self):
         """Manage the counting of aligned reads per gene."""
@@ -769,9 +770,11 @@ class Controller(object):
         if self._args.remove_cross_aligned_reads:
             self._crossmapped_reads_by_lib = {}
             for lib_name, read_alignment_path in zip(
-                    lib_names, self._pathcreator.read_alignment_bam_paths
+                lib_names, self._pathcreator.read_alignment_bam_paths
             ):
-                self._crossmapped_reads_by_lib[lib_name] = self.determine_crossmapped_reads(read_alignment_path)
+                self._crossmapped_reads_by_lib[
+                    lib_name
+                ] = self.determine_crossmapped_reads(read_alignment_path)
         jobs = []
         with concurrent.futures.ProcessPoolExecutor(
             max_workers=self._args.processes
@@ -817,7 +820,9 @@ class Controller(object):
                         strand_specific = False
 
                     if self._args.remove_cross_aligned_reads:
-                        crossmapped_reads = self._crossmapped_reads_by_lib[lib_name]
+                        crossmapped_reads = self._crossmapped_reads_by_lib[
+                            lib_name
+                        ]
                     else:
                         crossmapped_reads = None
 
@@ -834,7 +839,7 @@ class Controller(object):
                         strand_specific=strand_specific,
                         unique_only=self._args.unique_only,
                         remove_cross_aligned_reads=self._args.remove_cross_aligned_reads,
-                        crossmapped_reads=crossmapped_reads
+                        crossmapped_reads=crossmapped_reads,
                     )
                     if norm_by_overlap_freq:
                         gene_wise_quantification.calc_overlaps_per_alignment(
@@ -1028,30 +1033,49 @@ class Controller(object):
 
     def compare_with_deseq(self):
         """Manage the pairwise expression comparison with DESeq."""
-        self._test_folder_existance(self._pathcreator.required_deseq_folders())
+        project_creator = ProjectCreator()
+        project_creator.create_subfolders(
+            self._pathcreator.required_deseq_folders()
+        )
         arg_libs = [
             self._pathcreator._clean_file_name(lib)
             for lib in self._args.libs.split(",")
         ]
         conditions = self._args.conditions.split(",")
         self._check_deseq_args(arg_libs, conditions)
-        deseq_runner = DESeqRunner(
-            arg_libs,
-            conditions,
-            self._pathcreator.deseq_raw_folder,
-            self._pathcreator.deseq_extended_folder,
-            self._pathcreator.deseq_script_path,
-            self._pathcreator.deseq_pca_heatmap_path,
-            self._pathcreator.gene_wise_quanti_combined_path,
-            self._pathcreator.deseq_tmp_session_info_script,
-            self._pathcreator.deseq_session_info,
-            self._args.fc_shrinkage_off,
-            self._args.cooks_cutoff_off,
-        )
-        deseq_runner.create_deseq_script_file()
-        deseq_runner.write_session_info_file()
-        deseq_runner.run_deseq()
-        deseq_runner.merge_counting_files_with_results()
+        for sp in self._species_folder_prefixes_and_display_names.keys():
+            print(sp)
+            deseq_runner = DESeqRunner(
+                arg_libs,
+                conditions,
+                self._pathcreator.deseq_folders_by_species[sp][
+                    "deseq_raw_folder"
+                ],
+                self._pathcreator.deseq_folders_by_species[sp][
+                    "deseq_extended_folder"
+                ],
+                self._pathcreator.deseq_files_by_species[sp][
+                    "deseq_script_path"
+                ],
+                self._pathcreator.deseq_files_by_species[sp][
+                    "deseq_pca_heatmap_path"
+                ],
+                self._pathcreator.gene_quanti_files_by_species[sp][
+                    "gene_wise_quanti_combined_path"
+                ],
+                self._pathcreator.deseq_files_by_species[sp][
+                    "deseq_tmp_session_info_script"
+                ],
+                self._pathcreator.deseq_files_by_species[sp][
+                    "deseq_session_info"
+                ],
+                self._args.fc_shrinkage_off,
+                self._args.cooks_cutoff_off,
+            )
+            deseq_runner.create_deseq_script_file()
+            deseq_runner.write_session_info_file()
+            deseq_runner.run_deseq()
+            deseq_runner.merge_counting_files_with_results()
 
     def _check_deseq_args(self, arg_libs, conditions):
         """Test if the given arguments are sufficient."""
@@ -1125,15 +1149,27 @@ class Controller(object):
         """Generate plots based on the gene-wise read countings"""
         # Create output folders for each species
         project_creator = ProjectCreator()
-        project_creator.create_subfolders(self._pathcreator.required_viz_gene_quanti_folders())
+        project_creator.create_subfolders(
+            self._pathcreator.required_viz_gene_quanti_folders()
+        )
 
         for sp in self._species_folder_prefixes:
             # Set output folder and files paths for each species
-            gene_wise_quanti_combined_path = self._pathcreator.gene_quanti_files_by_species[sp][
-                "gene_wise_quanti_combined_path"
-            ]
-            viz_gene_quanti_scatter_plot_path = self._pathcreator.viz_gene_quanti_files_by_species[sp]["viz_gene_quanti_scatter_plot_path"]
-            rna_classes_plot_path = self._pathcreator.viz_gene_quanti_files_by_species[sp]["rna_classes_plot_path"]
+            gene_wise_quanti_combined_path = (
+                self._pathcreator.gene_quanti_files_by_species[sp][
+                    "gene_wise_quanti_combined_path"
+                ]
+            )
+            viz_gene_quanti_scatter_plot_path = (
+                self._pathcreator.viz_gene_quanti_files_by_species[sp][
+                    "viz_gene_quanti_scatter_plot_path"
+                ]
+            )
+            rna_classes_plot_path = (
+                self._pathcreator.viz_gene_quanti_files_by_species[sp][
+                    "rna_classes_plot_path"
+                ]
+            )
 
             # Create plots
             gene_quanti_viz = GeneQuantiViz(
@@ -1143,16 +1179,13 @@ class Controller(object):
                 else self._pathcreator.get_lib_names_paired_end(),
             )
             gene_quanti_viz.parse_input_table()
-            gene_quanti_viz.plot_correlations(
-                viz_gene_quanti_scatter_plot_path
-            )
+            gene_quanti_viz.plot_correlations(viz_gene_quanti_scatter_plot_path)
             gene_quanti_viz.plot_annotation_class_quantification(
                 rna_classes_plot_path
             )
 
     def viz_deseq(self):
         """Generate plots based on the DESeq analysis"""
-        from reademptionlib.vizdeseq import DESeqViz
 
         deseq_path_template = (
             self._pathcreator.deseq_raw_folder + "/deseq_comp_%s_vs_%s.csv"
@@ -1169,4 +1202,3 @@ class Controller(object):
             self._pathcreator.viz_deseq_volcano_plot_path,
             self._pathcreator.viz_deseq_volcano_plot_adj_path,
         )
-

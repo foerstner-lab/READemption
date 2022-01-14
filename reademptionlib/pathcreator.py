@@ -72,7 +72,7 @@ class PathCreator:
         self._set_read_alignment_folder_names()
         self._set_coverage_folder_names()
         self._set_gene_quanti_folder_names()
-        self._set_deseq_folder_names()
+        self._set_deseq_folders_and_files_by_species()
         self._set_viz_align_folder_names()
         self._set_viz_gene_quanti_folder_names()
         self._set_viz_deseq_folder_names()
@@ -174,12 +174,48 @@ class PathCreator:
                 prefix
             ] = gene_quanti_species_files
 
-    def _set_deseq_folder_names(self):
-        self.deseq_base_folder = f"{self.output_folder}/deseq"
-        self.deseq_raw_folder = f"{self.deseq_base_folder}/deseq_raw"
-        self.deseq_extended_folder = (
-            f"{self.deseq_base_folder}/deseq_with_annotations"
-        )
+    def _set_deseq_folders_and_files_by_species(self):
+        self.deseq_folders_by_species = {}
+        self.deseq_files_by_species = {}
+        for prefix in self.species_folder_prefixes:
+            prefix_and_connector = prefix + self.prefix_folder_name_connector
+            if len(self.species_folder_prefixes) and prefix == " ":
+                prefix_and_connector = ""
+            deseq_species_folders = {}
+            deseq_species_folders[
+                "deseq_base_folder"
+            ] = f"{self.output_folder}/{prefix_and_connector}deseq"
+            deseq_species_folders[
+                "deseq_raw_folder"
+            ] = f"{self.output_folder}/{prefix_and_connector}deseq/deseq_raw"
+            deseq_species_folders[
+                "deseq_extended_folder"
+            ] = f"{self.output_folder}/{prefix_and_connector}deseq/deseq_with_annotations"
+
+            self.deseq_folders_by_species[prefix] = deseq_species_folders
+
+            deseq_species_files = {}
+            deseq_species_files[
+                "deseq_script_path"
+            ] = f"{deseq_species_folders['deseq_raw_folder']}/deseq.R"
+
+            deseq_species_files[
+                "deseq_pca_heatmap_path"
+            ] = f"{deseq_species_folders['deseq_raw_folder']}/sample_comparison_pca_heatmap.pdf"
+
+            deseq_species_files[
+                "deseq_tmp_session_info_script"
+            ] = f"{deseq_species_folders['deseq_raw_folder']}/tmp.R"
+
+            deseq_species_files[
+                "deseq_session_info"
+            ] = f"{deseq_species_folders['deseq_raw_folder']}/R_session_info.txt"
+
+            deseq_species_files[
+                "deseq_session_info"
+            ] = f"{deseq_species_folders['deseq_raw_folder']}/R_session_info.txt"
+
+            self.deseq_files_by_species[prefix] = deseq_species_files
 
     def _set_viz_align_folder_names(self):
         self.viz_align_read_lengths_folder = (
@@ -238,19 +274,6 @@ class PathCreator:
                 prefix
             ] = viz_gene_quanti_species_files
 
-
-
-    """def _set_viz_gene_quanti_folder_names(self):
-        self.viz_gene_quanti_base_folder = (
-            f"{self.output_folder}/viz_gene_quanti"
-        )
-        self.viz_gene_quanti_scatter_plot_path = (
-            f"{self.viz_gene_quanti_base_folder}/expression_scatter_plots.pdf"
-        )
-        self.viz_gene_quanti_rna_classes_plot_path = (
-            f"{self.viz_gene_quanti_base_folder}/rna_class_sizes.pdf"
-        )"""
-
     def _set_viz_deseq_folder_names(self):
         self.viz_deseq_base_folder = f"{self.output_folder}/viz_deseq"
         self.viz_deseq_scatter_plot_path = (
@@ -280,12 +303,6 @@ class PathCreator:
             f"{self.align_report_folder}/read_alignment_stats_transposed.csv"
         )
         self.index_path = f"{self.read_alignment_index_folder}/index.idx"
-        self.deseq_script_path = f"{self.deseq_raw_folder}/deseq.R"
-        self.deseq_pca_heatmap_path = (
-            f"{self.deseq_raw_folder}/sample_comparison_pca_heatmap.pdf"
-        )
-        self.deseq_tmp_session_info_script = f"{self.deseq_raw_folder}/tmp.R"
-        self.deseq_session_info = f"{self.deseq_raw_folder}/R_session_info.txt"
         self.version_path = f"{self.align_report_folder}/version_log.txt"
 
     def _get_sorted_folder_content(self, folder):
@@ -433,7 +450,7 @@ class PathCreator:
                 self.ref_seq_path_list.append(ref_seq_path)
 
     # TODO remove
-    #def get_annotation_files_by_species(self):
+    # def get_annotation_files_by_species(self):
     #    """Read the names of annotation files."""
     #    return self._get_sorted_folder_content(self.annotation_folder)
 
@@ -552,7 +569,12 @@ class PathCreator:
         return [*self._unpack_folder_paths(self.coverage_folders_by_species)]
 
     def required_viz_gene_quanti_folders(self):
-        return [*self._unpack_folder_paths(self.viz_gene_quanti_folders_by_species)]
+        return [
+            *self._unpack_folder_paths(self.viz_gene_quanti_folders_by_species)
+        ]
+
+    def required_deseq_folders(self):
+        return [*self._unpack_folder_paths(self.deseq_folders_by_species)]
 
     def _unpack_folder_paths(self, folders_by_species):
         folder_paths = []
@@ -578,13 +600,6 @@ class PathCreator:
                 ]
             )
         return gene_quanti_folders
-
-    def required_deseq_folders(self):
-        return [
-            self.deseq_base_folder,
-            self.deseq_raw_folder,
-            self.deseq_extended_folder,
-        ]
 
     def required_viz_align_folders(self):
         return [
@@ -672,7 +687,7 @@ class PathCreator:
         )
 
     # TODO annotation_folder needs to be the annotation folder for the current species
-    #def set_annotation_paths(self, annotation_files):
+    # def set_annotation_paths(self, annotation_files):
     #    self.annotation_paths = self._path_list(
     #        self.annotation_folder, annotation_files
     #    )
@@ -680,7 +695,9 @@ class PathCreator:
     def _path_list(self, folder, files, appendix=""):
         return [f"{folder}/{file}{appendix}" for file in files]
 
-    def gene_quanti_paths_by_species(self, gene_quanti_per_lib_species_folder, read_file, annotation_file):
+    def gene_quanti_paths_by_species(
+        self, gene_quanti_per_lib_species_folder, read_file, annotation_file
+    ):
         return f"{gene_quanti_per_lib_species_folder}/{read_file}_to_{annotation_file}.csv"
 
     def wiggle_file_raw_path(self, read_file, strand, multi=None, div=None):
