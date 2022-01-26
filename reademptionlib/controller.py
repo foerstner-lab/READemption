@@ -3,7 +3,8 @@ import os
 import sys
 import json
 import pysam
-from reademptionlib.coveragecalculator import CoverageCalculator
+#from reademptionlib.coveragecalculator import CoverageCalculator
+from reademptionlib.coveragecreator import CoverageCreator
 from reademptionlib.crossalignfilter import CrossAlignFilter
 from reademptionlib.deseq import DESeqRunner
 from reademptionlib.fasta import FastaParser
@@ -19,7 +20,7 @@ from reademptionlib.readprocessor import ReadProcessor
 from reademptionlib.vizalign import AlignViz
 from reademptionlib.vizdeseq import DESeqViz
 from reademptionlib.vizgenequanti import GeneQuantiViz
-from reademptionlib.wiggle import WiggleWriter
+#from reademptionlib.wiggle import WiggleWriter
 
 import pprint
 
@@ -470,13 +471,7 @@ class Controller(object):
         too large when working with large reference sequences.
 
         """
-        project_creator = ProjectCreator()
-        project_creator.create_subfolders(
-            self._pathcreator.required_coverage_folders()
-        )
-        self._test_folder_existance(
-            self._pathcreator.required_coverage_folders()
-        )
+
         raw_stat_data_reader = RawStatDataReader()
         alignment_stats = [
             raw_stat_data_reader.read(
@@ -498,37 +493,67 @@ class Controller(object):
             aligned_counting = "no_of_aligned_reads"
         else:
             aligned_counting = "no_of_uniquely_aligned_reads"
-        read_files_aligned_read_freq = dict(
-            [
-                (read_file, round(attributes["stats_total"][aligned_counting]))
-                for read_file, attributes in alignment_stats[0].items()
-            ]
+
+        if not self._args.non_strand_specific:
+            strands = ["forward", "reverse"]
+        else:
+            strands = ["forward_and_reverse"]
+
+
+        self.read_files_aligned_read_freq_and_min_reads_aligned_by_species = {}
+        for sp in self._species_folder_prefixes_and_display_names.keys():
+            # Retrieve the either the no. of uniquely aligned reads or
+            # number of all aligned reads for each library of the given species
+            read_files_aligned_read_freq = dict(
+                [
+                    (read_file, round(attributes["species_stats"][sp][aligned_counting]))
+                    for read_file, attributes in alignment_stats[0].items()
+                ]
+            )
+            self.read_files_aligned_read_freq_and_min_reads_aligned_by_species[sp] = {}
+            self.read_files_aligned_read_freq_and_min_reads_aligned_by_species[sp]["read_files_aligned_read_freq"] = read_files_aligned_read_freq
+            # Retrieve the min no. of aligned reads
+            # of all libraries for the given species
+            min_no_of_aligned_reads = float(
+                min(read_files_aligned_read_freq.values())
+            )
+            self.read_files_aligned_read_freq_and_min_reads_aligned_by_species[sp]["min_no_of_aligned_reads"] = min_no_of_aligned_reads
+
+        self._pathcreator.set_coverage_folder_and_file_names(strands, lib_names, self.read_files_aligned_read_freq_and_min_reads_aligned_by_species)
+
+        project_creator = ProjectCreator()
+        project_creator.create_subfolders(
+            self._pathcreator.required_coverage_folders()
+            )
+        self._test_folder_existance(
+            self._pathcreator.required_coverage_folders()
         )
-        min_no_of_aligned_reads = float(
-            min(read_files_aligned_read_freq.values())
-        )
-        # Run the generation of coverage in parallel
-        jobs = []
-        with concurrent.futures.ProcessPoolExecutor(
-            max_workers=self._args.processes
-        ) as executor:
-            for lib_name, bam_path in zip(
-                lib_names, self._pathcreator.read_alignment_bam_paths
-            ):
-                no_of_aligned_reads = float(
-                    read_files_aligned_read_freq[lib_name]
-                )
-                jobs.append(
-                    executor.submit(
-                        self._create_coverage_files_for_lib,
-                        lib_name,
-                        bam_path,
-                        no_of_aligned_reads,
-                        min_no_of_aligned_reads,
+
+        # Run the coverage file creation species-wise
+        for sp in self.read_files_aligned_read_freq_and_min_reads_aligned_by_species.keys():
+
+            # Run the generation of coverage in parallel
+
+            jobs = []
+            with concurrent.futures.ProcessPoolExecutor(
+                max_workers=self._args.processes
+            ) as executor:
+                for lib_name, bam_path in zip(
+                    lib_names, self._pathcreator.read_alignment_bam_paths
+                ):
+                    coverage_creator = CoverageCreator(self._args, strands, self._pathcreator.coverage_files_by_species[sp][lib_name])
+                    jobs.append(
+                        executor.submit(
+                            coverage_creator.create_coverage_files_for_lib,
+                            lib_name,
+                            bam_path,
+                            self.read_files_aligned_read_freq_and_min_reads_aligned_by_species[sp]["read_files_aligned_read_freq"][lib_name],
+                            self.read_files_aligned_read_freq_and_min_reads_aligned_by_species[sp]["min_no_of_aligned_reads"]
                     )
-                )
-        # Evaluate thread outcome
-        self._check_job_completeness(jobs)
+                    )
+            # Evaluate thread outcome
+            self._check_job_completeness(jobs)
+
 
     def _all_coverage_file_exist(
         self, lib_name, strands, no_of_aligned_reads, min_no_of_aligned_reads
@@ -850,16 +875,6 @@ class Controller(object):
                         annotation_files,
                         self._pathcreator.annotation_paths_by_species[sp],
                     ):
-                        gene_wise_quantification.quantify(
-                            read_alignment_path,
-                            annotation_path,
-                            self._pathcreator.gene_quanti_paths_by_species(
-                                gene_quanti_per_lib_species_folder,
-                                lib_name,
-                                annotation_file,
-                            ),
-                            self._args.pseudocounts,
-                        )
                         output_path = (
                             self._pathcreator.gene_quanti_paths_by_species(
                                 gene_quanti_per_lib_species_folder,
@@ -1044,7 +1059,6 @@ class Controller(object):
         conditions = self._args.conditions.split(",")
         self._check_deseq_args(arg_libs, conditions)
         for sp in self._species_folder_prefixes_and_display_names.keys():
-            print(sp)
             deseq_runner = DESeqRunner(
                 arg_libs,
                 conditions,

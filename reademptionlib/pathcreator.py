@@ -1,3 +1,4 @@
+from collections import defaultdict
 import json
 import os
 import sys
@@ -70,7 +71,7 @@ class PathCreator:
         self.output_folder = f"{self.base_path}/output"
         self._set_input_folder_names()
         self._set_read_alignment_folder_names()
-        self._set_coverage_folder_names()
+        # self._set_coverage_folder_names() #TODO needs to be set in controller
         self._set_gene_quanti_folder_names()
         self._set_deseq_folders_and_files_by_species()
         self._set_viz_align_folder_names()
@@ -118,8 +119,9 @@ class PathCreator:
             f"{self.align_report_folder}/stats_data_json"
         )
 
-    def _set_coverage_folder_names(self):
+    def set_coverage_folder_and_file_names(self, strands, lib_names, read_files_aligned_read_freq_and_min_reads_aligned_by_species):
         self.coverage_folders_by_species = {}
+        self.coverage_files_by_species = {}
         for prefix in self.species_folder_prefixes:
             prefix_and_connector = prefix + self.prefix_folder_name_connector
             if len(self.species_folder_prefixes) and prefix == " ":
@@ -135,6 +137,70 @@ class PathCreator:
                 "coverage_tnoar_mil_norm_folder"
             ] = f"{self.output_folder}/{prefix_and_connector}coverage-tnoar_mil_normalized"
             self.coverage_folders_by_species[prefix] = coverage_species_folders
+
+            coverage_species_files = {}
+            for lib in lib_names:
+                # Add wiggle raw paths
+                coverage_species_files[lib] = {}
+                coverage_species_files[lib]["wiggle_file_raw_path"] = {}
+                for strand in strands:
+                    coverage_species_files[lib]["wiggle_file_raw_path"][
+                        strand
+                    ] = self._wiggle_file_path(
+                        coverage_species_folders["coverage_raw_folder"],
+                        lib,
+                        strand,
+                    )
+
+                # Add wiggle tnoar norm min path tnoar_norm_min
+                coverage_species_files[lib]["wiggle_file_tnoar_norm_min_path"] = {}
+                for strand in strands:
+                    coverage_species_files[lib]["wiggle_file_tnoar_norm_min_path"][
+                        strand
+                    ] = self._wiggle_file_path(
+                        coverage_species_folders["coverage_tnoar_min_norm_folder"],
+                        lib,
+                        strand,
+                        multi=read_files_aligned_read_freq_and_min_reads_aligned_by_species[prefix]["min_no_of_aligned_reads"],
+                        div=read_files_aligned_read_freq_and_min_reads_aligned_by_species[prefix]["read_files_aligned_read_freq"][lib]
+                    )
+                # Add wiggle tnoar norm min path tnoar_norm_mil
+                coverage_species_files[lib]["wiggle_file_tnoar_norm_mil_path"] = {}
+                for strand in strands:
+                    coverage_species_files[lib]["wiggle_file_tnoar_norm_mil_path"][
+                        strand
+                    ] = self._wiggle_file_path(
+                        coverage_species_folders["coverage_tnoar_mil_norm_folder"],
+                        lib,
+                        strand,
+                        multi=1000000,
+                        div=read_files_aligned_read_freq_and_min_reads_aligned_by_species[prefix]["read_files_aligned_read_freq"][lib]
+                    )
+
+            self.coverage_files_by_species[prefix] = coverage_species_files
+
+            # weiter
+            # def wiggle_file_raw_path(self, read_file, strand, multi=None, div=None):
+            #    return self._wiggle_file_path(
+            #        self.coverage_raw_folder, read_file, strand, multi=None, div=None
+            #    )
+
+            #    def wiggle_file_raw_path(self, read_file, strand, multi=None, div=None):
+
+    #        return self._wiggle_file_path(
+    #            self.coverage_raw_folder, read_file, strand, multi=None, div=None
+    #        )
+
+    def _wiggle_file_path(
+        self, folder, read_file, strand, multi=None, div=None
+    ):
+        path = f"{folder}/{read_file}"
+        if not div is None:
+            path += f"_div_by_{div:.1f}"
+        if not multi is None:
+            path += f"_multi_by_{multi:.1f}"
+        path += f"_{strand}.wig"
+        return path
 
     def _set_gene_quanti_folder_names(self):
         self.gene_quanti_folders_by_species = {}
@@ -449,10 +515,6 @@ class PathCreator:
             for ref_seq_path in ref_seq_paths:
                 self.ref_seq_path_list.append(ref_seq_path)
 
-    # TODO remove
-    # def get_annotation_files_by_species(self):
-    #    """Read the names of annotation files."""
-    #    return self._get_sorted_folder_content(self.annotation_folder)
 
     def set_annotation_paths_by_species(self) -> None:
         """
@@ -700,33 +762,10 @@ class PathCreator:
     ):
         return f"{gene_quanti_per_lib_species_folder}/{read_file}_to_{annotation_file}.csv"
 
-    def wiggle_file_raw_path(self, read_file, strand, multi=None, div=None):
-        return self._wiggle_file_path(
-            self.coverage_raw_folder, read_file, strand, multi=None, div=None
-        )
+    # weiter
 
-    def wiggle_file_tnoar_norm_min_path(
-        self, read_file, strand, multi=None, div=None
-    ):
-        return self._wiggle_file_path(
-            self.coverage_tnoar_min_norm_folder, read_file, strand, multi, div
-        )
-        # TODO return wiggle_file_tnoar_norm_min_path for each species
+    #    def wiggle_file_raw_path(self, read_file, strand, multi=None, div=None):
+    #        return self._wiggle_file_path(
+    #            self.coverage_raw_folder, read_file, strand, multi=None, div=None
+    #        )
 
-    def wiggle_file_tnoar_norm_mil_path(
-        self, read_file, strand, multi=None, div=None
-    ):
-        return self._wiggle_file_path(
-            self.coverage_tnoar_mil_norm_folder, read_file, strand, multi, div
-        )
-
-    def _wiggle_file_path(
-        self, folder, read_file, strand, multi=None, div=None
-    ):
-        path = f"{folder}/{read_file}"
-        if not div is None:
-            path += f"_div_by_{div}.1f"
-        if not multi is None:
-            path += f"_multi_by_{multi}.1f"
-        path += f"_{strand}.wig"
-        return path

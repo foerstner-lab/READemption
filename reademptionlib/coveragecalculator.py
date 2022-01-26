@@ -49,6 +49,9 @@ class CoverageCalculator(object):
                 continue
             # Note: No translation from SAMParsers coordinates to python
             # list coorindates is needed.
+            # TODO if remove cross mapped reads:
+            # TODO      if read is cross mapped:
+            # TODO      continue
             start = entry.pos
             end = entry.aend
             # Normalize coverage increment by number of read alignments
