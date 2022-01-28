@@ -10,7 +10,8 @@ import pysam
 
 class TestCoverageCalculator(unittest.TestCase):
     def setUp(self):
-        self.coverage_calculator = CoverageCalculator()
+        self.species_references = ["chrom", "plasmid1", "plasmid2"]
+        self.coverage_calculator = CoverageCalculator(self.species_references)
         self.example_data = ExampleData()
         self._sam_bam_prefix = "dummy"
 
@@ -130,7 +131,7 @@ class TestCoverageCalculator(unittest.TestCase):
         mapping is counted as one to each of the matching position
         independent how often its read is mapped in in total.
         """
-        self.coverage_calculator = CoverageCalculator(
+        self.coverage_calculator = CoverageCalculator(self.species_references,
             read_count_splitting=False
         )
         self._generate_bam_file(
@@ -163,7 +164,7 @@ class TestCoverageCalculator(unittest.TestCase):
         """If uniqueley_aligned_only is True skip any mapping of read
         that are aligned to more than on location.
         """
-        self.coverage_calculator = CoverageCalculator(
+        self.coverage_calculator = CoverageCalculator(self.species_references,
             uniquely_aligned_only=True
         )
         self._generate_bam_file(
@@ -196,7 +197,7 @@ class TestCoverageCalculator(unittest.TestCase):
         """If first_base_only is True only the first nucleotide of a
         mapping is considered.
         """
-        self.coverage_calculator = CoverageCalculator(
+        self.coverage_calculator = CoverageCalculator(self.species_references,
             coverage_style="first_base_only"
         )
         self._generate_bam_file(
