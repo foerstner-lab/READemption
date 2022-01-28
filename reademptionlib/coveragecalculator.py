@@ -5,12 +5,16 @@ import pysam
 class CoverageCalculator(object):
     def __init__(
         self,
+        species_references,
         read_count_splitting=True,
         uniquely_aligned_only=False,
         coverage_style="global",
         clip_length=11,
         non_strand_specific=False,
+        remove_cross_mapped_reads=False,
+        cross_mapped_reads=None,
     ):
+        self._species_references = species_references
         self._read_count_splitting = read_count_splitting
         self._uniquely_aligned_only = uniquely_aligned_only
         self._coverage_style = coverage_style
@@ -18,10 +22,14 @@ class CoverageCalculator(object):
         self._coverage_add_function = self._select_coverage_add_function()
         self._coverages = {}
         self._non_strand_specific = non_strand_specific
+        self._remove_cross_mapped_reads = remove_cross_mapped_reads
+        self._cross_mapped_reads = cross_mapped_reads
 
     def ref_seq_and_coverages(self, bam_path):
         bam = self._open_bam_file(bam_path)
         for ref_seq, length in zip(bam.references, bam.lengths):
+            if ref_seq not in self._species_references:
+                continue
             self._init_coverage_list(length)
             self._calc_coverage(ref_seq, bam)
             if self._non_strand_specific:
@@ -49,9 +57,12 @@ class CoverageCalculator(object):
                 continue
             # Note: No translation from SAMParsers coordinates to python
             # list coorindates is needed.
-            # TODO if remove cross mapped reads:
-            # TODO      if read is cross mapped:
-            # TODO      continue
+            # Don't count cross mapped reads if "removing cross mapped reads"
+            # is turned on
+            if self._remove_cross_mapped_reads:
+                if entry.qname in self._cross_mapped_reads:
+                    continue
+
             start = entry.pos
             end = entry.aend
             # Normalize coverage increment by number of read alignments

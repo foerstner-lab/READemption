@@ -762,10 +762,5 @@ class PathCreator:
     ):
         return f"{gene_quanti_per_lib_species_folder}/{read_file}_to_{annotation_file}.csv"
 
-    # weiter
 
-    #    def wiggle_file_raw_path(self, read_file, strand, multi=None, div=None):
-    #        return self._wiggle_file_path(
-    #            self.coverage_raw_folder, read_file, strand, multi=None, div=None
-    #        )
 
