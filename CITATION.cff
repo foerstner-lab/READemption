@@ -1,4 +1,4 @@
-cff-version: 1.0.1
+cff-version: 1.2.0
 message: If you use this software, please cite it as below.
 authors:
   - family-names: Förstner
@@ -13,6 +13,27 @@ authors:
   - family-names: Tobin
     given-names: Diarmaid         
 title: "READemption"
-version: 1.0.1
-doi: 10.5281/zenodo.3940386
+version: 1.0.5
+doi: 10.5281/zenodo.5565069
 date-released: 2020-07-11
+preferred-citation:
+  type: article
+  authors:
+  - family-names: "Förstner"
+    given-names: "Konrad U."
+    orcid: "https://orcid.org/0000-0002-1481-2996"
+  - family-names: "Vogel"
+    given-names: "Jörg"
+    orcid: "https://orcid.org/0000-0003-2220-1404"
+  - family-names: "Sharma"
+    given-names: "Cynthia M."
+    orcid: "https://orcid.org/0000-0002-2321-9705"    
+  doi: "10.1093/bioinformatics/btu533"
+  journal: "Bioinformatics"
+  month: 12
+  start: 3421
+  end: 3423
+  title: "READemption—a tool for the computational analysis of deep-sequencing–based transcriptome data"
+  issue: 23
+  volume: 30
+  year: 2014
