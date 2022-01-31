@@ -5,6 +5,11 @@ coverage:
 	coverage run tests/test_all.py
 	coverage report
 
+coverage_html:
+	# pytest-cov needs to be installed:
+	# $ pip install pytest-cov
+	pytest --cov=reademptionlib --cov-report html --cov-context=test
+
 package:
 	pandoc -o README.rst README.md
 	python3 setup.py sdist bdist_wheel
