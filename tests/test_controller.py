@@ -36,6 +36,7 @@ class ArgMock:
         self.min_overlap = 1
         self.read_region = "global"
         self.clip_length = 11
+        # Gene quantification
         self.no_count_split_by_alignment_no = False
         self.no_count_splitting_by_gene_no = False
         self.add_antisense = False
@@ -44,8 +45,10 @@ class ArgMock:
         self.allowed_features = None
         self.unique_only = False
         self.pseudocounts = False
-        self.check_for_existing_files = False
-        self.remove_cross_aligned_reads = True
+        # Coverage
+        self.normalize_by_uniquely = False
+        self.skip_read_count_splitting = False
+        self.coverage_style = "global"
         self.items = [self.project_path, self.species, self.min_read_length]
 
     # make mock argument object iterable like argparse.Namespace()
@@ -68,7 +71,7 @@ class TestController(unittest.TestCase):
         self.triple_expected_after_alignment_copy = "a_test_project"
         self.triple_expected_after_alignment_copy_output = "a_test_project/output"
         self.triple_expected_after_gene_quanti_output = "tests/test_files/reademption_analysis_triple_after_gene_quanti_remove_cross_aligned_reads/output"
-
+        self.triple_expected_after_coverage_output = "tests/test_files/reademption_analysis_triple_after_coverage/output"
 
     def tearDown(self):
         self._remove_triple_input_files_and_structure_copy()
@@ -158,6 +161,37 @@ class TestControllerGeneQuantification(TestController):
                     expected_files_and_checksums[expected_subfolder_file] = hash
         # Compare the checksums
         assert expected_files_and_checksums == created_files_and_checksums
+
+class TestControllerCoverage(TestController):
+    def test_coverage(self):
+        self._version = 2.0
+        self._copy_aligned_files_and_structure()
+        self.controller.create_coverage_files()
+        # Collect the checksums of the created files
+        created_files_and_checksums = {}
+        for created_subfolder_files in os.walk(self.triple_expected_after_alignment_copy_output):
+            for created_subfolder_file in created_subfolder_files[2]:
+                output_file_path = created_subfolder_files[0] + "/" + created_subfolder_file
+                # exclude gz zipped files because of different checksums due to meta information
+                if not output_file_path.endswith(".gz"):
+                    hash = hashlib.md5(open(output_file_path,'rb').read()).hexdigest()
+                    created_files_and_checksums[created_subfolder_file] = hash
+        # Collect the checksums of the expected files
+        expected_files_and_checksums = {}
+        for expected_subfolder_files in os.walk(self.triple_expected_after_coverage_output):
+            for expected_subfolder_file in expected_subfolder_files[2]:
+                output_file_path = expected_subfolder_files[0] + "/" + expected_subfolder_file
+                # exclude gz zipped files because of different checksums due to meta information
+                if not output_file_path.endswith(".gz"):
+                    hash = hashlib.md5(open(output_file_path,'rb').read()).hexdigest()
+                    expected_files_and_checksums[expected_subfolder_file] = hash
+        # Compare the checksums
+        print("Expected:")
+        print(expected_files_and_checksums)
+        print("Created:")
+        print(created_files_and_checksums)
+        assert expected_files_and_checksums == created_files_and_checksums
+
 
 if __name__ == "__main__":
     unittest.main()
