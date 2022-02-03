@@ -11,14 +11,14 @@ class CoverageCreator(object):
         strands,
         coverage_files,
         species_references,
-        remove_cross_mapped_reads=False,
+        count_cross_aligned_reads=False,
         cross_mapped_reads=None,
     ):
         self._args = args
         self.strands = strands
         self.coverage_files = coverage_files
         self._species_references = species_references
-        self._remove_cross_mapped_reads = remove_cross_mapped_reads
+        self._count_cross_aligned_reads = count_cross_aligned_reads
         self._cross_mapped_reads = cross_mapped_reads
 
     def create_coverage_files_for_lib(
@@ -37,7 +37,7 @@ class CoverageCreator(object):
             coverage_style=self._args.coverage_style,
             clip_length=self._args.clip_length,
             non_strand_specific=self._args.non_strand_specific,
-            remove_cross_mapped_reads=self._remove_cross_mapped_reads,
+            count_cross_aligned_reads=self._count_cross_aligned_reads,
             cross_mapped_reads=self._cross_mapped_reads,
         )
         (
@@ -48,7 +48,7 @@ class CoverageCreator(object):
         for (
             ref_seq,
             coverages,
-        ) in coverage_calculator.ref_seq_and_coverages(  # TODO ref seqs only for given species
+        ) in coverage_calculator.ref_seq_and_coverages(
             bam_path
         ):
             for strand in self.strands:

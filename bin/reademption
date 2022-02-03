@@ -217,6 +217,22 @@ def create_parser():
         "calculation.",
     )
     coverage_creation_parser.add_argument(
+        "--count_cross_aligned_reads",
+        "-x",
+        default=False,
+        action="store_true",
+        help="Count species-cross-aligned reads for the coverage file creation,"
+             " by default these reads are not counted",
+    )
+    coverage_creation_parser.add_argument(
+        "--normalize_cross_aligned_reads_included",
+        "-X",
+        default=False,
+        action="store_true",
+        help="Add species-cross-aligned reads to normalization,"
+             " by default only the species specific reads are used.",
+    )
+    coverage_creation_parser.add_argument(
         "--processes",
         "-p",
         default=1,
@@ -273,13 +289,7 @@ def create_parser():
         "Attention! You have to take care that there are no partially "
         "generated files left!",
     )
-    coverage_creation_parser.add_argument(
-        "--remove_cross_aligned_reads",
-        "-x",
-        default=False,
-        action="store_true",
-        help="Do NOT count species-cross-aligned reads for the coverage file creation",
-    )
+
     coverage_creation_parser.set_defaults(func=create_coverage_files)
 
     # Parameters for gene wise quantification

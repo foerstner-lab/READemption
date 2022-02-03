@@ -49,6 +49,8 @@ class ArgMock:
         self.normalize_by_uniquely = False
         self.skip_read_count_splitting = False
         self.coverage_style = "global"
+        self.count_cross_aligned_reads = False
+        self.normalize_cross_aligned_reads_included = False
         self.items = [self.project_path, self.species, self.min_read_length]
 
     # make mock argument object iterable like argparse.Namespace()

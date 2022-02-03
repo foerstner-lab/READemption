@@ -11,7 +11,7 @@ class CoverageCalculator(object):
         coverage_style="global",
         clip_length=11,
         non_strand_specific=False,
-        remove_cross_mapped_reads=False,
+        count_cross_aligned_reads=False,
         cross_mapped_reads=None,
     ):
         self._species_references = species_references
@@ -22,7 +22,7 @@ class CoverageCalculator(object):
         self._coverage_add_function = self._select_coverage_add_function()
         self._coverages = {}
         self._non_strand_specific = non_strand_specific
-        self._remove_cross_mapped_reads = remove_cross_mapped_reads
+        self._count_cross_aligned_reads = count_cross_aligned_reads
         self._cross_mapped_reads = cross_mapped_reads
 
     def ref_seq_and_coverages(self, bam_path):
@@ -59,7 +59,7 @@ class CoverageCalculator(object):
             # list coorindates is needed.
             # Don't count cross mapped reads if "removing cross mapped reads"
             # is turned on
-            if self._remove_cross_mapped_reads:
+            if not self._count_cross_aligned_reads:
                 if entry.qname in self._cross_mapped_reads:
                     continue
 

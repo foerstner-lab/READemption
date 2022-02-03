@@ -484,32 +484,28 @@ class Controller(object):
             self._pathcreator.set_read_files_dep_file_lists_paired_end(
                 self._pathcreator.get_read_files(), lib_names
             )
-        # Get number of aligned or number of uniquely aligned reads
-        if not self._args.normalize_by_uniquely:
-            aligned_counting = "no_of_aligned_reads"
-        else:
-            aligned_counting = "no_of_uniquely_aligned_reads"
-
         if not self._args.non_strand_specific:
             strands = ["forward", "reverse"]
         else:
             strands = ["forward_and_reverse"]
-
         self.read_files_aligned_read_freq_and_min_reads_aligned_by_species = {}
         for sp in self._species_folder_prefixes_and_display_names.keys():
             # Retrieve the either the no. of uniquely aligned reads or
+            # the number of species exclusive aligned reads ("all aligned" - "cross aligned") (Default behaviour) or
             # number of all aligned reads for each library of the given species
-            read_files_aligned_read_freq = dict(
-                [
-                    (
-                        read_file,
-                        round(
-                            attributes["species_stats"][sp][aligned_counting]
-                        ),
-                    )
-                    for read_file, attributes in alignment_stats[0].items()
-                ]
-            )
+            read_files_aligned_read_freq = {}
+            for read_file, attributes in alignment_stats[0].items():
+                # If option normalize by uniquely is chosen, only the sum of uniquely aligned reads is used for normalisation
+                # this excludes species cross mapped reads, split aligned reads and multiple aligned reads
+                if self._args.normalize_by_uniquely:
+                    read_files_aligned_read_freq[read_file] = attributes["species_stats"][sp]["no_of_uniquely_aligned_reads"]
+                elif self._args.normalize_cross_aligned_reads_included:
+                    read_files_aligned_read_freq[read_file] = attributes["species_stats"][sp]["no_of_aligned_reads"]
+                # Default: Number of aligned reads without the cross aligned reads are used for normalization
+                else:
+                    read_files_aligned_read_freq[read_file] = attributes["species_stats"][sp]["no_of_aligned_reads"] - attributes["species_stats"][sp]["no_of_cross_aligned_reads"]
+
+
             self.read_files_aligned_read_freq_and_min_reads_aligned_by_species[
                 sp
             ] = {}
@@ -524,6 +520,7 @@ class Controller(object):
             self.read_files_aligned_read_freq_and_min_reads_aligned_by_species[
                 sp
             ]["min_no_of_aligned_reads"] = min_no_of_aligned_reads
+
 
         self._pathcreator.set_coverage_folder_and_file_names(
             strands,
@@ -541,7 +538,7 @@ class Controller(object):
 
         # determine species cross mapped reads
         self._pathcreator.set_ref_seq_paths_by_species()
-        if self._args.remove_cross_aligned_reads:
+        if not self._args.count_cross_aligned_reads:
             self._crossmapped_reads_by_lib = {}
             for lib_name, read_alignment_path in zip(
                 lib_names, self._pathcreator.read_alignment_bam_paths
@@ -559,7 +556,6 @@ class Controller(object):
         ) in (
             self.read_files_aligned_read_freq_and_min_reads_aligned_by_species.keys()
         ):
-
             # Run the generation of coverage in parallel
 
             jobs = []
@@ -569,7 +565,7 @@ class Controller(object):
                 for lib_name, bam_path in zip(
                     lib_names, self._pathcreator.read_alignment_bam_paths
                 ):
-                    if self._args.remove_cross_aligned_reads:
+                    if not self._args.count_cross_aligned_reads:
                         cross_mapped_reads = self._crossmapped_reads_by_lib[
                             lib_name
                         ]
@@ -582,7 +578,7 @@ class Controller(object):
                             lib_name
                         ],
                         references_by_species[sp],
-                        self._args.remove_cross_aligned_reads,
+                        self._args.count_cross_aligned_reads,
                         cross_mapped_reads,
                     )
                     jobs.append(

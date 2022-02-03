@@ -11,7 +11,7 @@ import pysam
 class TestCoverageCalculator(unittest.TestCase):
     def setUp(self):
         self.species_references = ["chrom", "plasmid1", "plasmid2"]
-        self.coverage_calculator = CoverageCalculator(self.species_references)
+        self.coverage_calculator = CoverageCalculator(self.species_references, count_cross_aligned_reads=True)
         self.example_data = ExampleData()
         self._sam_bam_prefix = "dummy"
 
@@ -132,7 +132,7 @@ class TestCoverageCalculator(unittest.TestCase):
         independent how often its read is mapped in in total.
         """
         self.coverage_calculator = CoverageCalculator(self.species_references,
-            read_count_splitting=False
+            read_count_splitting=False, count_cross_aligned_reads=True
         )
         self._generate_bam_file(
             self.example_data.sam_content_2, self._sam_bam_prefix
@@ -165,7 +165,7 @@ class TestCoverageCalculator(unittest.TestCase):
         that are aligned to more than on location.
         """
         self.coverage_calculator = CoverageCalculator(self.species_references,
-            uniquely_aligned_only=True
+            uniquely_aligned_only=True, count_cross_aligned_reads=True
         )
         self._generate_bam_file(
             self.example_data.sam_content_3, self._sam_bam_prefix
@@ -198,7 +198,7 @@ class TestCoverageCalculator(unittest.TestCase):
         mapping is considered.
         """
         self.coverage_calculator = CoverageCalculator(self.species_references,
-            coverage_style="first_base_only"
+            coverage_style="first_base_only", count_cross_aligned_reads=True
         )
         self._generate_bam_file(
             self.example_data.sam_content_1, self._sam_bam_prefix

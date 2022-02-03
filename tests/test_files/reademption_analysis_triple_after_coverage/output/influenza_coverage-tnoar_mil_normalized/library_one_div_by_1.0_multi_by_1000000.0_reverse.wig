@@ -1,0 +1,5 @@
+track type=wiggle_0 name="library_one_reverse"
+variableStep chrom=NC_007373.1 span=1
+
+variableStep chrom=NC_007372.1 span=1
+
