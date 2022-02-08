@@ -411,12 +411,22 @@ def create_parser():
         "generated files left!",
     )
     gene_wise_quanti_parser.add_argument(
-        "--remove_cross_aligned_reads",
+        "--count_cross_aligned_reads",
         "-x",
         default=False,
         action="store_true",
-        help="Do NOT count species-cross-aligned reads for the gene quantification",
+        help="Count species-cross-aligned reads for the gene quantification. By"
+             "default these reads are not counted",
     )
+    gene_wise_quanti_parser.add_argument(
+        "--normalize_cross_aligned_reads_included",
+        "-X",
+        default=False,
+        action="store_true",
+        help="Add species-cross-aligned reads to normalization,"
+             " by default only the species specific reads are used.",
+    )
+
     gene_wise_quanti_parser.set_defaults(func=run_gene_wise_quantification)
 
     # Parameters for DESeq calling

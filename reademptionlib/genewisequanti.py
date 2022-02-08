@@ -18,7 +18,7 @@ class GeneWiseQuantification(object):
         antisense_only=False,
         strand_specific=True,
         unique_only=False,
-        remove_cross_aligned_reads=False,
+        count_cross_aligned_reads=False,
         crossmapped_reads = None
     ):
         """
@@ -39,8 +39,9 @@ class GeneWiseQuantification(object):
         self._antisense_only = antisense_only
         self._strand_specific = strand_specific
         self._unique_only = unique_only
-        self._remove_cross_aligned_reads = remove_cross_aligned_reads
+        self._count_cross_aligned_reads = count_cross_aligned_reads
         self._crossmapped_reads = crossmapped_reads
+
 
 
     def calc_overlaps_per_alignment(
@@ -60,8 +61,8 @@ class GeneWiseQuantification(object):
                     continue
                 for alignment in self._overlapping_alignments(sam, entry):
                     alignment_id = self._alignment_id(alignment)
-                    # check if species cross aligned reads should be removed
-                    if self._remove_cross_aligned_reads:
+                    # check if species cross aligned reads should be counted
+                    if not self._count_cross_aligned_reads:
                         # skip alignment if it is cross aligned
                         if alignment.qname in self._crossmapped_reads:
                             continue
@@ -114,8 +115,8 @@ class GeneWiseQuantification(object):
                 sum_sense = 1
                 sum_antisense = 1
             for alignment in self._overlapping_alignments(sam, entry):
-                # check if species cross aligned reads should be removed
-                if self._remove_cross_aligned_reads:
+                # check if species cross aligned reads should be counted
+                if not self._count_cross_aligned_reads:
                     # skip alignment if it is cross aligned
                     if alignment.qname in self._crossmapped_reads:
                         continue

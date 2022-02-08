@@ -688,7 +688,7 @@ class Controller(object):
             )
         self._pathcreator.set_annotation_files_by_species()
         # determine species cross mapped reads
-        if self._args.remove_cross_aligned_reads:
+        if not self._args.count_cross_aligned_reads:
             self._crossmapped_reads_by_lib = {}
             for lib_name, read_alignment_path in zip(
                 lib_names, self._pathcreator.read_alignment_bam_paths
@@ -740,7 +740,7 @@ class Controller(object):
                     if self._args.non_strand_specific:
                         strand_specific = False
 
-                    if self._args.remove_cross_aligned_reads:
+                    if not self._args.count_cross_aligned_reads:
                         crossmapped_reads = self._crossmapped_reads_by_lib[
                             lib_name
                         ]
@@ -759,8 +759,8 @@ class Controller(object):
                         antisense_only=self._args.antisense_only,
                         strand_specific=strand_specific,
                         unique_only=self._args.unique_only,
-                        remove_cross_aligned_reads=self._args.remove_cross_aligned_reads,
-                        crossmapped_reads=crossmapped_reads,
+                        count_cross_aligned_reads = self._args.count_cross_aligned_reads,
+                        crossmapped_reads=crossmapped_reads
                     )
                     if norm_by_overlap_freq:
                         gene_wise_quantification.calc_overlaps_per_alignment(
@@ -868,7 +868,7 @@ class Controller(object):
                     "gene_wise_quanti_combined_rpkm_path"
                 ],
                 self._libs_and_total_num_of_aligned_reads(
-                    sp, self._args.remove_cross_aligned_reads
+                    sp, self._args.normalize_cross_aligned_reads_included
                 ),
             )
         if self._file_needs_to_be_created(
@@ -883,7 +883,7 @@ class Controller(object):
                     "gene_wise_quanti_combined_tnoar_path"
                 ],
                 self._libs_and_total_num_of_aligned_reads(
-                    sp, self._args.remove_cross_aligned_reads
+                    sp, self._args.normalize_cross_aligned_reads_included
                 ),
             )
         if self._file_needs_to_be_created(
@@ -901,14 +901,22 @@ class Controller(object):
             )
 
     def _libs_and_total_num_of_aligned_reads(
-        self, sp, remove_cross_aligned_reads=False
+            self, sp, normalize_cross_aligned_reads_included=False
     ):
         """Read the total number of reads per library for a selected species."""
         with open(
             self._pathcreator.read_alignments_stats_path
         ) as read_aligner_stats_fh:
             read_aligner_stats = json.loads(read_aligner_stats_fh.read())
-        if remove_cross_aligned_reads:
+        if normalize_cross_aligned_reads_included:
+            return dict(
+                [
+                    (lib, values["species_stats"][sp]["no_of_aligned_reads"])
+                    for lib, values in read_aligner_stats.items()
+                ]
+            )
+
+        else:
             return dict(
                 [
                     (
@@ -918,13 +926,6 @@ class Controller(object):
                             "no_of_cross_aligned_reads"
                         ],
                     )
-                    for lib, values in read_aligner_stats.items()
-                ]
-            )
-        else:
-            return dict(
-                [
-                    (lib, values["species_stats"][sp]["no_of_aligned_reads"])
                     for lib, values in read_aligner_stats.items()
                 ]
             )
