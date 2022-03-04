@@ -498,13 +498,21 @@ class Controller(object):
                 # If option normalize by uniquely is chosen, only the sum of uniquely aligned reads is used for normalisation
                 # this excludes species cross mapped reads, split aligned reads and multiple aligned reads
                 if self._args.normalize_by_uniquely:
-                    read_files_aligned_read_freq[read_file] = attributes["species_stats"][sp]["no_of_uniquely_aligned_reads"]
+                    read_files_aligned_read_freq[read_file] = attributes[
+                        "species_stats"
+                    ][sp]["no_of_uniquely_aligned_reads"]
                 elif self._args.normalize_cross_aligned_reads_included:
-                    read_files_aligned_read_freq[read_file] = attributes["species_stats"][sp]["no_of_aligned_reads"]
+                    read_files_aligned_read_freq[read_file] = attributes[
+                        "species_stats"
+                    ][sp]["no_of_aligned_reads"]
                 # Default: Number of aligned reads without the cross aligned reads are used for normalization
                 else:
-                    read_files_aligned_read_freq[read_file] = attributes["species_stats"][sp]["no_of_aligned_reads"] - attributes["species_stats"][sp]["no_of_cross_aligned_reads"]
-
+                    read_files_aligned_read_freq[read_file] = (
+                        attributes["species_stats"][sp]["no_of_aligned_reads"]
+                        - attributes["species_stats"][sp][
+                            "no_of_cross_aligned_reads"
+                        ]
+                    )
 
             self.read_files_aligned_read_freq_and_min_reads_aligned_by_species[
                 sp
@@ -520,7 +528,6 @@ class Controller(object):
             self.read_files_aligned_read_freq_and_min_reads_aligned_by_species[
                 sp
             ]["min_no_of_aligned_reads"] = min_no_of_aligned_reads
-
 
         self._pathcreator.set_coverage_folder_and_file_names(
             strands,
@@ -759,8 +766,8 @@ class Controller(object):
                         antisense_only=self._args.antisense_only,
                         strand_specific=strand_specific,
                         unique_only=self._args.unique_only,
-                        count_cross_aligned_reads = self._args.count_cross_aligned_reads,
-                        crossmapped_reads=crossmapped_reads
+                        count_cross_aligned_reads=self._args.count_cross_aligned_reads,
+                        crossmapped_reads=crossmapped_reads,
                     )
                     if norm_by_overlap_freq:
                         gene_wise_quantification.calc_overlaps_per_alignment(
@@ -901,7 +908,7 @@ class Controller(object):
             )
 
     def _libs_and_total_num_of_aligned_reads(
-            self, sp, normalize_cross_aligned_reads_included=False
+        self, sp, normalize_cross_aligned_reads_included=False
     ):
         """Read the total number of reads per library for a selected species."""
         with open(
@@ -954,11 +961,18 @@ class Controller(object):
             for lib in self._args.libs.split(",")
         ]
         conditions = self._args.conditions.split(",")
+        replicates = self._args.replicates.split(",")
+        libs_by_species = self._get_libs_by_species(self._args.libs_by_species)
+        size_factor = self._args.size_factor
         self._check_deseq_args(arg_libs, conditions)
         for sp in self._species_folder_prefixes_and_display_names.keys():
             deseq_runner = DESeqRunner(
+                sp,
                 arg_libs,
                 conditions,
+                replicates,
+                libs_by_species,
+                size_factor,
                 self._pathcreator.deseq_folders_by_species[sp][
                     "deseq_raw_folder"
                 ],
@@ -987,6 +1001,17 @@ class Controller(object):
             deseq_runner.write_session_info_file()
             deseq_runner.run_deseq()
             deseq_runner.merge_counting_files_with_results()
+
+    def _get_libs_by_species(self, arg_libs_by_species):
+        libs_by_species = {}
+        for sp_and_libs in arg_libs_by_species:
+            sp, libs_string = sp_and_libs.split("=")
+            libs = libs_string.split(",")
+            clean_libs = [
+                self._pathcreator._clean_file_name(lib) for lib in libs
+            ]
+            libs_by_species[sp] = clean_libs
+        return libs_by_species
 
     def _check_deseq_args(self, arg_libs, conditions):
         """Test if the given arguments are sufficient."""

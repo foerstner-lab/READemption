@@ -62,7 +62,10 @@ def create_parser():
         "--project_path READemption_analysis",
     )
     create_project_parser.add_argument(
-        "--project_path", "-f", required=True, help="Path of the project folder."
+        "--project_path",
+        "-f",
+        required=True,
+        help="Path of the project folder.",
     )
     create_project_parser.set_defaults(func=create_project)
 
@@ -71,7 +74,10 @@ def create_parser():
         "align", help="Run read alignings"
     )
     read_aligning_parser.add_argument(
-        "--project_path", "-f", required=True, help="Path of the project folder."
+        "--project_path",
+        "-f",
+        required=True,
+        help="Path of the project folder.",
     )
     read_aligning_parser.add_argument(
         "--min_read_length",
@@ -188,7 +194,7 @@ def create_parser():
         default=False,
         action="store_true",
         help="Remove reads from BAM files that are cross-mapped to replicons of different "
-        "species."
+        "species.",
     )
     read_aligning_parser.set_defaults(func=align_reads)
 
@@ -197,7 +203,10 @@ def create_parser():
         "coverage", help="Create coverage (wiggle) files"
     )
     coverage_creation_parser.add_argument(
-        "--project_path", "-f", required=True, help="Path of the project folder."
+        "--project_path",
+        "-f",
+        required=True,
+        help="Path of the project folder.",
     )
     coverage_creation_parser.add_argument(
         "--unique_only",
@@ -222,7 +231,7 @@ def create_parser():
         default=False,
         action="store_true",
         help="Count species-cross-aligned reads for the coverage file creation,"
-             " by default these reads are not counted",
+        " by default these reads are not counted",
     )
     coverage_creation_parser.add_argument(
         "--normalize_cross_aligned_reads_included",
@@ -230,7 +239,7 @@ def create_parser():
         default=False,
         action="store_true",
         help="Add species-cross-aligned reads to normalization,"
-             " by default only the species specific reads are used.",
+        " by default only the species specific reads are used.",
     )
     coverage_creation_parser.add_argument(
         "--processes",
@@ -297,7 +306,10 @@ def create_parser():
         "gene_quanti", help="Quantify the expression gene wise"
     )
     gene_wise_quanti_parser.add_argument(
-        "--project_path", "-f", required=True, help="Path of the project folder."
+        "--project_path",
+        "-f",
+        required=True,
+        help="Path of the project folder.",
     )
     gene_wise_quanti_parser.add_argument(
         "--min_overlap",
@@ -416,7 +428,7 @@ def create_parser():
         default=False,
         action="store_true",
         help="Count species-cross-aligned reads for the gene quantification. By"
-             "default these reads are not counted",
+        "default these reads are not counted",
     )
     gene_wise_quanti_parser.add_argument(
         "--normalize_cross_aligned_reads_included",
@@ -424,7 +436,7 @@ def create_parser():
         default=False,
         action="store_true",
         help="Add species-cross-aligned reads to normalization,"
-             " by default only the species specific reads are used.",
+        " by default only the species specific reads are used.",
     )
 
     gene_wise_quanti_parser.set_defaults(func=run_gene_wise_quantification)
@@ -434,7 +446,10 @@ def create_parser():
         "deseq", help="Compare expression pairwise using DESeq"
     )
     deseq_parser.add_argument(
-        "--project_path", "-f", required=True, help="Path of the project folder."
+        "--project_path",
+        "-f",
+        required=True,
+        help="Path of the project folder.",
     )
     deseq_parser.add_argument(
         "--libs", "-l", required=True, help="Comma separated list of libraries."
@@ -447,6 +462,57 @@ def create_parser():
         "their corresponding libraries.",
     )
     deseq_parser.add_argument(
+        "--replicates",
+        "-r",
+        required=True,
+        help="Comma separated list of replicates in the same order as "
+        "their corresponding libraries.",
+    )
+    deseq_parser.add_argument(
+        "--libs_by_species",
+        "-s",
+        nargs="+",
+        metavar="SUB_FOLDER_NAME=LIST_OF_LIBRARIES",
+        required=True,
+        help="One key-value pair for each species.\n"
+        "Key-value "
+        "pairs consist of the 'folder prefix' (key) and a 'list of "
+        "libraries' and are separated by an '='-sign.\n"
+        "The 'folder prefix' has or have to be the same that was used when "
+        "creating a new project \n"
+        "Syntax example: \n"
+        "$ reademption deseq --libs infected_1.fq,infected_2.fq,"
+        "control_human_1.fq,control_human_2.fq,"
+        "control_staph_1.fq,control_staph_2.fq \n"
+        "--conditions infected,infected,control_human,control_human,"
+        "control_staph,control_staph \n"
+        "--replicates 1,2,1,2,1,2"
+        " --libs_by_species "
+        'human="infected_1.fq,infected_2.fq,control_human_1.fq,'
+        'control_human2.fq" '
+        'staphylococcus="infected_1.fq,infected_2.fq,'
+        'control_staphylococcus_1.fq,control_staphylococcus_2.fq" '
+        "--project_path READemption_analysis",
+    )
+    deseq_parser.add_argument(
+        "--size_factor",
+        "-b",
+        choices=["project", "species", "comparison"],
+        default="species",
+        help="Select the libraries for the size factor estimation of DESeq2."
+        "Selecting the option 'project' will result in calculating the "
+        "size factors for all comparisons based on all libraries of the"
+        "whole project (It doesn't matter if the libraries have no reads "
+        "of the species being inspected or if the libraries are part of"
+        "the current comparison). The option 'species' will result in "
+        "calculating the size factors for all comparisons of a species "
+        "only based on the libraries of the given species. The option "
+        "'comparison' calculates the size factors for each comparison and"
+        "only based on the libraries that are being compared for the"
+        "current comparison.",
+    )
+
+    deseq_parser.add_argument(
         "--cooks_cutoff_off", "-k", default=False, action="store_true"
     )
     deseq_parser.add_argument(
@@ -456,6 +522,7 @@ def create_parser():
         action="store_true",
         help="turn off log2 fold change shrinkage",
     )
+
     deseq_parser.set_defaults(func=run_deseq)
 
     # Parameters for viz_align
@@ -471,7 +538,10 @@ def create_parser():
         help="Use this if reads are originating from a paired-end sequencing.",
     )
     viz_align_parser.add_argument(
-        "--project_path", "-f", required=True, help="Path of the project folder."
+        "--project_path",
+        "-f",
+        required=True,
+        help="Path of the project folder.",
     )
     viz_align_parser.set_defaults(func=viz_align)
 
@@ -488,7 +558,10 @@ def create_parser():
         help="Use this if reads are originating from a paired-end sequencing.",
     )
     viz_gene_quanti_parser.add_argument(
-        "--project_path", "-f", required=True, help="Path of the project folder."
+        "--project_path",
+        "-f",
+        required=True,
+        help="Path of the project folder.",
     )
     viz_gene_quanti_parser.set_defaults(func=viz_gene_quanti)
 
@@ -497,7 +570,10 @@ def create_parser():
         "viz_deseq", help="Generate DESeq visualisations."
     )
     viz_deseq_parser.add_argument(
-        "--project_path", "-f", required=True, help="Path of the project folder."
+        "--project_path",
+        "-f",
+        required=True,
+        help="Path of the project folder.",
     )
 
     viz_deseq_parser.add_argument(
