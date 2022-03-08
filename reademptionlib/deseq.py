@@ -169,7 +169,10 @@ class DESeqRunner(object):
             output_fh.close()
 
     def _condition_combos(self, conditions):
-        non_redundant_conditions = set(conditions)
+        non_redundant_conditions = []
+        for cond in conditions:
+            if cond not in non_redundant_conditions:
+                non_redundant_conditions.append(cond)
         for cond1 in non_redundant_conditions:
             for cond2 in non_redundant_conditions:
                 if not cond1 == cond2:

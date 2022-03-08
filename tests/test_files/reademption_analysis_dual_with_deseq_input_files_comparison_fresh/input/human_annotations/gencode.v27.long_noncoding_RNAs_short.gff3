@@ -1,0 +1,8 @@
+##gff-version 3								
+#description: evidence-based annotation of the human genome (GRCh38), version 27 (Ensembl 90) - long non-coding RNAs								
+#provider: GENCODE								
+#contact: gencode-help@sanger.ac.uk								
+#format: gff3								
+#date: 2017-08-01								
+##sequence-region chr1 1 248956422								
+chr2	HAVANA	gene	61	120	.	+	.	gene_name=mirna_A;ID=ENSG00000243485.5;gene_id=ENSG00000243485.5;gene_type=lincRNA;level=2;tag=ncRNA_host;havana_gene=OTTHUMG00000000959.2
