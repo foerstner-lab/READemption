@@ -37,7 +37,7 @@ class DESeqViz(object):
         deseq_result = pd.read_table(
             self._deseq_path_template % (condition_1, condition_2)
         )
-        # Remove 0 base mean row as those would otherwise couse trouble
+        # Remove 0 base mean row as those would otherwise cause trouble
         # for the log10
         deseq_result = deseq_result[deseq_result.baseMean > 0]
         fig = plt.figure()
@@ -138,7 +138,7 @@ class DESeqViz(object):
         )
         # To avoid problem with zero in log10
         p_values = np.array(p_values)
-        p_values[p_values == 0.0] = 10 ** -100
+        p_values[p_values == 0.0] = 10**-100
         mod_p_values = -1 * np.log10(p_values)
         mod_p_values[mod_p_values == float("+inf")] = 0.0
         mod_p_values[mod_p_values == float("-inf")] = 0.0

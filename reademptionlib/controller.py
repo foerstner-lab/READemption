@@ -1122,19 +1122,44 @@ class Controller(object):
 
     def viz_deseq(self):
         """Generate plots based on the DESeq analysis"""
+        # Create output folders for each species
+        project_creator = ProjectCreator()
+        project_creator.create_subfolders(
+            self._pathcreator.required_viz_deseq_folders()
+        )
 
-        deseq_path_template = (
-            self._pathcreator.deseq_raw_folder + "/deseq_comp_%s_vs_%s.csv"
-        )
-        deseq_viz = DESeqViz(
-            self._pathcreator.deseq_script_path,
-            deseq_path_template,
-            max_pvalue=self._args.max_pvalue,
-        )
-        deseq_viz.create_scatter_plots(
-            self._pathcreator.viz_deseq_scatter_plot_path
-        )
-        deseq_viz.create_volcano_plots(
-            self._pathcreator.viz_deseq_volcano_plot_path,
-            self._pathcreator.viz_deseq_volcano_plot_adj_path,
-        )
+        for sp in self._species_folder_prefixes:
+            # Set output folder and files paths for each species
+            deseq_path_template = (
+                self._pathcreator.deseq_folders_by_species[sp][
+                    "deseq_raw_folder"
+                ]
+                + "/deseq_comp_%s_vs_%s.csv"
+            )
+            print(deseq_path_template)
+            print(
+                self._pathcreator.deseq_files_by_species[sp][
+                    "deseq_script_path"
+                ]
+            )
+
+            deseq_viz = DESeqViz(
+                self._pathcreator.deseq_files_by_species[sp][
+                    "deseq_script_path"
+                ],
+                deseq_path_template,
+                max_pvalue=self._args.max_pvalue,
+            )
+            deseq_viz.create_scatter_plots(
+                self._pathcreator.viz_deseq_files_by_species[sp][
+                    "viz_deseq_scatter_plot_path"
+                ]
+            )
+            deseq_viz.create_volcano_plots(
+                self._pathcreator.viz_deseq_files_by_species[sp][
+                    "viz_deseq_volcano_plot_path"
+                ],
+                self._pathcreator.viz_deseq_files_by_species[sp][
+                    "viz_deseq_volcano_plot_adj_path"
+                ],
+            )

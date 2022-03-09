@@ -119,7 +119,12 @@ class PathCreator:
             f"{self.align_report_folder}/stats_data_json"
         )
 
-    def set_coverage_folder_and_file_names(self, strands, lib_names, read_files_aligned_read_freq_and_min_reads_aligned_by_species):
+    def set_coverage_folder_and_file_names(
+        self,
+        strands,
+        lib_names,
+        read_files_aligned_read_freq_and_min_reads_aligned_by_species,
+    ):
         self.coverage_folders_by_species = {}
         self.coverage_files_by_species = {}
         for prefix in self.species_folder_prefixes:
@@ -153,28 +158,52 @@ class PathCreator:
                     )
 
                 # Add wiggle tnoar norm min path tnoar_norm_min
-                coverage_species_files[lib]["wiggle_file_tnoar_norm_min_path"] = {}
+                coverage_species_files[lib][
+                    "wiggle_file_tnoar_norm_min_path"
+                ] = {}
                 for strand in strands:
-                    coverage_species_files[lib]["wiggle_file_tnoar_norm_min_path"][
-                        strand
-                    ] = self._wiggle_file_path(
-                        coverage_species_folders["coverage_tnoar_min_norm_folder"],
+                    coverage_species_files[lib][
+                        "wiggle_file_tnoar_norm_min_path"
+                    ][strand] = self._wiggle_file_path(
+                        coverage_species_folders[
+                            "coverage_tnoar_min_norm_folder"
+                        ],
                         lib,
                         strand,
-                        multi=read_files_aligned_read_freq_and_min_reads_aligned_by_species[prefix]["min_no_of_aligned_reads"],
-                        div=read_files_aligned_read_freq_and_min_reads_aligned_by_species[prefix]["read_files_aligned_read_freq"][lib]
+                        multi=read_files_aligned_read_freq_and_min_reads_aligned_by_species[
+                            prefix
+                        ][
+                            "min_no_of_aligned_reads"
+                        ],
+                        div=read_files_aligned_read_freq_and_min_reads_aligned_by_species[
+                            prefix
+                        ][
+                            "read_files_aligned_read_freq"
+                        ][
+                            lib
+                        ],
                     )
                 # Add wiggle tnoar norm min path tnoar_norm_mil
-                coverage_species_files[lib]["wiggle_file_tnoar_norm_mil_path"] = {}
+                coverage_species_files[lib][
+                    "wiggle_file_tnoar_norm_mil_path"
+                ] = {}
                 for strand in strands:
-                    coverage_species_files[lib]["wiggle_file_tnoar_norm_mil_path"][
-                        strand
-                    ] = self._wiggle_file_path(
-                        coverage_species_folders["coverage_tnoar_mil_norm_folder"],
+                    coverage_species_files[lib][
+                        "wiggle_file_tnoar_norm_mil_path"
+                    ][strand] = self._wiggle_file_path(
+                        coverage_species_folders[
+                            "coverage_tnoar_mil_norm_folder"
+                        ],
                         lib,
                         strand,
                         multi=1000000,
-                        div=read_files_aligned_read_freq_and_min_reads_aligned_by_species[prefix]["read_files_aligned_read_freq"][lib]
+                        div=read_files_aligned_read_freq_and_min_reads_aligned_by_species[
+                            prefix
+                        ][
+                            "read_files_aligned_read_freq"
+                        ][
+                            lib
+                        ],
                     )
 
             self.coverage_files_by_species[prefix] = coverage_species_files
@@ -341,12 +370,39 @@ class PathCreator:
             ] = viz_gene_quanti_species_files
 
     def _set_viz_deseq_folder_names(self):
-        self.viz_deseq_base_folder = f"{self.output_folder}/viz_deseq"
-        self.viz_deseq_scatter_plot_path = (
-            f"{self.viz_deseq_base_folder}/MA_plots.pdf"
-        )
-        self.viz_deseq_volcano_plot_path = f"{self.viz_deseq_base_folder}/volcano_plots_log2_fold_change_vs_p-value.pdf"
-        self.viz_deseq_volcano_plot_adj_path = f"{self.viz_deseq_base_folder}/volcano_plots_log2_fold_change_vs_adjusted_p-value.pdf"
+        self.viz_deseq_folders_by_species = {}
+        self.viz_deseq_files_by_species = {}
+        for prefix in self.species_folder_prefixes:
+            prefix_and_connector = prefix + self.prefix_folder_name_connector
+            if len(self.species_folder_prefixes) and prefix == " ":
+                prefix_and_connector = ""
+            viz_deseq_species_folders = {}
+            viz_deseq_species_folders[
+                "viz_deseq_base_folder"
+            ] = f"{self.output_folder}/{prefix_and_connector}viz_deseq"
+            self.viz_deseq_folders_by_species[
+                prefix
+            ] = viz_deseq_species_folders
+
+            viz_deseq_species_files = {}
+            viz_deseq_species_files[
+                "viz_deseq_scatter_plot_path"
+            ] = f"{viz_deseq_species_folders['viz_deseq_base_folder']}/MA_plots.pdf"
+            viz_deseq_species_files[
+                "viz_deseq_volcano_plot_path"
+            ] = f"{viz_deseq_species_folders['viz_deseq_base_folder']}/volcano_plots_log2_fold_change_vs_p-value.pdf"
+            viz_deseq_species_files[
+                "viz_deseq_volcano_plot_adj_path"
+            ] = f"{viz_deseq_species_folders['viz_deseq_base_folder']}/volcano_plots_log2_fold_change_vs_adjusted_p-value.pdf"
+
+            self.viz_deseq_files_by_species[prefix] = viz_deseq_species_files
+
+        # self.viz_deseq_base_folder = f"{self.output_folder}/viz_deseq"
+        # self.viz_deseq_scatter_plot_path = (
+        #    f"{self.viz_deseq_base_folder}/MA_plots.pdf"
+        # )
+        # self.viz_deseq_volcano_plot_path = f"{self.viz_deseq_base_folder}/volcano_plots_log2_fold_change_vs_p-value.pdf"
+        # self.viz_deseq_volcano_plot_adj_path = f"{self.viz_deseq_base_folder}/volcano_plots_log2_fold_change_vs_adjusted_p-value.pdf"
 
     def _set_static_files(self):
         """Set name of common files."""
@@ -515,7 +571,6 @@ class PathCreator:
             for ref_seq_path in ref_seq_paths:
                 self.ref_seq_path_list.append(ref_seq_path)
 
-
     def set_annotation_paths_by_species(self) -> None:
         """
         sets the attribute annotation_paths_by_species that is a dictionary
@@ -635,6 +690,9 @@ class PathCreator:
             *self._unpack_folder_paths(self.viz_gene_quanti_folders_by_species)
         ]
 
+    def required_viz_deseq_folders(self):
+        return [*self._unpack_folder_paths(self.viz_deseq_folders_by_species)]
+
     def required_deseq_folders(self):
         return [*self._unpack_folder_paths(self.deseq_folders_by_species)]
 
@@ -669,9 +727,6 @@ class PathCreator:
             self.viz_align_all_folder,
             *self.viz_align_folders_by_species.values(),
         ]
-
-    def required_viz_deseq_folders(self):
-        return [self.viz_deseq_base_folder]
 
     def set_read_files_dep_file_lists_single_end(self, read_files, lib_names):
         self.read_paths = self._path_list(self.read_fasta_folder, read_files)
@@ -761,6 +816,3 @@ class PathCreator:
         self, gene_quanti_per_lib_species_folder, read_file, annotation_file
     ):
         return f"{gene_quanti_per_lib_species_folder}/{read_file}_to_{annotation_file}.csv"
-
-
-
