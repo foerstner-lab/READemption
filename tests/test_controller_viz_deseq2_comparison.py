@@ -61,7 +61,7 @@ class TestController(unittest.TestCase):
 
 
 class TestControllerCompareWithDeseq(TestController):
-    def test_deseq_comparison(self):
+    def test_viz_deseq_comparison(self):
         self._version = 2.0
         self._copy_fresh_dual_input_files_and_structure()
         self.controller.viz_deseq()
