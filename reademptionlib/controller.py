@@ -1134,13 +1134,7 @@ class Controller(object):
                 self._pathcreator.deseq_folders_by_species[sp][
                     "deseq_raw_folder"
                 ]
-                + "/deseq_comp_%s_vs_%s.csv"
-            )
-            print(deseq_path_template)
-            print(
-                self._pathcreator.deseq_files_by_species[sp][
-                    "deseq_script_path"
-                ]
+                + "/deseq_comp_"
             )
 
             deseq_viz = DESeqViz(
