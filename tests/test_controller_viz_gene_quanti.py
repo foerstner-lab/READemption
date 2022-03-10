@@ -34,7 +34,7 @@ class TestController(unittest.TestCase):
         self.triple_fresh_copy_output = f"{self.triple_fresh_copy}/output"
         self.triple_fresh_copy_output_viz_gene_quanti_human = f"{self.triple_fresh_copy_output}/human_viz_gene_quanti"
         self.triple_fresh_copy_output_viz_gene_quanti_staph = f"{self.triple_fresh_copy_output}/staphylococcus_viz_gene_quanti"
-
+        self.triple_fresh_copy_output_viz_gene_quanti_influenza = f"{self.triple_fresh_copy_output}/influenza_viz_gene_quanti"
 
 
     def tearDown(self):
@@ -61,9 +61,14 @@ class TestControllerCompareWithDeseq(TestController):
         human_viz_gene_quanti_files_expected = ['rna_class_sizes.pdf', 'expression_scatter_plots.pdf']
         human_viz_gene_quanti_files_calculated = os.listdir(self.triple_fresh_copy_output_viz_gene_quanti_human)
         assert human_viz_gene_quanti_files_expected == human_viz_gene_quanti_files_calculated
+
         staphyloccocus_viz_gene_quanti_files_expected = ['rna_class_sizes.pdf', 'expression_scatter_plots.pdf']
         staphyloccocus_viz_gene_quanti_files_calculated = os.listdir(self.triple_fresh_copy_output_viz_gene_quanti_staph)
         assert staphyloccocus_viz_gene_quanti_files_expected == staphyloccocus_viz_gene_quanti_files_calculated
+
+        influenza_viz_gene_quanti_files_expected = ['rna_class_sizes.pdf', 'expression_scatter_plots.pdf']
+        influenza_viz_gene_quanti_files_calculated = os.listdir(self.triple_fresh_copy_output_viz_gene_quanti_influenza)
+        assert influenza_viz_gene_quanti_files_expected == influenza_viz_gene_quanti_files_calculated
 
 if __name__ == "__main__":
     unittest.main()
