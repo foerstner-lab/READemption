@@ -548,7 +548,8 @@ class ReadAlignerStatsTable(object):
         return stats_per_ref_combined
 
     def _append_to_df(self, df, lib, stat, value):
-        df = df.append(pd.Series({lib: stat}, name=value))
+        dataframe_to_add = pd.DataFrame({lib: stat}, index=[value])
+        df = pd.concat([df, dataframe_to_add], axis=0)
         return df
 
     def _get_read_process_number(self, lib, attribute):
