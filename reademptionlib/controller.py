@@ -177,6 +177,7 @@ class Controller(object):
             self._pathcreator.read_alignment_bam_paths,
             self._pathcreator.unaligned_reads_paths,
             self._pathcreator.read_alignments_stats_path,
+            self._args.paired_end
         )
         self._write_alignment_stat_table()
         if self._args.crossalign_cleaning:
@@ -405,6 +406,7 @@ class Controller(object):
         result_bam_paths,
         unaligned_reads_paths,
         output_stats_path,
+        paired_end=False
     ):
         """Manage the generation of alingment statistics."""
         raw_stat_data_writer = RawStatDataWriter(pretty=True)
@@ -420,7 +422,7 @@ class Controller(object):
                 read_alignment_bam_path,
                 unaligned_reads_path,
             ) in zip(lib_names, result_bam_paths, unaligned_reads_paths):
-                read_aligner_stats = ReadAlignerStats(references_by_species)
+                read_aligner_stats = ReadAlignerStats(references_by_species, paired_end)
                 read_files_and_jobs[lib_name] = executor.submit(
                     read_aligner_stats.count,
                     read_alignment_bam_path,

@@ -7,8 +7,9 @@ import pysam
 
 
 class ReadAlignerStats(object):
-    def __init__(self, references_by_speies):
+    def __init__(self, references_by_speies, paired_end=False):
         self.references_by_species = references_by_speies
+        self.paired_end = paired_end
         self.fasta_parser = FastaParser()
 
         """
@@ -240,6 +241,9 @@ class ReadAlignerStats(object):
                 self._stats["stats_total"]["no_of_aligned_reads"] += 1
                 # retrieve all alignments of the query
                 alignments = indexed_bam.find(entry.query_name)
+                # for paired end reads: select only the alignments of the current mate.
+                if self.paired_end:
+                    alignments = [alignment for alignment in alignments if alignment.is_read1 == entry.is_read1]
                 # collect all reference names of alignments of query
                 alignments_ref_seqs = []
                 for alignment in alignments:
