@@ -25,6 +25,9 @@ class CoverageCreator(object):
         self, lib_name, bam_path, no_of_aligned_reads, min_no_of_aligned_reads
     ):
         """Perform the coverage calculation for a given library."""
+        # Don't create a coverage file, if no reads were aligned
+        if no_of_aligned_reads == 0:
+            return
         if self._all_coverage_file_exist():
             return
         read_count_splitting = True
