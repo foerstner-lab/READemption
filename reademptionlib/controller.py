@@ -469,7 +469,12 @@ class Controller(object):
         too large when working with large reference sequences.
 
         """
-
+        if (self._args.build_fragments and not self._args.paired_end):
+            self._write_err_msg_and_quit("The option '-bf' or "
+                                         "'--build_fragments' is only valid "
+                                         "for paired end reads. If you have "
+                                         "paired end reads, please also set "
+                                         "the option '-P' or '--paired_end'.\n")
         raw_stat_data_reader = RawStatDataReader()
         alignment_stats = [
             raw_stat_data_reader.read(
