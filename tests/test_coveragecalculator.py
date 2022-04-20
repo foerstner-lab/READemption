@@ -29,6 +29,7 @@ class TestCoverageCalculator(unittest.TestCase):
         pysam.view("-Sb", "-o{}".format(bam_file), sam_file, catch_stdout=False)
         pysam.index(bam_file)
         self._bam = pysam.Samfile(bam_file)
+        self._bam_path = bam_file
 
     def test_init_coverage_list(self):
         self.coverage_calculator._init_coverage_list(10)
@@ -49,7 +50,7 @@ class TestCoverageCalculator(unittest.TestCase):
             self.example_data.sam_content_1, self._sam_bam_prefix
         )
         self.coverage_calculator._init_coverage_list(self._bam.lengths[0])
-        self.coverage_calculator._calc_coverage("chrom", self._bam)
+        self.coverage_calculator._calc_coverage("chrom", self._bam, self._bam_path)
         self.assertEqual(
             len(self.coverage_calculator._coverages["forward"]), 1500
         )
@@ -104,7 +105,7 @@ class TestCoverageCalculator(unittest.TestCase):
             self.example_data.sam_content_2, self._sam_bam_prefix
         )
         self.coverage_calculator._init_coverage_list(self._bam.lengths[0])
-        self.coverage_calculator._calc_coverage("chrom", self._bam)
+        self.coverage_calculator._calc_coverage("chrom", self._bam, self._bam_path)
         self.assertListEqual(
             self.coverage_calculator._coverages["forward"][0:15].tolist(),
             [
@@ -138,7 +139,7 @@ class TestCoverageCalculator(unittest.TestCase):
             self.example_data.sam_content_2, self._sam_bam_prefix
         )
         self.coverage_calculator._init_coverage_list(self._bam.lengths[0])
-        self.coverage_calculator._calc_coverage("chrom", self._bam)
+        self.coverage_calculator._calc_coverage("chrom", self._bam, self._bam_path)
         self.assertListEqual(
             self.coverage_calculator._coverages["forward"][0:15].tolist(),
             [
@@ -171,7 +172,7 @@ class TestCoverageCalculator(unittest.TestCase):
             self.example_data.sam_content_3, self._sam_bam_prefix
         )
         self.coverage_calculator._init_coverage_list(self._bam.lengths[0])
-        self.coverage_calculator._calc_coverage("chrom", self._bam)
+        self.coverage_calculator._calc_coverage("chrom", self._bam, self._bam_path)
         self.assertListEqual(
             self.coverage_calculator._coverages["forward"][0:15].tolist(),
             [
@@ -204,7 +205,7 @@ class TestCoverageCalculator(unittest.TestCase):
             self.example_data.sam_content_1, self._sam_bam_prefix
         )
         self.coverage_calculator._init_coverage_list(self._bam.lengths[0])
-        self.coverage_calculator._calc_coverage("chrom", self._bam)
+        self.coverage_calculator._calc_coverage("chrom", self._bam, self._bam_path)
         self.assertListEqual(
             self.coverage_calculator._coverages["forward"][0:15].tolist(),
             [
