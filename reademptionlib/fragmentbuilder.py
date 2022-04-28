@@ -46,7 +46,7 @@ class FragmentBuilder(object):
             # fragment.tags = alignment.tags
         }
 
-    def build_sam_file_with_fragments(
+    def build_bam_file_with_fragments(
         self, read_alignment_path, fragment_alignment_path
     ):
         with pysam.Samfile(read_alignment_path) as input_bam:

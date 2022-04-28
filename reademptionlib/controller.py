@@ -208,7 +208,7 @@ class Controller(object):
                 # Perform the building for fragments from reads
                 fragment_builder = FragmentBuilder()
                 jobs.append(
-                    executor.submit(fragment_builder.build_sam_file_with_fragments,
+                    executor.submit(fragment_builder.build_bam_file_with_fragments,
                                     read_alignment_path,
                                     fragment_alignment_path)
                 )
