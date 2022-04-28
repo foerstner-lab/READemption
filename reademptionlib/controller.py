@@ -582,12 +582,11 @@ class Controller(object):
         self._test_folder_existance(
             self._pathcreator.required_coverage_folders()
         )
-
-        # determine species cross mapped reads
         if self._args.build_fragments:
             alignment_paths = self._pathcreator.aligned_fragments_bam_paths
         else:
             alignment_paths = self._pathcreator.read_alignment_bam_paths
+        # determine species cross mapped reads
         self._pathcreator.set_ref_seq_paths_by_species()
         if not self._args.count_cross_aligned_reads:
             self._crossmapped_reads_by_lib = {}
@@ -610,10 +609,6 @@ class Controller(object):
             # Run the generation of coverage in parallel
 
             jobs = []
-            if self._args.build_fragments:
-                alignment_paths = self._pathcreator.aligned_fragments_bam_paths
-            else:
-                alignment_paths = self._pathcreator.read_alignment_bam_paths
             with concurrent.futures.ProcessPoolExecutor(
                 max_workers=self._args.processes
             ) as executor:
