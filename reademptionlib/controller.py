@@ -19,6 +19,7 @@ from reademptionlib.readprocessor import ReadProcessor
 from reademptionlib.vizalign import AlignViz
 from reademptionlib.vizdeseq import DESeqViz
 from reademptionlib.vizgenequanti import GeneQuantiViz
+from reademptionlib.fragmentbuilder import FragmentBuilder
 
 
 class Controller(object):
@@ -182,6 +183,38 @@ class Controller(object):
         self._write_alignment_stat_table()
         if self._args.crossalign_cleaning:
             self._remove_crossaligned_reads()
+
+        if self._args.paired_end:
+            # Build a bam file containing fragments merged from read
+            # pairs
+            build_fragments = True
+            if build_fragments:
+                self._build_fragments()
+
+    def _build_fragments(self):
+        # Build a bam file containing fragments merged from read
+        # pairs
+        jobs = []
+        with concurrent.futures.ProcessPoolExecutor(
+                max_workers=self._args.processes
+        ) as executor:
+            for (
+                    read_alignment_path,
+                    fragment_alignment_path,
+            ) in zip(
+                self._pathcreator.read_alignment_bam_paths,
+                self._pathcreator.aligned_fragments_bam_paths,
+            ):
+                # Perform the building for fragments from reads
+                fragment_builder = FragmentBuilder()
+                jobs.append(
+                    executor.submit(fragment_builder.build_sam_file_with_fragments,
+                                    read_alignment_path,
+                                    fragment_alignment_path)
+                )
+            # Evaluate thread outcome
+        self._check_job_completeness(jobs)
+
 
     def _remove_crossaligned_reads(self):
         # self._string_to_species_and_sequence_ids()
@@ -551,11 +584,15 @@ class Controller(object):
         )
 
         # determine species cross mapped reads
+        if self._args.build_fragments:
+            alignment_paths = self._pathcreator.aligned_fragments_bam_paths
+        else:
+            alignment_paths = self._pathcreator.read_alignment_bam_paths
         self._pathcreator.set_ref_seq_paths_by_species()
         if not self._args.count_cross_aligned_reads:
             self._crossmapped_reads_by_lib = {}
             for lib_name, read_alignment_path in zip(
-                lib_names, self._pathcreator.read_alignment_bam_paths
+                lib_names, alignment_paths
             ):
                 self._crossmapped_reads_by_lib[
                     lib_name
@@ -573,11 +610,15 @@ class Controller(object):
             # Run the generation of coverage in parallel
 
             jobs = []
+            if self._args.build_fragments:
+                alignment_paths = self._pathcreator.aligned_fragments_bam_paths
+            else:
+                alignment_paths = self._pathcreator.read_alignment_bam_paths
             with concurrent.futures.ProcessPoolExecutor(
                 max_workers=self._args.processes
             ) as executor:
                 for lib_name, bam_path in zip(
-                    lib_names, self._pathcreator.read_alignment_bam_paths
+                    lib_names, alignment_paths
                 ):
                     if not self._args.count_cross_aligned_reads:
                         cross_mapped_reads = self._crossmapped_reads_by_lib[
@@ -721,6 +762,8 @@ class Controller(object):
                 for lib_name, read_alignment_path in zip(
                     lib_names, self._pathcreator.read_alignment_bam_paths
                 ):
+
+
                     # Perform the gene wise quantification for a given library.
                     gene_quanti_per_lib_species_folder = (
                         self._pathcreator.gene_quanti_folders_by_species[sp][
@@ -776,6 +819,7 @@ class Controller(object):
                         count_cross_aligned_reads=self._args.count_cross_aligned_reads,
                         crossmapped_reads=crossmapped_reads,
                     )
+
                     if norm_by_overlap_freq:
                         gene_wise_quantification.calc_overlaps_per_alignment(
                             read_alignment_path,

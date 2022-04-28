@@ -803,6 +803,12 @@ class PathCreator:
             self.read_alignments_folder, lib_names, appendix="_alignments_final"
         )
 
+        self.aligned_fragments_bam_paths = self._path_list(
+            self.read_alignments_folder,
+            lib_names,
+            appendix="_alignments_final_fragments.bam",
+        )
+
     # TODO annotation_folder needs to be the annotation folder for the current species
     # def set_annotation_paths(self, annotation_files):
     #    self.annotation_paths = self._path_list(
