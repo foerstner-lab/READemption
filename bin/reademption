@@ -126,6 +126,19 @@ def create_parser():
         "). This option cannot be used with polyA tail clipping.",
     )
     read_aligning_parser.add_argument(
+        "--no_fragment_building",
+        "-nb",
+        default=False,
+        action="store_true",
+        help="Do not build fragments from paired end alignments. "
+             "Not building the fragments saves time. If later"
+             "subcommands like 'gene_quanti' or 'coverage' need the fragments,"
+             "they will be build before. If you don't want to work with fragments,"
+             "also turn on 'no_fragments' when using the sucommands "
+             "'gene_quanti' and 'coverage' to avoid building the fragments when"
+             "running these downstream subcommands",
+    )
+    read_aligning_parser.add_argument(
         "--split",
         "-S",
         default=False,
@@ -306,11 +319,13 @@ def create_parser():
         help="Use this if reads are originating from a paired-end sequencing.",
     )
     coverage_creation_parser.add_argument(
-        "--build_fragments",
-        "-bf",
+        "--no_fragments",
+        "-nf",
         default=False,
         action="store_true",
-        help="Use this if reads are originating from a paired-end sequencing.",
+        help="Count single alignments instead of fragments built after alignment."
+             "This option saves time if the fragments have not been build during alignment."
+             "Only use this if reads are originating from a paired-end sequencing.",
     )
 
     coverage_creation_parser.set_defaults(func=create_coverage_files)
@@ -453,6 +468,22 @@ def create_parser():
         " by default only the species specific reads are used.",
     )
 
+    gene_wise_quanti_parser.add_argument(
+        "--paired_end",
+        "-P",
+        default=False,
+        action="store_true",
+        help="Use this if reads are originating from a paired-end sequencing.",
+    )
+    gene_wise_quanti_parser.add_argument(
+        "--no_fragments",
+        "-nf",
+        default=False,
+        action="store_true",
+        help="Count single alignments instead of fragments built after alignment."
+             "This option saves time if the fragments have not been build during alignment."
+             "Only use this if reads are originating from a paired-end sequencing.",
+    )
     gene_wise_quanti_parser.set_defaults(func=run_gene_wise_quantification)
 
     # Parameters for DESeq calling

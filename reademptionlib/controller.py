@@ -187,8 +187,7 @@ class Controller(object):
         if self._args.paired_end:
             # Build a bam file containing fragments merged from read
             # pairs
-            build_fragments = True
-            if build_fragments:
+            if not self._args.no_fragment_building:
                 self._build_fragments()
 
     def _build_fragments(self):
@@ -502,9 +501,9 @@ class Controller(object):
         too large when working with large reference sequences.
 
         """
-        if (self._args.build_fragments and not self._args.paired_end):
-            self._write_err_msg_and_quit("The option '-bf' or "
-                                         "'--build_fragments' is only valid "
+        if (self._args.no_fragments and not self._args.paired_end):
+            self._write_err_msg_and_quit("The option '-nf' or "
+                                         "'--no_fragments' is only valid "
                                          "for paired end reads. If you have "
                                          "paired end reads, please also set "
                                          "the option '-P' or '--paired_end'.\n")
@@ -524,6 +523,17 @@ class Controller(object):
             self._pathcreator.set_read_files_dep_file_lists_paired_end(
                 self._pathcreator.get_read_files(), lib_names
             )
+        # If fragments should be used and they were not created during alignment,
+        # they will be created now
+        if not self._args.no_fragments:
+            bam_files_exist = []
+            for bam_fragment_path in self._pathcreator.aligned_fragments_bam_paths:
+                bam_files_exist.append(os.path.exists(bam_fragment_path))
+            # If any of the bam files containing fragments is missing, create all
+            # of them
+            if not all(bam_files_exist):
+                self._build_fragments()
+
         if not self._args.non_strand_specific:
             strands = ["forward", "reverse"]
         else:
@@ -582,7 +592,7 @@ class Controller(object):
         self._test_folder_existance(
             self._pathcreator.required_coverage_folders()
         )
-        if self._args.build_fragments:
+        if not self._args.no_fragments:
             alignment_paths = self._pathcreator.aligned_fragments_bam_paths
         else:
             alignment_paths = self._pathcreator.read_alignment_bam_paths
@@ -591,8 +601,11 @@ class Controller(object):
         if not self._args.count_cross_aligned_reads:
             self._crossmapped_reads_by_lib = {}
             for lib_name, read_alignment_path in zip(
-                lib_names, alignment_paths
+                lib_names, self._pathcreator.read_alignment_bam_paths
             ):
+                # retrieve the cross mapped reads from the single read files
+                # to also get reads where two mates map to different
+                # species. This would not be possible with the built fragments
                 self._crossmapped_reads_by_lib[
                     lib_name
                 ] = self.determine_crossmapped_reads(read_alignment_path)
@@ -704,6 +717,13 @@ class Controller(object):
 
     def quantify_gene_wise(self):
         """Manage the counting of aligned reads per gene."""
+        if (self._args.no_fragments and not self._args.paired_end):
+            self._write_err_msg_and_quit("The option '-nf' or "
+                                         "'--no_fragments' is only valid "
+                                         "for paired end reads. If you have "
+                                         "paired end reads, please also set "
+                                         "the option '-P' or '--paired_end'.\n")
+
         project_creator = ProjectCreator()
         project_creator.create_subfolders(
             self._pathcreator.required_gene_quanti_folders()
@@ -736,13 +756,31 @@ class Controller(object):
             self._pathcreator.set_read_files_dep_file_lists_paired_end(
                 self._pathcreator.get_read_files(), lib_names
             )
+        # If fragments should be used and they were not created during alignment,
+        # they will be created now
+        if not self._args.no_fragments:
+            bam_files_exist = []
+            for bam_fragment_path in self._pathcreator.aligned_fragments_bam_paths:
+                bam_files_exist.append(os.path.exists(bam_fragment_path))
+            # If any of the bam files containing fragments is missing, create all
+            # of them
+            if not all(bam_files_exist):
+                self._build_fragments()
+
         self._pathcreator.set_annotation_files_by_species()
+        if not self._args.no_fragments:
+            alignment_paths = self._pathcreator.aligned_fragments_bam_paths
+        else:
+            alignment_paths = self._pathcreator.read_alignment_bam_paths
         # determine species cross mapped reads
         if not self._args.count_cross_aligned_reads:
             self._crossmapped_reads_by_lib = {}
             for lib_name, read_alignment_path in zip(
                 lib_names, self._pathcreator.read_alignment_bam_paths
             ):
+                # retrieve the cross mapped reads from the single read files
+                # to also get reads where two mates map to different
+                # species. This would not be possible with the built fragments
                 self._crossmapped_reads_by_lib[
                     lib_name
                 ] = self.determine_crossmapped_reads(read_alignment_path)
@@ -755,10 +793,8 @@ class Controller(object):
                 annotation_files,
             ) in self._pathcreator.annotation_files_by_species.items():
                 for lib_name, read_alignment_path in zip(
-                    lib_names, self._pathcreator.read_alignment_bam_paths
+                    lib_names, alignment_paths
                 ):
-
-
                     # Perform the gene wise quantification for a given library.
                     gene_quanti_per_lib_species_folder = (
                         self._pathcreator.gene_quanti_folders_by_species[sp][
@@ -787,7 +823,7 @@ class Controller(object):
                             "The file(s) %s exist(s). Skipping their/its generation.\n"
                             % ", ".join(gene_quanti_paths)
                         )
-                        return
+                        continue
                     strand_specific = True
                     if self._args.non_strand_specific:
                         strand_specific = False
