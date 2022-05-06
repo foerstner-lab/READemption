@@ -18,7 +18,7 @@ class ArgMock:
         self.processes = 1
         self.check_for_existing_files = False
         # Coverage
-        self.build_fragments = True
+        self.no_fragments = False
         self.paired_end = True
         self.unique_only = False
         self.normalize_by_uniquely = False
