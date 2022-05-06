@@ -525,7 +525,7 @@ class Controller(object):
             )
         # If fragments should be used and they were not created during alignment,
         # they will be created now
-        if not self._args.no_fragments:
+        if (not self._args.no_fragments and self._args.paired_end):
             bam_files_exist = []
             for bam_fragment_path in self._pathcreator.aligned_fragments_bam_paths:
                 bam_files_exist.append(os.path.exists(bam_fragment_path))
@@ -592,7 +592,9 @@ class Controller(object):
         self._test_folder_existance(
             self._pathcreator.required_coverage_folders()
         )
-        if not self._args.no_fragments:
+        # weiter
+        # Set alignment paths to fragments or single reads
+        if (not self._args.no_fragments and self._args.paired_end):
             alignment_paths = self._pathcreator.aligned_fragments_bam_paths
         else:
             alignment_paths = self._pathcreator.read_alignment_bam_paths
@@ -758,7 +760,7 @@ class Controller(object):
             )
         # If fragments should be used and they were not created during alignment,
         # they will be created now
-        if not self._args.no_fragments:
+        if (not self._args.no_fragments and self._args.paired_end):
             bam_files_exist = []
             for bam_fragment_path in self._pathcreator.aligned_fragments_bam_paths:
                 bam_files_exist.append(os.path.exists(bam_fragment_path))
@@ -766,9 +768,9 @@ class Controller(object):
             # of them
             if not all(bam_files_exist):
                 self._build_fragments()
-
+        # Set alignment paths to fragments or single reads
         self._pathcreator.set_annotation_files_by_species()
-        if not self._args.no_fragments:
+        if (not self._args.no_fragments and self._args.paired_end):
             alignment_paths = self._pathcreator.aligned_fragments_bam_paths
         else:
             alignment_paths = self._pathcreator.read_alignment_bam_paths
