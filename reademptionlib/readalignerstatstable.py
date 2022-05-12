@@ -12,6 +12,7 @@ class ReadAlignerStatsTable(object):
         paired_end,
         species_folder_prefixes_and_display_names,
         references_by_species,
+        fragments=False
     ):
         self._table = []
         self._read_processing_stats = read_processing_stats
@@ -24,6 +25,12 @@ class ReadAlignerStatsTable(object):
             species_folder_prefixes_and_display_names
         )
         self._references_by_species = references_by_species
+        self._fragments = fragments
+
+        if self._fragments:
+            self.reads_or_fragments = "fragments"
+        else:
+            self.reads_or_fragments = "reads"
 
     def write(self):
         all_stats = self._create_table_all_statistics()
@@ -87,10 +94,10 @@ class ReadAlignerStatsTable(object):
                 lib,
                 int(
                     self._alignment_stats[lib]["stats_total"][
-                        "no_of_aligned_reads"
+                        f"no_of_aligned_{self.reads_or_fragments}"
                     ]
                 ),
-                "Total no. of aligned reads",
+                f"Total no. of aligned {self.reads_or_fragments}",
             )
             stats_total = self._append_to_df(
                 stats_total,
@@ -107,40 +114,40 @@ class ReadAlignerStatsTable(object):
                 lib,
                 int(
                     self._alignment_stats[lib]["stats_total"][
-                        "no_of_uniquely_aligned_reads"
+                        f"no_of_uniquely_aligned_{self.reads_or_fragments}"
                     ]
                 ),
-                "Total no. of uniquely aligned reads",
+                f"Total no. of uniquely aligned {self.reads_or_fragments}",
             )
             stats_total = self._append_to_df(
                 stats_total,
                 lib,
                 int(
                     self._alignment_stats[lib]["stats_total"][
-                        "no_of_split_aligned_reads"
+                        f"no_of_split_aligned_{self.reads_or_fragments}"
                     ]
                 ),
-                "Total no. of split aligned reads",
+                f"Total no. of split aligned {self.reads_or_fragments}",
             )
             stats_total = self._append_to_df(
                 stats_total,
                 lib,
                 int(
                     self._alignment_stats[lib]["stats_total"][
-                        "no_of_multiple_aligned_reads"
+                        f"no_of_multiple_aligned_{self.reads_or_fragments}"
                     ]
                 ),
-                "Total no. of multiple aligned reads",
+                f"Total no. of multiple aligned {self.reads_or_fragments}",
             )
             stats_total = self._append_to_df(
                 stats_total,
                 lib,
                 int(
                     self._alignment_stats[lib]["stats_total"][
-                        "no_of_cross_aligned_reads"
+                        f"no_of_cross_aligned_{self.reads_or_fragments}"
                     ]
                 ),
-                "Total no. of cross aligned reads",
+                f"Total no. of cross aligned {self.reads_or_fragments}",
             )
             stats_total = self._append_to_df(
                 stats_total,
@@ -152,6 +159,42 @@ class ReadAlignerStatsTable(object):
                 ),
                 "Total no. of alignments",
             )
+            # Do not add to fragment stats
+            if not self._fragments:
+                stats_total = self._append_to_df(
+                    stats_total,
+                    lib,
+                    round(
+                        self._calc_percentage(
+                            (
+                                self._alignment_stats[lib]["stats_total"][
+                                    "no_of_aligned_reads"
+                                ]
+                            ),
+                            self._get_read_process_number(lib, "total_no_of_reads"),
+                        ),
+                        2,
+                    ),
+                    "Percentage of aligned reads (compared to no. of input reads)",
+                )
+            # Do not add to fragment stats
+            if not self._fragments:
+                stats_total = self._append_to_df(
+                    stats_total,
+                    lib,
+                    round(
+                        self._calc_percentage(
+                            (
+                                self._alignment_stats[lib]["stats_total"][
+                                    "no_of_aligned_reads"
+                                ]
+                            ),
+                            self._get_read_process_number(lib, "long_enough"),
+                        ),
+                        2,
+                    ),
+                    "Percentage of aligned reads (compared to no. of long enough reads)",
+                )
             stats_total = self._append_to_df(
                 stats_total,
                 lib,
@@ -159,14 +202,18 @@ class ReadAlignerStatsTable(object):
                     self._calc_percentage(
                         (
                             self._alignment_stats[lib]["stats_total"][
-                                "no_of_aligned_reads"
+                                f"no_of_uniquely_aligned_{self.reads_or_fragments}"
                             ]
                         ),
-                        self._get_read_process_number(lib, "total_no_of_reads"),
+                        (
+                            self._alignment_stats[lib]["stats_total"][
+                                f"no_of_aligned_{self.reads_or_fragments}"
+                            ]
+                        ),
                     ),
                     2,
                 ),
-                "Percentage of aligned reads (compared to no. of input reads)",
+                f"Percentage of uniquely aligned {self.reads_or_fragments} (in relation to all aligned {self.reads_or_fragments})",
             )
             stats_total = self._append_to_df(
                 stats_total,
@@ -175,14 +222,18 @@ class ReadAlignerStatsTable(object):
                     self._calc_percentage(
                         (
                             self._alignment_stats[lib]["stats_total"][
-                                "no_of_aligned_reads"
+                                f"no_of_split_aligned_{self.reads_or_fragments}"
                             ]
                         ),
-                        self._get_read_process_number(lib, "long_enough"),
+                        (
+                            self._alignment_stats[lib]["stats_total"][
+                                f"no_of_aligned_{self.reads_or_fragments}"
+                            ]
+                        ),
                     ),
                     2,
                 ),
-                "Percentage of aligned reads (compared to no. of long enough reads)",
+                f"Percentage of split aligned {self.reads_or_fragments} (in relation to all aligned {self.reads_or_fragments})",
             )
             stats_total = self._append_to_df(
                 stats_total,
@@ -191,18 +242,18 @@ class ReadAlignerStatsTable(object):
                     self._calc_percentage(
                         (
                             self._alignment_stats[lib]["stats_total"][
-                                "no_of_uniquely_aligned_reads"
+                                f"no_of_multiple_aligned_{self.reads_or_fragments}"
                             ]
                         ),
                         (
                             self._alignment_stats[lib]["stats_total"][
-                                "no_of_aligned_reads"
+                                f"no_of_aligned_{self.reads_or_fragments}"
                             ]
                         ),
                     ),
                     2,
                 ),
-                "Percentage of uniquely aligned reads (in relation to all aligned reads)",
+                f"Percentage of multiple aligned {self.reads_or_fragments} (in relation to all aligned {self.reads_or_fragments})",
             )
             stats_total = self._append_to_df(
                 stats_total,
@@ -211,58 +262,18 @@ class ReadAlignerStatsTable(object):
                     self._calc_percentage(
                         (
                             self._alignment_stats[lib]["stats_total"][
-                                "no_of_split_aligned_reads"
+                                f"no_of_cross_aligned_{self.reads_or_fragments}"
                             ]
                         ),
                         (
                             self._alignment_stats[lib]["stats_total"][
-                                "no_of_aligned_reads"
+                                f"no_of_aligned_{self.reads_or_fragments}"
                             ]
                         ),
                     ),
                     2,
                 ),
-                "Percentage of split aligned reads (in relation to all aligned reads)",
-            )
-            stats_total = self._append_to_df(
-                stats_total,
-                lib,
-                round(
-                    self._calc_percentage(
-                        (
-                            self._alignment_stats[lib]["stats_total"][
-                                "no_of_multiple_aligned_reads"
-                            ]
-                        ),
-                        (
-                            self._alignment_stats[lib]["stats_total"][
-                                "no_of_aligned_reads"
-                            ]
-                        ),
-                    ),
-                    2,
-                ),
-                "Percentage of multiple aligned reads (in relation to all aligned reads)",
-            )
-            stats_total = self._append_to_df(
-                stats_total,
-                lib,
-                round(
-                    self._calc_percentage(
-                        (
-                            self._alignment_stats[lib]["stats_total"][
-                                "no_of_cross_aligned_reads"
-                            ]
-                        ),
-                        (
-                            self._alignment_stats[lib]["stats_total"][
-                                "no_of_aligned_reads"
-                            ]
-                        ),
-                    ),
-                    2,
-                ),
-                "Percentage of cross aligned reads (in relation to all aligned reads)",
+                f"Percentage of cross aligned {self.reads_or_fragments} (in relation to all aligned {self.reads_or_fragments})",
             )
             stats_total.insert(0, "Species", "all")
             stats_total["Statistic"] = stats_total.index
@@ -297,50 +308,50 @@ class ReadAlignerStatsTable(object):
             lib,
             int(
                 self._alignment_stats[lib]["species_stats"][species][
-                    "no_of_aligned_reads"
+                    f"no_of_aligned_{self.reads_or_fragments}"
                 ]
             ),
-            "Total no. of aligned reads",
+            f"Total no. of aligned {self.reads_or_fragments}",
         )
         stats_total = self._append_to_df(
             stats_total,
             lib,
             int(
                 self._alignment_stats[lib]["species_stats"][species][
-                    "no_of_uniquely_aligned_reads"
+                    f"no_of_uniquely_aligned_{self.reads_or_fragments}"
                 ]
             ),
-            "Total no. of uniquely aligned reads",
+            f"Total no. of uniquely aligned {self.reads_or_fragments}",
         )
         stats_total = self._append_to_df(
             stats_total,
             lib,
             int(
                 self._alignment_stats[lib]["species_stats"][species][
-                    "no_of_split_aligned_reads"
+                    f"no_of_split_aligned_{self.reads_or_fragments}"
                 ]
             ),
-            "Total no. of split aligned reads",
+            f"Total no. of split aligned {self.reads_or_fragments}",
         )
         stats_total = self._append_to_df(
             stats_total,
             lib,
             int(
                 self._alignment_stats[lib]["species_stats"][species][
-                    "no_of_multiple_aligned_reads"
+                    f"no_of_multiple_aligned_{self.reads_or_fragments}"
                 ]
             ),
-            "Total no. of multiple aligned reads",
+            f"Total no. of multiple aligned {self.reads_or_fragments}",
         )
         stats_total = self._append_to_df(
             stats_total,
             lib,
             int(
                 self._alignment_stats[lib]["species_stats"][species][
-                    "no_of_cross_aligned_reads"
+                    f"no_of_cross_aligned_{self.reads_or_fragments}"
                 ]
             ),
-            "Total no. of cross aligned reads",
+            f"Total no. of cross aligned {self.reads_or_fragments}",
         )
         stats_total = self._append_to_df(
             stats_total,
@@ -352,6 +363,42 @@ class ReadAlignerStatsTable(object):
             ),
             "Total no. of alignments",
         )
+        # Do not add to fragment stats
+        if not self._fragments:
+            stats_total = self._append_to_df(
+                stats_total,
+                lib,
+                round(
+                    self._calc_percentage(
+                        (
+                            self._alignment_stats[lib]["species_stats"][species][
+                                "no_of_aligned_reads"
+                            ]
+                        ),
+                        self._get_read_process_number(lib, "total_no_of_reads"),
+                    ),
+                    2,
+                ),
+                "Percentage of aligned reads (compared to no. of input reads)",
+            )
+        # Do not add to fragment stats
+        if not self._fragments:
+            stats_total = self._append_to_df(
+                stats_total,
+                lib,
+                round(
+                    self._calc_percentage(
+                        (
+                            self._alignment_stats[lib]["species_stats"][species][
+                                "no_of_aligned_reads"
+                            ]
+                        ),
+                        self._get_read_process_number(lib, "long_enough"),
+                    ),
+                    2,
+                ),
+                "Percentage of aligned reads (compared to no. of long enough reads)",
+            )
         stats_total = self._append_to_df(
             stats_total,
             lib,
@@ -359,14 +406,18 @@ class ReadAlignerStatsTable(object):
                 self._calc_percentage(
                     (
                         self._alignment_stats[lib]["species_stats"][species][
-                            "no_of_aligned_reads"
+                            f"no_of_uniquely_aligned_{self.reads_or_fragments}"
                         ]
                     ),
-                    self._get_read_process_number(lib, "total_no_of_reads"),
+                    (
+                        self._alignment_stats[lib]["species_stats"][species][
+                            f"no_of_aligned_{self.reads_or_fragments}"
+                        ]
+                    ),
                 ),
                 2,
             ),
-            "Percentage of aligned reads (compared to no. of input reads)",
+            f"Percentage of uniquely aligned {self.reads_or_fragments} (in relation to all aligned {self.reads_or_fragments})",
         )
         stats_total = self._append_to_df(
             stats_total,
@@ -375,14 +426,18 @@ class ReadAlignerStatsTable(object):
                 self._calc_percentage(
                     (
                         self._alignment_stats[lib]["species_stats"][species][
-                            "no_of_aligned_reads"
+                            f"no_of_split_aligned_{self.reads_or_fragments}"
                         ]
                     ),
-                    self._get_read_process_number(lib, "long_enough"),
+                    (
+                        self._alignment_stats[lib]["species_stats"][species][
+                            f"no_of_aligned_{self.reads_or_fragments}"
+                        ]
+                    ),
                 ),
                 2,
             ),
-            "Percentage of aligned reads (compared to no. of long enough reads)",
+            f"Percentage of split aligned {self.reads_or_fragments} (in relation to all aligned {self.reads_or_fragments})",
         )
         stats_total = self._append_to_df(
             stats_total,
@@ -391,18 +446,18 @@ class ReadAlignerStatsTable(object):
                 self._calc_percentage(
                     (
                         self._alignment_stats[lib]["species_stats"][species][
-                            "no_of_uniquely_aligned_reads"
+                            f"no_of_multiple_aligned_{self.reads_or_fragments}"
                         ]
                     ),
                     (
                         self._alignment_stats[lib]["species_stats"][species][
-                            "no_of_aligned_reads"
+                            f"no_of_aligned_{self.reads_or_fragments}"
                         ]
                     ),
                 ),
                 2,
             ),
-            "Percentage of uniquely aligned reads (in relation to all aligned reads)",
+            f"Percentage of multiple aligned {self.reads_or_fragments} (in relation to all aligned {self.reads_or_fragments})",
         )
         stats_total = self._append_to_df(
             stats_total,
@@ -411,58 +466,18 @@ class ReadAlignerStatsTable(object):
                 self._calc_percentage(
                     (
                         self._alignment_stats[lib]["species_stats"][species][
-                            "no_of_split_aligned_reads"
+                            f"no_of_cross_aligned_{self.reads_or_fragments}"
                         ]
                     ),
                     (
                         self._alignment_stats[lib]["species_stats"][species][
-                            "no_of_aligned_reads"
+                            f"no_of_aligned_{self.reads_or_fragments}"
                         ]
                     ),
                 ),
                 2,
             ),
-            "Percentage of split aligned reads (in relation to all aligned reads)",
-        )
-        stats_total = self._append_to_df(
-            stats_total,
-            lib,
-            round(
-                self._calc_percentage(
-                    (
-                        self._alignment_stats[lib]["species_stats"][species][
-                            "no_of_multiple_aligned_reads"
-                        ]
-                    ),
-                    (
-                        self._alignment_stats[lib]["species_stats"][species][
-                            "no_of_aligned_reads"
-                        ]
-                    ),
-                ),
-                2,
-            ),
-            "Percentage of multiple aligned reads (in relation to all aligned reads)",
-        )
-        stats_total = self._append_to_df(
-            stats_total,
-            lib,
-            round(
-                self._calc_percentage(
-                    (
-                        self._alignment_stats[lib]["species_stats"][species][
-                            "no_of_cross_aligned_reads"
-                        ]
-                    ),
-                    (
-                        self._alignment_stats[lib]["species_stats"][species][
-                            "no_of_aligned_reads"
-                        ]
-                    ),
-                ),
-                2,
-            ),
-            "Percentage of cross aligned reads (in relation to all aligned reads)",
+            f"Percentage of cross aligned {self.reads_or_fragments} (in relation to all aligned {self.reads_or_fragments})",
         )
         stats_total.insert(0, "Species", species_display_name)
         stats_total["Statistic"] = stats_total.index
@@ -490,9 +505,9 @@ class ReadAlignerStatsTable(object):
                         int(
                             self._alignment_stats[lib]["stats_per_reference"][
                                 ref_id
-                            ]["no_of_aligned_reads"]
+                            ][f"no_of_aligned_{self.reads_or_fragments}"]
                         ),
-                        f"{ref_id} - No. of aligned reads",
+                        f"{ref_id} - No. of aligned {self.reads_or_fragments}",
                     )
                     ref_stats = self._append_to_df(
                         ref_stats,
@@ -500,9 +515,9 @@ class ReadAlignerStatsTable(object):
                         int(
                             self._alignment_stats[lib]["stats_per_reference"][
                                 ref_id
-                            ]["no_of_uniquely_aligned_reads"]
+                            ][f"no_of_uniquely_aligned_{self.reads_or_fragments}"]
                         ),
-                        f"{ref_id} - No. of uniquely aligned reads",
+                        f"{ref_id} - No. of uniquely aligned {self.reads_or_fragments}",
                     )
                     ref_stats = self._append_to_df(
                         ref_stats,
@@ -510,9 +525,9 @@ class ReadAlignerStatsTable(object):
                         int(
                             self._alignment_stats[lib]["stats_per_reference"][
                                 ref_id
-                            ]["no_of_split_aligned_reads"]
+                            ][f"no_of_split_aligned_{self.reads_or_fragments}"]
                         ),
-                        f"{ref_id} - No. of split aligned reads",
+                        f"{ref_id} - No. of split aligned {self.reads_or_fragments}",
                     )
                     ref_stats = self._append_to_df(
                         ref_stats,
@@ -520,9 +535,9 @@ class ReadAlignerStatsTable(object):
                         int(
                             self._alignment_stats[lib]["stats_per_reference"][
                                 ref_id
-                            ]["no_of_multiple_aligned_reads"]
+                            ][f"no_of_multiple_aligned_{self.reads_or_fragments}"]
                         ),
-                        f"{ref_id} - No. of multiple aligned reads",
+                        f"{ref_id} - No. of multiple aligned {self.reads_or_fragments}",
                     )
                     ref_stats = self._append_to_df(
                         ref_stats,

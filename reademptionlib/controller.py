@@ -180,7 +180,6 @@ class Controller(object):
             self._pathcreator.read_alignments_stats_path,
             self._args.paired_end
         )
-        self._write_alignment_stat_table()
         if self._args.crossalign_cleaning:
             self._remove_crossaligned_reads()
 
@@ -188,7 +187,26 @@ class Controller(object):
             # Build a bam file containing fragments merged from read
             # pairs
             if not self._args.no_fragment_building:
+                fragments = True
+                # build the fragments bam file
                 self._build_fragments()
+                # generate fragment alignment stats
+                self._generate_read_alignment_stats(
+                    self._lib_names,
+                    self._pathcreator.aligned_fragments_bam_paths,
+                    self._pathcreator.unaligned_reads_paths,
+                    self._pathcreator.fragment_alignments_stats_path,
+                    self._args.paired_end,
+                    fragments
+                )
+                # write fragment stats table
+                self._write_alignment_stat_table(self._pathcreator.fragment_alignments_stats_path,
+                                                 self._pathcreator.fragment_alignment_stats_table_path,
+                                                 self._pathcreator.fragment_alignment_stats_table_transposed_path,
+                                                 fragments)
+        self._write_alignment_stat_table(self._pathcreator.read_alignments_stats_path,
+                                         self._pathcreator.read_alignment_stats_table_path,
+                                         self._pathcreator.read_alignment_stats_table_transposed_path)
 
     def _build_fragments(self):
         # Build a bam file containing fragments merged from read
@@ -438,7 +456,8 @@ class Controller(object):
         result_bam_paths,
         unaligned_reads_paths,
         output_stats_path,
-        paired_end=False
+        paired_end=False,
+        fragments=False
     ):
         """Manage the generation of alingment statistics."""
         raw_stat_data_writer = RawStatDataWriter(pretty=True)
@@ -454,7 +473,7 @@ class Controller(object):
                 read_alignment_bam_path,
                 unaligned_reads_path,
             ) in zip(lib_names, result_bam_paths, unaligned_reads_paths):
-                read_aligner_stats = ReadAlignerStats(references_by_species, paired_end)
+                read_aligner_stats = ReadAlignerStats(references_by_species, paired_end, fragments)
                 read_files_and_jobs[lib_name] = executor.submit(
                     read_aligner_stats.count,
                     read_alignment_bam_path,
@@ -470,25 +489,26 @@ class Controller(object):
         )
         raw_stat_data_writer.write(read_files_and_stats, output_stats_path)
 
-    def _write_alignment_stat_table(self):
+    def _write_alignment_stat_table(self, alignments_stats_path, alignment_stats_table_path, alignment_stats_table_transposed_path, fragments=False):
         """Manage the creation of the mapping statistic output table."""
         raw_stat_data_reader = RawStatDataReader()
         read_processing_stats = raw_stat_data_reader.read(
             self._pathcreator.read_processing_stats_path
         )
         final_alignment_stats = raw_stat_data_reader.read(
-            self._pathcreator.read_alignments_stats_path
+            alignments_stats_path
         )
         references_by_species = self._get_references_by_species()
         read_aligner_stats_table = ReadAlignerStatsTable(
             read_processing_stats,
             final_alignment_stats,
             self._lib_names,
-            self._pathcreator.read_alignment_stats_table_path,
-            self._pathcreator.read_alignment_stats_table_transposed_path,
+            alignment_stats_table_path,
+            alignment_stats_table_transposed_path,
             self._args.paired_end,
             self._species_folder_prefixes_and_display_names,
             references_by_species,
+            fragments
         )
         read_aligner_stats_table.write()
 
@@ -563,7 +583,6 @@ class Controller(object):
                             "no_of_cross_aligned_reads"
                         ]
                     )
-
             self.read_files_aligned_read_freq_and_min_reads_aligned_by_species[
                 sp
             ] = {}
@@ -578,7 +597,6 @@ class Controller(object):
             self.read_files_aligned_read_freq_and_min_reads_aligned_by_species[
                 sp
             ]["min_no_of_aligned_reads"] = min_no_of_aligned_reads
-
         self._pathcreator.set_coverage_folder_and_file_names(
             strands,
             lib_names,

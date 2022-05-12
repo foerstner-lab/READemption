@@ -412,6 +412,9 @@ class PathCreator:
         self.read_alignments_stats_path = (
             f"{self.raw_stat_data_folder}/read_alignments_final.json"
         )
+        self.fragment_alignments_stats_path = (
+            f"{self.raw_stat_data_folder}/fragment_alignments_final.json"
+        )
         self.read_file_stats = (
             f"{self.align_report_folder}/input_read_stats.txt"
         )
@@ -423,6 +426,12 @@ class PathCreator:
         )
         self.read_alignment_stats_table_transposed_path = (
             f"{self.align_report_folder}/read_alignment_stats_transposed.csv"
+        )
+        self.fragment_alignment_stats_table_path = (
+            f"{self.align_report_folder}/fragment_alignment_stats.csv"
+        )
+        self.fragment_alignment_stats_table_transposed_path = (
+            f"{self.align_report_folder}/fragment_alignment_stats_transposed.csv"
         )
         self.index_path = f"{self.read_alignment_index_folder}/index.idx"
         self.version_path = f"{self.align_report_folder}/version_log.txt"
