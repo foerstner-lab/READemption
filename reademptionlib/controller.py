@@ -610,7 +610,6 @@ class Controller(object):
         self._test_folder_existance(
             self._pathcreator.required_coverage_folders()
         )
-        # weiter
         # Set alignment paths to fragments or single reads
         if (not self._args.no_fragments and self._args.paired_end):
             alignment_paths = self._pathcreator.aligned_fragments_bam_paths
@@ -737,12 +736,36 @@ class Controller(object):
 
     def quantify_gene_wise(self):
         """Manage the counting of aligned reads per gene."""
+        raw_stat_data_reader = RawStatDataReader()
+        alignment_stats = [
+            raw_stat_data_reader.read(
+                self._pathcreator.read_alignments_stats_path
+            )
+        ]
+        lib_names = list(alignment_stats[0].keys())
+        was_paired_end_alignment = self._was_paired_end_alignment(lib_names)
+        if (was_paired_end_alignment and not self._args.paired_end):
+            self._write_err_msg_and_quit("The alignemnt seems to be based on paired end reads. "
+                                         "Please also set "
+                                         "the option '-P' or '--paired_end'.\n")
+
         if (self._args.no_fragments and not self._args.paired_end):
             self._write_err_msg_and_quit("The option '-nf' or "
                                          "'--no_fragments' is only valid "
                                          "for paired end reads. If you have "
                                          "paired end reads, please also set "
                                          "the option '-P' or '--paired_end'.\n")
+
+        if (self._args.no_norm_by_fragments and not self._args.paired_end):
+            self._write_err_msg_and_quit("The option '-nnf' or "
+                                         "'--no_norm_by_fragments' is only valid "
+                                         "for paired end reads. If you have "
+                                         "paired end reads, please also set "
+                                         "the option '-P' or '--paired_end'.\n")
+        if self._args.paired_end and not self._args.no_norm_by_fragments:
+            norm_by_fragments = True
+        else:
+            norm_by_fragments = False
 
         project_creator = ProjectCreator()
         project_creator.create_subfolders(
@@ -908,6 +931,7 @@ class Controller(object):
                 annotation_files,
                 self._pathcreator.annotation_paths_by_species[sp],
                 lib_names,
+                norm_by_fragments
             )
 
     def _was_paired_end_alignment(self, lib_names):
@@ -917,7 +941,7 @@ class Controller(object):
         return False
 
     def _gene_quanti_create_overview(
-        self, sp, annotation_files, annotation_paths, lib_names
+        self, sp, annotation_files, annotation_paths, lib_names, norm_by_fragments
     ):
         """Create an overview table of all gene quantification for all libs."""
         strand_specific = True
@@ -977,7 +1001,7 @@ class Controller(object):
                     "gene_wise_quanti_combined_rpkm_path"
                 ],
                 self._libs_and_total_num_of_aligned_reads(
-                    sp, self._args.normalize_cross_aligned_reads_included
+                    sp, self._args.normalize_cross_aligned_reads_included, norm_by_fragments
                 ),
             )
         if self._file_needs_to_be_created(
@@ -992,7 +1016,7 @@ class Controller(object):
                     "gene_wise_quanti_combined_tnoar_path"
                 ],
                 self._libs_and_total_num_of_aligned_reads(
-                    sp, self._args.normalize_cross_aligned_reads_included
+                    sp, self._args.normalize_cross_aligned_reads_included, norm_by_fragments
                 ),
             )
         if self._file_needs_to_be_created(
@@ -1010,17 +1034,23 @@ class Controller(object):
             )
 
     def _libs_and_total_num_of_aligned_reads(
-        self, sp, normalize_cross_aligned_reads_included=False
+        self, sp, normalize_cross_aligned_reads_included=False, norm_by_fragments=False,
     ):
         """Read the total number of reads per library for a selected species."""
+        if norm_by_fragments:
+            reads_or_fragments = "fragments"
+            alignment_stats_path = self._pathcreator.fragment_alignments_stats_path
+        else:
+            reads_or_fragments = "reads"
+            alignment_stats_path = self._pathcreator.read_alignments_stats_path
         with open(
-            self._pathcreator.read_alignments_stats_path
+            alignment_stats_path
         ) as read_aligner_stats_fh:
             read_aligner_stats = json.loads(read_aligner_stats_fh.read())
         if normalize_cross_aligned_reads_included:
             return dict(
                 [
-                    (lib, values["species_stats"][sp]["no_of_aligned_reads"])
+                    (lib, values["species_stats"][sp][f"no_of_aligned_{reads_or_fragments}"])
                     for lib, values in read_aligner_stats.items()
                 ]
             )
@@ -1030,9 +1060,9 @@ class Controller(object):
                 [
                     (
                         lib,
-                        values["species_stats"][sp]["no_of_aligned_reads"]
+                        values["species_stats"][sp][f"no_of_aligned_{reads_or_fragments}"]
                         - values["species_stats"][sp][
-                            "no_of_cross_aligned_reads"
+                            f"no_of_cross_aligned_{reads_or_fragments}"
                         ],
                     )
                     for lib, values in read_aligner_stats.items()
