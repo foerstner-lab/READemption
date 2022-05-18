@@ -521,20 +521,53 @@ class Controller(object):
         too large when working with large reference sequences.
 
         """
+
+        # Select if normalisation is based on fragment numbers
+        if self._args.paired_end and not self._args.no_norm_by_fragments:
+            norm_by_fragments = True
+        else:
+            norm_by_fragments = False
+        if norm_by_fragments:
+            reads_or_fragments = "fragments"
+            alignment_stats_path = self._pathcreator.fragment_alignments_stats_path
+        else:
+            reads_or_fragments = "reads"
+            alignment_stats_path = self._pathcreator.read_alignments_stats_path
+
+        # Get alignment stats
+        raw_stat_data_reader = RawStatDataReader()
+        alignment_stats = [
+            raw_stat_data_reader.read(
+                alignment_stats_path
+            )
+        ]
+        # Lib names was paired end
+        lib_names = list(alignment_stats[0].keys())
+        was_paired_end_alignment = self._was_paired_end_alignment(lib_names)
+
+        # Quit if the wrong parameters have been chosen for the subcommand
+        if (was_paired_end_alignment and not self._args.paired_end):
+            self._write_err_msg_and_quit("The alignemnt seems to be based on paired end reads. "
+                                         "Please also set "
+                                         "the option '-P' or '--paired_end'.\n")
+
         if (self._args.no_fragments and not self._args.paired_end):
             self._write_err_msg_and_quit("The option '-nf' or "
                                          "'--no_fragments' is only valid "
                                          "for paired end reads. If you have "
                                          "paired end reads, please also set "
                                          "the option '-P' or '--paired_end'.\n")
-        raw_stat_data_reader = RawStatDataReader()
-        alignment_stats = [
-            raw_stat_data_reader.read(
-                self._pathcreator.read_alignments_stats_path
-            )
-        ]
-        lib_names = list(alignment_stats[0].keys())
-        was_paired_end_alignment = self._was_paired_end_alignment(lib_names)
+
+        if (self._args.no_norm_by_fragments and not self._args.paired_end):
+            self._write_err_msg_and_quit("The option '-nnf' or "
+                                         "'--no_norm_by_fragments' is only valid "
+                                         "for paired end reads. If you have "
+                                         "paired end reads, please also set "
+                                         "the option '-P' or '--paired_end'.\n")
+
+
+
+        # Set read files and lib names
         if not was_paired_end_alignment:
             self._pathcreator.set_read_files_dep_file_lists_single_end(
                 self._pathcreator.get_read_files(), lib_names
@@ -554,10 +587,32 @@ class Controller(object):
             if not all(bam_files_exist):
                 self._build_fragments()
 
+        # Set alignment paths to fragments or single reads
+        if (not self._args.no_fragments and self._args.paired_end):
+            alignment_paths = self._pathcreator.aligned_fragments_bam_paths
+        else:
+            alignment_paths = self._pathcreator.read_alignment_bam_paths
+        # determine species cross mapped reads
+        self._pathcreator.set_ref_seq_paths_by_species()
+        if not self._args.count_cross_aligned_reads:
+            self._crossmapped_reads_by_lib = {}
+            for lib_name, read_alignment_path in zip(
+                    lib_names, self._pathcreator.read_alignment_bam_paths
+            ):
+                # retrieve the cross mapped reads from the single read files
+                # to also get reads where two mates map to different
+                # species. This would not be possible with the built fragments
+                self._crossmapped_reads_by_lib[
+                    lib_name
+                ] = self.determine_crossmapped_reads(read_alignment_path)
+
         if not self._args.non_strand_specific:
             strands = ["forward", "reverse"]
         else:
             strands = ["forward_and_reverse"]
+
+
+
         self.read_files_aligned_read_freq_and_min_reads_aligned_by_species = {}
         for sp in self._species_folder_prefixes_and_display_names.keys():
             # Retrieve the either the no. of uniquely aligned reads or
@@ -570,17 +625,17 @@ class Controller(object):
                 if self._args.normalize_by_uniquely:
                     read_files_aligned_read_freq[read_file] = attributes[
                         "species_stats"
-                    ][sp]["no_of_uniquely_aligned_reads"]
+                    ][sp][f"no_of_uniquely_aligned_{reads_or_fragments}"]
                 elif self._args.normalize_cross_aligned_reads_included:
                     read_files_aligned_read_freq[read_file] = attributes[
                         "species_stats"
-                    ][sp]["no_of_aligned_reads"]
+                    ][sp][f"no_of_aligned_{reads_or_fragments}"]
                 # Default: Number of aligned reads without the cross aligned reads are used for normalization
                 else:
                     read_files_aligned_read_freq[read_file] = (
-                        attributes["species_stats"][sp]["no_of_aligned_reads"]
+                        attributes["species_stats"][sp][f"no_of_aligned_{reads_or_fragments}"]
                         - attributes["species_stats"][sp][
-                            "no_of_cross_aligned_reads"
+                            f"no_of_cross_aligned_{reads_or_fragments}"
                         ]
                     )
             self.read_files_aligned_read_freq_and_min_reads_aligned_by_species[
@@ -610,26 +665,10 @@ class Controller(object):
         self._test_folder_existance(
             self._pathcreator.required_coverage_folders()
         )
-        # Set alignment paths to fragments or single reads
-        if (not self._args.no_fragments and self._args.paired_end):
-            alignment_paths = self._pathcreator.aligned_fragments_bam_paths
-        else:
-            alignment_paths = self._pathcreator.read_alignment_bam_paths
-        # determine species cross mapped reads
-        self._pathcreator.set_ref_seq_paths_by_species()
-        if not self._args.count_cross_aligned_reads:
-            self._crossmapped_reads_by_lib = {}
-            for lib_name, read_alignment_path in zip(
-                lib_names, self._pathcreator.read_alignment_bam_paths
-            ):
-                # retrieve the cross mapped reads from the single read files
-                # to also get reads where two mates map to different
-                # species. This would not be possible with the built fragments
-                self._crossmapped_reads_by_lib[
-                    lib_name
-                ] = self.determine_crossmapped_reads(read_alignment_path)
 
-        # get references and by species
+
+
+        # get references by species
         references_by_species = self._get_references_by_species()
 
         # Run the coverage file creation species-wise
@@ -736,14 +775,19 @@ class Controller(object):
 
     def quantify_gene_wise(self):
         """Manage the counting of aligned reads per gene."""
+        # Get alignment stats
         raw_stat_data_reader = RawStatDataReader()
         alignment_stats = [
             raw_stat_data_reader.read(
                 self._pathcreator.read_alignments_stats_path
             )
         ]
-        lib_names = list(alignment_stats[0].keys())
+
+        # Lib names and was paired end
+        lib_names = sorted(list(alignment_stats[0].keys()))
         was_paired_end_alignment = self._was_paired_end_alignment(lib_names)
+
+        # Quit if the wrong parameters have been chosen for the subcommand
         if (was_paired_end_alignment and not self._args.paired_end):
             self._write_err_msg_and_quit("The alignemnt seems to be based on paired end reads. "
                                          "Please also set "
@@ -762,6 +806,7 @@ class Controller(object):
                                          "for paired end reads. If you have "
                                          "paired end reads, please also set "
                                          "the option '-P' or '--paired_end'.\n")
+        # Select if normalisation is based on fragment numbers
         if self._args.paired_end and not self._args.no_norm_by_fragments:
             norm_by_fragments = True
         else:
@@ -782,15 +827,9 @@ class Controller(object):
             norm_by_alignment_freq = False
         if self._args.no_count_splitting_by_gene_no:
             norm_by_overlap_freq = False
-        raw_stat_data_reader = RawStatDataReader()
-        alignment_stats = [
-            raw_stat_data_reader.read(
-                self._pathcreator.read_alignments_stats_path
-            )
-        ]
-        lib_names = sorted(list(alignment_stats[0].keys()))
         self._pathcreator.set_annotation_paths_by_species()
-        was_paired_end_alignment = self._was_paired_end_alignment(lib_names)
+
+        # Set read files and lib names
         if not was_paired_end_alignment:
             self._pathcreator.set_read_files_dep_file_lists_single_end(
                 self._pathcreator.get_read_files(), lib_names
@@ -799,6 +838,7 @@ class Controller(object):
             self._pathcreator.set_read_files_dep_file_lists_paired_end(
                 self._pathcreator.get_read_files(), lib_names
             )
+
         # If fragments should be used and they were not created during alignment,
         # they will be created now
         if (not self._args.no_fragments and self._args.paired_end):
@@ -809,12 +849,14 @@ class Controller(object):
             # of them
             if not all(bam_files_exist):
                 self._build_fragments()
+
         # Set alignment paths to fragments or single reads
         self._pathcreator.set_annotation_files_by_species()
         if (not self._args.no_fragments and self._args.paired_end):
             alignment_paths = self._pathcreator.aligned_fragments_bam_paths
         else:
             alignment_paths = self._pathcreator.read_alignment_bam_paths
+
         # determine species cross mapped reads
         if not self._args.count_cross_aligned_reads:
             self._crossmapped_reads_by_lib = {}

@@ -327,6 +327,15 @@ def create_parser():
              "This option saves time if the fragments have not been build during alignment."
              "Only use this if reads are originating from a paired-end sequencing.",
     )
+    coverage_creation_parser.add_argument(
+        "--no_norm_by_fragments",
+        "-nff",
+        default=False,
+        action="store_true",
+        help="Use total no. of single alignments instead of fragments built after alignment for the normalisation."
+             "This option saves time if the fragments have not been build during alignment."
+             "Only use this if reads are originating from a paired-end sequencing.",
+    )
 
     coverage_creation_parser.set_defaults(func=create_coverage_files)
 
