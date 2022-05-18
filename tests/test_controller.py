@@ -45,6 +45,7 @@ class ArgMock:
         self.allowed_features = None
         self.unique_only = False
         self.pseudocounts = False
+        self.no_norm_by_fragments = False
         # Coverage
         self.normalize_by_uniquely = False
         self.skip_read_count_splitting = False
