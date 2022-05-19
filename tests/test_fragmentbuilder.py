@@ -10,7 +10,8 @@ import pysam
 class TestFragmentBuilder(unittest.TestCase):
     def setUp(self):
         #self.species_references = ["chrom", "plasmid1", "plasmid2"]
-        self.fragment_builder = FragmentBuilder()
+        self.max_fragment_length = False
+        self.fragment_builder = FragmentBuilder(self.max_fragment_length)
         self.example_data = ExampleData()
 
         self._no_fragments = "no_fragments"
