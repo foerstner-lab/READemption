@@ -23,6 +23,11 @@ def main():
     else:
         parser.print_help()
 
+def is_positive_int(value):
+    integer = int(value)
+    if integer <= 0:
+        raise argparse.ArgumentTypeError(f"{value} is an invalid positive integer value")
+    return integer
 
 def create_parser():
     parser = argparse.ArgumentParser()
@@ -137,6 +142,14 @@ def create_parser():
              "also turn on 'no_fragments' when using the sucommands "
              "'gene_quanti' and 'coverage' to avoid building the fragments when"
              "running these downstream subcommands",
+    )
+    read_aligning_parser.add_argument(
+        "--max_fragment_length",
+        "-mf",
+        default=False,
+        type=is_positive_int,
+        help="The maximum fragment length for all fragments. Fragments are "
+              "either built from two mates or a single read",
     )
     read_aligning_parser.add_argument(
         "--split",
@@ -328,6 +341,14 @@ def create_parser():
              "Only use this if reads are originating from a paired-end sequencing.",
     )
     coverage_creation_parser.add_argument(
+        "--max_fragment_length",
+        "-mf",
+        default=False,
+        type=is_positive_int,
+        help="The maximum fragment length for all fragments. Fragments are "
+             "either built from two mates or a single read",
+    )
+    coverage_creation_parser.add_argument(
         "--no_norm_by_fragments",
         "-nff",
         default=False,
@@ -492,6 +513,14 @@ def create_parser():
         help="Count single alignments instead of fragments built after alignment."
              "This option saves time if the fragments have not been build during alignment."
              "Only use this if reads are originating from a paired-end sequencing.",
+    )
+    gene_wise_quanti_parser.add_argument(
+        "--max_fragment_length",
+        "-mf",
+        default=False,
+        type=is_positive_int,
+        help="The maximum fragment length for all fragments. Fragments are "
+             "either built from two mates or a single read",
     )
     gene_wise_quanti_parser.add_argument(
         "--no_norm_by_fragments",

@@ -5,7 +5,9 @@ import pysam
 class FragmentBuilder(object):
     def __init__(
         self,
+        max_fragment_length
     ):
+        self._max_fragment_length = max_fragment_length
         self.sam_flag_property_to_value = {
             "read paired": 1,
             "read mapped in proper pair": 2,
@@ -71,11 +73,18 @@ class FragmentBuilder(object):
                         alignment.reference_start = start
                         alignment.query_sequence = fragment_length * "N"
                         alignment.cigarstring = f"{fragment_length}="
+                        if self._max_fragment_length:
+                            if fragment_length > self._max_fragment_length:
+                                continue
                         output_bam.write(alignment)
 
                     elif alignment.is_proper_pair is False:
                         # if the read is not mapped in proper pair, add the
                         # single read
+                        fragment_length = abs(alignment.template_length)
+                        if self._max_fragment_length:
+                            if fragment_length > self._max_fragment_length:
+                                continue
                         output_bam.write(alignment)
 
                     else:

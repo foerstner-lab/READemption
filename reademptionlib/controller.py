@@ -223,7 +223,7 @@ class Controller(object):
                 self._pathcreator.aligned_fragments_bam_paths,
             ):
                 # Perform the building for fragments from reads
-                fragment_builder = FragmentBuilder()
+                fragment_builder = FragmentBuilder(self._args.max_fragment_length)
                 jobs.append(
                     executor.submit(fragment_builder.build_bam_file_with_fragments,
                                     read_alignment_path,
