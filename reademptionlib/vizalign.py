@@ -303,7 +303,12 @@ class AlignViz(object):
         ax = species_and_cross_aligned_and_unaligned_transposed.plot(
             kind="bar", stacked=True
         )
-        ax.legend(loc="center left", bbox_to_anchor=(1, 0.5))
+        # reverse the labels to have them in the same order as the bar segments
+        handles, labels = plt.gca().get_legend_handles_labels()
+        handles.reverse()
+        labels.reverse()
+        ax.legend(loc="center left", bbox_to_anchor=(1, 0.5),handles=handles, labels=labels)
+
         fig = ax.get_figure()
         fig.savefig(f"{output_path}.pdf", bbox_inches="tight")
 
