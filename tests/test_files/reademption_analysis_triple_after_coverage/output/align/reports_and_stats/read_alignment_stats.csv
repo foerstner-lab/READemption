@@ -1,0 +1,126 @@
+Species	Statistic	library_one	library_two
+all	No. of input reads	15	30
+all	No. of reads - PolyA detected and removed	0	0
+all	No. of reads - Single 3' A removed	0	0
+all	No. of reads - Unmodified	15	30
+all	No. of reads - Removed as too short	1	2
+all	No. of reads - Long enough and used for alignment	14	28
+all	Total no. of aligned reads	13	26
+all	Total no. of unaligned reads	1	2
+all	Total no. of uniquely aligned reads	6	12
+all	Total no. of split aligned reads	3	6
+all	Total no. of multiple aligned reads	1	2
+all	Total no. of cross aligned reads	3	6
+all	Total no. of alignments	19	38
+all	Percentage of aligned reads (compared to no. of input reads)	86.67	86.67
+all	Percentage of aligned reads (compared to no. of long enough reads)	92.86	92.86
+all	Percentage of uniquely aligned reads (in relation to all aligned reads)	46.15	46.15
+all	Percentage of split aligned reads (in relation to all aligned reads)	23.08	23.08
+all	Percentage of multiple aligned reads (in relation to all aligned reads)	7.69	7.69
+all	Percentage of cross aligned reads (in relation to all aligned reads)	23.08	23.08
+Homo sapiens	Total no. of aligned reads	9	18
+Homo sapiens	Total no. of uniquely aligned reads	3	6
+Homo sapiens	Total no. of split aligned reads	3	6
+Homo sapiens	Total no. of multiple aligned reads	1	2
+Homo sapiens	Total no. of cross aligned reads	2	4
+Homo sapiens	Total no. of alignments	11	22
+Homo sapiens	Percentage of aligned reads (compared to no. of input reads)	60.0	60.0
+Homo sapiens	Percentage of aligned reads (compared to no. of long enough reads)	64.29	64.29
+Homo sapiens	Percentage of uniquely aligned reads (in relation to all aligned reads)	33.33	33.33
+Homo sapiens	Percentage of split aligned reads (in relation to all aligned reads)	33.33	33.33
+Homo sapiens	Percentage of multiple aligned reads (in relation to all aligned reads)	11.11	11.11
+Homo sapiens	Percentage of cross aligned reads (in relation to all aligned reads)	22.22	22.22
+Staphylococcus aureus	Total no. of aligned reads	5	10
+Staphylococcus aureus	Total no. of uniquely aligned reads	2	4
+Staphylococcus aureus	Total no. of split aligned reads	0	0
+Staphylococcus aureus	Total no. of multiple aligned reads	0	0
+Staphylococcus aureus	Total no. of cross aligned reads	3	6
+Staphylococcus aureus	Total no. of alignments	5	10
+Staphylococcus aureus	Percentage of aligned reads (compared to no. of input reads)	33.33	33.33
+Staphylococcus aureus	Percentage of aligned reads (compared to no. of long enough reads)	35.71	35.71
+Staphylococcus aureus	Percentage of uniquely aligned reads (in relation to all aligned reads)	40.0	40.0
+Staphylococcus aureus	Percentage of split aligned reads (in relation to all aligned reads)	0.0	0.0
+Staphylococcus aureus	Percentage of multiple aligned reads (in relation to all aligned reads)	0.0	0.0
+Staphylococcus aureus	Percentage of cross aligned reads (in relation to all aligned reads)	60.0	60.0
+Influenza A	Total no. of aligned reads	3	6
+Influenza A	Total no. of uniquely aligned reads	1	2
+Influenza A	Total no. of split aligned reads	0	0
+Influenza A	Total no. of multiple aligned reads	0	0
+Influenza A	Total no. of cross aligned reads	2	4
+Influenza A	Total no. of alignments	3	6
+Influenza A	Percentage of aligned reads (compared to no. of input reads)	20.0	20.0
+Influenza A	Percentage of aligned reads (compared to no. of long enough reads)	21.43	21.43
+Influenza A	Percentage of uniquely aligned reads (in relation to all aligned reads)	33.33	33.33
+Influenza A	Percentage of split aligned reads (in relation to all aligned reads)	0.0	0.0
+Influenza A	Percentage of multiple aligned reads (in relation to all aligned reads)	0.0	0.0
+Influenza A	Percentage of cross aligned reads (in relation to all aligned reads)	66.67	66.67
+Homo sapiens	GL000008.2 - No. of aligned reads	0	0
+Homo sapiens	GL000008.2 - No. of uniquely aligned reads	0	0
+Homo sapiens	GL000008.2 - No. of split aligned reads	0	0
+Homo sapiens	GL000008.2 - No. of multiple aligned reads	0	0
+Homo sapiens	GL000008.2 - No. of alignments	0	0
+Homo sapiens	chr1 - No. of aligned reads	3	6
+Homo sapiens	chr1 - No. of uniquely aligned reads	2	4
+Homo sapiens	chr1 - No. of split aligned reads	0	0
+Homo sapiens	chr1 - No. of multiple aligned reads	0	0
+Homo sapiens	chr1 - No. of alignments	3	6
+Homo sapiens	chr2 - No. of aligned reads	2	4
+Homo sapiens	chr2 - No. of uniquely aligned reads	1	2
+Homo sapiens	chr2 - No. of split aligned reads	0	0
+Homo sapiens	chr2 - No. of multiple aligned reads	1	2
+Homo sapiens	chr2 - No. of alignments	3	6
+Homo sapiens	chr3 - No. of aligned reads	1	2
+Homo sapiens	chr3 - No. of uniquely aligned reads	0	0
+Homo sapiens	chr3 - No. of split aligned reads	0	0
+Homo sapiens	chr3 - No. of multiple aligned reads	1	2
+Homo sapiens	chr3 - No. of alignments	1	2
+Homo sapiens	chr19 - No. of aligned reads	2	4
+Homo sapiens	chr19 - No. of uniquely aligned reads	0	0
+Homo sapiens	chr19 - No. of split aligned reads	2	4
+Homo sapiens	chr19 - No. of multiple aligned reads	0	0
+Homo sapiens	chr19 - No. of alignments	2	4
+Homo sapiens	chr20 - No. of aligned reads	1	2
+Homo sapiens	chr20 - No. of uniquely aligned reads	0	0
+Homo sapiens	chr20 - No. of split aligned reads	0	0
+Homo sapiens	chr20 - No. of multiple aligned reads	0	0
+Homo sapiens	chr20 - No. of alignments	1	2
+Homo sapiens	chr21 - No. of aligned reads	0	0
+Homo sapiens	chr21 - No. of uniquely aligned reads	0	0
+Homo sapiens	chr21 - No. of split aligned reads	0	0
+Homo sapiens	chr21 - No. of multiple aligned reads	0	0
+Homo sapiens	chr21 - No. of alignments	0	0
+Homo sapiens	chr22 - No. of aligned reads	1	2
+Homo sapiens	chr22 - No. of uniquely aligned reads	0	0
+Homo sapiens	chr22 - No. of split aligned reads	1	2
+Homo sapiens	chr22 - No. of multiple aligned reads	0	0
+Homo sapiens	chr22 - No. of alignments	1	2
+Homo sapiens	chr23 - No. of aligned reads	0	0
+Homo sapiens	chr23 - No. of uniquely aligned reads	0	0
+Homo sapiens	chr23 - No. of split aligned reads	0	0
+Homo sapiens	chr23 - No. of multiple aligned reads	0	0
+Homo sapiens	chr23 - No. of alignments	0	0
+Homo sapiens	chrX - No. of aligned reads	0	0
+Homo sapiens	chrX - No. of uniquely aligned reads	0	0
+Homo sapiens	chrX - No. of split aligned reads	0	0
+Homo sapiens	chrX - No. of multiple aligned reads	0	0
+Homo sapiens	chrX - No. of alignments	0	0
+Homo sapiens	KQ031388.1 - No. of aligned reads	0	0
+Homo sapiens	KQ031388.1 - No. of uniquely aligned reads	0	0
+Homo sapiens	KQ031388.1 - No. of split aligned reads	0	0
+Homo sapiens	KQ031388.1 - No. of multiple aligned reads	0	0
+Homo sapiens	KQ031388.1 - No. of alignments	0	0
+Staphylococcus aureus	NC_007795.1 - No. of aligned reads	5	10
+Staphylococcus aureus	NC_007795.1 - No. of uniquely aligned reads	2	4
+Staphylococcus aureus	NC_007795.1 - No. of split aligned reads	0	0
+Staphylococcus aureus	NC_007795.1 - No. of multiple aligned reads	0	0
+Staphylococcus aureus	NC_007795.1 - No. of alignments	5	10
+Influenza A	NC_007373.1 - No. of aligned reads	2	4
+Influenza A	NC_007373.1 - No. of uniquely aligned reads	1	2
+Influenza A	NC_007373.1 - No. of split aligned reads	0	0
+Influenza A	NC_007373.1 - No. of multiple aligned reads	0	0
+Influenza A	NC_007373.1 - No. of alignments	2	4
+Influenza A	NC_007372.1 - No. of aligned reads	1	2
+Influenza A	NC_007372.1 - No. of uniquely aligned reads	0	0
+Influenza A	NC_007372.1 - No. of split aligned reads	0	0
+Influenza A	NC_007372.1 - No. of multiple aligned reads	0	0
+Influenza A	NC_007372.1 - No. of alignments	1	2
