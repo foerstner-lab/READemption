@@ -78,8 +78,9 @@ class TestController(unittest.TestCase):
         self.triple_expected_after_coverage_output = "tests/test_files/reademption_analysis_triple_after_coverage/output"
 
     def tearDown(self):
-        self._remove_triple_input_files_and_structure_copy()
-        self._remove_project_folder()
+        print("no tear down!")
+        #self._remove_triple_input_files_and_structure_copy()
+        #self._remove_project_folder()
 
     def _copy_fresh_triple_input_files_and_structure(self):
         shutil.copytree(
