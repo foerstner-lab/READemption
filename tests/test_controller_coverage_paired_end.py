@@ -86,6 +86,9 @@ class TestControllerCoveragePairedEnd(TestController):
                 # changes the hashsums when creating a new file due to testing
                 if "align" in output_file_path:
                     continue
+                # exclude gitkeeps
+                if ".gitkeep" in output_file_path:
+                    continue
                 else:
                     hash = hashlib.md5(open(output_file_path,'rb').read()).hexdigest()
                     created_files_and_checksums_human[created_subfolder_file] = hash
@@ -97,6 +100,9 @@ class TestControllerCoveragePairedEnd(TestController):
                 # exclude R session info file and heatmap since metadata of these files
                 # changes the hashsums when creating a new file due to testing
                 if "align" in output_file_path:
+                    continue
+                # exclude gitkeeps
+                if ".gitkeep" in output_file_path:
                     continue
                 else:
                     hash = hashlib.md5(open(output_file_path,'rb').read()).hexdigest()

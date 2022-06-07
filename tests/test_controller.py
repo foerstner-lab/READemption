@@ -123,6 +123,9 @@ class TestControllerReadAligning(TestController):
         for created_subfolder_files in os.walk(self.triple_fresh_copy_output):
             for created_subfolder_file in created_subfolder_files[2]:
                 output_file_path = created_subfolder_files[0] + "/" + created_subfolder_file
+                # exclude gitkeeps
+                if ".gitkeep" in output_file_path:
+                    continue
                 # exclude gz zipped files because of different checksums due to meta information
                 if not output_file_path.endswith(".gz"):
                     hash = hashlib.md5(open(output_file_path,'rb').read()).hexdigest()
@@ -132,6 +135,9 @@ class TestControllerReadAligning(TestController):
         for expected_subfolder_files in os.walk(self.triple_expected_after_alignment_output):
             for expected_subfolder_file in expected_subfolder_files[2]:
                 output_file_path = expected_subfolder_files[0] + "/" + expected_subfolder_file
+                # exclude gitkeeps
+                if ".gitkeep" in output_file_path:
+                    continue
                 # exclude gz zipped files because of different checksums due to meta information
                 if not output_file_path.endswith(".gz"):
                     hash = hashlib.md5(open(output_file_path,'rb').read()).hexdigest()
