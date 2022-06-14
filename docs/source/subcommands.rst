@@ -1,21 +1,85 @@
 READemption's subcommands
 =========================
 
+**Results separately for each species**
+
 In general the subcommands need at least one argument - the analysis
-folder.
+folder. The only exception is the ``create`` subcommand, which needs the ``species`` of a project.
+After the initial project creation and the subsequent alignment,
+which is (except for the statistics) species agnostic all other subcommands
+(``coverage``, ``gene_quanti``, ``deseq``, ``viz_align``, ``viz_gene_quanti``, ``viz_deseq``) present
+their results by species.
+
+
+**Exclude or include species cross-mapped reads**
+
+Usually a multi-species project will contain cross-mapped reads that map to different species.
+These reads are excluded from countings and normalization factors of the subcommands ``coverage`` and ``gene_quanti`` per default.
+Since the other subcommands (``deseq``, ``viz_gene_quanti``, ``viz_deseq``) are based on ``gene_quanti``,
+species cross-mapped reads are also excluded from these subcommands.
+This default behaviour can be turned off separately for countings [--count_cross_aligned_reads] and normalization [--normalize_cross_aligned_reads_included],
+when executing ``coverage`` or ``gene_quanti``.
+
+**Fragment building for paired-end reads**
+
+When using paired-end reads, READemption automatically builds fragments from aligned reads
+as part of the ``align`` subcommand.
+This behaviour, if not needed, can be turned off [--no_fragment_building] to save time.
+To continue skipping fragment building, the flag [--no_fragment_building] also needs to be set during
+``coverage`` or ``gene_quanti``. Otherwise the fragments will be build and used by ``coverage`` and ``gene_quanti``,
+even if fragments were not built during ``align``.
 
 create
 ------
 
 ``create`` generates the required folder structure for input and
-output files. Once these folders are created the input files have to
-be placed into the correct locations. As a minimal requirement,
+output files. A ``folder prefix`` and a ``display name`` must be assigned to each ``species``,
+even if the project contains only a single species.
+Once these folders are created the input files have to
+be placed into the correct locations. A ``reference_sequences`` folder and an
+``annotation`` folder will be created for each species, while the ``reads`` folder
+is common for all species.
+
+The following example creates the input folders for a project with three different species::
+
+  $ reademption create --project_path reademption_analysis_triple \
+        --species \
+        human="Homo sapiens" \
+        staphylococcus="Staphylococcus aureus" \
+        influenza="Influenza A"
+
+Created input folder structure:
+
+| reademption_analysis_triple
+| ├── config.json
+| ├── input
+| │      ├── human_annotations
+| │      ├── human_reference_sequences
+| │      ├── influenza_annotations
+| │      ├── influenza_reference_sequences
+| │      ├── reads
+| │      ├── staphylococcus_annotations
+| │      └── staphylococcus_reference_sequences
+| └── output
+|          └── align
+|                   ├── alignments
+|                   ├── index
+|                   ├── processed_reads
+|                   ├── reports_and_stats
+|                   │      ├── stats_data_json
+|                   │      └── version_log.txt
+|                   └── unaligned_reads
+
+
+
+As a minimal requirement,
 RNA-Seqs reads in FASTA format (can be compressed with ``bzip2`` or
-``gzip``) must be placed in ``input/reads`` and the reference sequence
-in FASTA format must be copied or linked in
-``input/reference_sequences``. For the command ``gene_quanti``
+``gzip``) must be placed in ``input/reads`` and the reference sequences of the different species
+in FASTA format must be copied or linked to their corresponding species input folder
+``input/[species]_reference_sequences``. For the command ``gene_quanti``
 annotation files in GFF3 format have to be put into
-``input/annotations``.
+``input/[species]_annotations``.
+Please note that a single species project will have only one annotations and one reference_sequences folder.
 
 .. argparse::
    :filename: reademption
@@ -38,8 +102,8 @@ format. ``align`` generates the read alignments in BAM format
 stores unmapped reads so that they can be inspected e.g. to search for
 contaminations. The file
 ``output/align/reports_and_stats/read_alignment_stats.csv`` lists
-several mapping statistics. The folder
-``output/align/reports_and_stats/stats_data_json/`` contains files
+several mapping statistics for the whole project, separated by species and per chromosome.
+The folder ``output/align/reports_and_stats/stats_data_json/`` contains files
 with the original countings in JSON format. Please be aware that
 READemption can perform only basic quality trimming and adapter
 clipping. If this is not sufficient you can use the `FASTX toolkit
@@ -56,7 +120,7 @@ preprocessing.
 coverage
 --------
 
-`coverage` generates strand specific coverage files in `wiggle format
+``coverage`` generates strand specific coverage files in `wiggle format
 <http://genome.ucsc.edu/goldenPath/help/wiggle.html>`_ based on the
 read alignments. These wiggle files can be viewed in common genome
 browser like the `Integrated genome browser (IGB)
