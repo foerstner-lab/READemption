@@ -22,12 +22,31 @@ READemption is a pipeline for the computational evaluation of
 RNA-Seq data. It was originally developed to process dRNA-Seq reads
 (as introduced by Sharma et al., Nature, 2010 (`Pubmed
 <http://www.ncbi.nlm.nih.gov/pubmed/20164839>`_)) originating from
-bacterial samples. Meanwhile is has been extended to process data
+bacterial samples. Meanwhile it has been extended to process data
 generated in different experimental setups and from all domains of
-life. The `functions <subcommands.html>`_ which are accessible via a
-command-line interface cover read processing and aligning, coverage
-calculation, gene expression quantification, differential gene
-expression analysis as well as visualization. In order to set up and
+life.
+READemption features handling of:
+
+- **single and multi-species projects**
+
+- **single or paired-end reads**
+
+The `functions <subcommands.html>`_ which are accessible via a
+command-line interface cover:
+
+- **read processing**
+
+- **aligning**
+
+- **coverage calculation**
+
+- **gene expression quantification**
+
+- **differential gene expression analysis**
+
+- **visualization**
+
+In order to set up and
 perform analyses quickly READemption follows the principal of
 *convention over configuration*: Once the input files are
 copied/linked into defined folders no further parameters have to be
