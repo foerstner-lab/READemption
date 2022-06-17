@@ -10,6 +10,7 @@ Table of content
    live_and_installation_image
    docker_image
    subcommands
+   fragment_building
    example_analysis
    troubleshooting
    license
