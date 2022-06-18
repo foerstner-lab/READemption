@@ -9,12 +9,12 @@ READemption derives these positions from the alignments of a pair and writes the
 The resulting BAM file will consist of single-end reads that present the original template fragments.
 If a paired-end read could not be properly mapped in pair, i.e. only one read of a pair could be mapped,
 the mapped read will also be written to the BAM file, but its initial start and stop positions will be preserved.
+The figures below show different possible alignment layouts for the two reads of a pair and their calculated fragment.
 
-
-Fragment building for pairs that map to the forward strand
+Fragment building for different layouts of pairs that map to the forward strand
 ----------------------------------------------------------
 
-A\)
+**A\) Pair in order, no overlap**
 
 
        start 1                         end 1
@@ -32,7 +32,13 @@ A\)
        -----------------------------calculated fragment--------------------------------------->
 
 
-B\)
+|
+
+|
+
+|
+
+**B\) Pair in order, overlap**
 
 
        start 1                         end 1
@@ -49,7 +55,13 @@ B\)
 
        ------------------calculated fragment------------------------->
 
-C\)
+|
+
+|
+
+|
+
+**C\) Pair in order, identical overlap**
 
 
                                             start 1                         end 1
@@ -66,7 +78,13 @@ C\)
 
                                             ----calculated fragment--->
 
-D\)
+|
+
+|
+
+|
+
+**D\) Pair in reverse order, both reads exceed each other (template fragment length is smaller than read length)**
 
 
                                                    start 1                         end 1
@@ -83,8 +101,13 @@ D\)
 
     calculated fragment:              ------------------------>
 
+|
 
-E\)
+|
+
+|
+
+**E\) Pair in reverse order, no overlap (can occur when the template fragment is a circular RNA)**
 
 
                                                                       start 1                         end 1
@@ -102,10 +125,10 @@ E\)
 
        -----------------------------calculated fragment--------------------------------------->
 
-Fragment building for pairs that map to the reverse strand
+Fragment building for different layouts of pairs that map to the reverse strand
 ----------------------------------------------------------
 
-A\)
+**A\) Pair in order, no overlap**
 
 
        start 2                         end 2
@@ -122,8 +145,14 @@ A\)
 
        <---------------------------calculated fragment---------------------------------------
 
+|
 
-B\)
+|
+
+|
+
+
+**B\) Pair in order, overlap**
 
 
        start 2                         end 2
@@ -140,7 +169,13 @@ B\)
 
        <-------------------calculated fragment------------------------
 
-C\)
+|
+
+|
+
+|
+
+**C\) Pair in order, identical overlap**
 
 
                                             start 2                         end 2
@@ -157,7 +192,13 @@ C\)
 
                                             <----calculated fragment-----
 
-D\)
+|
+
+|
+
+|
+
+**D\) Pair in reverse order, both reads exceed each other (template fragment length is smaller than read length)**
 
 
                                                    start 2                         end 2
@@ -174,8 +215,14 @@ D\)
 
     calculated fragment:              <------------------------
 
+|
 
-E\)
+|
+
+|
+
+
+**E\) Pair in reverse order, no overlap (can occur when the template fragment is a circular RNA)**
 
 
                                                                       start 2                         end 2
