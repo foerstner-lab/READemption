@@ -156,10 +156,10 @@ class DESeqRunner(object):
                     # Add another column to the header
                     comparison_file_row = [""] + comparison_file_row
                     # Extend column description
-                    counting_file_row[self._first_data_column :] = [
+                    counting_file_row[(self._first_data_column -1) :] = [
                         f"{lib_name} raw countings"
                         for lib_name in counting_file_row[
-                            self._first_data_column :
+                            (self._first_data_column -1) :
                         ]
                     ]
                 output_fh.write(
