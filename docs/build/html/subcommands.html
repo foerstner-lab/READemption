@@ -1,74 +1,37 @@
-
-
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8">
-  
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>READemption’s subcommands &mdash; READemption 1.0.1 documentation</title>
-  
-
-  
-  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-
-  
-  
-  
-  
-
-  
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
     <script src="_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-    
-      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
         <script src="_static/jquery.js"></script>
         <script src="_static/underscore.js"></script>
         <script src="_static/doctools.js"></script>
-        <script src="_static/language_data.js"></script>
-    
-    <script type="text/javascript" src="_static/js/theme.js"></script>
-
-    
+    <script src="_static/js/theme.js"></script>
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Performing an example analysis" href="example_analysis.html" />
     <link rel="prev" title="Docker image" href="docker_image.html" /> 
 </head>
 
-<body class="wy-body-for-nav">
-
-   
+<body class="wy-body-for-nav"> 
   <div class="wy-grid-for-nav">
-    
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-          
-
-          
-            <a href="index.html" class="icon icon-home" alt="Documentation Home"> READemption
-          
-
-          
-            
+            <a href="index.html" class="icon icon-home"> READemption
             <img src="_static/READemption_logo.png" class="logo" alt="Logo"/>
-          
           </a>
-
-          
-            
-            
               <div class="version">
                 1.0
               </div>
-            
-          
-
-          
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
     <input type="text" name="q" placeholder="Search docs" />
@@ -76,18 +39,7 @@
     <input type="hidden" name="area" value="default" />
   </form>
 </div>
-
-          
-        </div>
-
-        
-        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
-          
-            
-            
-              
-            
-            
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="installation.html">Installation and updating</a></li>
 <li class="toctree-l1"><a class="reference internal" href="live_and_installation_image.html">Live system and installation image</a></li>
@@ -133,96 +85,121 @@
 <li class="toctree-l1"><a class="reference internal" href="versions.html">Versions/Change log</a></li>
 </ul>
 
-            
-          
         </div>
-        
       </div>
     </nav>
 
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
-
-      
-      <nav class="wy-nav-top" aria-label="top navigation">
-        
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
           <a href="index.html">READemption</a>
-        
       </nav>
 
-
       <div class="wy-nav-content">
-        
         <div class="rst-content">
-        
-          
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<div role="navigation" aria-label="breadcrumbs navigation">
-
+          <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-    
       <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
-        
       <li>READemption’s subcommands</li>
-    
-    
       <li class="wy-breadcrumbs-aside">
-        
-            
-        
       </li>
-    
   </ul>
-
-  
   <hr/>
 </div>
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
-            
-  <div class="section" id="reademption-s-subcommands">
-<h1>READemption’s subcommands<a class="headerlink" href="#reademption-s-subcommands" title="Permalink to this headline">¶</a></h1>
+             
+  <section id="reademption-s-subcommands">
+<h1>READemption’s subcommands<a class="headerlink" href="#reademption-s-subcommands" title="Permalink to this headline"></a></h1>
+<p><strong>Results separately for each species</strong></p>
 <p>In general the subcommands need at least one argument - the analysis
-folder.</p>
-<div class="section" id="create">
-<h2>create<a class="headerlink" href="#create" title="Permalink to this headline">¶</a></h2>
+folder. The only exception is the <code class="docutils literal notranslate"><span class="pre">create</span></code> subcommand, which needs the <code class="docutils literal notranslate"><span class="pre">species</span></code> of a project.
+After the initial project creation and the subsequent alignment,
+which is (except for the statistics) species agnostic all other subcommands
+(<code class="docutils literal notranslate"><span class="pre">coverage</span></code>, <code class="docutils literal notranslate"><span class="pre">gene_quanti</span></code>, <code class="docutils literal notranslate"><span class="pre">deseq</span></code>, <code class="docutils literal notranslate"><span class="pre">viz_align</span></code>, <code class="docutils literal notranslate"><span class="pre">viz_gene_quanti</span></code>, <code class="docutils literal notranslate"><span class="pre">viz_deseq</span></code>) present
+their results by species.</p>
+<p><strong>Exclude or include species cross-mapped reads</strong></p>
+<p>Usually a multi-species project will contain cross-mapped reads that map to different species.
+These reads are excluded from countings and normalization factors of the subcommands <code class="docutils literal notranslate"><span class="pre">coverage</span></code> and <code class="docutils literal notranslate"><span class="pre">gene_quanti</span></code> per default.
+Since the other subcommands (<code class="docutils literal notranslate"><span class="pre">deseq</span></code>, <code class="docutils literal notranslate"><span class="pre">viz_gene_quanti</span></code>, <code class="docutils literal notranslate"><span class="pre">viz_deseq</span></code>) are based on <code class="docutils literal notranslate"><span class="pre">gene_quanti</span></code>,
+species cross-mapped reads are also excluded from these subcommands.
+This default behaviour can be turned off separately for countings [–count_cross_aligned_reads] and normalization [–normalize_cross_aligned_reads_included],
+when executing <code class="docutils literal notranslate"><span class="pre">coverage</span></code> or <code class="docutils literal notranslate"><span class="pre">gene_quanti</span></code>.</p>
+<p><strong>Fragment building for paired-end reads</strong></p>
+<p>When using paired-end reads, READemption automatically builds fragments from aligned reads
+as part of the <code class="docutils literal notranslate"><span class="pre">align</span></code> subcommand.
+This behaviour, if not needed, can be turned off [–no_fragment_building] to save time.
+To continue skipping fragment building, the flag [–no_fragment_building] also needs to be set during
+<code class="docutils literal notranslate"><span class="pre">coverage</span></code> or <code class="docutils literal notranslate"><span class="pre">gene_quanti</span></code>. Otherwise the fragments will be build and used by <code class="docutils literal notranslate"><span class="pre">coverage</span></code> and <code class="docutils literal notranslate"><span class="pre">gene_quanti</span></code>,
+even if fragments were not built during <code class="docutils literal notranslate"><span class="pre">align</span></code>.</p>
+<section id="create">
+<h2>create<a class="headerlink" href="#create" title="Permalink to this headline"></a></h2>
 <p><code class="docutils literal notranslate"><span class="pre">create</span></code> generates the required folder structure for input and
-output files. Once these folders are created the input files have to
-be placed into the correct locations. As a minimal requirement,
-RNA-Seqs reads in FASTA format (can be compressed with <code class="docutils literal notranslate"><span class="pre">bzip2</span></code> or
-<code class="docutils literal notranslate"><span class="pre">gzip</span></code>) must be placed in <code class="docutils literal notranslate"><span class="pre">input/reads</span></code> and the reference sequence
-in FASTA format must be copied or linked in
-<code class="docutils literal notranslate"><span class="pre">input/reference_sequences</span></code>. For the command <code class="docutils literal notranslate"><span class="pre">gene_quanti</span></code>
-annotation files in GFF3 format have to be put into
-<code class="docutils literal notranslate"><span class="pre">input/annotations</span></code>.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">usage</span><span class="p">:</span> <span class="n">reademption</span> <span class="n">create</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">project_path</span> <span class="n">PROJECT_PATH</span><span class="p">]</span>
+output files. A <code class="docutils literal notranslate"><span class="pre">folder</span> <span class="pre">prefix</span></code> and a <code class="docutils literal notranslate"><span class="pre">display</span> <span class="pre">name</span></code> must be assigned to each <code class="docutils literal notranslate"><span class="pre">species</span></code>,
+even if the project contains only a single species.
+Once these folders are created the input files have to
+be placed into the correct locations. A <code class="docutils literal notranslate"><span class="pre">reference_sequences</span></code> folder and an
+<code class="docutils literal notranslate"><span class="pre">annotation</span></code> folder will be created for each species, while the <code class="docutils literal notranslate"><span class="pre">reads</span></code> folder
+is common for all species.</p>
+<p>The following example creates the input folders for a project with three different species:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ reademption create --project_path reademption_analysis_triple \
+      --species \
+      human=&quot;Homo sapiens&quot; \
+      staphylococcus=&quot;Staphylococcus aureus&quot; \
+      influenza=&quot;Influenza A&quot;
 </pre></div>
 </div>
-<div class="section" id="Named Arguments">
-<h3>Named Arguments<a class="headerlink" href="#Named Arguments" title="Permalink to this headline">¶</a></h3>
+<p>Created input folder structure:</p>
+<div class="line-block">
+<div class="line">reademption_analysis_triple</div>
+<div class="line">├── config.json</div>
+<div class="line">├── input</div>
+<div class="line">│      ├── human_annotations</div>
+<div class="line">│      ├── human_reference_sequences</div>
+<div class="line">│      ├── influenza_annotations</div>
+<div class="line">│      ├── influenza_reference_sequences</div>
+<div class="line">│      ├── reads</div>
+<div class="line">│      ├── staphylococcus_annotations</div>
+<div class="line">│      └── staphylococcus_reference_sequences</div>
+<div class="line">└── output</div>
+<div class="line">         └── align</div>
+<div class="line">                  ├── alignments</div>
+<div class="line">                  ├── index</div>
+<div class="line">                  ├── processed_reads</div>
+<div class="line">                  ├── reports_and_stats</div>
+<div class="line">                  │      ├── stats_data_json</div>
+<div class="line">                  │      └── version_log.txt</div>
+<div class="line">                  └── unaligned_reads</div>
+</div>
+<p>As a minimal requirement,
+RNA-Seqs reads in FASTA format (can be compressed with <code class="docutils literal notranslate"><span class="pre">bzip2</span></code> or
+<code class="docutils literal notranslate"><span class="pre">gzip</span></code>) must be placed in <code class="docutils literal notranslate"><span class="pre">input/reads</span></code> and the reference sequences of the different species
+in FASTA format must be copied or linked to their corresponding species input folder
+<code class="docutils literal notranslate"><span class="pre">input/[species]_reference_sequences</span></code>. For the command <code class="docutils literal notranslate"><span class="pre">gene_quanti</span></code>
+annotation files in GFF3 format have to be put into
+<code class="docutils literal notranslate"><span class="pre">input/[species]_annotations</span></code>.
+Please note that a single species project will have only one annotations and one reference_sequences folder.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">usage</span><span class="p">:</span> <span class="n">reademption</span> <span class="n">create</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="o">--</span><span class="n">species</span> <span class="n">SUB_FOLDER_NAME</span><span class="o">=</span><span class="n">DISPLAY_NAME</span> <span class="p">[</span><span class="n">SUB_FOLDER_NAME</span><span class="o">=</span><span class="n">DISPLAY_NAME</span> <span class="o">...</span><span class="p">]</span> <span class="o">--</span><span class="n">project_path</span> <span class="n">PROJECT_PATH</span>
+</pre></div>
+</div>
+<section id="Named Arguments">
+<h3>Named Arguments<a class="headerlink" href="#Named Arguments" title="Permalink to this headline"></a></h3>
 <dl class="option-list">
+<dt><kbd>--species, -s</kbd></dt>
+<dd><p>One key-value pair for each species.
+Key-value pairs consist of a ‘folder prefix’ (key) and a ‘display name’ (value) and are separated by an ‘=’-sign.
+The ‘folder prefix’ will be used to create input -and output folders for the given species.
+The ‘display name’ will be used for output files and figures.
+Syntax example:
+$ reademption create –species human=”Homo sapiens” staphylococcus=”Staphylococcus aureus” –project_path READemption_analysis</p>
+</dd>
 <dt><kbd>--project_path, -f</kbd></dt>
 <dd><p>Path of the project folder.</p>
 </dd>
 </dl>
-</div>
-</div>
-<div class="section" id="align">
-<h2>align<a class="headerlink" href="#align" title="Permalink to this headline">¶</a></h2>
+</section>
+</section>
+<section id="align">
+<h2>align<a class="headerlink" href="#align" title="Permalink to this headline"></a></h2>
 <p><code class="docutils literal notranslate"><span class="pre">align</span></code> performs the clipping and size filtering of the reads, as
 well as the actual aligning to the reference sequences. It also
 generates statistics about the steps (e.g. number of aligned reads,
@@ -235,27 +212,20 @@ format. <code class="docutils literal notranslate"><span class="pre">align</span
 stores unmapped reads so that they can be inspected e.g. to search for
 contaminations. The file
 <code class="docutils literal notranslate"><span class="pre">output/align/reports_and_stats/read_alignment_stats.csv</span></code> lists
-several mapping statistics. The folder
-<code class="docutils literal notranslate"><span class="pre">output/align/reports_and_stats/stats_data_json/</span></code> contains files
+several mapping statistics for the whole project, separated by species and per chromosome.
+The folder <code class="docutils literal notranslate"><span class="pre">output/align/reports_and_stats/stats_data_json/</span></code> contains files
 with the original countings in JSON format. Please be aware that
 READemption can perform only basic quality trimming and adapter
 clipping. If this is not sufficient you can use the <a class="reference external" href="http://hannonlab.cshl.edu/fastx_toolkit/">FASTX toolkit</a>, <a class="reference external" href="https://code.google.com/p/cutadapt/">cutadapt</a> or other tools for the
 preprocessing.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">usage</span><span class="p">:</span> <span class="n">reademption</span> <span class="n">align</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">project_path</span> <span class="n">PROJECT_PATH</span><span class="p">]</span>
-                         <span class="p">[</span><span class="o">--</span><span class="n">min_read_length</span> <span class="n">MIN_READ_LENGTH</span><span class="p">]</span>
-                         <span class="p">[</span><span class="o">--</span><span class="n">processes</span> <span class="n">PROCESSES</span><span class="p">]</span>
-                         <span class="p">[</span><span class="o">--</span><span class="n">segemehl_accuracy</span> <span class="n">SEGEMEHL_ACCURACY</span><span class="p">]</span>
-                         <span class="p">[</span><span class="o">--</span><span class="n">segemehl_evalue</span> <span class="n">SEGEMEHL_EVALUE</span><span class="p">]</span>
-                         <span class="p">[</span><span class="o">--</span><span class="n">segemehl_bin</span> <span class="n">SEGEMEHL_BIN</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">paired_end</span><span class="p">]</span>
-                         <span class="p">[</span><span class="o">--</span><span class="n">split</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">poly_a_clipping</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">fastq</span><span class="p">]</span>
-                         <span class="p">[</span><span class="o">--</span><span class="n">min_phred_score</span> <span class="n">MIN_PHRED_SCORE</span><span class="p">]</span>
-                         <span class="p">[</span><span class="o">--</span><span class="n">adapter</span> <span class="n">ADAPTER</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">check_for_existing_files</span><span class="p">]</span>
-                         <span class="p">[</span><span class="o">--</span><span class="n">reverse_complement</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">progress</span><span class="p">]</span>
-                         <span class="p">[</span><span class="o">--</span><span class="n">crossalign_cleaning</span> <span class="n">CROSSALIGN_CLEANING_STRING</span><span class="p">]</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">usage</span><span class="p">:</span> <span class="n">reademption</span> <span class="n">align</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="o">--</span><span class="n">project_path</span> <span class="n">PROJECT_PATH</span> <span class="p">[</span><span class="o">--</span><span class="n">min_read_length</span> <span class="n">MIN_READ_LENGTH</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">processes</span> <span class="n">PROCESSES</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">segemehl_accuracy</span> <span class="n">SEGEMEHL_ACCURACY</span><span class="p">]</span>
+                         <span class="p">[</span><span class="o">--</span><span class="n">segemehl_evalue</span> <span class="n">SEGEMEHL_EVALUE</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">segemehl_bin</span> <span class="n">SEGEMEHL_BIN</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">paired_end</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">no_fragment_building</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">max_fragment_length</span> <span class="n">MAX_FRAGMENT_LENGTH</span><span class="p">]</span>
+                         <span class="p">[</span><span class="o">--</span><span class="n">split</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">poly_a_clipping</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">fastq</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">min_phred_score</span> <span class="n">MIN_PHRED_SCORE</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">adapter</span> <span class="n">ADAPTER</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">check_for_existing_files</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">reverse_complement</span><span class="p">]</span>
+                         <span class="p">[</span><span class="o">--</span><span class="n">progress</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">crossalign_cleaning</span><span class="p">]</span>
 </pre></div>
 </div>
-<div class="section" id="Named Arguments">
-<h3>Named Arguments<a class="headerlink" href="#Named Arguments" title="Permalink to this headline">¶</a></h3>
+<section id="Named Arguments">
+<h3>Named Arguments<a class="headerlink" href="#Named Arguments" title="Permalink to this headline"></a></h3>
 <dl class="option-list">
 <dt><kbd>--project_path, -f</kbd></dt>
 <dd><p>Path of the project folder.</p>
@@ -282,6 +252,14 @@ preprocessing.</p>
 </dd>
 <dt><kbd>--paired_end, -P</kbd></dt>
 <dd><p>Use this if reads are originating from a paired-end sequencing. The members of a pair must be marked with ‘_p1’ and ‘_p2’ in front of the file type suffixes (e.g. ‘my_sample_p1.fa’ and ‘my_sample_p2.fa’ or ‘my_sample_p1.fa.bz2’ and ‘my_sample_p2.fa.bz2’). This option cannot be used with polyA tail clipping.</p>
+<p>Default: False</p>
+</dd>
+<dt><kbd>--no_fragment_building, -nb</kbd></dt>
+<dd><p>Do not build fragments from paired end alignments. Not building the fragments saves time. If latersubcommands like ‘gene_quanti’ or ‘coverage’ need the fragments,they will be build before. If you don’t want to work with fragments,also turn on ‘no_fragments’ when using the sucommands ‘gene_quanti’ and ‘coverage’ to avoid building the fragments whenrunning these downstream subcommands</p>
+<p>Default: False</p>
+</dd>
+<dt><kbd>--max_fragment_length, -mf</kbd></dt>
+<dd><p>The maximum fragment length for all fragments. Fragments are either built from two mates or a single read</p>
 <p>Default: False</p>
 </dd>
 <dt><kbd>--split, -S</kbd></dt>
@@ -315,14 +293,15 @@ preprocessing.</p>
 <p>Default: False</p>
 </dd>
 <dt><kbd>--crossalign_cleaning, -x</kbd></dt>
-<dd><p>Remove reads that are cross-mapped to replicons of different species. To associated species and replicons give a string in the following format: ‘&lt;ORG_NAME_1&gt;:&lt;org_1_repl1&gt;,&lt;org_1_repl2&gt;,..,&lt;org_1_repl_n&gt;;&lt;ORG_NAME_2&gt;:&lt;org_2_repl1&gt;,&lt;org_2_repl2&gt;,..,&lt;org_2_repl_n&gt;’</p>
+<dd><p>Remove reads from BAM files that are cross-mapped to replicons of different species.</p>
+<p>Default: False</p>
 </dd>
 </dl>
-</div>
-</div>
-<div class="section" id="coverage">
-<h2>coverage<a class="headerlink" href="#coverage" title="Permalink to this headline">¶</a></h2>
-<p><cite>coverage</cite> generates strand specific coverage files in <a class="reference external" href="http://genome.ucsc.edu/goldenPath/help/wiggle.html">wiggle format</a> based on the
+</section>
+</section>
+<section id="coverage">
+<h2>coverage<a class="headerlink" href="#coverage" title="Permalink to this headline"></a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">coverage</span></code> generates strand specific coverage files in <a class="reference external" href="http://genome.ucsc.edu/goldenPath/help/wiggle.html">wiggle format</a> based on the
 read alignments. These wiggle files can be viewed in common genome
 browser like the <a class="reference external" href="http://bioviz.org/">Integrated genome browser (IGB)</a> or the <a class="reference external" href="https://www.broadinstitute.org/software/igv/">Integrative genome viewer (IGV)</a>. Three sets of wiggle
 files will be generated: raw counting values without normalization
@@ -347,17 +326,14 @@ example a read that is mapped to three different location will
 contribute a value of 1/3 to each of the nucleotides of these
 positions. To turn off this behavior use
 <code class="docutils literal notranslate"><span class="pre">--skip_read_count_splitting</span></code>.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">usage</span><span class="p">:</span> <span class="n">reademption</span> <span class="n">coverage</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">project_path</span> <span class="n">PROJECT_PATH</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">unique_only</span><span class="p">]</span>
-                            <span class="p">[</span><span class="o">--</span><span class="n">normalize_by_uniquely</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">processes</span> <span class="n">PROCESSES</span><span class="p">]</span>
-                            <span class="p">[</span><span class="o">--</span><span class="n">skip_read_count_splitting</span><span class="p">]</span>
-                            <span class="p">[</span><span class="o">--</span><span class="n">non_strand_specific</span><span class="p">]</span>
-                            <span class="p">[</span><span class="o">--</span><span class="n">coverage_style</span> <span class="p">{</span><span class="k">global</span><span class="p">,</span><span class="n">first_base_only</span><span class="p">,</span><span class="n">last_base_only</span><span class="p">,</span><span class="n">centered</span><span class="p">}]</span>
-                            <span class="p">[</span><span class="o">--</span><span class="n">clip_length</span> <span class="n">CLIP_LENGTH</span><span class="p">]</span>
-                            <span class="p">[</span><span class="o">--</span><span class="n">check_for_existing_files</span><span class="p">]</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">usage</span><span class="p">:</span> <span class="n">reademption</span> <span class="n">coverage</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="o">--</span><span class="n">project_path</span> <span class="n">PROJECT_PATH</span> <span class="p">[</span><span class="o">--</span><span class="n">unique_only</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">normalize_by_uniquely</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">count_cross_aligned_reads</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">normalize_cross_aligned_reads_included</span><span class="p">]</span>
+                            <span class="p">[</span><span class="o">--</span><span class="n">processes</span> <span class="n">PROCESSES</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">skip_read_count_splitting</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">non_strand_specific</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">coverage_style</span> <span class="p">{</span><span class="k">global</span><span class="p">,</span><span class="n">first_base_only</span><span class="p">,</span><span class="n">last_base_only</span><span class="p">,</span><span class="n">centered</span><span class="p">}]</span>
+                            <span class="p">[</span><span class="o">--</span><span class="n">clip_length</span> <span class="n">CLIP_LENGTH</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">check_for_existing_files</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">paired_end</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">no_fragments</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">max_fragment_length</span> <span class="n">MAX_FRAGMENT_LENGTH</span><span class="p">]</span>
+                            <span class="p">[</span><span class="o">--</span><span class="n">no_norm_by_fragments</span><span class="p">]</span>
 </pre></div>
 </div>
-<div class="section" id="Named Arguments">
-<h3>Named Arguments<a class="headerlink" href="#Named Arguments" title="Permalink to this headline">¶</a></h3>
+<section id="Named Arguments">
+<h3>Named Arguments<a class="headerlink" href="#Named Arguments" title="Permalink to this headline"></a></h3>
 <dl class="option-list">
 <dt><kbd>--project_path, -f</kbd></dt>
 <dd><p>Path of the project folder.</p>
@@ -368,6 +344,14 @@ positions. To turn off this behavior use
 </dd>
 <dt><kbd>--normalize_by_uniquely, -U</kbd></dt>
 <dd><p>Normalize by the number of uniquely aligned reads. By default the normalization is done based on the total number of aligned reads even if only uniquely aligned reads are used for the coverage calculation.</p>
+<p>Default: False</p>
+</dd>
+<dt><kbd>--count_cross_aligned_reads, -x</kbd></dt>
+<dd><p>Count species-cross-aligned reads for the coverage file creation, by default these reads are not counted</p>
+<p>Default: False</p>
+</dd>
+<dt><kbd>--normalize_cross_aligned_reads_included, -X</kbd></dt>
+<dd><p>Add species-cross-aligned reads to normalization, by default only the species specific reads are used.</p>
 <p>Default: False</p>
 </dd>
 <dt><kbd>--processes, -p</kbd></dt>
@@ -395,11 +379,27 @@ positions. To turn off this behavior use
 <dd><p>Check for existing files (e.g. from a interrupted previous run) and do not overwrite them if they exits. Attention! You have to take care that there are no partially generated files left!</p>
 <p>Default: False</p>
 </dd>
+<dt><kbd>--paired_end, -P</kbd></dt>
+<dd><p>Use this if reads are originating from a paired-end sequencing.</p>
+<p>Default: False</p>
+</dd>
+<dt><kbd>--no_fragments, -nf</kbd></dt>
+<dd><p>Count single alignments instead of fragments built after alignment.This option saves time if the fragments have not been build during alignment.Only use this if reads are originating from a paired-end sequencing.</p>
+<p>Default: False</p>
+</dd>
+<dt><kbd>--max_fragment_length, -mf</kbd></dt>
+<dd><p>The maximum fragment length for all fragments. Fragments are either built from two mates or a single read</p>
+<p>Default: False</p>
+</dd>
+<dt><kbd>--no_norm_by_fragments, -nff</kbd></dt>
+<dd><p>Use total no. of single alignments instead of fragments built after alignment for the normalisation.This option saves time if the fragments have not been build during alignment.Only use this if reads are originating from a paired-end sequencing.</p>
+<p>Default: False</p>
+</dd>
 </dl>
-</div>
-</div>
-<div class="section" id="gene-quanti">
-<h2>gene_quanti<a class="headerlink" href="#gene-quanti" title="Permalink to this headline">¶</a></h2>
+</section>
+</section>
+<section id="gene-quanti">
+<h2>gene_quanti<a class="headerlink" href="#gene-quanti" title="Permalink to this headline"></a></h2>
 <p>With <code class="docutils literal notranslate"><span class="pre">gene_quanti</span></code> the number of reads overlapping with each of the
 annotation entries is counted and the results are combined in
 tables. At least one GGF3 file with annotations has to be placed in
@@ -414,20 +414,15 @@ raw read countings, Transcripts per Million (TPM) normalized read counts,
 normalized by the total number of aligned reads of the given library (TNOAR),
 as well as Reads per Kilobase Million (RPKM) normalized read counts
 The results of the different counting methods are provided in separate CSV-tables.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">usage</span><span class="p">:</span> <span class="n">reademption</span> <span class="n">gene_quanti</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">project_path</span> <span class="n">PROJECT_PATH</span><span class="p">]</span>
-                               <span class="p">[</span><span class="o">--</span><span class="n">min_overlap</span> <span class="n">MIN_OVERLAP</span><span class="p">]</span>
-                               <span class="p">[</span><span class="o">--</span><span class="n">read_region</span> <span class="p">{</span><span class="k">global</span><span class="p">,</span><span class="n">first_base_only</span><span class="p">,</span><span class="n">last_base_only</span><span class="p">,</span><span class="n">centered</span><span class="p">}]</span>
-                               <span class="p">[</span><span class="o">--</span><span class="n">clip_length</span> <span class="n">CLIP_LENGTH</span><span class="p">]</span>
-                               <span class="p">[</span><span class="o">--</span><span class="n">no_count_split_by_alignment_no</span><span class="p">]</span>
-                               <span class="p">[</span><span class="o">--</span><span class="n">no_count_splitting_by_gene_no</span><span class="p">]</span>
-                               <span class="p">[</span><span class="o">--</span><span class="n">add_antisense</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">antisense_only</span><span class="p">]</span>
-                               <span class="p">[</span><span class="o">--</span><span class="n">non_strand_specific</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">processes</span> <span class="n">PROCESSES</span><span class="p">]</span>
-                               <span class="p">[</span><span class="o">--</span><span class="n">features</span> <span class="n">ALLOWED_FEATURES</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">unique_only</span><span class="p">]</span>
-                               <span class="p">[</span><span class="o">--</span><span class="n">pseudocounts</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">check_for_existing_files</span><span class="p">]</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">usage</span><span class="p">:</span> <span class="n">reademption</span> <span class="n">gene_quanti</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="o">--</span><span class="n">project_path</span> <span class="n">PROJECT_PATH</span> <span class="p">[</span><span class="o">--</span><span class="n">min_overlap</span> <span class="n">MIN_OVERLAP</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">read_region</span> <span class="p">{</span><span class="k">global</span><span class="p">,</span><span class="n">first_base_only</span><span class="p">,</span><span class="n">last_base_only</span><span class="p">,</span><span class="n">centered</span><span class="p">}]</span>
+                               <span class="p">[</span><span class="o">--</span><span class="n">clip_length</span> <span class="n">CLIP_LENGTH</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">no_count_split_by_alignment_no</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">no_count_splitting_by_gene_no</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">add_antisense</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">antisense_only</span><span class="p">]</span>
+                               <span class="p">[</span><span class="o">--</span><span class="n">non_strand_specific</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">processes</span> <span class="n">PROCESSES</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">features</span> <span class="n">ALLOWED_FEATURES</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">unique_only</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">pseudocounts</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">check_for_existing_files</span><span class="p">]</span>
+                               <span class="p">[</span><span class="o">--</span><span class="n">count_cross_aligned_reads</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">normalize_cross_aligned_reads_included</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">paired_end</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">no_fragments</span><span class="p">]</span>
+                               <span class="p">[</span><span class="o">--</span><span class="n">max_fragment_length</span> <span class="n">MAX_FRAGMENT_LENGTH</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">no_norm_by_fragments</span><span class="p">]</span>
 </pre></div>
 </div>
-<div class="section" id="Named Arguments">
-<h3>Named Arguments<a class="headerlink" href="#Named Arguments" title="Permalink to this headline">¶</a></h3>
+<section id="Named Arguments">
+<h3>Named Arguments<a class="headerlink" href="#Named Arguments" title="Permalink to this headline"></a></h3>
 <dl class="option-list">
 <dt><kbd>--project_path, -f</kbd></dt>
 <dd><p>Path of the project folder.</p>
@@ -457,7 +452,7 @@ The results of the different counting methods are provided in separate CSV-table
 <dd><p>Count anti-sense and sense read-gene-overlaps and report them separately. By default only sense overlaps are counted.</p>
 <p>Default: False</p>
 </dd>
-<dt><kbd>--antisense_only, -x</kbd></dt>
+<dt><kbd>--antisense_only, -ao</kbd></dt>
 <dd><p>Count only anti-sense read-gene-overlaps and no sense overlaps. By default only sense overlaps are counted.</p>
 <p>Default: False</p>
 </dd>
@@ -484,11 +479,35 @@ The results of the different counting methods are provided in separate CSV-table
 <dd><p>Check for existing files (e.g. from a interrupted previous run) and do not overwrite them if they exits. Attention! You have to take care that there are no partially generated files left!</p>
 <p>Default: False</p>
 </dd>
+<dt><kbd>--count_cross_aligned_reads, -x</kbd></dt>
+<dd><p>Count species-cross-aligned reads for the gene quantification. Bydefault these reads are not counted</p>
+<p>Default: False</p>
+</dd>
+<dt><kbd>--normalize_cross_aligned_reads_included, -X</kbd></dt>
+<dd><p>Add species-cross-aligned reads to normalization, by default only the species specific reads are used.</p>
+<p>Default: False</p>
+</dd>
+<dt><kbd>--paired_end, -P</kbd></dt>
+<dd><p>Use this if reads are originating from a paired-end sequencing.</p>
+<p>Default: False</p>
+</dd>
+<dt><kbd>--no_fragments, -nf</kbd></dt>
+<dd><p>Count single alignments instead of fragments built after alignment.This option saves time if the fragments have not been build during alignment.Only use this if reads are originating from a paired-end sequencing.</p>
+<p>Default: False</p>
+</dd>
+<dt><kbd>--max_fragment_length, -mf</kbd></dt>
+<dd><p>The maximum fragment length for all fragments. Fragments are either built from two mates or a single read</p>
+<p>Default: False</p>
+</dd>
+<dt><kbd>--no_norm_by_fragments, -nff</kbd></dt>
+<dd><p>Use total no. of single alignments instead of fragments built after alignment for the normalisation.This option saves time if the fragments have not been build during alignment.Only use this if reads are originating from a paired-end sequencing.</p>
+<p>Default: False</p>
+</dd>
 </dl>
-</div>
-</div>
-<div class="section" id="deseq">
-<h2>deseq<a class="headerlink" href="#deseq" title="Permalink to this headline">¶</a></h2>
+</section>
+</section>
+<section id="deseq">
+<h2>deseq<a class="headerlink" href="#deseq" title="Permalink to this headline"></a></h2>
 <p>Differential gene expression can be performed using <code class="docutils literal notranslate"><span class="pre">deseq</span></code> which
 will run a <a class="reference external" href="http://www.bioconductor.org/packages/release/bioc/html/DESeq2.html">DESeq2</a>
 analyses for all possible combinations of conditions. To allocated the
@@ -496,13 +515,12 @@ conditions to the libraries use the <code class="docutils literal notranslate"><
 parameters (e.g. <code class="docutils literal notranslate"><span class="pre">--libs</span>
 <span class="pre">SamA_R1.fa,SamA_R2.fa,SamB_R1.fa,SamB_R2.fa</span> <span class="pre">--conditions</span>
 <span class="pre">SamA,SamA,SamB,SamB</span></code>).</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">usage</span><span class="p">:</span> <span class="n">reademption</span> <span class="n">deseq</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">project_path</span> <span class="n">PROJECT_PATH</span><span class="p">]</span> <span class="o">--</span><span class="n">libs</span> <span class="n">LIBS</span>
-                         <span class="o">--</span><span class="n">conditions</span> <span class="n">CONDITIONS</span> <span class="p">[</span><span class="o">--</span><span class="n">cooks_cutoff_off</span><span class="p">]</span>
-                         <span class="p">[</span><span class="o">--</span><span class="n">fc_shrinkage_off</span><span class="p">]</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">usage</span><span class="p">:</span> <span class="n">reademption</span> <span class="n">deseq</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="o">--</span><span class="n">project_path</span> <span class="n">PROJECT_PATH</span> <span class="o">--</span><span class="n">libs</span> <span class="n">LIBS</span> <span class="o">--</span><span class="n">conditions</span> <span class="n">CONDITIONS</span> <span class="o">--</span><span class="n">replicates</span> <span class="n">REPLICATES</span> <span class="o">--</span><span class="n">libs_by_species</span> <span class="n">SUB_FOLDER_NAME</span><span class="o">=</span><span class="n">LIST_OF_LIBRARIES</span>
+                         <span class="p">[</span><span class="n">SUB_FOLDER_NAME</span><span class="o">=</span><span class="n">LIST_OF_LIBRARIES</span> <span class="o">...</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">size_factor</span> <span class="p">{</span><span class="n">project</span><span class="p">,</span><span class="n">species</span><span class="p">,</span><span class="n">comparison</span><span class="p">}]</span> <span class="p">[</span><span class="o">--</span><span class="n">cooks_cutoff_off</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">fc_shrinkage_off</span><span class="p">]</span>
 </pre></div>
 </div>
-<div class="section" id="Named Arguments">
-<h3>Named Arguments<a class="headerlink" href="#Named Arguments" title="Permalink to this headline">¶</a></h3>
+<section id="Named Arguments">
+<h3>Named Arguments<a class="headerlink" href="#Named Arguments" title="Permalink to this headline"></a></h3>
 <dl class="option-list">
 <dt><kbd>--project_path, -f</kbd></dt>
 <dd><p>Path of the project folder.</p>
@@ -513,6 +531,23 @@ parameters (e.g. <code class="docutils literal notranslate"><span class="pre">--
 <dt><kbd>--conditions, -c</kbd></dt>
 <dd><p>Comma separated list of condition in the same order as their corresponding libraries.</p>
 </dd>
+<dt><kbd>--replicates, -r</kbd></dt>
+<dd><p>Comma separated list of replicates in the same order as their corresponding libraries.</p>
+</dd>
+<dt><kbd>--libs_by_species, -s</kbd></dt>
+<dd><p>One key-value pair for each species.
+Key-value pairs consist of the ‘folder prefix’ (key) and a ‘list of libraries’ and are separated by an ‘=’-sign.
+The ‘folder prefix’ has or have to be the same that was used when creating a new project
+Syntax example:
+$ reademption deseq –libs infected_1.fq,infected_2.fq,control_human_1.fq,control_human_2.fq,control_staph_1.fq,control_staph_2.fq
+–conditions infected,infected,control_human,control_human,control_staph,control_staph
+–replicates 1,2,1,2,1,2 –libs_by_species human=”infected_1.fq,infected_2.fq,control_human_1.fq,control_human2.fq” staphylococcus=”infected_1.fq,infected_2.fq,control_staphylococcus_1.fq,control_staphylococcus_2.fq” –project_path READemption_analysis</p>
+</dd>
+<dt><kbd>--size_factor, -b</kbd></dt>
+<dd><p>Possible choices: project, species, comparison</p>
+<p>Select the libraries for the size factor estimation of DESeq2.Selecting the option ‘project’ will result in calculating the size factors for all comparisons based on all libraries of thewhole project (It doesn’t matter if the libraries have no reads of the species being inspected or if the libraries are part ofthe current comparison). The option ‘species’ will result in calculating the size factors for all comparisons of a species only based on the libraries of the given species. The option ‘comparison’ calculates the size factors for each comparison andonly based on the libraries that are being compared for thecurrent comparison.</p>
+<p>Default: “species”</p>
+</dd>
 <dt><kbd>--cooks_cutoff_off, -k</kbd></dt>
 <dd><p>Default: False</p>
 </dd>
@@ -521,17 +556,17 @@ parameters (e.g. <code class="docutils literal notranslate"><span class="pre">--
 <p>Default: False</p>
 </dd>
 </dl>
-</div>
-</div>
-<div class="section" id="viz-align">
-<h2>viz_align<a class="headerlink" href="#viz-align" title="Permalink to this headline">¶</a></h2>
+</section>
+</section>
+<section id="viz-align">
+<h2>viz_align<a class="headerlink" href="#viz-align" title="Permalink to this headline"></a></h2>
 <p><code class="docutils literal notranslate"><span class="pre">viz_align</span></code> plots histograms of the read length distributions of the
 reads before and after the read clipping.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">usage</span><span class="p">:</span> <span class="n">reademption</span> <span class="n">viz_align</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">paired_end</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">project_path</span> <span class="n">PROJECT_PATH</span><span class="p">]</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">usage</span><span class="p">:</span> <span class="n">reademption</span> <span class="n">viz_align</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">paired_end</span><span class="p">]</span> <span class="o">--</span><span class="n">project_path</span> <span class="n">PROJECT_PATH</span>
 </pre></div>
 </div>
-<div class="section" id="Named Arguments">
-<h3>Named Arguments<a class="headerlink" href="#Named Arguments" title="Permalink to this headline">¶</a></h3>
+<section id="Named Arguments">
+<h3>Named Arguments<a class="headerlink" href="#Named Arguments" title="Permalink to this headline"></a></h3>
 <dl class="option-list">
 <dt><kbd>--paired_end, -P</kbd></dt>
 <dd><p>Use this if reads are originating from a paired-end sequencing.</p>
@@ -541,22 +576,21 @@ reads before and after the read clipping.</p>
 <dd><p>Path of the project folder.</p>
 </dd>
 </dl>
-</div>
-</div>
-<div class="section" id="viz-gene-quanti">
-<h2>viz_gene_quanti<a class="headerlink" href="#viz-gene-quanti" title="Permalink to this headline">¶</a></h2>
+</section>
+</section>
+<section id="viz-gene-quanti">
+<h2>viz_gene_quanti<a class="headerlink" href="#viz-gene-quanti" title="Permalink to this headline"></a></h2>
 <p><code class="docutils literal notranslate"><span class="pre">viz_gene_quanti</span></code> creates scatterplots in which the raw gene wise
 quantification values are compared for each library pair
 (all-against-all). For each comparison the <a class="reference external" href="https://en.wikipedia.org/wiki/Pearson_product-moment_correlation_coefficient">pearson correllation</a>
 (<cite>r</cite>) coefficiant is. Additionally, bar charts that visualize the
 distribution of the read counting of the different annotation classes
 are plotted.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">usage</span><span class="p">:</span> <span class="n">reademption</span> <span class="n">viz_gene_quanti</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">paired_end</span><span class="p">]</span>
-                                   <span class="p">[</span><span class="o">--</span><span class="n">project_path</span> <span class="n">PROJECT_PATH</span><span class="p">]</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">usage</span><span class="p">:</span> <span class="n">reademption</span> <span class="n">viz_gene_quanti</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">paired_end</span><span class="p">]</span> <span class="o">--</span><span class="n">project_path</span> <span class="n">PROJECT_PATH</span>
 </pre></div>
 </div>
-<div class="section" id="Named Arguments">
-<h3>Named Arguments<a class="headerlink" href="#Named Arguments" title="Permalink to this headline">¶</a></h3>
+<section id="Named Arguments">
+<h3>Named Arguments<a class="headerlink" href="#Named Arguments" title="Permalink to this headline"></a></h3>
 <dl class="option-list">
 <dt><kbd>--paired_end, -P</kbd></dt>
 <dd><p>Use this if reads are originating from a paired-end sequencing.</p>
@@ -566,19 +600,18 @@ are plotted.</p>
 <dd><p>Path of the project folder.</p>
 </dd>
 </dl>
-</div>
-</div>
-<div class="section" id="viz-deseq">
-<h2>viz_deseq<a class="headerlink" href="#viz-deseq" title="Permalink to this headline">¶</a></h2>
+</section>
+</section>
+<section id="viz-deseq">
+<h2>viz_deseq<a class="headerlink" href="#viz-deseq" title="Permalink to this headline"></a></h2>
 <p><code class="docutils literal notranslate"><span class="pre">viz_deseq</span></code> generates MA-plots of the comparison (log2 fold changes
 vs. the base mean) as well as volcano plots (log2 fold changes
 vs. p-values / adjusted p-values).</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">usage</span><span class="p">:</span> <span class="n">reademption</span> <span class="n">viz_deseq</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">project_path</span> <span class="n">PROJECT_PATH</span><span class="p">]</span>
-                             <span class="p">[</span><span class="o">--</span><span class="n">max_pvalue</span> <span class="n">MAX_PVALUE</span><span class="p">]</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">usage</span><span class="p">:</span> <span class="n">reademption</span> <span class="n">viz_deseq</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="o">--</span><span class="n">project_path</span> <span class="n">PROJECT_PATH</span> <span class="p">[</span><span class="o">--</span><span class="n">max_pvalue</span> <span class="n">MAX_PVALUE</span><span class="p">]</span>
 </pre></div>
 </div>
-<div class="section" id="Named Arguments">
-<h3>Named Arguments<a class="headerlink" href="#Named Arguments" title="Permalink to this headline">¶</a></h3>
+<section id="Named Arguments">
+<h3>Named Arguments<a class="headerlink" href="#Named Arguments" title="Permalink to this headline"></a></h3>
 <dl class="option-list">
 <dt><kbd>--project_path, -f</kbd></dt>
 <dd><p>Path of the project folder.</p>
@@ -588,67 +621,42 @@ vs. p-values / adjusted p-values).</p>
 <p>Default: 0.05</p>
 </dd>
 </dl>
-</div>
-</div>
-</div>
+</section>
+</section>
+</section>
 
 
            </div>
-           
           </div>
-          <footer>
-  
-    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-      
-        <a href="example_analysis.html" class="btn btn-neutral float-right" title="Performing an example analysis" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
-      
-      
-        <a href="docker_image.html" class="btn btn-neutral float-left" title="Docker image" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
-      
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="docker_image.html" class="btn btn-neutral float-left" title="Docker image" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="example_analysis.html" class="btn btn-neutral float-right" title="Performing an example analysis" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
-  
 
   <hr/>
 
   <div role="contentinfo">
-    <p>
-        
-        &copy; Copyright 2020, Konrad U. Förstner and Till Sauerwein
-
-    </p>
+    <p>&#169; Copyright 2020, Konrad U. Förstner and Till Sauerwein.</p>
   </div>
-    
-    
-    
-    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
-    
-    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
-    
-    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
 
 </footer>
-
         </div>
       </div>
-
     </section>
-
   </div>
-  
-
-  <script type="text/javascript">
+  <script>
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });
   </script>
-
-  
-  
-    
-  
     <div class="footer">
     This documention is licensed under the <a href="https://creativecommons.org/licenses/by/3.0/">Creative Commons Attribution license</a>, 2020, Konrad U. Förstner and Till Sauerwein.
-      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 3.0.3.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 4.4.0.
     </div>
 
 
