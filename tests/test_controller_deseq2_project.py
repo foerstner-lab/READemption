@@ -75,34 +75,17 @@ class TestControllerCompareWithDeseq(TestController):
         self._version = 2.0
         self._copy_fresh_dual_input_files_and_structure()
         self.controller.compare_with_deseq()
-        # Collect the checksums of the created files
-        created_files_and_checksums_human = {}
+        # Collect created files
+        created_files = []
         for created_subfolder_files in os.walk(self.dual_fresh_copy_output_human):
             for created_subfolder_file in created_subfolder_files[2]:
-                output_file_path = created_subfolder_files[0] + "/" + created_subfolder_file
-                # exclude R session info file and heatmap since metadata of these files
-                # changes the hashsums when creating a new file due to testing
-                if "R_session_info.txt" in output_file_path:
-                    continue
-                if "sample_comparison_pca_heatmap.pdf" in output_file_path:
-                    continue
-                else:
-                    hash = hashlib.md5(open(output_file_path,'rb').read()).hexdigest()
-                    created_files_and_checksums_human[created_subfolder_file] = hash
-        # Collect the checksums of the expected files
-        expected_files_and_checksums_human = {}
+                created_files.append(created_subfolder_file)
+
+        # Collect expected files
+        expected_files = []
         for expected_subfolder_files in os.walk(self.dual_expected_output_human):
             for expected_subfolder_file in expected_subfolder_files[2]:
-                output_file_path = expected_subfolder_files[0] + "/" + expected_subfolder_file
-                # exclude R session info file and heatmap since metadata of these files
-                # changes the hashsums when creating a new file due to testing
-                if "R_session_info.txt" in output_file_path:
-                    continue
-                if "sample_comparison_pca_heatmap.pdf" in output_file_path:
-                    continue
-                else:
-                    hash = hashlib.md5(open(output_file_path,'rb').read()).hexdigest()
-                    expected_files_and_checksums_human[expected_subfolder_file] = hash
+                expected_files.append(expected_subfolder_file)
         # Compare the checksums
         # Can be used to compare the content of twho files line wise:
         #with open(self.dual_expected_R_script_human, 'r') as expected_R_script, open(self.dual_fresh_copy_R_script_human, 'r') as calculated_R_script:
@@ -119,38 +102,21 @@ class TestControllerCompareWithDeseq(TestController):
         #print(expected_files_and_checksums)
         #print("Created:")
         #pprint.pprint(created_files_and_checksums)
-        assert expected_files_and_checksums_human == created_files_and_checksums_human
+        assert expected_files == created_files
 
         # Staphylococcus
         # Collect the checksums of the created files
         created_files_and_checksums_staph = {}
-        for created_subfolder_files in os.walk(self.dual_fresh_copy_output_staph):
+        created_files = []
+        for created_subfolder_files in os.walk(self.dual_fresh_copy_output_human):
             for created_subfolder_file in created_subfolder_files[2]:
-                output_file_path = created_subfolder_files[0] + "/" + created_subfolder_file
-                # exclude R session info file and heatmap since metadata of these files
-                # changes the hashsums when creating a new file due to testing
-                if "R_session_info.txt" in output_file_path:
-                    continue
-                if "sample_comparison_pca_heatmap.pdf" in output_file_path:
-                    continue
-                else:
-                    hash = hashlib.md5(open(output_file_path,'rb').read()).hexdigest()
-                    created_files_and_checksums_staph[created_subfolder_file] = hash
+                created_files.append(created_subfolder_file)
         # Collect the checksums of the expected files
-        expected_files_and_checksums_staph = {}
-        for expected_subfolder_files in os.walk(self.dual_expected_output_staph):
+        expected_files = []
+        for expected_subfolder_files in os.walk(self.dual_expected_output_human):
             for expected_subfolder_file in expected_subfolder_files[2]:
-                output_file_path = expected_subfolder_files[0] + "/" + expected_subfolder_file
-                # exclude R session info file and heatmap since metadata of these files
-                # changes the hashsums when creating a new file due to testing
-                if "R_session_info.txt" in output_file_path:
-                    continue
-                if "sample_comparison_pca_heatmap.pdf" in output_file_path:
-                    continue
-                else:
-                    hash = hashlib.md5(open(output_file_path,'rb').read()).hexdigest()
-                    expected_files_and_checksums_staph[expected_subfolder_file] = hash
-        assert expected_files_and_checksums_staph == created_files_and_checksums_staph
+                expected_files.append(expected_subfolder_file)
+        assert expected_files == created_files
 
 if __name__ == "__main__":
     unittest.main()
