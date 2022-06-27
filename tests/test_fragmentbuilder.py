@@ -59,15 +59,21 @@ class TestFragmentBuilder(unittest.TestCase):
 
         # Compare the expected sam file content with the created sam file content
         # Can be used to compare the content of two files line wise:
+        expected_content_without_headers = []
+        calculated_content_without_headers = []
         with open(self.sam_with_fragments_expected_path, 'r') as expected_sam, open(self.sam_with_fragments_built_path, 'r') as calculated_sam:
             expected_contend = expected_sam.readlines()
             calculated_contend = calculated_sam.readlines()
-            for l1, l2 in zip(expected_contend, calculated_contend):
-                if (l1.startswith("@") or l2.startswith("@")):
+            for expected_line, calculated_line in zip(expected_contend, calculated_contend):
+                if (expected_line.startswith("@") or calculated_line.startswith("@")):
                     continue
-                if l1 != l2:
-                    print(f"expected line: '{l1}' does not match calculated line '{l2}'")
-            assert expected_contend == calculated_contend
+                if expected_line != calculated_line:
+                    print(f"expected line: '{expected_line}' does not match calculated line '{calculated_line}'")
+                expected_content_without_headers.append(expected_line)
+                calculated_content_without_headers.append(calculated_line)
+
+        assert expected_content_without_headers == calculated_content_without_headers
+
 
 class ExampleData(object):
     sam_no_fragments = """@HD	VN:1.0	SO:coordinate
@@ -76,7 +82,7 @@ class ExampleData(object):
 @RG	ID:A1	SM:sample1	LB:library1	PU:unit1	PL:illumina
 @PG	ID:segemehl	VN:0.3.4	CL:segemehl.x --query reademption_analysis_dual_paired_end/output/align/processed_reads/library_one_p1_processed.fa.gz --mate reademption_analysis_dual_paired_end/output/align/processed_reads/library_one_p2_processed.fa.gz --index reademption_analysis_dual_paired_end/output/align/index/index.idx --database reademption_analysis_dual_paired_end/input/human_reference_sequences/GRCh38.p10.genome_short_for_paired_end.fa reademption_analysis_dual_paired_end/input/staphylococcus_reference_sequences/GCF_000013425.1_ASM1342v1_genomic_short_for_paired_end.fa --outfile reademption_analysis_dual_paired_end/output/align/alignments/library_one_alignments_final.bam --bamabafixoida --hitstrategy 1 --accuracy 100 --evalue 5.0 --threads 1 --splits --nomatchfilename reademption_analysis_dual_paired_end/output/align/unaligned_reads/library_one_unaligned.fa
 @PG	ID:samtools	PN:samtools	PP:segemehl	VN:1.10 (pysam)	CL:samtools view -b -F 4 -o reademption_analysis_dual_paired_end/output/align/alignments/library_one_alignments_final.bam_filtered reademption_analysis_dual_paired_end/output/align/alignments/library_one_alignments_final.bam
-@PG	ID:samtools.1	PN:samtools	PP:samtools	VN:1.10 (pysam)	CL:samtools sort -o reademption_analysis_dual_paired_end/output/align/alignments/library_one_alignments_final.bam_sorted reademption_analysis_dual_paired_end/output/align/alignments/library_one_alignments_final.bam
+@PG	ID:samtools.1	PN:samtools	PP:samtools	VN:1.14 (pysam)	CL:samtools sort -o reademption_analysis_dual_paired_end/output/align/alignments/library_one_alignments_final.bam_sorted reademption_analysis_dual_paired_end/output/align/alignments/library_one_alignments_final.bam
 SN7001299:308:CAPEHACXX:5:2301:2152:1	355	chr1	1	1	20=	=	41	60	ACCCTAACCCTAACCCTAAC	*	HI:i:1	NH:i:2	NM:i:0	MD:Z:20	RG:Z:A1	YZ:Z:0
 SN7001299:308:CAPEHACXX:5:2301:2152:1	147	chr1	41	1	20=	=	541	520	TAACCCTAACCCTAACCCTA	*	HI:i:0	NH:i:2	NM:i:0	MD:Z:20	RG:Z:A1	YZ:Z:0
 SN7001299:308:CAPEHACXX:5:2301:2152:1	403	chr1	41	1	20=	=	1	-60	TAACCCTAACCCTAACCCTA	*	HI:i:1	NH:i:2	NM:i:0	MD:Z:20	RG:Z:A1	YZ:Z:0
@@ -117,7 +123,7 @@ SN7001299:308:CAPEHACXX:5:2301:2152:12	163	chr1	1091	1	20=	=	1086	-25	CGTGTGTGAC
 @RG	ID:A1	SM:sample1	LB:library1	PU:unit1	PL:illumina
 @PG	ID:segemehl	VN:0.3.4	CL:segemehl.x --query reademption_analysis_dual_paired_end/output/align/processed_reads/library_one_p1_processed.fa.gz --mate reademption_analysis_dual_paired_end/output/align/processed_reads/library_one_p2_processed.fa.gz --index reademption_analysis_dual_paired_end/output/align/index/index.idx --database reademption_analysis_dual_paired_end/input/human_reference_sequences/GRCh38.p10.genome_short_for_paired_end.fa reademption_analysis_dual_paired_end/input/staphylococcus_reference_sequences/GCF_000013425.1_ASM1342v1_genomic_short_for_paired_end.fa --outfile reademption_analysis_dual_paired_end/output/align/alignments/library_one_alignments_final.bam --bamabafixoida --hitstrategy 1 --accuracy 100 --evalue 5.0 --threads 1 --splits --nomatchfilename reademption_analysis_dual_paired_end/output/align/unaligned_reads/library_one_unaligned.fa
 @PG	ID:samtools	PN:samtools	PP:segemehl	VN:1.10 (pysam)	CL:samtools view -b -F 4 -o reademption_analysis_dual_paired_end/output/align/alignments/library_one_alignments_final.bam_filtered reademption_analysis_dual_paired_end/output/align/alignments/library_one_alignments_final.bam
-@PG	ID:samtools.1	PN:samtools	PP:samtools	VN:1.10 (pysam)	CL:samtools sort -o reademption_analysis_dual_paired_end/output/align/alignments/library_one_alignments_final.bam_sorted reademption_analysis_dual_paired_end/output/align/alignments/library_one_alignments_final.bam
+@PG	ID:samtools.1	PN:samtools	PP:samtools	VN:1.14 (pysam)	CL:samtools sort -o reademption_analysis_dual_paired_end/output/align/alignments/library_one_alignments_final.bam_sorted reademption_analysis_dual_paired_end/output/align/alignments/library_one_alignments_final.bam
 @PG	ID:samtools.2	PN:samtools	PP:samtools.1	VN:1.10 (pysam)	CL:samtools view -h -o no_fragments.bam no_fragments.sam
 @PG	ID:samtools.3	PN:samtools	PP:samtools.2	VN:1.10 (pysam)	CL:samtools sort -o with_fragments_built.bam_sorted with_fragments_built.bam
 @PG	ID:samtools.4	PN:samtools	PP:samtools.3	VN:1.10 (pysam)	CL:samtools view -h -o with_fragments_built.sam with_fragments_built.bam

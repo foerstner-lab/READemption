@@ -67,10 +67,10 @@ class TestControllerCompareWithDeseq(TestController):
         self.controller.viz_deseq()
         human_viz_deseq_files_expected = ['volcano_plots_log2_fold_change_vs_adjusted_p-value.pdf', 'MA_plots.pdf', 'volcano_plots_log2_fold_change_vs_p-value.pdf']
         human_viz_desq_files_calculated = os.listdir(self.dual_fresh_copy_output_viz_deseq_human)
-        assert human_viz_deseq_files_expected == human_viz_desq_files_calculated
+        assert sorted(human_viz_deseq_files_expected) == sorted(human_viz_desq_files_calculated)
         staphyloccocus_viz_deseq_files_expected = ['volcano_plots_log2_fold_change_vs_adjusted_p-value.pdf', 'MA_plots.pdf', 'volcano_plots_log2_fold_change_vs_p-value.pdf']
         staphyloccocus_viz_desq_files_calculated = os.listdir(self.dual_fresh_copy_output_viz_deseq_staph)
-        assert staphyloccocus_viz_deseq_files_expected == staphyloccocus_viz_desq_files_calculated
+        assert sorted(staphyloccocus_viz_deseq_files_expected) == sorted(staphyloccocus_viz_desq_files_calculated)
 
 if __name__ == "__main__":
     unittest.main()

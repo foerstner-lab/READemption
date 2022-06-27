@@ -60,15 +60,15 @@ class TestControllerCompareWithDeseq(TestController):
         self.controller.viz_gene_quanti()
         human_viz_gene_quanti_files_expected = ['rna_class_sizes.pdf', 'expression_scatter_plots.pdf']
         human_viz_gene_quanti_files_calculated = os.listdir(self.triple_fresh_copy_output_viz_gene_quanti_human)
-        assert human_viz_gene_quanti_files_expected == human_viz_gene_quanti_files_calculated
+        assert sorted(human_viz_gene_quanti_files_expected) == sorted(human_viz_gene_quanti_files_calculated)
 
         staphyloccocus_viz_gene_quanti_files_expected = ['rna_class_sizes.pdf', 'expression_scatter_plots.pdf']
         staphyloccocus_viz_gene_quanti_files_calculated = os.listdir(self.triple_fresh_copy_output_viz_gene_quanti_staph)
-        assert staphyloccocus_viz_gene_quanti_files_expected == staphyloccocus_viz_gene_quanti_files_calculated
+        assert sorted(staphyloccocus_viz_gene_quanti_files_expected) == sorted(staphyloccocus_viz_gene_quanti_files_calculated)
 
         influenza_viz_gene_quanti_files_expected = ['rna_class_sizes.pdf', 'expression_scatter_plots.pdf']
         influenza_viz_gene_quanti_files_calculated = os.listdir(self.triple_fresh_copy_output_viz_gene_quanti_influenza)
-        assert influenza_viz_gene_quanti_files_expected == influenza_viz_gene_quanti_files_calculated
+        assert sorted(influenza_viz_gene_quanti_files_expected) == sorted(influenza_viz_gene_quanti_files_calculated)
 
 if __name__ == "__main__":
     unittest.main()
