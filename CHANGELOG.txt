@@ -1,3 +1,13 @@
+v2.0.0 (2022-06-28)
+- Added multi-species analysis (changes the API)
+- Results of subcommands separated by species
+- Updated mapping statistics (e.g. count species-cross aligned reads)
+- Include or exclude species-cross aligned reads in read counts and/or normalization
+- Additional vizualisation for multi-species projects
+- Template fragment building for paired-end reads
+- Subcommands (for paired-end reads) use counts and/or normalization based on fragments or single reads
+- Filter reads by template length
+- Output folder creation only when calling the corresponding subcommands
 v1.0.1 (2020-07-11)
 - Hotfix of align error cause by realign arg still present
 v1.0.0 (2020-07-08)

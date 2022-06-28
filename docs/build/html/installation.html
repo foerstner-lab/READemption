@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Installation and updating &mdash; READemption 1.0.1 documentation</title>
+  <title>Installation and updating &mdash; READemption 2.0.0 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -30,7 +30,7 @@
             <img src="_static/READemption_logo.png" class="logo" alt="Logo"/>
           </a>
               <div class="version">
-                1.0
+                2.0
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -56,12 +56,14 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#updating-reademption">Updating READemption</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#package-version-requirements-and-installation">Package version requirements and installation</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="live_and_installation_image.html">Live system and installation image</a></li>
 <li class="toctree-l1"><a class="reference internal" href="docker_image.html">Docker image</a></li>
 <li class="toctree-l1"><a class="reference internal" href="subcommands.html">READemption’s subcommands</a></li>
-<li class="toctree-l1"><a class="reference internal" href="example_analysis.html">Performing an example analysis</a></li>
+<li class="toctree-l1"><a class="reference internal" href="fragment_building.html">Fragment building for paired-end reads</a></li>
+<li class="toctree-l1"><a class="reference internal" href="example_analysis.html">Performing example analyses</a></li>
 <li class="toctree-l1"><a class="reference internal" href="troubleshooting.html">Troubleshooting</a></li>
 <li class="toctree-l1"><a class="reference internal" href="license.html">License</a></li>
 <li class="toctree-l1"><a class="reference internal" href="versions.html">Versions/Change log</a></li>
@@ -213,6 +215,50 @@ upgrade it to the newest version by running</p>
 </pre></div>
 </div>
 </section>
+<section id="package-version-requirements-and-installation">
+<h2>Package version requirements and installation<a class="headerlink" href="#package-version-requirements-and-installation" title="Permalink to this headline"></a></h2>
+<p>Create a python version 3.9 environment</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">conda</span> <span class="n">create</span> <span class="o">--</span><span class="n">name</span> <span class="n">py3</span><span class="mf">.9</span><span class="n">_reademption</span> <span class="n">python</span><span class="o">=</span><span class="mf">3.9</span>
+</pre></div>
+</div>
+<p>Activate the environment</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">conda</span> <span class="n">activate</span> <span class="n">py3</span><span class="mf">.9</span><span class="n">_reademption</span>
+</pre></div>
+</div>
+<p>Install pysam</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">conda</span> <span class="n">install</span> <span class="o">-</span><span class="n">c</span> <span class="n">bioconda</span> <span class="n">pysam</span><span class="o">=</span><span class="mf">0.19.1</span>
+</pre></div>
+</div>
+<p>Install segemehl</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">conda</span> <span class="n">install</span> <span class="o">-</span><span class="n">c</span> <span class="n">bioconda</span> <span class="n">segemehl</span><span class="o">=</span><span class="mf">0.3.4</span>
+</pre></div>
+</div>
+<p>Install biopython (numpy 1.23 included)</p>
+<dl class="simple">
+<dt>::</dt><dd><p>conda install biopython=1.79</p>
+</dd>
+</dl>
+<p>Install pandas</p>
+<dl class="simple">
+<dt>::</dt><dd><p>conda install pandas=1.4.3</p>
+</dd>
+</dl>
+<p>Install seaborn</p>
+<dl class="simple">
+<dt>::</dt><dd><p>conda install seaborn=0.11.2</p>
+</dd>
+</dl>
+<p>Install matplotlib</p>
+<dl class="simple">
+<dt>::</dt><dd><p>conda install matplotlib=3.5.2</p>
+</dd>
+</dl>
+<p>Install pytest (only required for testing)</p>
+<dl class="simple">
+<dt>::</dt><dd><p>conda install pytest</p>
+</dd>
+</dl>
+</section>
 </section>
 
 
@@ -226,7 +272,7 @@ upgrade it to the newest version by running</p>
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2020, Konrad U. Förstner and Till Sauerwein.</p>
+    <p>&#169; Copyright 2022, Konrad U. Förstner and Till Sauerwein.</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
@@ -245,7 +291,7 @@ upgrade it to the newest version by running</p>
       });
   </script>
     <div class="footer">
-    This documention is licensed under the <a href="https://creativecommons.org/licenses/by/3.0/">Creative Commons Attribution license</a>, 2020, Konrad U. Förstner and Till Sauerwein.
+    This documention is licensed under the <a href="https://creativecommons.org/licenses/by/3.0/">Creative Commons Attribution license</a>, 2022, Konrad U. Förstner and Till Sauerwein.
       Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 4.4.0.
     </div>
 

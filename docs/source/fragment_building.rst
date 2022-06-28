@@ -12,7 +12,7 @@ the mapped read will also be written to the BAM file, but its initial start and 
 The figures below show different possible alignment layouts for the two reads of a pair and their calculated fragment.
 
 Fragment building for different layouts of pairs that map to the forward strand
-----------------------------------------------------------
+-------------------------------------------------------------------------------
 
 **A\) Pair in order, no overlap**
 
@@ -126,7 +126,7 @@ Fragment building for different layouts of pairs that map to the forward strand
        -----------------------------calculated fragment--------------------------------------->
 
 Fragment building for different layouts of pairs that map to the reverse strand
-----------------------------------------------------------
+-------------------------------------------------------------------------------
 
 **A\) Pair in order, no overlap**
 

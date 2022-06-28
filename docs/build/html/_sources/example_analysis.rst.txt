@@ -37,6 +37,7 @@ Please not that all species of a project - even if it is only one species - need
   $ reademption create --project_path READemption_analysis --species salmonella="Salmonella Typhimurium"
   Created folder "READemption_analysis" and required subfolders.
   Please copy read files into folder "READemption_analysis/input/reads" and reference sequences files into folder/s "READemption_analysis/input/salmonella_reference_sequences".
+
 This will result in a folder structure as shown here:
 ::
 
@@ -96,6 +97,7 @@ necessary if both, FASTA and GFF3 files, will be loaded in the IGB.
 
 **Then we download the GFF3 files that contain the annotations**
 ::
+
    $ wget -P READemption_analysis/input/salmonella_annotations https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/210/855/GCF_000210855.2_ASM21085v2/GCF_000210855.2_ASM21085v2_genomic.gff.gz
    $ gunzip READemption_analysis/input/salmonella_annotations/GCF_000210855.2_ASM21085v2_genomic.gff.gz
 
@@ -249,9 +251,10 @@ classes.
 
 ::
 
-   $ reademption viz_gene_quanti --project_path READemption_analysis
+    $ reademption viz_gene_quanti --project_path READemption_analysis
 
 ``viz_deseq`` generates MA-plots as well as volcano plots.
+
 
 ::
 
