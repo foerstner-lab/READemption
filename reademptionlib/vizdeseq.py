@@ -35,9 +35,9 @@ class DESeqViz(object):
         font = {"family": "sans-serif", "size": 7}
         matplotlib.rc("font", **font)
         deseq_result = pd.read_table(
-            self._deseq_path_template % (condition_1, condition_2)
+            self._deseq_path_template + f"{condition_1}_vs_{condition_2}.csv"
         )
-        # Remove 0 base mean row as those would otherwise couse trouble
+        # Remove 0 base mean row as those would otherwise cause trouble
         # for the log10
         deseq_result = deseq_result[deseq_result.baseMean > 0]
         fig = plt.figure()
@@ -59,7 +59,7 @@ class DESeqViz(object):
             ".r",
             alpha=0.3,
         )
-        plt.title("{} vs. {} - MA plot".format(condition_1, condition_2))
+        plt.title(f"{condition_1} vs. {condition_2} - MA plot")
         y_max = max([abs(log2_fc) for log2_fc in deseq_result.log2FoldChange])
         plt.ylim(-1.1 * y_max, 1.1 * y_max)
         plt.xlabel("log10 base mean")
@@ -88,7 +88,7 @@ class DESeqViz(object):
                     return sorted(list(set(line.split())))
 
     def _create_volcano_plots(self, condition_1, condition_2):
-        deseq_path = self._deseq_path_template % (condition_1, condition_2)
+        deseq_path = self._deseq_path_template + f"{condition_1}_vs_{condition_2}.csv"
         (
             basemean,
             log2_fold_changes,
@@ -138,7 +138,7 @@ class DESeqViz(object):
         )
         # To avoid problem with zero in log10
         p_values = np.array(p_values)
-        p_values[p_values == 0.0] = 10 ** -100
+        p_values[p_values == 0.0] = 10**-100
         mod_p_values = -1 * np.log10(p_values)
         mod_p_values[mod_p_values == float("+inf")] = 0.0
         mod_p_values[mod_p_values == float("-inf")] = 0.0
@@ -155,8 +155,8 @@ class DESeqViz(object):
         plt.plot(log2_fold_changes, mod_p_values, "k.", alpha=0.3)
         # Add axis labels
         plt.xlabel("log$_2$ fold change")
-        plt.ylabel("- log$_{10}$ p-value %s" % (pvalue_string_mod))
-        plt.title("%s vs. %s" % (condition_1, condition_2))
+        plt.ylabel(f"- log$_{10}$ p-value {pvalue_string_mod}")
+        plt.title(f"{condition_1} vs. {condition_2}")
         significant_p_value = -1 * np.log10(self._p_value_significance_limit)
         plt.plot(
             [-1 * max_log_2_fold_change, max_log_2_fold_change],

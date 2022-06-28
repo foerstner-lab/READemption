@@ -1,0 +1,12 @@
+##gff-version 3								
+#!gff-spec-version 1.21								
+#!processor NCBI annotwriter								
+#!genome-build ViralMultiSegProj15622								
+#!genome-build-accession NCBI_Assembly:GCF_000865085.1								
+##sequence-region NC_007373.1 1 2341								
+##species https://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?id=335341								
+NC_007373.1	RefSeq	gene	1	80	.	+	.	gene_name=gene_X;ID=gene-FLUAVH3N2_s1p1;Dbxref=GeneID:3655161;Name=PB2;gbkey=Gene;gene=PB2;gene_biotype=protein_coding;locus_tag=FLUAVH3N2_s1p1
+##sequence-region NC_007372.1 1 2341								
+##species https://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?id=335341								
+NC_007372.1	RefSeq	gene	1	40	.	+	.	gene_name=gene_Y;ID=gene-FLUAVH3N2_s2p1;Dbxref=GeneID:3655159;Name=PB1;gbkey=Gene;gene=PB1;gene_biotype=protein_coding;locus_tag=FLUAVH3N2_s2p1
+NC_007372.1	RefSeq	gene	41	80	.	+	.	gene_name=gene_Z;ID=gene-FLUAVH3N2_s2p1;Dbxref=GeneID:3655159;Name=PB1;gbkey=Gene;gene=PB1;gene_biotype=protein_coding;locus_tag=FLUAVH3N2_s2p1

@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>READemption - A RNA-Seq Analysis Pipeline &mdash; READemption 1.0.5 documentation</title>
+  <title>READemption - A RNA-Seq Analysis Pipeline &mdash; READemption 2.0.0 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -29,7 +29,7 @@
             <img src="_static/READemption_logo.png" class="logo" alt="Logo"/>
           </a>
               <div class="version">
-                1.0
+                2.0
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -44,7 +44,8 @@
 <li class="toctree-l1"><a class="reference internal" href="live_and_installation_image.html">Live system and installation image</a></li>
 <li class="toctree-l1"><a class="reference internal" href="docker_image.html">Docker image</a></li>
 <li class="toctree-l1"><a class="reference internal" href="subcommands.html">READemption’s subcommands</a></li>
-<li class="toctree-l1"><a class="reference internal" href="example_analysis.html">Performing an example analysis</a></li>
+<li class="toctree-l1"><a class="reference internal" href="fragment_building.html">Fragment building for paired-end reads</a></li>
+<li class="toctree-l1"><a class="reference internal" href="example_analysis.html">Performing example analyses</a></li>
 <li class="toctree-l1"><a class="reference internal" href="troubleshooting.html">Troubleshooting</a></li>
 <li class="toctree-l1"><a class="reference internal" href="license.html">License</a></li>
 <li class="toctree-l1"><a class="reference internal" href="versions.html">Versions/Change log</a></li>
@@ -83,7 +84,8 @@
 <li class="toctree-l1"><a class="reference internal" href="live_and_installation_image.html">Live system and installation image</a></li>
 <li class="toctree-l1"><a class="reference internal" href="docker_image.html">Docker image</a></li>
 <li class="toctree-l1"><a class="reference internal" href="subcommands.html">READemption’s subcommands</a></li>
-<li class="toctree-l1"><a class="reference internal" href="example_analysis.html">Performing an example analysis</a></li>
+<li class="toctree-l1"><a class="reference internal" href="fragment_building.html">Fragment building for paired-end reads</a></li>
+<li class="toctree-l1"><a class="reference internal" href="example_analysis.html">Performing example analyses</a></li>
 <li class="toctree-l1"><a class="reference internal" href="troubleshooting.html">Troubleshooting</a></li>
 <li class="toctree-l1"><a class="reference internal" href="license.html">License</a></li>
 <li class="toctree-l1"><a class="reference internal" href="versions.html">Versions/Change log</a></li>
@@ -95,12 +97,25 @@
 <p>READemption is a pipeline for the computational evaluation of
 RNA-Seq data. It was originally developed to process dRNA-Seq reads
 (as introduced by Sharma et al., Nature, 2010 (<a class="reference external" href="http://www.ncbi.nlm.nih.gov/pubmed/20164839">Pubmed</a>)) originating from
-bacterial samples. Meanwhile is has been extended to process data
+bacterial samples. Meanwhile it has been extended to process data
 generated in different experimental setups and from all domains of
-life. The <a class="reference external" href="subcommands.html">functions</a> which are accessible via a
-command-line interface cover read processing and aligning, coverage
-calculation, gene expression quantification, differential gene
-expression analysis as well as visualization. In order to set up and
+life.
+READemption features handling of:</p>
+<ul class="simple">
+<li><p><strong>single and multi-species projects</strong></p></li>
+<li><p><strong>single or paired-end reads</strong></p></li>
+</ul>
+<p>The <a class="reference external" href="subcommands.html">functions</a> which are accessible via a
+command-line interface cover:</p>
+<ul class="simple">
+<li><p><strong>read processing</strong></p></li>
+<li><p><strong>aligning</strong></p></li>
+<li><p><strong>coverage calculation</strong></p></li>
+<li><p><strong>gene expression quantification</strong></p></li>
+<li><p><strong>differential gene expression analysis</strong></p></li>
+<li><p><strong>visualization</strong></p></li>
+</ul>
+<p>In order to set up and
 perform analyses quickly READemption follows the principal of
 <em>convention over configuration</em>: Once the input files are
 copied/linked into defined folders no further parameters have to be
@@ -141,7 +156,7 @@ Bioinformatics, Aug 13. <a class="reference external" href="http://bioinformatic
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2021, Konrad U. Förstner and Till Sauerwein.</p>
+    <p>&#169; Copyright 2022, Konrad U. Förstner and Till Sauerwein.</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
@@ -160,8 +175,8 @@ Bioinformatics, Aug 13. <a class="reference external" href="http://bioinformatic
       });
   </script>
     <div class="footer">
-    This documention is licensed under the <a href="https://creativecommons.org/licenses/by/3.0/">Creative Commons Attribution license</a>, 2021, Konrad U. Förstner and Till Sauerwein.
-      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 4.2.0.
+    This documention is licensed under the <a href="https://creativecommons.org/licenses/by/3.0/">Creative Commons Attribution license</a>, 2022, Konrad U. Förstner and Till Sauerwein.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 4.4.0.
     </div>
 
 

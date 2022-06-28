@@ -19,7 +19,7 @@ class TestGeneWiseQuantification(unittest.TestCase):
     def setUp(self):
         self.example_data = ExampleData()
         self._sam_bam_prefix = "dummy"
-        self.gene_wise_quantification = GeneWiseQuantification()
+        self.gene_wise_quantification = GeneWiseQuantification("references_by_species_dummy")
 
     def tearDown(self):
         for suffix in [".sam", ".bam", ".bam.bai"]:
@@ -29,7 +29,7 @@ class TestGeneWiseQuantification(unittest.TestCase):
         self._generate_bam_file(
             self.example_data.sam_content_1, self._sam_bam_prefix
         )
-        self.gene_wise_quantification = GeneWiseQuantification()
+        self.gene_wise_quantification = GeneWiseQuantification("references_by_species_dummy")
         sam = pysam.Samfile(self._sam_bam_prefix + ".bam")
         # Overlap with all mappings on the forward strand
         self.assertListEqual(
@@ -124,7 +124,7 @@ class TestGeneWiseQuantification(unittest.TestCase):
         self._generate_bam_file(
             self.example_data.sam_content_1, self._sam_bam_prefix
         )
-        self.gene_wise_quantification = GeneWiseQuantification()
+        self.gene_wise_quantification = GeneWiseQuantification("references_by_species_dummy")
         self.gene_wise_quantification._min_overlap = 5
         sam = pysam.Samfile(self._sam_bam_prefix + ".bam")
         # 1 overlapping base in the 5' end of the reads => not enough

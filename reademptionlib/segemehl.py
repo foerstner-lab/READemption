@@ -78,9 +78,6 @@ class Segemehl(object):
             segemehl_call.append("--splits")
         if nonmatch_file:
             segemehl_call += ["--nomatchfilename", nonmatch_file]
-        if self._show_progress is False:
-            # segemehl_call += ["--silent"]
-            pass
         if other_parameters:
             segemehl_call.append(other_parameters)
         # Discard standard error output

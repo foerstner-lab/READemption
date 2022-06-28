@@ -7,6 +7,7 @@ import pandas as pd
 class GeneWiseQuantification(object):
     def __init__(
         self,
+        references_by_species,
         min_overlap=1,
         read_region="global",
         clip_length=11,
@@ -17,6 +18,8 @@ class GeneWiseQuantification(object):
         antisense_only=False,
         strand_specific=True,
         unique_only=False,
+        count_cross_aligned_reads=False,
+        crossmapped_reads=None,
     ):
         """
         - normalize_by_alignment: consider that some reads are aligned at
@@ -25,6 +28,7 @@ class GeneWiseQuantification(object):
           overlap with more than on gene
 
         """
+        self._references_by_species = references_by_species
         self._min_overlap = min_overlap
         self._read_region = read_region
         self._clip_length = clip_length
@@ -35,6 +39,8 @@ class GeneWiseQuantification(object):
         self._antisense_only = antisense_only
         self._strand_specific = strand_specific
         self._unique_only = unique_only
+        self._count_cross_aligned_reads = count_cross_aligned_reads
+        self._crossmapped_reads = crossmapped_reads
 
     def calc_overlaps_per_alignment(
         self, read_alignment_path, annotation_paths
@@ -48,11 +54,18 @@ class GeneWiseQuantification(object):
         for annotation_path in annotation_paths:
             annotation_name = annotation_path.split("/")[-1]
             sam = pysam.Samfile(read_alignment_path)
-            for entry in gff3_parser.entries(open(annotation_path), annotation_name):
+            for entry in gff3_parser.entries(
+                open(annotation_path), annotation_name
+            ):
                 if _entry_to_use(entry, self._allowed_features) is False:
                     continue
                 for alignment in self._overlapping_alignments(sam, entry):
                     alignment_id = self._alignment_id(alignment)
+                    # check if species cross aligned reads should be counted
+                    if not self._count_cross_aligned_reads:
+                        # skip alignment if it is cross aligned
+                        if alignment.qname in self._crossmapped_reads:
+                            continue
                     self.alignments_and_no_of_overlaps.setdefault(
                         alignment_id, 0
                     )
@@ -91,7 +104,9 @@ class GeneWiseQuantification(object):
             + "\n"
         )
         annotation_name = annotation_path.split("/")[-1]
-        for entry in gff3_parser.entries(open(annotation_path), annotation_name):
+        for entry in gff3_parser.entries(
+            open(annotation_path), annotation_name
+        ):
             if _entry_to_use(entry, self._allowed_features) is False:
                 continue
             if pseudocounts is False:
@@ -101,6 +116,11 @@ class GeneWiseQuantification(object):
                 sum_sense = 1
                 sum_antisense = 1
             for alignment in self._overlapping_alignments(sam, entry):
+                # check if species cross aligned reads should be counted
+                if not self._count_cross_aligned_reads:
+                    # skip alignment if it is cross aligned
+                    if alignment.qname in self._crossmapped_reads:
+                        continue
                 fraction = fraction_calc_method(alignment)
                 if self._same_strand(entry, alignment):
                     sum_sense += fraction
@@ -154,25 +174,17 @@ class GeneWiseQuantification(object):
                     self._alignment_id(alignment)
                 ]
             )
-            / float(alignment_tags["NH"])   # no. of alignments of read
+            / float(alignment_tags["NH"])  # no. of alignments of read
         )
 
     def _fraction_norm_by_alignment(self, alignment):
         alignment_tags = self._alignment_tags(alignment)
-        return (
-            1.0
-            / float(alignment_tags["NH"]) # no. of alignments of read
-        )
+        return 1.0 / float(alignment_tags["NH"])  # no. of alignments of read
 
     def _fraction_norm_by_overlap(self, alignment):
         alignment_tags = self._alignment_tags(alignment)
-        return (
-            1.0
-            / float(
-                self.alignments_and_no_of_overlaps[
-                    self._alignment_id(alignment)
-                ]
-            )
+        return 1.0 / float(
+            self.alignments_and_no_of_overlaps[self._alignment_id(alignment)]
         )
 
     def _overlapping_alignments(self, sam, entry):
@@ -344,21 +356,23 @@ class GeneWiseOverview(object):
         for lib in libs:
             gene_quanti[lib] = gene_quanti[lib].astype(float)
             if (gene_quanti[lib] == 0).all():
-                print(f"Warning: Calculating TPM values for genes that have no "
-                      f"other values than zero is not possible. Skipping the "
-                      f"creation of the TPM gene quantification for library {lib}.")
+                print(
+                    f"Warning: Calculating TPM values for genes that have no "
+                    f"other values than zero is not possible. Skipping the "
+                    f"creation of the TPM gene quantification for library {lib}."
+                )
                 gene_quanti.drop(lib, inplace=True, axis=1)
                 continue
             # calculate A
             gene_quanti["transcript_count"] = gene_quanti.apply(
-                lambda df: (int(df[lib]))
+                lambda df: (float(df[lib]))
                 / (int(df["End"]) - int(df["Start"]) + 1),
                 axis=1,
             )
             A = gene_quanti["transcript_count"].sum()
             # calculate TPM per gene and replace the raw read counts in the gene quanti table
             gene_quanti[lib] = gene_quanti.apply(
-                lambda df: (int(df[lib]) * 1000000)
+                lambda df: (float(df[lib]) * 1000000)
                 / ((int(df["End"]) - int(df["Start"]) + 1) * A),
                 axis=1,
             )
@@ -430,7 +444,9 @@ class GeneWiseOverview(object):
             entries = []
             seq_lengths = []
             annotation_name = annotation_path.split("/")[-1]
-            for entry in gff3_parser.entries(open(annotation_path), annotation_name):
+            for entry in gff3_parser.entries(
+                open(annotation_path), annotation_name
+            ):
                 if _entry_to_use(entry, self._allowed_features) is False:
                     continue
                 entries.append(direction + "\t" + str(entry))
@@ -482,7 +498,9 @@ class GeneWiseOverview(object):
             entries = []
             seq_lengths = []
             annotation_name = annotation_path.split("/")[-1]
-            for entry in gff3_parser.entries(open(annotation_path), annotation_name):
+            for entry in gff3_parser.entries(
+                open(annotation_path), annotation_name
+            ):
                 if _entry_to_use(entry, self._allowed_features) is False:
                     continue
                 entries.append(direction + "\t" + str(entry))
@@ -536,11 +554,11 @@ class GeneWiseOverview(object):
         with C = is the number of mappable reads that fell onto the gene
              N = total number of mappable read
              L = length of the gene
-        
+
         """
         return str(
             float(counting)
-            * float(10 ** 9)
+            * float(10**9)
             / (float(total_no_of_aligned_reads) * float(length))
         )
 

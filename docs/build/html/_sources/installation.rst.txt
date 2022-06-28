@@ -146,3 +146,48 @@ upgrade it to the newest version by running
 ::
 
   pip3 install --upgrade READemption
+
+
+Package version requirements and installation
+---------------------------------------------
+Create a python version 3.9 environment
+::
+    conda create --name py3.9_reademption python=3.9
+
+Activate the environment
+::
+    conda activate py3.9_reademption
+
+Install pysam
+::
+    conda install -c bioconda pysam=0.19.1
+
+
+Install segemehl
+::
+    conda install -c bioconda segemehl=0.3.4
+
+Install biopython (numpy 1.23 included)
+
+::
+    conda install biopython=1.79
+
+Install pandas
+
+::
+    conda install pandas=1.4.3
+
+Install seaborn
+
+::
+    conda install seaborn=0.11.2
+
+Install matplotlib
+
+::
+    conda install matplotlib=3.5.2
+
+Install pytest (only required for testing)
+
+::
+    conda install pytest

@@ -1,0 +1,2 @@
+Orientation of counted reads relative to the strand location of the annotation	Sequence name	Source	Feature	Start	End	Score	Strand	Frame	Attributes	library_one	library_two
+sense	NC_007795.1	RefSeq	gene	1	80	.	+	.	gene_name=gene_K;ID=gene-SAOUHSC_00001;Dbxref=GeneID:3919798;Name=dnaA;gbkey=Gene;gene=dnaA;gene_biotype=protein_coding;locus_tag=SAOUHSC_00001;sequence=CGATTAAAGATAGAAATACACGATGCGAGCAATCAAATTTCATAACATCACCATGAGTTTGGTCCGAAGCATGAGTGTTT	0.5	0.5

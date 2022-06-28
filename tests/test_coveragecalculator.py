@@ -10,7 +10,8 @@ import pysam
 
 class TestCoverageCalculator(unittest.TestCase):
     def setUp(self):
-        self.coverage_calculator = CoverageCalculator()
+        self.species_references = ["chrom", "plasmid1", "plasmid2"]
+        self.coverage_calculator = CoverageCalculator(self.species_references, count_cross_aligned_reads=True)
         self.example_data = ExampleData()
         self._sam_bam_prefix = "dummy"
 
@@ -28,6 +29,7 @@ class TestCoverageCalculator(unittest.TestCase):
         pysam.view("-Sb", "-o{}".format(bam_file), sam_file, catch_stdout=False)
         pysam.index(bam_file)
         self._bam = pysam.Samfile(bam_file)
+        #self._bam_path = bam_file
 
     def test_init_coverage_list(self):
         self.coverage_calculator._init_coverage_list(10)
@@ -130,8 +132,8 @@ class TestCoverageCalculator(unittest.TestCase):
         mapping is counted as one to each of the matching position
         independent how often its read is mapped in in total.
         """
-        self.coverage_calculator = CoverageCalculator(
-            read_count_splitting=False
+        self.coverage_calculator = CoverageCalculator(self.species_references,
+            read_count_splitting=False, count_cross_aligned_reads=True
         )
         self._generate_bam_file(
             self.example_data.sam_content_2, self._sam_bam_prefix
@@ -163,8 +165,8 @@ class TestCoverageCalculator(unittest.TestCase):
         """If uniqueley_aligned_only is True skip any mapping of read
         that are aligned to more than on location.
         """
-        self.coverage_calculator = CoverageCalculator(
-            uniquely_aligned_only=True
+        self.coverage_calculator = CoverageCalculator(self.species_references,
+            uniquely_aligned_only=True, count_cross_aligned_reads=True
         )
         self._generate_bam_file(
             self.example_data.sam_content_3, self._sam_bam_prefix
@@ -196,8 +198,8 @@ class TestCoverageCalculator(unittest.TestCase):
         """If first_base_only is True only the first nucleotide of a
         mapping is considered.
         """
-        self.coverage_calculator = CoverageCalculator(
-            coverage_style="first_base_only"
+        self.coverage_calculator = CoverageCalculator(self.species_references,
+            coverage_style="first_base_only", count_cross_aligned_reads=True
         )
         self._generate_bam_file(
             self.example_data.sam_content_1, self._sam_bam_prefix

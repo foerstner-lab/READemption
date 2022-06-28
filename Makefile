@@ -5,6 +5,11 @@ coverage:
 	coverage run tests/test_all.py
 	coverage report
 
+coverage_html:
+	# pytest-cov needs to be installed:
+	# $ pip install pytest-cov
+	pytest --cov=reademptionlib --cov-report html --cov-context=test
+
 package:
 	rm -r build
 	pandoc -o README.rst README.md
@@ -17,6 +22,10 @@ package_to_pypi:
 	python3 -m twine upload  --verbose  dist/*
 
 html_doc:
+	# install sphinx argparse extension
+	# pip install sphinx-argparse
+	# install rtd theme
+	# pip install sphinx-rtd-theme
 	cd docs && make html && cd ..
 
 show_html_docs:
@@ -31,6 +40,7 @@ new_release:
 	@echo "  git checkout release_v0.4.X"
 	@echo "* Change version and date in bin/reademption"
 	@echo "* Change version in setup.py"
+	@echo "* Change requirements (install_requires) in setup.py"
 	@echo "* Change version, release and date in docs/source/conf.py"
 	@echo "* Add description to CHANGELOG.txt"
 	@echo "* Refresh the two reademption links in docs and docs/source."
