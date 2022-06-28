@@ -52,7 +52,7 @@ jobs:
     - name: Add conda bin (segemehl.x) to PATH
       shell: bash
       run: echo "$CONDA/bin" >> $GITHUB_PATH
-    - name Install DESEQ2
+    - name: Install DESEQ2
       shell: bash
       run: echo "if (!requireNamespace('BiocManager', quietly = TRUE)) install.packages('BiocManager') ; BiocManager::install('DESeq2'); install.packages('gplots')" | R --no-save
     - name: Test with pytest
