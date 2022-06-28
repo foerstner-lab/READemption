@@ -64,4 +64,4 @@ jobs:
       run:  sudo echo "if (!requireNamespace('BiocManager', quietly = TRUE)) install.packages('BiocManager') ; BiocManager::install('DESeq2'); install.packages('gplots')" | sudo R --no-save
     - name: Test with pytest
       run: |
-        pytest tests/test_projectcreator.py
+        pytest
