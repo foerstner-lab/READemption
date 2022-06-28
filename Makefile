@@ -10,6 +10,15 @@ coverage_html:
 	# $ pip install pytest-cov
 	pytest --cov=reademptionlib --cov-report html --cov-context=test
 
+coverage_batch:
+	# install coverage-badge
+	# pip install coverage-badge
+	# run coverage
+	coverage run tests/test_all.py
+	# create the badge
+	coverage-badge -o coverage.svg
+	# add and commit the badge to GitHub
+
 package:
 	rm -r build
 	pandoc -o README.rst README.md
