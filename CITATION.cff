@@ -13,9 +13,9 @@ authors:
   - family-names: Tobin
     given-names: Diarmaid         
 title: "READemption"
-version: 1.0.5
-doi: 10.5281/zenodo.5565069
-date-released: 2020-07-11
+version: 2.0.0
+doi: https://zenodo.org/record/6772669
+date-released: 2022-06-28
 preferred-citation:
   type: article
   authors:
