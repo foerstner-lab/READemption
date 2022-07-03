@@ -18,7 +18,7 @@
     <script src="_static/js/theme.js"></script>
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="READemption’s subcommands" href="subcommands.html" />
-    <link rel="prev" title="Live system and installation image" href="live_and_installation_image.html" /> 
+    <link rel="prev" title="Installation and updating" href="installation.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -42,7 +42,6 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="installation.html">Installation and updating</a></li>
-<li class="toctree-l1"><a class="reference internal" href="live_and_installation_image.html">Live system and installation image</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Docker image</a></li>
 <li class="toctree-l1"><a class="reference internal" href="subcommands.html">READemption’s subcommands</a></li>
 <li class="toctree-l1"><a class="reference internal" href="fragment_building.html">Fragment building for paired-end reads</a></li>
@@ -87,26 +86,28 @@ that can be easily retrieved and used once you have <a class="reference external
 in your list of docker images:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ sudo docker images
 REPOSITORY                    TAG                 IMAGE ID            CREATED             VIRTUAL SIZE
-tillsauerwein/reademption     1.0.5               6ca6b40723c0        3 hours ago         1.91GB
-tillsauerwein/reademption     latest              6ca6b40723c0        3 hours ago         1.91GB
+tillsauerwein/reademption     2.0.0               2ad405f43cb6        42 minutes ago      3.31GB
+tillsauerwein/reademption     latest              2ad405f43cb6        42 minutes ago      3.31GB
 </pre></div>
 </div>
-<p>You can simply start the contains by running the following command:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ sudo docker run -i -t reademption_1.0.5
+<p>You can simply start the container by running the following command:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ sudo docker run -i -t reademption
 root@3b9e7fd860ee:/# reademption -v
-READemption version 1.0.5
+READemption version 2.0.0
 </pre></div>
 </div>
 <p>Inside of this environment you have access to the local installation
 of READemption.</p>
-<p>You can find a detailed tutorial of using READemption with docker at <a class="reference external" href="https://github.com/Tillsa/READemption_Docker_Tutorial">https://github.com/Tillsa/READemption_Docker_Tutorial</a>.</p>
+<p>You can find a detailed tutorial of using READemption with docker at <a class="reference external" href="https://github.com/Tillsa/READemption_Docker_Tutorial">https://github.com/Tillsa/READemption_Docker_Tutorial</a>.
+The tutorial is the same as the single-species analysis shown
+at the <a class="reference external" href="https://reademption.readthedocs.io/en/latest/example_analysis.html#single-species-analysis">Performing example analyses</a> section.</p>
 </section>
 
 
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="live_and_installation_image.html" class="btn btn-neutral float-left" title="Live system and installation image" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="installation.html" class="btn btn-neutral float-left" title="Installation and updating" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
         <a href="subcommands.html" class="btn btn-neutral float-right" title="READemption’s subcommands" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 

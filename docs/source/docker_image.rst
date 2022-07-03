@@ -18,20 +18,23 @@ in your list of docker images:
 
   $ sudo docker images
   REPOSITORY                    TAG                 IMAGE ID            CREATED             VIRTUAL SIZE
-  tillsauerwein/reademption     1.0.5               6ca6b40723c0        3 hours ago         1.91GB
-  tillsauerwein/reademption     latest              6ca6b40723c0        3 hours ago         1.91GB
+  tillsauerwein/reademption     2.0.0               2ad405f43cb6        42 minutes ago      3.31GB
+  tillsauerwein/reademption     latest              2ad405f43cb6        42 minutes ago      3.31GB
 
 
-You can simply start the contains by running the following command:
+
+You can simply start the container by running the following command:
 
 :: 
 
-  $ sudo docker run -i -t reademption_1.0.5
+  $ sudo docker run -i -t reademption
   root@3b9e7fd860ee:/# reademption -v
-  READemption version 1.0.5
+  READemption version 2.0.0
 
 
 Inside of this environment you have access to the local installation
 of READemption.
 
 You can find a detailed tutorial of using READemption with docker at https://github.com/Tillsa/READemption_Docker_Tutorial.
+The tutorial is the same as the single-species analysis shown
+at the `Performing example analyses <https://reademption.readthedocs.io/en/latest/example_analysis.html#single-species-analysis>`_ section.

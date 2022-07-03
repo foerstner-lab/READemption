@@ -43,6 +43,10 @@ show_html_docs:
 pylint:
 	pylint bin/reademption reademptionlib/* tests/*
 
+conda_package:
+	# create conda meta.yaml from pypi package
+	conda skeleton pypi reademption
+
 new_release:
 	@echo "* Create/checkout a release branch"
 	@echo "  git branch release_v0.4.X"
@@ -70,7 +74,8 @@ new_release:
 	@echo "* conda install -c conda-forge twine "
 	@echo " make package_to_pypi"
 	@echo "* Test doc creation"
-	@echo "* git add CHANGELOG.txt bin/reademption docs/source/conf.py setup.py"
+	@echo "* Update version and date in CITATION.cff"
+	@echo "* git add CHANGELOG.txt bin/reademption docs/source/conf.py setup.py CITATION.cff"
 	@echo " Also add the changed html pages of the docu e.g.: git add -u    (adds all modified files to repo)"
 	@echo "* Commit changes e.g. 'git commit -m \"Set version to 0.4.X\"'"
 	@echo "* Tag the commit e.g. 'git tag -a v0.4.X -m \"version v0.4.X\"'"
@@ -85,10 +90,17 @@ new_release:
 	@echo "The documenation should update automatically after pushing to github via a .readthedocs.yml"
 	@echo "If the automatic update did not work go to read the docs"
 	      " -  login and hit 'build'"
+	@echo "*create conda package"
+	@echo "conda-build --python 3.9 conda_package/reademption"
+	@echo "if necessary install anaconda client"
+	@echo " conda install anaconda-client"
+	@echo "* login to anaconda client"
+	@echo " anaconda login"
+	@echo "*upload anaconda package"
+	@echo "anaconda upload /home/till/anaconda3/conda-bld/linux-64/reademption-2.0.0-py39_0.tar.bz2"
 	@echo "*Create Docker image with tags latest and the current version:"
-	@echo " docker build -f Dockerfile -t tillsauerwein/reademption:1.0.X -t tillsauerwein/reademption:latest ."
+	@echo " docker build -f Dockerfile -t tillsauerwein/reademption:2.0.0 -t tillsauerwein/reademption:latest ."
 	@echo "*push all docker images to dockerhub:"
 	@echo " docker push -a tillsauerwein/reademption"
 	# @echo "* Upload new docs using 'make upload_doc'"
 
-# Todo: docker_images: docker build -t konradfoerstner/reademption:0.4.1 -t konradfoerstner/reademption:latest .

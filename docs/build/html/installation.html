@@ -17,7 +17,7 @@
         <script src="_static/doctools.js"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Live system and installation image" href="live_and_installation_image.html" />
+    <link rel="next" title="Docker image" href="docker_image.html" />
     <link rel="prev" title="READemption - A RNA-Seq Analysis Pipeline" href="index.html" /> 
 </head>
 
@@ -42,8 +42,9 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <ul class="current">
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Installation and updating</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#requirements">Requirements</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#installing-on-a-fresh-ubuntu-system">Installing on a fresh Ubuntu system</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#installing-on-a-fresh-ubuntu-system-using-conda">Installing on a fresh Ubuntu system using Conda</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#installing-on-a-fresh-ubuntu-system-using-pip">Installing on a fresh Ubuntu system using pip</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#requirements">Requirements</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#installing-all-required-debian-ubuntu-packages">1. Installing all required Debian/Ubuntu packages</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#install-segemehl-version-0-3-4">2. Install segemehl (version 0.3.4)</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#install-deseq2">3. Install DESeq2</a></li>
@@ -56,10 +57,8 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#updating-reademption">Updating READemption</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#package-version-requirements-and-installation">Package version requirements and installation</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="live_and_installation_image.html">Live system and installation image</a></li>
 <li class="toctree-l1"><a class="reference internal" href="docker_image.html">Docker image</a></li>
 <li class="toctree-l1"><a class="reference internal" href="subcommands.html">READemption’s subcommands</a></li>
 <li class="toctree-l1"><a class="reference internal" href="fragment_building.html">Fragment building for paired-end reads</a></li>
@@ -94,22 +93,47 @@
              
   <section id="installation-and-updating">
 <h1>Installation and updating<a class="headerlink" href="#installation-and-updating" title="Permalink to this headline"></a></h1>
+<p>For an easy installation process we recommend using Conda. All necessary steps are described in detail below.</p>
+<section id="installing-on-a-fresh-ubuntu-system-using-conda">
+<h2>Installing on a fresh Ubuntu system using Conda<a class="headerlink" href="#installing-on-a-fresh-ubuntu-system-using-conda" title="Permalink to this headline"></a></h2>
+<p>The following installation steps where tested on ubuntu:22.04.
+We recommend using the package and environment manager Conda for an easy installation.
+It can be downloaded and installed with <a class="reference external" href="https://www.anaconda.com/products/distribution">Anaconda</a>.
+After installing anaconda add the channels <em>anaconda-forge</em> and <em>bioconda</em> by entering the following commands in your terminal:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">conda</span> <span class="n">config</span> <span class="o">--</span><span class="n">add</span> <span class="n">channels</span> <span class="n">conda</span><span class="o">-</span><span class="n">forge</span>
+<span class="n">conda</span> <span class="n">config</span> <span class="o">--</span><span class="n">add</span> <span class="n">channels</span> <span class="n">bioconda</span>
+</pre></div>
+</div>
+<p>To avoid package conflicts we recommend creating a conda environment for READemption based on Python 3.9:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">conda</span> <span class="n">create</span> <span class="o">-</span><span class="n">n</span> <span class="s2">&quot;reademption&quot;</span> <span class="n">python</span><span class="o">=</span><span class="mf">3.9</span>
+</pre></div>
+</div>
+<p>Afterwards activate the environment:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">conda</span> <span class="n">activate</span> <span class="n">reademption</span>
+</pre></div>
+</div>
+<p>Now you can install the READemption conda package that includes READemption and all its dependencies (e.g. segemehl and DESeq2):</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">conda</span> <span class="n">install</span> <span class="o">-</span><span class="n">c</span> <span class="n">till_sauerwein</span> <span class="n">reademption</span> <span class="o">-</span><span class="n">y</span>
+</pre></div>
+</div>
+<p>READemption is ready to use and you can start your own analysis or
+try one of our <a class="reference external" href="https://reademption.readthedocs.io/en/latest/example_analysis.html">example analyses</a></p>
+</section>
+<section id="installing-on-a-fresh-ubuntu-system-using-pip">
+<h2>Installing on a fresh Ubuntu system using pip<a class="headerlink" href="#installing-on-a-fresh-ubuntu-system-using-pip" title="Permalink to this headline"></a></h2>
+<p>The following installation steps where tested on ubuntu:22.04.</p>
 <section id="requirements">
-<h2>Requirements<a class="headerlink" href="#requirements" title="Permalink to this headline"></a></h2>
-<p>READemption was started to be developed using Python 3.2 and the user
+<h3>Requirements<a class="headerlink" href="#requirements" title="Permalink to this headline"></a></h3>
+<p>READemption 2.0.0 was developed using Python 3.9 and the user
 is advised to run READemption with this or a higher version. In any
 case <a class="reference external" href="https://pypi.python.org/pypi/setuptools">setuptools</a> and <a class="reference external" href="http://www.pip-installer.org">pip</a> should be available on the system in
 order to make the installation easy. READemption uses the short read
 mapper <a class="reference external" href="http://www.bioinf.uni-leipzig.de/Software/segemehl/">segemehl</a> for the
-mapping and this software needs to be installed. The subcommands
-<code class="docutils literal notranslate"><span class="pre">viz_align</span></code>, <code class="docutils literal notranslate"><span class="pre">viz_gene_quanti</span></code>, <code class="docutils literal notranslate"><span class="pre">viz_deseq</span></code> require the Python
-library <a class="reference external" href="http://matplotlib.org/">Matplotlib</a>. <a class="reference external" href="http://www.r-project.org/">R</a> and the bioconductor package <a class="reference external" href="http://bioconductor.org/packages/release/bioc/html/DESeq2.html">DESeq2</a> are
+mapping and this software needs to be installed. The bioconductor package <a class="reference external" href="http://bioconductor.org/packages/release/bioc/html/DESeq2.html">DESeq2</a> is
 necessary for the subcommand <code class="docutils literal notranslate"><span class="pre">deseq</span></code> which performs differential
-gene expression analysis. Don’t worry - in the following the
-installation of all these requirements will be covered.</p>
+gene expression analysis. All other requirements are installed via pip’s READemption package.
+Don’t worry - in the following the installation of all these requirements will be covered.</p>
 </section>
-<section id="installing-on-a-fresh-ubuntu-system">
-<h2>Installing on a fresh Ubuntu system<a class="headerlink" href="#installing-on-a-fresh-ubuntu-system" title="Permalink to this headline"></a></h2>
 <section id="installing-all-required-debian-ubuntu-packages">
 <h3>1. Installing all required Debian/Ubuntu packages<a class="headerlink" href="#installing-all-required-debian-ubuntu-packages" title="Permalink to this headline"></a></h3>
 <p>Before starting it is a good idea to update the package list:</p>
@@ -122,7 +146,7 @@ installation of all these requirements will be covered.</p>
 </div>
 <p>Some comments:</p>
 <ul class="simple">
-<li><p>Python version 3.6 and higher is recommended</p></li>
+<li><p>Python version 3.9 and higher is recommended</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">cython</span></code> is required for <code class="docutils literal notranslate"><span class="pre">pysam</span></code></p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">make</span></code>, <code class="docutils literal notranslate"><span class="pre">libncurses5-dev</span></code> and <code class="docutils literal notranslate"><span class="pre">zlib1g-dev</span></code> are needed for <code class="docutils literal notranslate"><span class="pre">segemehl</span></code></p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">libxml2</span></code> is required for the installation of some of the R-packages</p></li>
@@ -172,7 +196,7 @@ BiocManager::install(&quot;DESeq2&quot;)
 <h3>Install  READemption and it’s dependcies<a class="headerlink" href="#install-reademption-and-it-s-dependcies" title="Permalink to this headline"></a></h3>
 <p>Now you can use <code class="docutils literal notranslate"><span class="pre">pip</span></code> to install <code class="docutils literal notranslate"><span class="pre">READemption</span></code> and further python
 packages:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sudo</span> <span class="n">pip3</span> <span class="n">install</span> <span class="n">READemption</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sudo</span> <span class="n">pip</span> <span class="n">install</span> <span class="n">READemption</span>
 </pre></div>
 </div>
 <p>Voilà! You should now be able to call READemption:</p>
@@ -215,50 +239,6 @@ upgrade it to the newest version by running</p>
 </pre></div>
 </div>
 </section>
-<section id="package-version-requirements-and-installation">
-<h2>Package version requirements and installation<a class="headerlink" href="#package-version-requirements-and-installation" title="Permalink to this headline"></a></h2>
-<p>Create a python version 3.9 environment</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">conda</span> <span class="n">create</span> <span class="o">--</span><span class="n">name</span> <span class="n">py3</span><span class="mf">.9</span><span class="n">_reademption</span> <span class="n">python</span><span class="o">=</span><span class="mf">3.9</span>
-</pre></div>
-</div>
-<p>Activate the environment</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">conda</span> <span class="n">activate</span> <span class="n">py3</span><span class="mf">.9</span><span class="n">_reademption</span>
-</pre></div>
-</div>
-<p>Install pysam</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">conda</span> <span class="n">install</span> <span class="o">-</span><span class="n">c</span> <span class="n">bioconda</span> <span class="n">pysam</span><span class="o">=</span><span class="mf">0.19.1</span>
-</pre></div>
-</div>
-<p>Install segemehl</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">conda</span> <span class="n">install</span> <span class="o">-</span><span class="n">c</span> <span class="n">bioconda</span> <span class="n">segemehl</span><span class="o">=</span><span class="mf">0.3.4</span>
-</pre></div>
-</div>
-<p>Install biopython (numpy 1.23 included)</p>
-<dl class="simple">
-<dt>::</dt><dd><p>conda install biopython=1.79</p>
-</dd>
-</dl>
-<p>Install pandas</p>
-<dl class="simple">
-<dt>::</dt><dd><p>conda install pandas=1.4.3</p>
-</dd>
-</dl>
-<p>Install seaborn</p>
-<dl class="simple">
-<dt>::</dt><dd><p>conda install seaborn=0.11.2</p>
-</dd>
-</dl>
-<p>Install matplotlib</p>
-<dl class="simple">
-<dt>::</dt><dd><p>conda install matplotlib=3.5.2</p>
-</dd>
-</dl>
-<p>Install pytest (only required for testing)</p>
-<dl class="simple">
-<dt>::</dt><dd><p>conda install pytest</p>
-</dd>
-</dl>
-</section>
 </section>
 
 
@@ -266,7 +246,7 @@ upgrade it to the newest version by running</p>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="index.html" class="btn btn-neutral float-left" title="READemption - A RNA-Seq Analysis Pipeline" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="live_and_installation_image.html" class="btn btn-neutral float-right" title="Live system and installation image" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="docker_image.html" class="btn btn-neutral float-right" title="Docker image" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

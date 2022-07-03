@@ -1,4 +1,4 @@
-From ubuntu:20.04
+From ubuntu:22.04
 
 MAINTAINER Till Sauerwein <sauerwein@zbmed.de>
 
@@ -7,19 +7,16 @@ ENV PATH="/root/miniconda3/bin:${PATH}"
 ARG PATH="/root/miniconda3/bin:${PATH}"
 
 ENV TZ=Europe/Berlin
-RUN apt-get update && apt-get dist-upgrade -y
-RUN apt-get install -y python3 python3-setuptools python3-pip python3-matplotlib cython3 zlib1g-dev make libncurses5-dev r-base libxml2-dev
-RUN apt-get install wget tree
-RUN pip install READemption
+RUN apt-get update && apt-get dist-upgrade --fix-missing -y
+RUN apt-get -y install wget
 RUN wget \
     https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh \
     && mkdir /root/.conda \
     && bash Miniconda3-latest-Linux-x86_64.sh -b \
     && rm -f Miniconda3-latest-Linux-x86_64.sh
-RUN conda --version
-RUN conda update --yes conda
-RUN conda install -c bioconda segemehl=0.3.4
-RUN echo "if (!requireNamespace('BiocManager', quietly = TRUE)) install.packages('BiocManager') ; BiocManager::install('DESeq2'); install.packages('gplots')" | R --no-save
+RUN conda config --add channels conda-forge
+RUN conda config --add channels bioconda
+RUN conda install -c till_sauerwein reademption -y
 
 WORKDIR /root
 
