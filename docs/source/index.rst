@@ -7,7 +7,6 @@ Table of content
    :maxdepth: 1
 
    installation
-   live_and_installation_image
    docker_image
    subcommands
    fragment_building
