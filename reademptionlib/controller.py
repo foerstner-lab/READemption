@@ -20,7 +20,7 @@ from reademptionlib.vizalign import AlignViz
 from reademptionlib.vizdeseq import DESeqViz
 from reademptionlib.vizgenequanti import GeneQuantiViz
 from reademptionlib.fragmentbuilder import FragmentBuilder
-
+from datetime import datetime
 
 class Controller(object):
 
@@ -163,7 +163,9 @@ class Controller(object):
                 self._read_files, self._lib_names
             )
             self._prepare_reads_single_end()
+            print(f"controller align_single_end_reads start {datetime.now()}")
             self._align_single_end_reads()
+            print(f"controller align_single_end_reads stop {datetime.now()}")
         else:
             # Paired end reads
             self._read_file_pairs = self._pathcreator.get_read_file_pairs()
@@ -172,7 +174,10 @@ class Controller(object):
                 self._read_file_pairs, self._lib_names
             )
             self._prepare_reads_paired_end()
+            print(f"controller align_paired_end_reads start {datetime.now()}")
             self._align_paired_end_reads()
+            print(f"controller align_paired_end_reads stop {datetime.now()}")
+        print(f"controller generate_read_alignment_stats start {datetime.now()}")
         self._generate_read_alignment_stats(
             self._lib_names,
             self._pathcreator.read_alignment_bam_paths,
@@ -180,6 +185,7 @@ class Controller(object):
             self._pathcreator.read_alignments_stats_path,
             self._args.paired_end
         )
+        print(f"controller generate_read_alignment_stats stop {datetime.now()}")
         if self._args.crossalign_cleaning:
             self._remove_crossaligned_reads()
 
@@ -189,8 +195,11 @@ class Controller(object):
             if not self._args.no_fragment_building:
                 fragments = True
                 # build the fragments bam file
+                print(f"controller build_fragments start {datetime.now()}")
                 self._build_fragments()
+                print(f"controller build_fragments stop {datetime.now()}")
                 # generate fragment alignment stats
+                print(f"controller generate_fragment_alignmnet_stats start {datetime.now()}")
                 self._generate_read_alignment_stats(
                     self._lib_names,
                     self._pathcreator.aligned_fragments_bam_paths,
@@ -199,14 +208,19 @@ class Controller(object):
                     self._args.paired_end,
                     fragments
                 )
+                print(f"controller generate_fragment_alignmnet_stats stop {datetime.now()}")
                 # write fragment stats table
+                print(f"controller write_alignment_stats_table fragments start {datetime.now()}")
                 self._write_alignment_stat_table(self._pathcreator.fragment_alignments_stats_path,
                                                  self._pathcreator.fragment_alignment_stats_table_path,
                                                  self._pathcreator.fragment_alignment_stats_table_transposed_path,
                                                  fragments)
+                print(f"controller write_alignment_stats_table fragments stop {datetime.now()}")
+        print(f"controller write_alignment_stats_table reads start {datetime.now()}")
         self._write_alignment_stat_table(self._pathcreator.read_alignments_stats_path,
                                          self._pathcreator.read_alignment_stats_table_path,
                                          self._pathcreator.read_alignment_stats_table_transposed_path)
+        print(f"controller write_alignment_stats_table reads stop {datetime.now()}")
 
     def _build_fragments(self):
         # Build a bam file containing fragments merged from read
