@@ -72,7 +72,7 @@ class ReadAlignerStats(object):
             # Set up reference stats
             self._init_counting_dict(stats_per_ref, ref_id)
             print(ref_id)
-        for entry in bam.fetch():
+        for entry in bam.fetch(until_eof=True):
             ref_id = bam.getrname(entry.tid)
             # Don't count the alignment if it is supplementary, to avoid
             # counting the same alignment multiple times

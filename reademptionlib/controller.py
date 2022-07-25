@@ -3,6 +3,7 @@ import os
 import sys
 import json
 import pysam
+from reademptionlib.bamsorter import BamSorter
 from reademptionlib.coveragecreator import CoverageCreator
 from reademptionlib.crossalignfilter import CrossAlignFilter
 from reademptionlib.deseq import DESeqRunner
@@ -194,6 +195,11 @@ class Controller(object):
             # pairs
             if not self._args.no_fragment_building:
                 fragments = True
+                # sort the bam files by name and sam tag hit index to
+                # accelerate fragment building
+                print(f"controller sort bams by name and index start {datetime.now()}")
+                self._sort_bams_by_name_and_index()
+                print(f"controller sort bams by name and index end {datetime.now()}")
                 # build the fragments bam file
                 print(f"controller build_fragments start {datetime.now()}")
                 self._build_fragments()
@@ -222,6 +228,28 @@ class Controller(object):
                                          self._pathcreator.read_alignment_stats_table_transposed_path)
         print(f"controller write_alignment_stats_table reads stop {datetime.now()}")
 
+    def _sort_bams_by_name_and_index(self):
+        jobs = []
+        with concurrent.futures.ProcessPoolExecutor(
+                max_workers=self._args.processes
+        ) as executor:
+            for (
+                    read_alignment_path,
+                    read_alignment_sorted_path,
+            ) in zip(
+                self._pathcreator.read_alignment_bam_paths,
+                self._pathcreator.read_alignment_bam_sorted_paths,
+            ):
+                # Sort fragments
+                bam_sorter = BamSorter("HI", sort_by="name")
+                jobs.append(
+                    executor.submit(bam_sorter.sort_bam,
+                                    read_alignment_path,
+                                    read_alignment_sorted_path)
+                )
+        # Evaluate thread outcome
+        self._check_job_completeness(jobs)
+
     def _build_fragments(self):
         # Build a bam file containing fragments merged from read
         # pairs
@@ -230,17 +258,17 @@ class Controller(object):
                 max_workers=self._args.processes
         ) as executor:
             for (
-                    read_alignment_path,
+                    read_alignment_sorted_path,
                     fragment_alignment_path,
             ) in zip(
-                self._pathcreator.read_alignment_bam_paths,
+                self._pathcreator.read_alignment_bam_sorted_paths,
                 self._pathcreator.aligned_fragments_bam_paths,
             ):
                 # Perform the building for fragments from reads
                 fragment_builder = FragmentBuilder(self._args.max_fragment_length)
                 jobs.append(
                     executor.submit(fragment_builder.build_bam_file_with_fragments,
-                                    read_alignment_path,
+                                    read_alignment_sorted_path,
                                     fragment_alignment_path)
                 )
             # Evaluate thread outcome

@@ -811,7 +811,11 @@ class PathCreator:
         self.read_alignment_bam_prefix_paths = self._path_list(
             self.read_alignments_folder, lib_names, appendix="_alignments_final"
         )
-
+        self.read_alignment_bam_sorted_paths = self._path_list(
+            self.read_alignments_folder,
+            lib_names,
+            appendix="_alignments_final_sorted.bam",
+        )
         self.aligned_fragments_bam_paths = self._path_list(
             self.read_alignments_folder,
             lib_names,
