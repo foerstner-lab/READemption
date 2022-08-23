@@ -45,7 +45,7 @@ pylint:
 
 conda_package:
 	# create conda meta.yaml from pypi package
-	conda skeleton pypi reademption
+	conda skeleton pypi /conda_package/reademption
 
 new_release:
 	@echo "* Create/checkout a release branch"
@@ -92,7 +92,8 @@ new_release:
 	@echo "If the automatic update did not work go to read the docs"
 	      " -  login and hit 'build'"
 	@echo "*create conda package"
-	@echo "Change version in conda_package/reademption/meta.yaml"
+	@echo "conda skeleton pypi reademption"
+	@echo "replace yaml file from reademption with the one in folder conda_package/reademption"
 	@echo "conda-build --python 3.9 conda_package/reademption"
 	@echo "if necessary install anaconda client"
 	@echo " conda install anaconda-client"

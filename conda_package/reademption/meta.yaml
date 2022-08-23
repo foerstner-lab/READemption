@@ -7,7 +7,9 @@ package:
 
 source:
   url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/READemption-{{ version }}.tar.gz
-  sha256: 229442d5afedba0cdd5eaf8ed34128f851103c6ac55c4289434b0ab52bff8748
+  sha256: 5e58ae838d9e6fe7dbd74dc4ae838e58beb3c240417ddaefc736d04fe1a8331e
+  #sha256: 229442d5afedba0cdd5eaf8ed34128f851103c6ac55c4289434b0ab52bff8748
+  #5e58ae838d9e6fe7dbd74dc4ae838e58beb3c240417ddaefc736d04fe1a8331e
 
 build:
   script: {{ PYTHON }} -m pip install . -vv
