@@ -1,3 +1,6 @@
+v2.0.1 (2022-08-23)
+- Accelerate fragment building for paired-end reads
+- Set color blind friendly colors for viz align plots
 v2.0.0 (2022-06-28)
 - Added multi-species analysis (changes the API)
 - Results of subcommands separated by species

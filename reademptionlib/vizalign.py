@@ -299,7 +299,7 @@ class AlignViz(object):
         for all species
         :param output_path: the path where to save the figure
         """
-        sns.set()
+        sns.set_theme(palette="colorblind")
         ax = species_and_cross_aligned_and_unaligned_transposed.plot(
             kind="bar", stacked=True
         )
@@ -307,7 +307,7 @@ class AlignViz(object):
         handles, labels = plt.gca().get_legend_handles_labels()
         handles.reverse()
         labels.reverse()
-        ax.legend(loc="center left", bbox_to_anchor=(1, 0.5),handles=handles, labels=labels)
+        ax.legend(loc="upper center", bbox_to_anchor=(0.5, 1.35) ,handles=handles, labels=labels)
 
         fig = ax.get_figure()
         fig.savefig(f"{output_path}.pdf", bbox_inches="tight")
@@ -380,9 +380,9 @@ class AlignViz(object):
     def _plot_species_align_stats(
         self, species_aligned_reads_transposed, output_path
     ) -> None:
-        sns.set()
+        sns.set_theme(palette="colorblind")
         ax = species_aligned_reads_transposed.plot(kind="bar", stacked=True)
-        ax.legend(loc="center left", bbox_to_anchor=(1, 0.5))
+        ax.legend(loc="upper center", bbox_to_anchor=(0.5, 1.35))
         fig = ax.get_figure()
         fig.savefig(f"{output_path}.pdf", bbox_inches="tight")
 

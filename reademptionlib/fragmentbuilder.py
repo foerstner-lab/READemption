@@ -55,28 +55,21 @@ class FragmentBuilder(object):
             with pysam.Samfile(
                 fragment_alignment_path, "wb", header=input_bam.header
             ) as output_bam:
-                for alignment in input_bam.fetch():
-                    orientation = self._determine_orientation(alignment)
+                # collect the two reads of a pair for one alignment.
+                # This is only possible because the bam file has been ordered
+                # by read name and alignment hit index
+                pair = {}
+                for alignment in input_bam.fetch(until_eof=True):
                     # Only build a fragment if the pair is proper paired and the
-                    # current read is the first in pair, to avoid building the same
+                    # current read is the second in pair, to avoid building the same
                     # fragement twice (one time for read one and a second time for
                     # read two)
 
                     if alignment.is_proper_pair and alignment.is_read2 is False:
-                        # build fragment for read one and read two
-                        start, end = self._build_fragment(
-                            alignment, orientation, read_alignment_path
-                        )
-                        # no need of adding + 1 to the fragment length, since
-                        # start is 0-based and end is 1-based
-                        fragment_length = end - start
-                        alignment.reference_start = start
-                        alignment.query_sequence = fragment_length * "N"
-                        alignment.cigarstring = f"{fragment_length}="
-                        if self._max_fragment_length:
-                            if fragment_length > self._max_fragment_length:
-                                continue
-                        output_bam.write(alignment)
+                        # Don't build a fragment or add the read if the read is
+                        # read one and proper paired. The read is cached in the
+                        # pair dictionary
+                        pair["read1"] = alignment
 
                     elif alignment.is_proper_pair is False:
                         # if the read is not mapped in proper pair, add the
@@ -88,9 +81,28 @@ class FragmentBuilder(object):
                         output_bam.write(alignment)
 
                     else:
-                        # Don't build a fragment or add the read if the read is
-                        # read two and proper paired
-                        continue
+                        # Add read2 to the cached pair dictionary and build the
+                        # fragment
+                        pair["read2"] = alignment
+                        orientation = self._determine_orientation(pair["read1"])
+                        if pair["read1"].is_read2:
+                            print(f"read 1: {pair['read1']} is actually read 2: {pair['read2']}")
+                        if pair["read2"].is_read1:
+                            print(f"read 2: {pair['read2']} is actually read 1: {pair['read1']}")
+                        # build fragment for read one and read two
+                        start, end = self._build_fragment(
+                            pair["read1"], pair["read2"], orientation, read_alignment_path
+                        )
+                        # no need of adding + 1 to the fragment length, since
+                        # start is 0-based and end is 1-based
+                        fragment_length = end - start
+                        pair["read1"].reference_start = start
+                        pair["read1"].query_sequence = fragment_length * "N"
+                        pair["read1"].cigarstring = f"{fragment_length}="
+                        if self._max_fragment_length:
+                            if fragment_length > self._max_fragment_length:
+                                continue
+                        output_bam.write(pair["read1"])
         # Sort and index the resulting alignment file, since building new
         # fragments results in the new file being out of order
         tmp_sorted_outfile = f"{fragment_alignment_path}_sorted"
@@ -98,13 +110,13 @@ class FragmentBuilder(object):
         os.rename(tmp_sorted_outfile, fragment_alignment_path)
         pysam.index(fragment_alignment_path)
 
-    def _build_fragment(self, entry, orientation, read_alignment_path):
-        tlen = abs(entry.template_length)
+    def _build_fragment(self, read1, read2, orientation, read_alignment_path):
+        tlen = abs(read1.template_length)
         # start is 0-based
-        start = entry.reference_start
+        start = read1.reference_start
         # end is 1-based
-        end = entry.reference_end
-        start_of_mate = entry.next_reference_start
+        end = read1.reference_end
+        start_of_mate = read1.next_reference_start
         # check if the reads are in order
         if orientation == "forward":
             if start <= start_of_mate:
@@ -113,8 +125,7 @@ class FragmentBuilder(object):
                 end_of_fragment = start + tlen
             else:
                 # Forward read pair not in order
-                with pysam.Samfile(read_alignment_path) as bam:
-                    mate = bam.mate(entry)
+                mate = read2
                 mate_start = mate.pos
                 mate_end = mate.aend
                 # check if overlap or exceed. One needs to be added to the
@@ -135,8 +146,7 @@ class FragmentBuilder(object):
 
             else:
                 # Reverse read pair not in order
-                with pysam.Samfile(read_alignment_path) as bam:
-                    mate = bam.mate(entry)
+                mate = read2
                 mate_start = mate.pos
                 mate_end = mate.aend
                 # check if overlap or exceed. One needs to be added to the

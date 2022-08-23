@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Performing example analyses &mdash; READemption 2.0.1 documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="_static/doctools.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Troubleshooting" href="troubleshooting.html" />
+    <link rel="prev" title="Fragment building for paired-end reads" href="fragment_building.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="index.html" class="icon icon-home"> READemption
+            <img src="_static/READemption_logo.png" class="logo" alt="Logo"/>
+          </a>
+              <div class="version">
+                2.0
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation and updating</a></li>
+<li class="toctree-l1"><a class="reference internal" href="live_and_installation_image.html">Live system and installation image</a></li>
+<li class="toctree-l1"><a class="reference internal" href="docker_image.html">Docker image</a></li>
+<li class="toctree-l1"><a class="reference internal" href="subcommands.html">READemption’s subcommands</a></li>
+<li class="toctree-l1"><a class="reference internal" href="fragment_building.html">Fragment building for paired-end reads</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Performing example analyses</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#single-species-analysis">Single-species analysis</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#multi-species-analysis">Multi-species analysis</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="troubleshooting.html">Troubleshooting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="license.html">License</a></li>
+<li class="toctree-l1"><a class="reference internal" href="versions.html">Versions/Change log</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">READemption</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+      <li>Performing example analyses</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="performing-example-analyses">
+<h1>Performing example analyses<a class="headerlink" href="#performing-example-analyses" title="Permalink to this heading"></a></h1>
+<p>Below are two example analyses than can be performed by the user.
+The first one is a single-species analysis with one species (<em>Salmonella</em> Typhimurium SL1344),
+while the second one is a multi-species analysis with two species (<em>Staphylococcus aureus</em>
+strain SH100 and Human Mast cells). The read files of the multi-species analysis consist of three
+libraries: <em>Infected</em> has both human and staphylococcus reads, while <em>uninfected</em> has only humand and
+<em>steady_state</em> only stapyhlococcus reads. Both analysis follow a similar workflow.
+The main differences occur when creating a new project and running deseq,
+since some information about the libraries and
+the species they contain has to be provided (See details bwlow, when running the subcommands).</p>
+<section id="single-species-analysis">
+<h2>Single-species analysis<a class="headerlink" href="#single-species-analysis" title="Permalink to this heading"></a></h2>
+<p>Here you will be guided trough a small example analysis using a
+publicly available RNA-Seq from NCBI GEO that was part of a
+publication by <a class="reference external" href="http://www.ncbi.nlm.nih.gov/pubmed/24331466">Kröger et
+al.</a>. This is a
+transcriptome analysis of <em>Salmonella</em> Typhimurium SL1344 in different
+conditions. We will generate several output files in different
+formats. The CSV (tabular separated plain text files) files can be
+opened with any spreadsheet program like <a class="reference external" href="https://www.libreoffice.org/">LibreOffice</a> or Excel. For inspecting the mappings
+(in BAM format) and coverage files (wiggle format) you can use a
+genome browser for example <a class="reference external" href="http://bioviz.org/igb/">IGB</a> or <a class="reference external" href="https://www.broadinstitute.org/igv/home">IGV</a>.</p>
+<p><strong>Generating a project</strong></p>
+<p>At first we have to create the analysis folder and its input subfolder.
+All output folders, except for the <em>align</em> output folder, will be created when the corresponding subcommand is called.
+For this we use the <code class="docutils literal notranslate"><span class="pre">create</span></code> subcommand.
+Please not that all species of a project - even if it is only one species - need to be named via the <em>–species</em> flag</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ reademption create --project_path READemption_analysis --species salmonella=&quot;Salmonella Typhimurium&quot;
+Created folder &quot;READemption_analysis&quot; and required subfolders.
+Please copy read files into folder &quot;READemption_analysis/input/reads&quot; and reference sequences files into folder/s &quot;READemption_analysis/input/salmonella_reference_sequences&quot;.
+</pre></div>
+</div>
+<p>This will result in a folder structure as shown here:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>READemption_analysis
+├── config.json
+├── input
+│   ├── reads
+│   ├── salmonella_annotations
+│   └── salmonella_reference_sequences
+└── output
+    └── align
+        ├── alignments
+        ├── index
+        ├── processed_reads
+        ├── reports_and_stats
+        │   ├── stats_data_json
+        │   └── version_log.txt
+        └── unaligned_reads
+</pre></div>
+</div>
+<p><strong>Retrieving the input data</strong></p>
+<p>We have to download the reference sequence (FASTA format) as well as
+the annotation file (GFF3 format) for <em>Salmonella</em> from NCBI. As we
+will use the URL of <em>Salmonella</em> Typhimurium SL1344’s source FTP
+folder it several times we store it in an environment variable called
+<code class="docutils literal notranslate"><span class="pre">FTP_SOURCE</span></code>.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ FTP_SOURCE=ftp://ftp.ncbi.nih.gov/genomes/archive/old_refseq/Bacteria/Salmonella_enterica_serovar_Typhimurium_SL1344_uid86645/
+</pre></div>
+</div>
+<p>We download the reference sequence (the chromosome and three plasmids)
+in FASTA format and store them in the <code class="docutils literal notranslate"><span class="pre">reference_sequences</span></code>
+folder. The files are saved with a different suffix (<code class="docutils literal notranslate"><span class="pre">.fa</span></code> instead
+of <code class="docutils literal notranslate"><span class="pre">.fna</span></code>) as some genome browser (e.g. IGB) will not accept them as
+FASTA files otherwise.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ wget -O READemption_analysis/input/salmonella_reference_sequences/NC_016810.fa $FTP_SOURCE/NC_016810.fna
+$ wget -O READemption_analysis/input/salmonella_reference_sequences/NC_017718.fa $FTP_SOURCE/NC_017718.fna
+$ wget -O READemption_analysis/input/salmonella_reference_sequences/NC_017719.fa $FTP_SOURCE/NC_017719.fna
+$ wget -O READemption_analysis/input/salmonella_reference_sequences/NC_017720.fa $FTP_SOURCE/NC_017720.fna
+</pre></div>
+</div>
+<p>We have to modify the header of the FASTA files as the sequence IDs
+have to be the same as the ones in the first column of the GGF3 files
+(see below) to be used in the gene quantification. This will be also
+necessary if both, FASTA and GFF3 files, will be loaded in the IGB.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ sed -i &quot;s/&gt;/&gt;NC_016810.1 /&quot; READemption_analysis/input/salmonella_reference_sequences/NC_016810.fa
+$ sed -i &quot;s/&gt;/&gt;NC_017718.1 /&quot; READemption_analysis/input/salmonella_reference_sequences/NC_017718.fa
+$ sed -i &quot;s/&gt;/&gt;NC_017719.1 /&quot; READemption_analysis/input/salmonella_reference_sequences/NC_017719.fa
+$ sed -i &quot;s/&gt;/&gt;NC_017720.1 /&quot; READemption_analysis/input/salmonella_reference_sequences/NC_017720.fa
+</pre></div>
+</div>
+<p><strong>Then we download the GFF3 files that contain the annotations</strong></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ wget -P READemption_analysis/input/salmonella_annotations https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/210/855/GCF_000210855.2_ASM21085v2/GCF_000210855.2_ASM21085v2_genomic.gff.gz
+$ gunzip READemption_analysis/input/salmonella_annotations/GCF_000210855.2_ASM21085v2_genomic.gff.gz
+</pre></div>
+</div>
+<p>Finally, we need the reads of the RNA-Seq libraries. To save some time
+for running this examples we will work with subsampled libraries of 1M
+reads each. This will the limit informative value of the results which
+is acceptable as we just want to understand the workflow of the
+READemption. Please be aware that READemption can perform only basic
+quality trimming and adapter clipping. If this is not sufficient you
+can use the <a class="reference external" href="http://hannonlab.cshl.edu/fastx_toolkit/">FASTX toolkit</a>,
+<a class="reference external" href="https://code.google.com/p/cutadapt/">cutadapt</a> or other tools for
+the preprocessing.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ wget -P READemption_analysis/input/reads http://reademptiondata.imib-zinf.net/InSPI2_R1.fa.bz2
+$ wget -P READemption_analysis/input/reads http://reademptiondata.imib-zinf.net/InSPI2_R2.fa.bz2
+$ wget -P READemption_analysis/input/reads http://reademptiondata.imib-zinf.net/LSP_R1.fa.bz2
+$ wget -P READemption_analysis/input/reads http://reademptiondata.imib-zinf.net/LSP_R2.fa.bz2
+</pre></div>
+</div>
+<p>We have now all the necessary data available. The input folder should
+look like this now:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ ls READemption_analysis/input/*
+READemption_analysis/input/salmonella_annotations:
+NC_016810.gff  NC_017718.gff  NC_017719.gff  NC_017720.gff
+
+READemption_analysis/input/reads:
+InSPI2_R1.fa.bz2  InSPI2_R2.fa.bz2  LSP_R1.fa.bz2  LSP_R2.fa.bz2
+
+READemption_analysis/input/salmonella_reference_sequences:
+NC_016810.fa  NC_017718.fa  NC_017719.fa  NC_017720.fa
+</pre></div>
+</div>
+<p><strong>Processing and aligning the reads</strong></p>
+<p>The first step it the read processing and mapping. Via parameters we
+tell READemption to use 4 CPU (<code class="docutils literal notranslate"><span class="pre">-p</span> <span class="pre">4</span></code>) and perform a poly-A-clipping
+(<code class="docutils literal notranslate"><span class="pre">--poly_a_clipping</span></code>) before the mapping.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ reademption align -p 4 --poly_a_clipping --project_path READemption_analysis
+</pre></div>
+</div>
+<p>Once this the mapping is done the file <code class="docutils literal notranslate"><span class="pre">read_alignment_stats.csv</span></code> is
+created which can be found in
+<code class="docutils literal notranslate"><span class="pre">READemption_analysis/output/align/reports_and_stats/</span></code>. It contains
+several mapping statistics for example how many reads are successfully
+aligned in total and how many were aligned to each replicon. We see
+that more than 98 % of the reads are mapped for each library. Sorted
+and indexed alignements in BAM format are stored in
+<code class="docutils literal notranslate"><span class="pre">READemption_analysis/output/align/alignments</span></code>. We could load them
+into a genome browser but instead we continue with the next step.</p>
+<p><strong>Generating coverage files</strong></p>
+<p>In order to generate strand specific coverage files with different
+normalizations we use the subcommand <code class="docutils literal notranslate"><span class="pre">coverage</span></code>.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ reademption coverage -p 4 --project_path READemption_analysis
+</pre></div>
+</div>
+<p>The sets are stored in subfolder of
+<code class="docutils literal notranslate"><span class="pre">READemption_analysis/output/salmonella_coverage-raw/</span></code>, <code class="docutils literal notranslate"><span class="pre">READemption_analysis/output/salmonella_coverage-tnoar_mil_normalized/</span></code> and <code class="docutils literal notranslate"><span class="pre">READemption_analysis/output/salmonella_coverage-tnoar_min_normalized/</span></code>. The most oftenly used set
+is stored in <code class="docutils literal notranslate"><span class="pre">coverage-tnoar_min_normalized</span></code>. Here the coverage
+values are normalized by the total number of aligned reads (TNOAR) of
+the individual library and then multiplied by the lowest TNOAR value
+of all libraries.
+These files could be inspected for differential
+RNA-Seq (dRNA-Seq - comparing libraries with and without Terminator
+Exonuclease treatment) data in order to determine transcriptional
+start sites. They can be loaded in a common genome browsers like <a class="reference external" href="http://bioviz.org/igb/">IGB</a> or <a class="reference external" href="https://www.broadinstitute.org/igv/home">IGV</a>. Keep in mind that the
+coverages of the reverse strand have negative values so you have to
+adapt the scaling in some genome browsers.</p>
+<p><strong>Performing gene wise quantification</strong></p>
+<p>In this step we want to quantify the number of reads overlapping with
+the locations of the annotation entries. With the <code class="docutils literal notranslate"><span class="pre">--features</span></code>
+parameter we configure <code class="docutils literal notranslate"><span class="pre">reademption</span></code> to just quantify CDS, tRNA and
+rRNA entries.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ reademption gene_quanti -p 4 --features CDS,tRNA,rRNA --project_path READemption_analysis
+</pre></div>
+</div>
+<p>After the quantification we find tables that contain the combined
+counting for all entries in
+<code class="docutils literal notranslate"><span class="pre">READemption_analysis/output/salmonella_gene_quanti_combined</span></code>. The
+countings for mappings in sense and anti-sense are separately
+listed. Besides the raw countings there are also tables for
+countings normalized by the total number of reads, RPKM values and TPM (transcripts per million).</p>
+<p><strong>Performing differential gene expression analysis</strong></p>
+<p>To compare the gene expression of different conditions we apply the
+subcommand <code class="docutils literal notranslate"><span class="pre">deseq</span></code> which makes use of the R library <a class="reference external" href="http://www.bioconductor.org/packages/release/bioc/html/DESeq2.html">DESeq2</a>.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ reademption deseq -l InSPI2_R1.fa.bz2,InSPI2_R2.fa.bz2,LSP_R1.fa.bz2,LSP_R2.fa.bz2 -c InSPI2,InSPI2,LSP,LSP -r 1,2,1,2 --libs_by_species salmonella=InSPI2_R1,InSPI2_R2,LSP_R1,LSP_R2 project_path READemption_analysis
+</pre></div>
+</div>
+<p>We have to tell READemption which libraries are replicates of which
+condition. This is done by the parameter <code class="docutils literal notranslate"><span class="pre">-l</span></code>, <code class="docutils literal notranslate"><span class="pre">-c</span></code> and <code class="docutils literal notranslate"><span class="pre">-r</span></code> . <code class="docutils literal notranslate"><span class="pre">-l</span></code>
+should hold a comma separated list of the libraries, <code class="docutils literal notranslate"><span class="pre">-c</span></code> the
+corresponding conditions and <code class="docutils literal notranslate"><span class="pre">-r</span></code> the corresponding replicate number. In our case we have 4 libraries
+(<code class="docutils literal notranslate"><span class="pre">InSPI2_R1.fa.bz2</span></code>, <code class="docutils literal notranslate"><span class="pre">InSPI2_R2.fa.bz2</span></code>, <code class="docutils literal notranslate"><span class="pre">LSP_R1.fa.bz2</span></code>,
+<code class="docutils literal notranslate"><span class="pre">LSP_R2.fa.bz2</span></code>) and two conditions (which we call <code class="docutils literal notranslate"><span class="pre">InSPI2</span></code> and
+<code class="docutils literal notranslate"><span class="pre">LSP</span></code>) and two times two replicates (R1 and R2 for each condition). Just to make this association easier to understand:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">libs</span>      <span class="n">InSPI2_R1</span><span class="o">.</span><span class="n">fa</span><span class="o">.</span><span class="n">bz2</span>  <span class="n">InSPI2_R2</span><span class="o">.</span><span class="n">fa</span><span class="o">.</span><span class="n">bz2</span>  <span class="n">LSP_R1</span><span class="o">.</span><span class="n">fa</span><span class="o">.</span><span class="n">bz2</span>  <span class="n">LSP_R2</span><span class="o">.</span><span class="n">fa</span><span class="o">.</span><span class="n">bz2</span>
+             <span class="o">|</span>                 <span class="o">|</span>               <span class="o">|</span>              <span class="o">|</span>
+<span class="n">conds</span>      <span class="n">InSPI2</span>            <span class="n">InSPI2</span>            <span class="n">LSP</span>            <span class="n">LSP</span>
+             <span class="o">|</span>                 <span class="o">|</span>               <span class="o">|</span>              <span class="o">|</span>
+<span class="n">reps</span>         <span class="mi">1</span>                 <span class="mi">2</span>               <span class="mi">1</span>              <span class="mi">2</span>
+</pre></div>
+</div>
+<p>When you call <code class="docutils literal notranslate"><span class="pre">deseq</span></code> it will compare all conditions with each other
+and you can pick the comparison that you need. The raw <code class="docutils literal notranslate"><span class="pre">DESeq2</span></code>
+results are enriched with the original annotation information and are
+stored in
+<code class="docutils literal notranslate"><span class="pre">READemption_analysis/output/salmonella_deseq/deseq_with_annotations</span></code></p>
+<p><strong>Create plots</strong></p>
+<p>Finally we generate plots that visualize the results of the different
+steps. <code class="docutils literal notranslate"><span class="pre">viz_align</span></code> creates histograms of the read length
+distribution for the untreated and treated reads (saved in
+<code class="docutils literal notranslate"><span class="pre">READemption_analysis/output/read_lengths_viz_align/</span></code>).
+It also creates an overview of how many reads map to each species
+and how many reads are species cross-mapped per library (saved in
+<code class="docutils literal notranslate"><span class="pre">READemption_analysis/output/all_species_viz_align/</span></code>. However, this folder can be neglected in a single species analysis).</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ reademption viz_align --project_path READemption_analysis
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">viz_gene_quanti</span></code> visualizes the gene wise countings. In our example
+you will see that - as expected - the replicates are more similar to
+each other than to the libs of the other condition. It also generates
+bar plots that show the distribution of reads inside the different RNA
+classes.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ reademption viz_gene_quanti --project_path READemption_analysis
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">viz_deseq</span></code> generates MA-plots as well as volcano plots.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ reademption viz_deseq --project_path READemption_analysis
+</pre></div>
+</div>
+</section>
+<section id="multi-species-analysis">
+<h2>Multi-species analysis<a class="headerlink" href="#multi-species-analysis" title="Permalink to this heading"></a></h2>
+<p>Here you will be guided trough a small example Dual RNA-seq analysis using a
+publicly available RNA-Seq from the European Nucleotide Archive (ENA) that was part of a
+publication by <a class="reference external" href="https://pubmed.ncbi.nlm.nih.gov/35321877/">Goldmann et
+al.</a>. This is a
+transcriptome analysis of <em>Staphylococcus aureus</em>
+strain SH100 and Human Mast cells in different
+conditions. The complete analysis is publicly available at <a class="reference external" href="https://repository.publisso.de/resource/frl:6427216">Publisso</a>.
+Note that we use only three of the five conditions (9 instead of all 15 libraries) to make the analysis less complicated.
+We will generate several output files in different
+formats. The CSV (tabular separated plain text files) files can be
+opened with any spreadsheet program like <a class="reference external" href="https://www.libreoffice.org/">LibreOffice</a> or Excel. For inspecting the mappings
+(in BAM format) and coverage files (wiggle format) you can use a
+genome browser for example <a class="reference external" href="http://bioviz.org/igb/">IGB</a> or <a class="reference external" href="https://www.broadinstitute.org/igv/home">IGV</a>.</p>
+<p><strong>Generating a project</strong></p>
+<p>At first we have to create the analysis folder and its input subfolder.
+All output folders, except for the <em>align</em> output folder, will be created when the corresponding subcommand is called.
+For this we use the <code class="docutils literal notranslate"><span class="pre">create</span></code> subcommand.
+Please not that all species of a project - in this case two species - need to be named via the <em>–species</em> flag</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ reademption create --project_path READemption_analysis --species human=&quot;Homo sapiens&quot; staphylococcus=&quot;Staphylococcus aureus&quot;
+Created folder &quot;READemption_analysis&quot; and required subfolders.
+Please copy read files into folder &quot;READemption_analysis/input/reads&quot; and reference sequences files into folder/s &quot;READemption_analysis/input/human_reference_sequences&quot;, &quot;READemption_analysis/input/staphylococcus_reference_sequences&quot;.
+</pre></div>
+</div>
+<p>This will result in a folder structure as shown here:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>READemption_analysis
+├── config.json
+├── input
+│   ├── human_annotations
+│   ├── human_reference_sequences
+│   ├── reads
+│   ├── staphylococcus_annotations
+│   └── staphylococcus_reference_sequences
+└── output
+    └── align
+        ├── alignments
+        ├── index
+        ├── processed_reads
+        ├── reports_and_stats
+        │   ├── stats_data_json
+        │   └── version_log.txt
+        └── unaligned_reads
+</pre></div>
+</div>
+<p><strong>Retrieving the input data</strong></p>
+<p>We have to download the reference sequences (FASTA format) as well as
+the annotation files (GFF3 format) for both species.</p>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+<p>We download the <em>Staphylococcus</em> genome to the corresponding folder and unpack it.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ wget -O READemption_analysis/input/staphylococcus_reference_sequences/staphylococcus_genome.fa.gz ftp://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/013/425/GCF_000013425.1_ASM1342v1/GCF_000013425.1_ASM1342v1_genomic.fna.gz
+$ gunzip READemption_analysis/input/staphylococcus_reference_sequences/staphylococcus_genome.fa.gz
+</pre></div>
+</div>
+<p>We download the <em>Staphylococcus</em> annotation to the corresponding folder and unpack it.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ wget -O READemption_analysis/input/staphylococcus_annotations/staphylococcus_annotation.gff.gz ftp://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/013/425/GCF_000013425.1_ASM1342v1/GCF_000013425.1_ASM1342v1_genomic.gff.gz
+$ gunzip READemption_analysis/input/staphylococcus_annotations/staphylococcus_annotation.gff.gz
+</pre></div>
+</div>
+<p>We download the Human genome to the corresponding folder and unpack it.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ wget -O READemption_analysis/input/human_reference_sequences/human_genome.fa.gz ftp://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_27/GRCh38.p10.genome.fa.gz
+$ gunzip READemption_analysis/input/human_reference_sequences/human_genome.fa.gz
+</pre></div>
+</div>
+<p>We download the Human annotation to the corresponding folder and unpack it.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ wget -O READemption_analysis/input/human_annotations/human_annotation.gff.gz ftp://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_27/gencode.v27.annotation.gff3.gz
+$ gunzip READemption_analysis/input/human_annotations/human_annotation.gff.gz
+</pre></div>
+</div>
+<p>The reference <a href="#id6"><span class="problematic" id="id7">*</span></a>Staphylococcus sequence was saved with a different suffix (<code class="docutils literal notranslate"><span class="pre">.fa</span></code> instead
+of <code class="docutils literal notranslate"><span class="pre">.fna</span></code>) as some genome browser (e.g. IGB) will not accept them as
+FASTA files otherwise.</p>
+<p>Finally, we need the reads of the RNA-Seq libraries. To save some time
+for running this examples we will work with subsampled libraries of 10000
+reads each. This will the limit informative value of the results which
+is acceptable as we just want to understand the workflow of the
+READemption. Please be aware that READemption can perform only basic
+quality trimming and adapter clipping. If this is not sufficient you
+can use the <a class="reference external" href="http://hannonlab.cshl.edu/fastx_toolkit/">FASTX toolkit</a>,
+<a class="reference external" href="https://code.google.com/p/cutadapt/">cutadapt</a> or other tools for
+the preprocessing.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ wget https://raw.githubusercontent.com/Tillsa/Tillsa-2022-06-15-READemption_tutorial_data/main/Infected_replicate_1.fq https://raw.githubusercontent.com/Tillsa/Tillsa-2022-06-15-READemption_tutorial_data/main/Infected_replicate_2.fq \         https://raw.githubusercontent.com/Tillsa/Tillsa-2022-06-15-READemption_tutorial_data/main/Infected_replicate_3.fq https://raw.githubusercontent.com/Tillsa/Tillsa-2022-06-15-READemption_tutorial_data/main/Steady_state_replicate_1.fq https://raw.githubusercontent.com/Tillsa/Tillsa-2022-06-15-READemption_tutorial_data/main/Steady_state_replicate_2.fq https://raw.githubusercontent.com/Tillsa/Tillsa-2022-06-15-READemption_tutorial_data/main/Steady_state_replicate_3.fq https://raw.githubusercontent.com/Tillsa/Tillsa-2022-06-15-READemption_tutorial_data/main/Uninfected_replicate_1.fq https://raw.githubusercontent.com/Tillsa/Tillsa-2022-06-15-READemption_tutorial_data/main/Uninfected_replicate_2.fq https://raw.githubusercontent.com/Tillsa/Tillsa-2022-06-15-READemption_tutorial_data/main/Uninfected_replicate_3.fq -P READemption_analysis/input/reads
+</pre></div>
+</div>
+<p>We have now all the necessary data available. The input folder should
+look like this now:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ ls READemption_analysis/input/*
+input/human_annotations:
+human_annotation.gff
+
+input/human_reference_sequences:
+human_genome.fa
+
+input/reads:
+Infected_replicate_1.fq  Infected_replicate_3.fq      Steady_state_replicate_2.fq  Uninfected_replicate_1.fq  Uninfected_replicate_3.fq
+Infected_replicate_2.fq  Steady_state_replicate_1.fq  Steady_state_replicate_3.fq  Uninfected_replicate_2.fq
+
+input/staphylococcus_annotations:
+staphylococcus_annotation.gff
+
+input/staphylococcus_reference_sequences:
+staphylococcus_genome.fa
+</pre></div>
+</div>
+<p><strong>Processing and aligning the reads</strong></p>
+<p>The first step it the read processing and mapping. Via parameters we
+tell READemption to use 4 CPU (<code class="docutils literal notranslate"><span class="pre">-p</span> <span class="pre">4</span></code>) and perform a poly-A-clipping
+(<code class="docutils literal notranslate"><span class="pre">--poly_a_clipping</span></code>) before the mapping.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ reademption align -p 4 --poly_a_clipping --project_path READemption_analysis
+</pre></div>
+</div>
+<p>Once this the mapping is done the file <code class="docutils literal notranslate"><span class="pre">read_alignment_stats.csv</span></code> is
+created which can be found in
+<code class="docutils literal notranslate"><span class="pre">READemption_analysis/output/align/reports_and_stats/</span></code>. It contains
+several mapping statistics for example how many reads are successfully
+aligned in total and how many were aligned to each species as well as the species cross aligned reads. Sorted
+and indexed alignements in BAM format are stored in
+<code class="docutils literal notranslate"><span class="pre">READemption_analysis/output/align/alignments</span></code>. We could load them
+into a genome browser but instead we continue with the next step.</p>
+<p><strong>Generating coverage files</strong></p>
+<p>In order to generate strand specific coverage files with different
+normalizations we use the subcommand <code class="docutils literal notranslate"><span class="pre">coverage</span></code>.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ reademption coverage -p 4 --project_path READemption_analysis
+</pre></div>
+</div>
+<p>The sets are stored in subfolder of
+<code class="docutils literal notranslate"><span class="pre">READemption_analysis/output/staphylococcus_coverage-raw/</span></code>, <code class="docutils literal notranslate"><span class="pre">READemption_analysis/output/staphylococcus_coverage-tnoar_mil_normalized/</span></code>, <code class="docutils literal notranslate"><span class="pre">READemption_analysis/output/staphylococcus_coverage-tnoar_min_normalized/</span></code>,
+<code class="docutils literal notranslate"><span class="pre">READemption_analysis/output/human_coverage-raw/</span></code>, <code class="docutils literal notranslate"><span class="pre">READemption_analysis/output/human_coverage-tnoar_mil_normalized/</span></code> and <code class="docutils literal notranslate"><span class="pre">READemption_analysis/output/human_coverage-tnoar_min_normalized/</span></code>.
+The most oftenly used set is stored in <code class="docutils literal notranslate"><span class="pre">coverage-tnoar_min_normalized</span></code>.
+Here the coverage values are normalized by the total number of aligned reads (TNOAR) of
+the individual library and then multiplied by the lowest TNOAR value
+of all libraries.
+These files could be inspected for differential
+RNA-Seq (dRNA-Seq - comparing libraries with and without Terminator
+Exonuclease treatment) data in order to determine transcriptional
+start sites. They can be loaded in a common genome browsers like <a class="reference external" href="http://bioviz.org/igb/">IGB</a> or <a class="reference external" href="https://www.broadinstitute.org/igv/home">IGV</a>. Keep in mind that the
+coverages of the reverse strand have negative values so you have to
+adapt the scaling in some genome browsers.</p>
+<p><strong>Performing gene wise quantification</strong></p>
+<p>In this step we want to quantify the number of reads overlapping with
+the locations of the annotation entries. With the <code class="docutils literal notranslate"><span class="pre">--features</span></code>
+parameter we configure <code class="docutils literal notranslate"><span class="pre">reademption</span></code> to just quantify <em>gene</em> entries to save some time.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ reademption gene_quanti -p 4 --features gene --project_path READemption_analysis
+</pre></div>
+</div>
+<p>After the quantification we find tables that contain the combined
+counting for all entries in
+<code class="docutils literal notranslate"><span class="pre">READemption_analysis/output/staphylococcus_gene_quanti_combined</span></code> and <code class="docutils literal notranslate"><span class="pre">READemption_analysis/output/human_gene_quanti_combined</span></code>. The
+countings for mappings in sense and anti-sense are separately
+listed. Besides the raw countings there are also tables for
+countings normalized by the total number of reads, RPKM values and TPM (transcripts per million).</p>
+<p><strong>Performing differential gene expression analysis</strong></p>
+<p>To compare the gene expression of different conditions we apply the
+subcommand <code class="docutils literal notranslate"><span class="pre">deseq</span></code> which makes use of the R library <a class="reference external" href="http://www.bioconductor.org/packages/release/bioc/html/DESeq2.html">DESeq2</a>.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ reademption deseq -l Infected_replicate_1,Infected_replicate_2,Infected_replicate_3,Steady_state_replicate_1,Steady_state_replicate_2,Steady_state_replicate_3,Uninfected_replicate_1,Uninfected_replicate_2,Uninfected_replicate_3 -c infected,infected,infected,steady_state,steady_state,steady_state,uninfected,uninfected,uninfected -r 1,2,3,1,2,3,1,2,3 --libs_by_species human=&quot;Infected_replicate_1,Infected_replicate_2,Infected_replicate_3,Uninfected_replicate_1,Uninfected_replicate_2,Uninfected_replicate_3&quot; staphylococcus=&quot;Infected_replicate_1,Infected_replicate_2,Infected_replicate_3,Steady_state_replicate_1,Steady_state_replicate_2,Steady_state_replicate_3&quot; --size_factor=species --project_path READemption_analysis
+</pre></div>
+</div>
+<p>We have to tell READemption which libraries are replicates of which
+condition. This is done by the parameter <code class="docutils literal notranslate"><span class="pre">-l</span></code>, <code class="docutils literal notranslate"><span class="pre">-c</span></code> and <code class="docutils literal notranslate"><span class="pre">-r</span></code> . <code class="docutils literal notranslate"><span class="pre">-l</span></code>
+should hold a comma separated list of the libraries, <code class="docutils literal notranslate"><span class="pre">-c</span></code> the
+corresponding conditions and <code class="docutils literal notranslate"><span class="pre">-r</span></code> the corresponding replicate number.
+In our case we have 9 libraries (<code class="docutils literal notranslate"><span class="pre">Infected_replicate_1</span></code>, <code class="docutils literal notranslate"><span class="pre">Infected_replicate_2</span></code>, <code class="docutils literal notranslate"><span class="pre">Infected_replicate_3</span></code>, <code class="docutils literal notranslate"><span class="pre">Steady_state_replicate_1</span></code>, <code class="docutils literal notranslate"><span class="pre">Steady_state_replicate_2</span></code>, <code class="docutils literal notranslate"><span class="pre">Steady_state_replicate_3</span></code>, <code class="docutils literal notranslate"><span class="pre">Uninfected_replicate_1</span></code>, <code class="docutils literal notranslate"><span class="pre">Uninfected_replicate_2</span></code>, <code class="docutils literal notranslate"><span class="pre">Uninfected_replicate_3</span></code>)
+and three conditions (which we call <code class="docutils literal notranslate"><span class="pre">infected</span></code>, <code class="docutils literal notranslate"><span class="pre">steady_state</span></code> and <code class="docutils literal notranslate"><span class="pre">uninfected</span></code>) and three times three replicates (R1, R2 and R3 for each condition). Just to make this association easier to understand:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">libs</span>      <span class="n">Infected_replicate_1</span>    <span class="n">Infected_replicate_2</span>    <span class="n">Infected_replicate_3</span>    <span class="n">Steady_state_replicate_1</span>    <span class="n">Steady_state_replicate_2</span>    <span class="n">Steady_state_replicate_3</span>    <span class="n">Uninfected_replicate_1</span>    <span class="n">Uninfected_replicate_2</span>    <span class="n">Uninfected_replicate_3</span>
+             <span class="o">|</span>                              <span class="o">|</span>                       <span class="o">|</span>                        <span class="o">|</span>                        <span class="o">|</span>                               <span class="o">|</span>                         <span class="o">|</span>                         <span class="o">|</span>                         <span class="o">|</span>
+<span class="n">conds</span>     <span class="n">infected</span>                      <span class="n">infected</span>                <span class="n">infected</span>               <span class="n">steady_state</span>             <span class="n">steady_state</span>                    <span class="n">steady_state</span>                <span class="n">uninfected</span>                <span class="n">uninfected</span>                <span class="n">uninfected</span>
+             <span class="o">|</span>                              <span class="o">|</span>                       <span class="o">|</span>                        <span class="o">|</span>                        <span class="o">|</span>                               <span class="o">|</span>                         <span class="o">|</span>                         <span class="o">|</span>                         <span class="o">|</span>
+<span class="n">reps</span>         <span class="mi">1</span>                              <span class="mi">2</span>                       <span class="mi">3</span>                        <span class="mi">1</span>                        <span class="mi">2</span>                               <span class="mi">3</span>                         <span class="mi">1</span>                         <span class="mi">2</span>                         <span class="mi">3</span>
+</pre></div>
+</div>
+<p>Because we set the –size factor to species and set the species for each lib via –libs_by_species,
+when you call <code class="docutils literal notranslate"><span class="pre">deseq</span></code> it will calculate the size factors for normalization based on the reads of the current species.
+Deseq will compare all the possible combinations of the libraries of a species
+and you can pick the comparison that you need. The raw <code class="docutils literal notranslate"><span class="pre">DESeq2</span></code>
+results are enriched with the original annotation information and are
+stored in
+<code class="docutils literal notranslate"><span class="pre">READemption_analysis/output/staphyloccus_deseq/deseq_with_annotations</span></code> and <code class="docutils literal notranslate"><span class="pre">READemption_analysis/output/human_deseq/deseq_with_annotations</span></code></p>
+<p><strong>Create plots</strong></p>
+<p>Finally we generate plots that visualize the results of the different
+steps. <code class="docutils literal notranslate"><span class="pre">viz_align</span></code> creates histograms of the read length
+distribution for the untreated and treated reads (saved in
+<code class="docutils literal notranslate"><span class="pre">READemption_analysis/output/read_lengths_viz_align/</span></code>).
+It also creates an overview of how many reads map to each species and how many reads are species cross-mapped per library.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ reademption viz_align --project_path READemption_analysis
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">viz_gene_quanti</span></code> visualizes the gene wise countings. In our example
+you will see that - as expected - the replicates are more similar to
+each other than to the libs of the other condition. It also generates
+bar plots that show the distribution of reads inside the different RNA
+classes.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ reademption viz_gene_quanti --project_path READemption_analysis
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">viz_deseq</span></code> generates MA-plots as well as volcano plots.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ reademption viz_deseq --project_path READemption_analysis
+</pre></div>
+</div>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="fragment_building.html" class="btn btn-neutral float-left" title="Fragment building for paired-end reads" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="troubleshooting.html" class="btn btn-neutral float-right" title="Troubleshooting" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, Konrad U. Förstner and Till Sauerwein.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+    <div class="footer">
+    This documention is licensed under the <a href="https://creativecommons.org/licenses/by/3.0/">Creative Commons Attribution license</a>, 2022, Konrad U. Förstner and Till Sauerwein.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 5.1.1.
+    </div>
+
+
+</body>
+</html>

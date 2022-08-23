@@ -4,7 +4,7 @@ from collections import Counter
 from functools import reduce
 from reademptionlib.fasta import FastaParser
 import pysam
-
+from datetime import datetime
 
 class ReadAlignerStats(object):
     def __init__(self, references_by_speies, paired_end=False, fragments=False):
@@ -38,8 +38,12 @@ class ReadAlignerStats(object):
         for sp in self.references_by_species.keys():
             self._stats["species_stats"][sp] = defaultdict(float)
             self._init_species_dict(sp)
+        print(f"readalignerstats count_aligned_reads_and_alignments start {datetime.now()}")
         self._count_aligned_reads_and_alignments(read_alignment_result_bam_path)
+        print(f"readalignerstats count_aligned_reads_and_alignments stop {datetime.now()}")
+        print(f"readalignerstats count_unaligned_reads start {datetime.now()}")
         self._count_unaligned_reads(unaligned_reads_path)
+        print(f"readalignerstats count_unaligned_reads stop {datetime.now()}")
         return self._stats
 
     def _count_unaligned_reads(self, unaligned_read_paths):
@@ -66,7 +70,7 @@ class ReadAlignerStats(object):
         for ref_id in bam.references:
             # Set up reference stats
             self._init_counting_dict(stats_per_ref, ref_id)
-        for entry in bam.fetch():
+        for entry in bam.fetch(until_eof=True):
             ref_id = bam.getrname(entry.tid)
             # Don't count the alignment if it is supplementary, to avoid
             # counting the same alignment multiple times

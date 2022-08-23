@@ -13,9 +13,9 @@ authors:
   - family-names: Tobin
     given-names: Diarmaid         
 title: "READemption"
-version: 2.0.0
+version: 2.0.1
 doi: https://zenodo.org/record/6772669
-date-released: 2022-06-28
+date-released: 2022-08-23
 preferred-citation:
   type: article
   authors:
@@ -36,4 +36,8 @@ preferred-citation:
   title: "READemption—a tool for the computational analysis of deep-sequencing–based transcriptome data"
   issue: 23
   volume: 30
+<<<<<<< HEAD
   year: 2014
+=======
+  year: 2014
+>>>>>>> dev
