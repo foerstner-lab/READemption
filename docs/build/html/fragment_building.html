@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Fragment building for paired-end reads &mdash; READemption 1.0.1 documentation</title>
+  <title>Fragment building for paired-end reads &mdash; READemption 2.0.1 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -14,10 +14,11 @@
         <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
         <script src="_static/jquery.js"></script>
         <script src="_static/underscore.js"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="_static/doctools.js"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Performing an example analysis" href="example_analysis.html" />
+    <link rel="next" title="Performing example analyses" href="example_analysis.html" />
     <link rel="prev" title="READemption’s subcommands" href="subcommands.html" /> 
 </head>
 
@@ -30,7 +31,7 @@
             <img src="_static/READemption_logo.png" class="logo" alt="Logo"/>
           </a>
               <div class="version">
-                1.0
+                2.0
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -50,7 +51,7 @@
 <li class="toctree-l2"><a class="reference internal" href="#fragment-building-for-different-layouts-of-pairs-that-map-to-the-reverse-strand">Fragment building for different layouts of pairs that map to the reverse strand</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="example_analysis.html">Performing an example analysis</a></li>
+<li class="toctree-l1"><a class="reference internal" href="example_analysis.html">Performing example analyses</a></li>
 <li class="toctree-l1"><a class="reference internal" href="troubleshooting.html">Troubleshooting</a></li>
 <li class="toctree-l1"><a class="reference internal" href="license.html">License</a></li>
 <li class="toctree-l1"><a class="reference internal" href="versions.html">Versions/Change log</a></li>
@@ -80,7 +81,7 @@
            <div itemprop="articleBody">
              
   <section id="fragment-building-for-paired-end-reads">
-<h1>Fragment building for paired-end reads<a class="headerlink" href="#fragment-building-for-paired-end-reads" title="Permalink to this headline"></a></h1>
+<h1>Fragment building for paired-end reads<a class="headerlink" href="#fragment-building-for-paired-end-reads" title="Permalink to this heading"></a></h1>
 <p>READemption builds fragments for paired-end reads.
 Some sequencing protocols generate paired-end reads, where a template fragment is sequenced from
 both sides, resulting in a <em>read one</em> in 5’-3’ orientation and a <em>read two</em> in 3’-5’ orientation.
@@ -91,7 +92,7 @@ If a paired-end read could not be properly mapped in pair, i.e. only one read of
 the mapped read will also be written to the BAM file, but its initial start and stop positions will be preserved.
 The figures below show different possible alignment layouts for the two reads of a pair and their calculated fragment.</p>
 <section id="fragment-building-for-different-layouts-of-pairs-that-map-to-the-forward-strand">
-<h2>Fragment building for different layouts of pairs that map to the forward strand<a class="headerlink" href="#fragment-building-for-different-layouts-of-pairs-that-map-to-the-forward-strand" title="Permalink to this headline"></a></h2>
+<h2>Fragment building for different layouts of pairs that map to the forward strand<a class="headerlink" href="#fragment-building-for-different-layouts-of-pairs-that-map-to-the-forward-strand" title="Permalink to this heading"></a></h2>
 <p><strong>A) Pair in order, no overlap</strong></p>
 <p>       start 1                         end 1</p>
 <p>       —————–read 1————–&gt;</p>
@@ -165,7 +166,7 @@ The figures below show different possible alignment layouts for the two reads of
 <p>       —————————–calculated fragment—————————————&gt;</p>
 </section>
 <section id="fragment-building-for-different-layouts-of-pairs-that-map-to-the-reverse-strand">
-<h2>Fragment building for different layouts of pairs that map to the reverse strand<a class="headerlink" href="#fragment-building-for-different-layouts-of-pairs-that-map-to-the-reverse-strand" title="Permalink to this headline"></a></h2>
+<h2>Fragment building for different layouts of pairs that map to the reverse strand<a class="headerlink" href="#fragment-building-for-different-layouts-of-pairs-that-map-to-the-reverse-strand" title="Permalink to this heading"></a></h2>
 <p><strong>A) Pair in order, no overlap</strong></p>
 <p>       start 2                         end 2</p>
 <p>       —————–read 2————–&gt;</p>
@@ -245,13 +246,13 @@ The figures below show different possible alignment layouts for the two reads of
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="subcommands.html" class="btn btn-neutral float-left" title="READemption’s subcommands" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="example_analysis.html" class="btn btn-neutral float-right" title="Performing an example analysis" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="example_analysis.html" class="btn btn-neutral float-right" title="Performing example analyses" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2020, Konrad U. Förstner and Till Sauerwein.</p>
+    <p>&#169; Copyright 2022, Konrad U. Förstner and Till Sauerwein.</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
@@ -270,8 +271,8 @@ The figures below show different possible alignment layouts for the two reads of
       });
   </script>
     <div class="footer">
-    This documention is licensed under the <a href="https://creativecommons.org/licenses/by/3.0/">Creative Commons Attribution license</a>, 2020, Konrad U. Förstner and Till Sauerwein.
-      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 4.4.0.
+    This documention is licensed under the <a href="https://creativecommons.org/licenses/by/3.0/">Creative Commons Attribution license</a>, 2022, Konrad U. Förstner and Till Sauerwein.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 5.1.1.
     </div>
 
 
