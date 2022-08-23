@@ -1,0 +1,50 @@
+{% set name = "reademption" %}
+{% set version = "2.0.0" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/READemption-{{ version }}.tar.gz
+  sha256: 229442d5afedba0cdd5eaf8ed34128f851103c6ac55c4289434b0ab52bff8748
+
+build:
+  script: {{ PYTHON }} -m pip install . -vv
+  number: 0
+
+requirements:
+  build:
+    - python {{ python }}
+  host:
+    - pip
+    - python
+  run:
+    - biopython >=1.79
+    - matplotlib-base >=3.5.2
+    - pandas >=1.4.3
+    - pysam >=0.19.1
+    - seaborn >=0.11.2
+    - python
+    - sphinx-argparse >=0.2.5
+    - segemehl >=0.3.4
+    - bioconductor-deseq2 >=1.34.0
+    - r-gplots >=3.0.1
+
+test:
+  imports:
+    - reademptionlib
+  commands:
+    - pip check
+  requires:
+    - pip
+
+about:
+  home: https://github.com/foerstner-lab/READemption
+  summary: A RNA-Seq Analysis Pipeline
+  doc_url: https://reademption.readthedocs.io/en/latest/
+  license: ISC
+
+extra:
+  recipe-maintainers:
+    - Tillsa
