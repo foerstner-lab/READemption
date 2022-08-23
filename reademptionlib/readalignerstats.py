@@ -61,7 +61,6 @@ class ReadAlignerStats(object):
         self, read_alignment_result_bam_path
     ):
         bam = pysam.Samfile(read_alignment_result_bam_path)
-        print(f"readalignerstats bam: {read_alignment_result_bam_path}")
         bamfile = pysam.AlignmentFile(read_alignment_result_bam_path, "rb")
         indexed_bam = pysam.IndexedReads(bamfile)
         # build index in memory
@@ -71,7 +70,6 @@ class ReadAlignerStats(object):
         for ref_id in bam.references:
             # Set up reference stats
             self._init_counting_dict(stats_per_ref, ref_id)
-            print(ref_id)
         for entry in bam.fetch(until_eof=True):
             ref_id = bam.getrname(entry.tid)
             # Don't count the alignment if it is supplementary, to avoid
