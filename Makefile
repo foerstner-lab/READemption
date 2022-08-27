@@ -102,7 +102,7 @@ new_release:
 	@echo "*upload anaconda package"
 	@echo "anaconda upload /home/till/anaconda3/conda-bld/linux-64/reademption-2.0.0-py39_0.tar.bz2"
 	@echo "*Create Docker image with tags latest and the current version:"
-	@echo " docker build -f Dockerfile -t tillsauerwein/reademption:2.0.0 -t tillsauerwein/reademption:latest ."
+	@echo " docker build -f Dockerfile -t tillsauerwein/reademption:2.0.1 -t tillsauerwein/reademption:latest ."
 	@echo "*push all docker images to dockerhub:"
 	@echo " docker push -a tillsauerwein/reademption"
 	# @echo "* Upload new docs using 'make upload_doc'"
