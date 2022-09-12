@@ -3,10 +3,7 @@ import pysam
 
 
 class FragmentBuilder(object):
-    def __init__(
-        self,
-        max_fragment_length
-    ):
+    def __init__(self, max_fragment_length):
         self._max_fragment_length = max_fragment_length
         self.sam_flag_property_to_value = {
             "read paired": 1,
@@ -86,12 +83,19 @@ class FragmentBuilder(object):
                         pair["read2"] = alignment
                         orientation = self._determine_orientation(pair["read1"])
                         if pair["read1"].is_read2:
-                            print(f"read 1: {pair['read1']} is actually read 2: {pair['read2']}")
+                            print(
+                                f"read 1: {pair['read1']} is actually read 2: {pair['read2']}"
+                            )
                         if pair["read2"].is_read1:
-                            print(f"read 2: {pair['read2']} is actually read 1: {pair['read1']}")
+                            print(
+                                f"read 2: {pair['read2']} is actually read 1: {pair['read1']}"
+                            )
                         # build fragment for read one and read two
                         start, end = self._build_fragment(
-                            pair["read1"], pair["read2"], orientation, read_alignment_path
+                            pair["read1"],
+                            pair["read2"],
+                            orientation,
+                            read_alignment_path,
                         )
                         # no need of adding + 1 to the fragment length, since
                         # start is 0-based and end is 1-based

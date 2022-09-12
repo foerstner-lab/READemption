@@ -48,10 +48,7 @@ class CoverageCreator(object):
             coverage_writers_tnoar_min_norm,
             coverage_writers_tnoar_mil_norm,
         ) = self._wiggle_writers(lib_name)
-        for (
-            ref_seq,
-            coverages,
-        ) in coverage_calculator.ref_seq_and_coverages(
+        for (ref_seq, coverages,) in coverage_calculator.ref_seq_and_coverages(
             bam_path
         ):
             for strand in self.strands:

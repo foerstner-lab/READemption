@@ -92,7 +92,7 @@ class GeneWiseQuantification(object):
         annotation_path,
         output_path,
         fraction_calc_method,
-        pseudocounts=False
+        pseudocounts=False,
     ):
 
         sam = pysam.Samfile(read_alignment_path)
@@ -558,7 +558,7 @@ class GeneWiseOverview(object):
         """
         return str(
             float(counting)
-            * float(10**9)
+            * float(10 ** 9)
             / (float(total_no_of_aligned_reads) * float(length))
         )
 

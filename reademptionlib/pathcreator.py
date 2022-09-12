@@ -14,12 +14,12 @@ class PathCreator:
         # or if that argument was not given ("None"), the speces information
         # is retrieved from the config file
         if self.species_information:
-            self.species_folder_prefixes_and_display_names = (
-                self._get_species_from_cml_argument(self.species_information)
+            self.species_folder_prefixes_and_display_names = self._get_species_from_cml_argument(
+                self.species_information
             )
         else:
-            self.species_folder_prefixes_and_display_names = (
-                self._get_species_from_config(self.config_file)
+            self.species_folder_prefixes_and_display_names = self._get_species_from_config(
+                self.config_file
             )
         (
             self.species_folder_prefixes,
@@ -430,9 +430,7 @@ class PathCreator:
         self.fragment_alignment_stats_table_path = (
             f"{self.align_report_folder}/fragment_alignment_stats.csv"
         )
-        self.fragment_alignment_stats_table_transposed_path = (
-            f"{self.align_report_folder}/fragment_alignment_stats_transposed.csv"
-        )
+        self.fragment_alignment_stats_table_transposed_path = f"{self.align_report_folder}/fragment_alignment_stats_transposed.csv"
         self.index_path = f"{self.read_alignment_index_folder}/index.idx"
         self.version_path = f"{self.align_report_folder}/version_log.txt"
 

@@ -41,10 +41,10 @@ class Segemehl(object):
         other_parameters=None,
         paired_end=False,
     ):
-        if not paired_end:
+        if not paired_end:  # run alignment for single-end reads
             assert type(read_file_or_pair) == str
             segemehl_call = [self._segemehl_bin, "--query", read_file_or_pair]
-        else:
+        else:  # run alignment for paired-end reads
             assert type(read_file_or_pair) == list
             segemehl_call = [
                 self._segemehl_bin,

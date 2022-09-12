@@ -88,7 +88,9 @@ class DESeqViz(object):
                     return sorted(list(set(line.split())))
 
     def _create_volcano_plots(self, condition_1, condition_2):
-        deseq_path = self._deseq_path_template + f"{condition_1}_vs_{condition_2}.csv"
+        deseq_path = (
+            self._deseq_path_template + f"{condition_1}_vs_{condition_2}.csv"
+        )
         (
             basemean,
             log2_fold_changes,
@@ -138,7 +140,7 @@ class DESeqViz(object):
         )
         # To avoid problem with zero in log10
         p_values = np.array(p_values)
-        p_values[p_values == 0.0] = 10**-100
+        p_values[p_values == 0.0] = 10 ** -100
         mod_p_values = -1 * np.log10(p_values)
         mod_p_values[mod_p_values == float("+inf")] = 0.0
         mod_p_values[mod_p_values == float("-inf")] = 0.0

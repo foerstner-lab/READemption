@@ -70,7 +70,8 @@ class CoverageCalculator(object):
             # reverse strand and if it has the flag reverse it maps to the
             # forward strand.
             if (entry.is_reverse is False and entry.is_read2 is False) or (
-                    entry.is_reverse is True and entry.is_read2 is True):
+                entry.is_reverse is True and entry.is_read2 is True
+            ):
                 orientation = "forward"
             else:
                 orientation = "reverse"

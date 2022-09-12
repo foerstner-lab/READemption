@@ -12,7 +12,7 @@ class ReadAlignerStatsTable(object):
         paired_end,
         species_folder_prefixes_and_display_names,
         references_by_species,
-        fragments=False
+        fragments=False,
     ):
         self._table = []
         self._read_processing_stats = read_processing_stats
@@ -171,7 +171,9 @@ class ReadAlignerStatsTable(object):
                                     "no_of_aligned_reads"
                                 ]
                             ),
-                            self._get_read_process_number(lib, "total_no_of_reads"),
+                            self._get_read_process_number(
+                                lib, "total_no_of_reads"
+                            ),
                         ),
                         2,
                     ),
@@ -371,9 +373,9 @@ class ReadAlignerStatsTable(object):
                 round(
                     self._calc_percentage(
                         (
-                            self._alignment_stats[lib]["species_stats"][species][
-                                "no_of_aligned_reads"
-                            ]
+                            self._alignment_stats[lib]["species_stats"][
+                                species
+                            ]["no_of_aligned_reads"]
                         ),
                         self._get_read_process_number(lib, "total_no_of_reads"),
                     ),
@@ -389,9 +391,9 @@ class ReadAlignerStatsTable(object):
                 round(
                     self._calc_percentage(
                         (
-                            self._alignment_stats[lib]["species_stats"][species][
-                                "no_of_aligned_reads"
-                            ]
+                            self._alignment_stats[lib]["species_stats"][
+                                species
+                            ]["no_of_aligned_reads"]
                         ),
                         self._get_read_process_number(lib, "long_enough"),
                     ),
@@ -493,11 +495,9 @@ class ReadAlignerStatsTable(object):
                 species_for_ref_id = species
                 for ref_id in ref_ids:
 
-                    species_display_name = (
-                        self._species_folder_prefixes_and_display_names[
-                            species_for_ref_id
-                        ]
-                    )
+                    species_display_name = self._species_folder_prefixes_and_display_names[
+                        species_for_ref_id
+                    ]
                     ref_stats = pd.DataFrame(columns=[lib])
                     ref_stats = self._append_to_df(
                         ref_stats,
@@ -515,7 +515,9 @@ class ReadAlignerStatsTable(object):
                         int(
                             self._alignment_stats[lib]["stats_per_reference"][
                                 ref_id
-                            ][f"no_of_uniquely_aligned_{self.reads_or_fragments}"]
+                            ][
+                                f"no_of_uniquely_aligned_{self.reads_or_fragments}"
+                            ]
                         ),
                         f"{ref_id} - No. of uniquely aligned {self.reads_or_fragments}",
                     )
@@ -535,7 +537,9 @@ class ReadAlignerStatsTable(object):
                         int(
                             self._alignment_stats[lib]["stats_per_reference"][
                                 ref_id
-                            ][f"no_of_multiple_aligned_{self.reads_or_fragments}"]
+                            ][
+                                f"no_of_multiple_aligned_{self.reads_or_fragments}"
+                            ]
                         ),
                         f"{ref_id} - No. of multiple aligned {self.reads_or_fragments}",
                     )

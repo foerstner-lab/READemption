@@ -72,8 +72,8 @@ class AlignViz(object):
         )
         # get the sums of all species exclusively aligned reads in
         # a combined dataframe.
-        total_no_of_species_exclusive_reads = (
-            self._get_species_exclusive_reads_combined(read_alignment_stats)
+        total_no_of_species_exclusive_reads = self._get_species_exclusive_reads_combined(
+            read_alignment_stats
         )
 
         # Combine the species exclusive stats and the combined stats for
@@ -307,7 +307,12 @@ class AlignViz(object):
         handles, labels = plt.gca().get_legend_handles_labels()
         handles.reverse()
         labels.reverse()
-        ax.legend(loc="upper center", bbox_to_anchor=(0.5, 1.35) ,handles=handles, labels=labels)
+        ax.legend(
+            loc="upper center",
+            bbox_to_anchor=(0.5, 1.35),
+            handles=handles,
+            labels=labels,
+        )
 
         fig = ax.get_figure()
         fig.savefig(f"{output_path}.pdf", bbox_inches="tight")
@@ -358,10 +363,7 @@ class AlignViz(object):
                 species_aligned_reads.set_index("Statistic", inplace=True)
                 # Add the library stats to the species stats
                 aligned_reads_by_species[sp].append(species_aligned_reads)
-        for (
-            sp,
-            lib_stats,
-        ) in aligned_reads_by_species.items():
+        for (sp, lib_stats,) in aligned_reads_by_species.items():
             species_aligned_reads = pd.concat(lib_stats, axis=1)
             species_aligned_reads_transposed = species_aligned_reads.transpose()
             output_path = self._viz_align_aligned_reads_by_species_paths[sp]
