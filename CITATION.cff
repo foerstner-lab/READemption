@@ -9,9 +9,7 @@ authors:
     orcid: https://orcid.org/0000-0001-5830-4208
   - family-names: Bischler
     given-names: Thorsten 
-    orcid: https://orcid.org/0000-0001-9288-9481
-  - family-names: Tobin
-    given-names: Diarmaid         
+    orcid: https://orcid.org/0000-0001-9288-9481       
 title: "READemption"
 version: 2.0.1
 doi: https://zenodo.org/record/6772669
