@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Troubleshooting &mdash; READemption 2.0.1 documentation</title>
@@ -14,7 +14,6 @@
         <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
         <script src="_static/jquery.js"></script>
         <script src="_static/underscore.js"></script>
-        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="_static/doctools.js"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="search" title="Search" href="search.html" />
@@ -43,7 +42,6 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="installation.html">Installation and updating</a></li>
-<li class="toctree-l1"><a class="reference internal" href="live_and_installation_image.html">Live system and installation image</a></li>
 <li class="toctree-l1"><a class="reference internal" href="docker_image.html">Docker image</a></li>
 <li class="toctree-l1"><a class="reference internal" href="subcommands.html">READemption’s subcommands</a></li>
 <li class="toctree-l1"><a class="reference internal" href="fragment_building.html">Fragment building for paired-end reads</a></li>
@@ -89,11 +87,11 @@
            <div itemprop="articleBody">
              
   <section id="troubleshooting">
-<h1>Troubleshooting<a class="headerlink" href="#troubleshooting" title="Permalink to this heading"></a></h1>
+<h1>Troubleshooting<a class="headerlink" href="#troubleshooting" title="Permalink to this headline"></a></h1>
 <section id="pickling-error">
-<h2>Pickling error<a class="headerlink" href="#pickling-error" title="Permalink to this heading"></a></h2>
+<h2>Pickling error<a class="headerlink" href="#pickling-error" title="Permalink to this headline"></a></h2>
 <section id="problem">
-<h3>Problem<a class="headerlink" href="#problem" title="Permalink to this heading"></a></h3>
+<h3>Problem<a class="headerlink" href="#problem" title="Permalink to this headline"></a></h3>
 <p>When running reademption (e.g. with Python 3.2) you get an error like this:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Traceback</span> <span class="p">(</span><span class="n">most</span> <span class="n">recent</span> <span class="n">call</span> <span class="n">last</span><span class="p">):</span>
   <span class="n">File</span> <span class="s2">&quot;/usr/lib/python3.2/multiprocessing/queues.py&quot;</span><span class="p">,</span> <span class="n">line</span> <span class="mi">272</span><span class="p">,</span> <span class="ow">in</span> <span class="n">_feed</span>
@@ -103,14 +101,14 @@
 </div>
 </section>
 <section id="solution">
-<h3>Solution<a class="headerlink" href="#solution" title="Permalink to this heading"></a></h3>
+<h3>Solution<a class="headerlink" href="#solution" title="Permalink to this headline"></a></h3>
 <p>Switch to Python 3.3 or higher. The newer versions can handle this.</p>
 </section>
 </section>
 <section id="deseq2-unused-argument-error">
-<h2>DESeq2 unused argument error<a class="headerlink" href="#deseq2-unused-argument-error" title="Permalink to this heading"></a></h2>
+<h2>DESeq2 unused argument error<a class="headerlink" href="#deseq2-unused-argument-error" title="Permalink to this headline"></a></h2>
 <section id="id1">
-<h3>Problem<a class="headerlink" href="#id1" title="Permalink to this heading"></a></h3>
+<h3>Problem<a class="headerlink" href="#id1" title="Permalink to this headline"></a></h3>
 <p>Whenn running <code class="docutils literal notranslate"><span class="pre">deseq</span></code> you get an error similar to this:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Error</span> <span class="ow">in</span> <span class="n">results</span><span class="p">(</span><span class="n">dds</span><span class="p">,</span> <span class="n">contrast</span> <span class="o">=</span> <span class="n">c</span><span class="p">(</span><span class="s2">&quot;condition&quot;</span><span class="p">,</span> <span class="s2">&quot;XXX&quot;</span><span class="p">,</span> <span class="s2">&quot;YYY&quot;</span><span class="p">))</span> <span class="p">:</span>
   <span class="n">unused</span> <span class="n">argument</span> <span class="p">(</span><span class="n">contrast</span> <span class="o">=</span> <span class="n">c</span><span class="p">(</span><span class="s2">&quot;condition&quot;</span><span class="p">,</span> <span class="s2">&quot;XXX&quot;</span><span class="p">,</span> <span class="s2">&quot;YYY&quot;</span><span class="p">))</span>
@@ -120,7 +118,7 @@
 </div>
 </section>
 <section id="id2">
-<h3>Solution<a class="headerlink" href="#id2" title="Permalink to this heading"></a></h3>
+<h3>Solution<a class="headerlink" href="#id2" title="Permalink to this headline"></a></h3>
 <p>Get a newer version of DESeq2. Version 1.2.10 and higher should work.</p>
 </section>
 </section>
@@ -157,7 +155,7 @@
   </script>
     <div class="footer">
     This documention is licensed under the <a href="https://creativecommons.org/licenses/by/3.0/">Creative Commons Attribution license</a>, 2022, Konrad U. Förstner and Till Sauerwein.
-      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 5.1.1.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 4.4.0.
     </div>
 
 

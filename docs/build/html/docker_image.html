@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Docker image &mdash; READemption 2.0.1 documentation</title>
@@ -14,12 +14,11 @@
         <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
         <script src="_static/jquery.js"></script>
         <script src="_static/underscore.js"></script>
-        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="_static/doctools.js"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="READemption’s subcommands" href="subcommands.html" />
-    <link rel="prev" title="Live system and installation image" href="live_and_installation_image.html" /> 
+    <link rel="prev" title="Installation and updating" href="installation.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -43,7 +42,6 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="installation.html">Installation and updating</a></li>
-<li class="toctree-l1"><a class="reference internal" href="live_and_installation_image.html">Live system and installation image</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Docker image</a></li>
 <li class="toctree-l1"><a class="reference internal" href="subcommands.html">READemption’s subcommands</a></li>
 <li class="toctree-l1"><a class="reference internal" href="fragment_building.html">Fragment building for paired-end reads</a></li>
@@ -77,38 +75,39 @@
            <div itemprop="articleBody">
              
   <section id="docker-image">
-<h1>Docker image<a class="headerlink" href="#docker-image" title="Permalink to this heading"></a></h1>
+<h1>Docker image<a class="headerlink" href="#docker-image" title="Permalink to this headline"></a></h1>
 <p><a class="reference external" href="https://docker.com/">Docker</a> is a light-weight way to deploy
-applications. We offer an <a class="reference external" href="https://registry.hub.docker.com/u/konradfoerstner/reademption/">image for READemption</a>
+applications. We offer an <a class="reference external" href="https://hub.docker.com/r/tillsauerwein/reademption">image for READemption</a>
 that can be easily retrieved and used once you have <a class="reference external" href="https://docs.docker.com/installation/">Docker installed</a>. To get the image run</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ sudo docker pull konradfoerstner/reademption
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ sudo docker pull tillsauerwein/reademption
 </pre></div>
 </div>
 <p>Now you have the image READempmtion image and should see it shown
 in your list of docker images:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ sudo docker images
 REPOSITORY                    TAG                 IMAGE ID            CREATED             VIRTUAL SIZE
-reademption_0.3.3             latest              416dbb001c6b        2 weeks ago         802.5 MB
-konradfoerstner/reademption   0.3.3               416dbb001c6b        2 weeks ago         802.5 MB
-ubuntu                        14.04               ba5877dc9bec        4 weeks ago         192.7 MB
-ubuntu                        latest              ba5877dc9bec        4 weeks ago         192.7 MB
+tillsauerwein/reademption     2.0.0               2ad405f43cb6        42 minutes ago      3.31GB
+tillsauerwein/reademption     latest              2ad405f43cb6        42 minutes ago      3.31GB
 </pre></div>
 </div>
-<p>You can simply start the contains by running the following command:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ sudo docker run -i -t reademption_0.3.3
+<p>You can simply start the container by running the following command:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ sudo docker run -i -t reademption
 root@3b9e7fd860ee:/# reademption -v
-READemption version 0.3.3
+READemption version 2.0.0
 </pre></div>
 </div>
 <p>Inside of this environment you have access to the local installation
 of READemption.</p>
+<p>You can find a detailed tutorial of using READemption with docker at <a class="reference external" href="https://github.com/Tillsa/READemption_Docker_Tutorial">https://github.com/Tillsa/READemption_Docker_Tutorial</a>.
+The tutorial is the same as the single-species analysis shown
+at the <a class="reference external" href="https://reademption.readthedocs.io/en/latest/example_analysis.html#single-species-analysis">Performing example analyses</a> section.</p>
 </section>
 
 
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="live_and_installation_image.html" class="btn btn-neutral float-left" title="Live system and installation image" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="installation.html" class="btn btn-neutral float-left" title="Installation and updating" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
         <a href="subcommands.html" class="btn btn-neutral float-right" title="READemption’s subcommands" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
@@ -135,7 +134,7 @@ of READemption.</p>
   </script>
     <div class="footer">
     This documention is licensed under the <a href="https://creativecommons.org/licenses/by/3.0/">Creative Commons Attribution license</a>, 2022, Konrad U. Förstner and Till Sauerwein.
-      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 5.1.1.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 4.4.0.
     </div>
 
 

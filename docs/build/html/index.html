@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>READemption - A RNA-Seq Analysis Pipeline &mdash; READemption 2.0.1 documentation</title>
@@ -14,7 +14,6 @@
         <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
         <script src="_static/jquery.js"></script>
         <script src="_static/underscore.js"></script>
-        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="_static/doctools.js"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="search" title="Search" href="search.html" />
@@ -42,7 +41,6 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <ul>
 <li class="toctree-l1"><a class="reference internal" href="installation.html">Installation and updating</a></li>
-<li class="toctree-l1"><a class="reference internal" href="live_and_installation_image.html">Live system and installation image</a></li>
 <li class="toctree-l1"><a class="reference internal" href="docker_image.html">Docker image</a></li>
 <li class="toctree-l1"><a class="reference internal" href="subcommands.html">READemption’s subcommands</a></li>
 <li class="toctree-l1"><a class="reference internal" href="fragment_building.html">Fragment building for paired-end reads</a></li>
@@ -76,13 +74,12 @@
            <div itemprop="articleBody">
              
   <section id="reademption-a-rna-seq-analysis-pipeline">
-<h1>READemption - A RNA-Seq Analysis Pipeline<a class="headerlink" href="#reademption-a-rna-seq-analysis-pipeline" title="Permalink to this heading"></a></h1>
+<h1>READemption - A RNA-Seq Analysis Pipeline<a class="headerlink" href="#reademption-a-rna-seq-analysis-pipeline" title="Permalink to this headline"></a></h1>
 <section id="table-of-content">
-<h2>Table of content<a class="headerlink" href="#table-of-content" title="Permalink to this heading"></a></h2>
+<h2>Table of content<a class="headerlink" href="#table-of-content" title="Permalink to this headline"></a></h2>
 <div class="toctree-wrapper compound">
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="installation.html">Installation and updating</a></li>
-<li class="toctree-l1"><a class="reference internal" href="live_and_installation_image.html">Live system and installation image</a></li>
 <li class="toctree-l1"><a class="reference internal" href="docker_image.html">Docker image</a></li>
 <li class="toctree-l1"><a class="reference internal" href="subcommands.html">READemption’s subcommands</a></li>
 <li class="toctree-l1"><a class="reference internal" href="fragment_building.html">Fragment building for paired-end reads</a></li>
@@ -94,17 +91,17 @@
 </div>
 </section>
 <section id="reademption-in-a-nutshell">
-<h2>READemption in a nutshell<a class="headerlink" href="#reademption-in-a-nutshell" title="Permalink to this heading"></a></h2>
+<h2>READemption in a nutshell<a class="headerlink" href="#reademption-in-a-nutshell" title="Permalink to this headline"></a></h2>
 <p>READemption is a pipeline for the computational evaluation of
 RNA-Seq data. It was originally developed to process dRNA-Seq reads
-(as introduced by Sharma et al., Nature, 2010 (<a class="reference external" href="http://www.ncbi.nlm.nih.gov/pubmed/20164839">Pubmed</a>)) originating from
+(as introduced by <em>Sharma et al.</em>, Nature, 2010 (<a class="reference external" href="http://www.ncbi.nlm.nih.gov/pubmed/20164839">Pubmed</a>)) originating from
 bacterial samples. Meanwhile it has been extended to process data
-generated in different experimental setups and from all domains of
+generated in different experimental setups e.g. Dual RNA-Seq
+(<em>Westermann et al.</em>, Nature, 2016 (<a class="reference external" href="https://pubmed.ncbi.nlm.nih.gov/26789254/">Pubmed</a>)) and from all domains of
 life.
 READemption features handling of:</p>
 <ul class="simple">
 <li><p><strong>single and multi-species projects</strong></p></li>
-<li><p><strong>single or paired-end reads</strong></p></li>
 </ul>
 <p>The <a class="reference external" href="subcommands.html">functions</a> which are accessible via a
 command-line interface cover:</p>
@@ -124,16 +121,16 @@ given. Still, READemption’s behavior can be adapted to specific needs
 of the user by parameters.</p>
 </section>
 <section id="download">
-<h2>Download<a class="headerlink" href="#download" title="Permalink to this heading"></a></h2>
+<h2>Download<a class="headerlink" href="#download" title="Permalink to this headline"></a></h2>
 <p>READemption can be download from <a class="reference external" href="https://pypi.python.org/pypi/READemption/">its PyPI page</a>. Please read the
 <a class="reference external" href="installation.html">installation instructions</a>.</p>
 </section>
 <section id="source-code">
-<h2>Source code<a class="headerlink" href="#source-code" title="Permalink to this heading"></a></h2>
+<h2>Source code<a class="headerlink" href="#source-code" title="Permalink to this headline"></a></h2>
 <p>The source code of READemption can be found at <a class="reference external" href="https://github.com/foerstner-lab/READemption">https://github.com/foerstner-lab/READemption</a>.</p>
 </section>
 <section id="cite">
-<h2>Cite<a class="headerlink" href="#cite" title="Permalink to this heading"></a></h2>
+<h2>Cite<a class="headerlink" href="#cite" title="Permalink to this headline"></a></h2>
 <p>If you apply READemption in your data analysis please cite the
 following publication: <em>READemption – A tool for the computational
 analysis of deep-sequencing-based transcriptome data</em>.
@@ -142,7 +139,7 @@ Bioinformatics, Aug 13. <a class="reference external" href="http://bioinformatic
 <a class="reference external" href="http://biorxiv.org/content/early/2014/05/19/003723">Pre-print at bioRxiv</a>.</p>
 </section>
 <section id="contact">
-<h2>Contact<a class="headerlink" href="#contact" title="Permalink to this heading"></a></h2>
+<h2>Contact<a class="headerlink" href="#contact" title="Permalink to this headline"></a></h2>
 <p>For question and requests feel free to contact <a class="reference external" href="http://konrad.foerstner.org/">Konrad Förstner</a> &lt;<a class="reference external" href="mailto:foerstner&#37;&#52;&#48;zbmed&#46;de">foerstner<span>&#64;</span>zbmed<span>&#46;</span>de</a>&gt;</p>
 </section>
 </section>
@@ -177,7 +174,7 @@ Bioinformatics, Aug 13. <a class="reference external" href="http://bioinformatic
   </script>
     <div class="footer">
     This documention is licensed under the <a href="https://creativecommons.org/licenses/by/3.0/">Creative Commons Attribution license</a>, 2022, Konrad U. Förstner and Till Sauerwein.
-      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 5.1.1.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 4.4.0.
     </div>
 
 

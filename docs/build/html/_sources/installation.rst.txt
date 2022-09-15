@@ -1,27 +1,59 @@
 Installation and updating
 =========================
+For an easy installation process we recommend using Conda. All necessary steps are described in detail below.
+
+Installing on a fresh Ubuntu system using Conda
+-----------------------------------------------
+The following installation steps where tested on ubuntu:22.04.
+We recommend using the package and environment manager Conda for an easy installation.
+It can be downloaded and installed with `Anaconda <https://www.anaconda.com/products/distribution>`_.
+After installing anaconda add the channels *anaconda-forge* and *bioconda* by entering the following commands in your terminal:
+
+::
+
+    conda config --add channels conda-forge
+    conda config --add channels bioconda
+
+To avoid package conflicts we recommend creating a conda environment for READemption based on Python 3.9:
+
+::
+
+    conda create -n "reademption" python=3.9
+
+Afterwards activate the environment:
+
+::
+
+    conda activate reademption
+
+Now you can install the READemption conda package that includes READemption and all its dependencies (e.g. segemehl and DESeq2):
+
+::
+
+    conda install -c till_sauerwein reademption -y
+
+READemption is ready to use and you can start your own analysis or
+try one of our `example analyses <https://reademption.readthedocs.io/en/latest/example_analysis.html>`_
+
+Installing on a fresh Ubuntu system using pip
+-----------------------------------------------
+The following installation steps where tested on ubuntu:22.04.
 
 Requirements
-------------
+~~~~~~~~~~~~
 
-READemption was started to be developed using Python 3.2 and the user
+READemption 2.0.0 was developed using Python 3.9 and the user
 is advised to run READemption with this or a higher version. In any
 case `setuptools <https://pypi.python.org/pypi/setuptools>`_ and `pip
 <http://www.pip-installer.org>`_ should be available on the system in
 order to make the installation easy. READemption uses the short read
 mapper `segemehl
 <http://www.bioinf.uni-leipzig.de/Software/segemehl/>`_ for the
-mapping and this software needs to be installed. The subcommands
-``viz_align``, ``viz_gene_quanti``, ``viz_deseq`` require the Python
-library `Matplotlib <http://matplotlib.org/>`_. `R
-<http://www.r-project.org/>`_ and the bioconductor package `DESeq2
-<http://bioconductor.org/packages/release/bioc/html/DESeq2.html>`_ are
+mapping and this software needs to be installed. The bioconductor package `DESeq2
+<http://bioconductor.org/packages/release/bioc/html/DESeq2.html>`_ is
 necessary for the subcommand ``deseq`` which performs differential
-gene expression analysis. Don't worry - in the following the
-installation of all these requirements will be covered.
-
-Installing on a fresh Ubuntu system
------------------------------------
+gene expression analysis. All other requirements are installed via pip's READemption package.
+Don't worry - in the following the installation of all these requirements will be covered.
 
 
 1. Installing all required Debian/Ubuntu packages
@@ -37,13 +69,13 @@ Now you can install the packages::
 
 Some comments:
 
-- Python version 3.6 and higher is recommended
+- Python version 3.9 and higher is recommended
 - ``cython`` is required for ``pysam``
 - ``make``, ``libncurses5-dev`` and ``zlib1g-dev`` are needed for ``segemehl``
 - ``libxml2`` is required for the installation of some of the R-packages
 
-2. Install segemehl
-~~~~~~~~~~~~~~~~~~~
+2. Install segemehl (version 0.3.4)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 ::
 
@@ -53,9 +85,8 @@ Some comments:
 
 
 Copying the executable to a location that is part of the ``PATH`` e.g
-``/usr/bin/`` ...
+``/usr/bin/`` ... ::
 
-::
   sudo cp segemehl-0.3.4/segemehl-0.3.4/segemehl.x /usr/bin/segemehl.x
 
 ... or the bin folder of your home directory::
@@ -66,7 +97,7 @@ Copying the executable to a location that is part of the ``PATH`` e.g
 
 Alternatively, segemehl can be installed via conda::
 
-  conda install -c bioconda segemehl
+  conda install -c bioconda segemehl=0.3.4
 
 
 3. Install DESeq2
@@ -80,8 +111,9 @@ Start ``R``::
 and install the DESeq2 package inside of the interactive command line
 interface. You might be asked to confirm the installation path::
 
-  source("http://bioconductor.org/biocLite.R")
-  biocLite("DESeq2")
+  if (!requireNamespace("BiocManager", quietly = TRUE))
+    install.packages("BiocManager")
+  BiocManager::install("DESeq2")
 
 Leave ``R``::
 
@@ -94,7 +126,7 @@ Install  READemption and it's dependcies
 Now you can use ``pip`` to install ``READemption`` and further python
 packages::
 
-  sudo pip3 install READemption
+  sudo pip install READemption
 
 Voilà! You should now be able to call READemption::
 
@@ -146,48 +178,3 @@ upgrade it to the newest version by running
 ::
 
   pip3 install --upgrade READemption
-
-
-Package version requirements and installation
----------------------------------------------
-Create a python version 3.9 environment
-::
-    conda create --name py3.9_reademption python=3.9
-
-Activate the environment
-::
-    conda activate py3.9_reademption
-
-Install pysam
-::
-    conda install -c bioconda pysam=0.19.1
-
-
-Install segemehl
-::
-    conda install -c bioconda segemehl=0.3.4
-
-Install biopython (numpy 1.23 included)
-
-::
-    conda install biopython=1.79
-
-Install pandas
-
-::
-    conda install pandas=1.4.3
-
-Install seaborn
-
-::
-    conda install seaborn=0.11.2
-
-Install matplotlib
-
-::
-    conda install matplotlib=3.5.2
-
-Install pytest (only required for testing)
-
-::
-    conda install pytest

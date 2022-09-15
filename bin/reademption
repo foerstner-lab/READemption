@@ -76,7 +76,7 @@ def create_parser():
 
     # Parameters for read alignment
     read_aligning_parser = subparsers.add_parser(
-        "align", help="Run read alignings"
+        "align", help="Run read alignings."
     )
     read_aligning_parser.add_argument(
         "--project_path",
@@ -136,12 +136,12 @@ def create_parser():
         default=False,
         action="store_true",
         help="Do not build fragments from paired end alignments. "
-             "Not building the fragments saves time. If later"
-             "subcommands like 'gene_quanti' or 'coverage' need the fragments,"
-             "they will be build before. If you don't want to work with fragments,"
+             "Not building the fragments saves time. If later "
+             "subcommands like 'gene_quanti' or 'coverage' need the fragments, "
+             "they will be build before. If you don't want to work with fragments, "
              "also turn on 'no_fragments' when using the sucommands "
-             "'gene_quanti' and 'coverage' to avoid building the fragments when"
-             "running these downstream subcommands",
+             "'gene_quanti' and 'coverage' to avoid building the fragments when "
+             "running these downstream subcommands.",
     )
     read_aligning_parser.add_argument(
         "--max_fragment_length",
@@ -149,7 +149,7 @@ def create_parser():
         default=False,
         type=is_positive_int,
         help="The maximum fragment length for all fragments. Fragments are "
-              "either built from two mates or a single read",
+              "either built from two mates or a single read.",
     )
     read_aligning_parser.add_argument(
         "--split",
@@ -226,7 +226,7 @@ def create_parser():
 
     # Parameters for coverage file building
     coverage_creation_parser = subparsers.add_parser(
-        "coverage", help="Create coverage (wiggle) files"
+        "coverage", help="Create coverage (wiggle) files."
     )
     coverage_creation_parser.add_argument(
         "--project_path",
@@ -256,16 +256,16 @@ def create_parser():
         "-x",
         default=False,
         action="store_true",
-        help="Count species-cross-aligned reads for the coverage file creation,"
-        " by default these reads are not counted",
+        help="Count species-cross-aligned reads for the coverage file creation, "
+        "by default these reads are not counted.",
     )
     coverage_creation_parser.add_argument(
         "--normalize_cross_aligned_reads_included",
         "-X",
         default=False,
         action="store_true",
-        help="Add species-cross-aligned reads to normalization,"
-        " by default only the species specific reads are used.",
+        help="Add species-cross-aligned reads to normalization, "
+        "by default only the species specific reads are used.",
     )
     coverage_creation_parser.add_argument(
         "--processes",
@@ -336,8 +336,8 @@ def create_parser():
         "-nf",
         default=False,
         action="store_true",
-        help="Count single alignments instead of fragments built after alignment."
-             "This option saves time if the fragments have not been build during alignment."
+        help="Count single alignments instead of fragments built after alignment. "
+             "This option saves time if the fragments have not been build during alignment. "
              "Only use this if reads are originating from a paired-end sequencing.",
     )
     coverage_creation_parser.add_argument(
@@ -346,15 +346,15 @@ def create_parser():
         default=False,
         type=is_positive_int,
         help="The maximum fragment length for all fragments. Fragments are "
-             "either built from two mates or a single read",
+             "either built from two mates or a single read.",
     )
     coverage_creation_parser.add_argument(
         "--no_norm_by_fragments",
         "-nff",
         default=False,
         action="store_true",
-        help="Use total no. of single alignments instead of fragments built after alignment for the normalisation."
-             "This option saves time if the fragments have not been build during alignment."
+        help="Use total no. of single alignments instead of fragments built after alignment for the normalisation. "
+             "This option saves time if the fragments have not been build during alignment. "
              "Only use this if reads are originating from a paired-end sequencing.",
     )
 
@@ -362,7 +362,7 @@ def create_parser():
 
     # Parameters for gene wise quantification
     gene_wise_quanti_parser = subparsers.add_parser(
-        "gene_quanti", help="Quantify the expression gene wise"
+        "gene_quanti", help="Quantify the expression gene wise."
     )
     gene_wise_quanti_parser.add_argument(
         "--project_path",
@@ -487,7 +487,7 @@ def create_parser():
         default=False,
         action="store_true",
         help="Count species-cross-aligned reads for the gene quantification. By"
-        "default these reads are not counted",
+        "default these reads are not counted.",
     )
     gene_wise_quanti_parser.add_argument(
         "--normalize_cross_aligned_reads_included",
@@ -510,8 +510,8 @@ def create_parser():
         "-nf",
         default=False,
         action="store_true",
-        help="Count single alignments instead of fragments built after alignment."
-             "This option saves time if the fragments have not been build during alignment."
+        help="Count single alignments instead of fragments built after alignment. "
+             "This option saves time if the fragments have not been build during alignment. "
              "Only use this if reads are originating from a paired-end sequencing.",
     )
     gene_wise_quanti_parser.add_argument(
@@ -520,15 +520,15 @@ def create_parser():
         default=False,
         type=is_positive_int,
         help="The maximum fragment length for all fragments. Fragments are "
-             "either built from two mates or a single read",
+             "either built from two mates or a single read.",
     )
     gene_wise_quanti_parser.add_argument(
         "--no_norm_by_fragments",
         "-nff",
         default=False,
         action="store_true",
-        help="Use total no. of single alignments instead of fragments built after alignment for the normalisation."
-             "This option saves time if the fragments have not been build during alignment."
+        help="Use total no. of single alignments instead of fragments built after alignment for the normalisation. "
+             "This option saves time if the fragments have not been build during alignment. "
              "Only use this if reads are originating from a paired-end sequencing.",
     )
     gene_wise_quanti_parser.set_defaults(func=run_gene_wise_quantification)
@@ -591,7 +591,7 @@ def create_parser():
         "-b",
         choices=["project", "species", "comparison"],
         default="species",
-        help="Select the libraries for the size factor estimation of DESeq2."
+        help="Select the libraries for the size factor estimation of DESeq2. "
         "Selecting the option 'project' will result in calculating the "
         "size factors for all comparisons based on all libraries of the"
         "whole project (It doesn't matter if the libraries have no reads "
@@ -612,7 +612,7 @@ def create_parser():
         "-so",
         default=False,
         action="store_true",
-        help="turn off log2 fold change shrinkage",
+        help="turn off log2 fold change shrinkage.",
     )
 
     deseq_parser.set_defaults(func=run_deseq)
@@ -673,8 +673,7 @@ def create_parser():
         type=float,
         default="0.05",
         help="Maximum adjusted p-value for genes considered to be regulated. "
-        "Genes with adjusted p-values below will be marked red. "
-        "(default 0.05)",
+        "Genes with adjusted p-values below will be marked red.",
     )
     viz_deseq_parser.set_defaults(func=viz_deseq)
     return parser
