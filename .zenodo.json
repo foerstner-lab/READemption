@@ -1,11 +1,11 @@
 {
-"description": "<p>Set version to v2.0.0</p>",
+"description": "<p>Set version to v2.0.2</p>",
 "license": "other-open",
 "title": "READemption",
 "notes": "If you use this software, please cite it as below.",
-"version": "1.0.5",
+"version": "2.0.2",
 "upload_type": "software",
-"publication_date": "2020-07-11",
+"publication_date": "2022-09-30",
 "creators": [
 {
 "orcid": "0000-0002-1481-2996",
@@ -19,15 +19,12 @@
 "orcid": "0000-0001-9288-9481",
 "name": "Bischler, Thorsten"
 },
-{
-"name": "Tobin, Diarmaid"
-}
 ],
 "access_right": "open",
 "related_identifiers": [
 {
 "scheme": "url",
-"identifier": "https://github.com/foerstner-lab/READemption/tree/v2.0.0",
+"identifier": "https://github.com/foerstner-lab/READemption/tree/v2.0.2",
 "relation": "isSupplementTo"
 },
 {
