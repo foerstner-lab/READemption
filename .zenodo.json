@@ -33,7 +33,7 @@
 {
 "scheme": "doi",
 "identifier": "10.5281/zenodo.591469",
-"relation": "isVersionOf"
+"relation": "isNewVersionOf"
 }
 ]
 }
