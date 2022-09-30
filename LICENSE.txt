@@ -1,8 +1,5 @@
-<<<<<<< HEAD
-Copyright (c) 2011-2022, Till Sauerwein <sauerwein@zbmed.de>, Konrad Förstner <konrad@foerstner.org>
-=======
+
 READemption is open source software and available under the MIT license.
->>>>>>> dev
 
 Copyright (c) 2011-2022, Konrad Förstner <konrad@foerstner.org>, Till Sauerwein <sauerwein@zbmed.de>
 

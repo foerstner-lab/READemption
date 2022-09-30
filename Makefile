@@ -52,6 +52,7 @@ new_release:
 	@echo "  git checkout dev"
 	@echo "* Change version and date in bin/reademption"
 	@echo "* Change version in setup.py"
+	@echo "* Change the version and date in .zenodo.json"
 	@echo "* Change requirements (install_requires) in setup.py"
 	@echo "* Change version, release and date in docs/source/conf.py"
 	@echo "* Add description to CHANGELOG.txt"
