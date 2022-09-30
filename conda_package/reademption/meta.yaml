@@ -1,52 +1,52 @@
 {% set name = "reademption" %}
-{% set version = "2.0.1" %}
+{% set version = "2.0.2" %}
 
 package:
-  name: {{ name|lower }}
-  version: {{ version }}
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
 
 source:
-  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/READemption-{{ version }}.tar.gz
-  sha256: 5e58ae838d9e6fe7dbd74dc4ae838e58beb3c240417ddaefc736d04fe1a8331e
-  #sha256: 229442d5afedba0cdd5eaf8ed34128f851103c6ac55c4289434b0ab52bff8748
-  #5e58ae838d9e6fe7dbd74dc4ae838e58beb3c240417ddaefc736d04fe1a8331e
+  #url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
+  url: "https://files.pythonhosted.org/packages/a6/4e/9c3e407eecb53083e7cc5f266b34a2ee149b924be559e62a0457cb94a749/READemption-2.0.2.tar.gz"
+  sha256: 8a7e96f4795561d4f5b36df277d0a93ca2a5666e1fc2b886ac714b922235a9a3
 
 build:
-  script: {{ PYTHON }} -m pip install . -vv
   number: 0
+  script: "{{ PYTHON }} -m pip install . -vv"
 
 requirements:
-  build:
-    - python {{ python }}
   host:
+    - biopython >=1.79
+    - matplotlib >=3.5.2
+    - pandas >=1.4.3
     - pip
+    - pysam >=0.19.1
     - python
+    - seaborn >=0.11.2
+    - sphinx-argparse >=0.2.5
   run:
     - biopython >=1.79
-    - matplotlib-base >=3.5.2
+    - matplotlib >=3.5.2
     - pandas >=1.4.3
     - pysam >=0.19.1
-    - seaborn >=0.11.2
     - python
+    - seaborn >=0.11.2
     - sphinx-argparse >=0.2.5
-    - segemehl >=0.3.4
-    - bioconductor-deseq2 >=1.34.0
-    - r-gplots >=3.0.1
 
 test:
   imports:
     - reademptionlib
-  commands:
-    - pip check
-  requires:
-    - pip
+    - tests
 
 about:
-  home: https://github.com/foerstner-lab/READemption
-  summary: A RNA-Seq Analysis Pipeline
-  doc_url: https://reademption.readthedocs.io/en/latest/
-  license: ISC
+  home: The package home page
+  license: MIT
+  license_family: MIT
+  license_file: 
+  summary: "A RNA-Seq Analysis Pipeline"
+  doc_url: 
+  dev_url: 
 
 extra:
   recipe-maintainers:
-    - Tillsa
+    - your-github-id-here

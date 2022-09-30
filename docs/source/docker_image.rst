@@ -18,8 +18,8 @@ in your list of docker images:
 
   $ sudo docker images
   REPOSITORY                    TAG                 IMAGE ID            CREATED             VIRTUAL SIZE
-  tillsauerwein/reademption     2.0.0               2ad405f43cb6        42 minutes ago      3.31GB
-  tillsauerwein/reademption     latest              2ad405f43cb6        42 minutes ago      3.31GB
+  tillsauerwein/reademption     2.0.2               41c42c0a6c35        42 minutes ago      3.31GB
+  tillsauerwein/reademption     latest              241c42c0a6c35        42 minutes ago      3.31GB
 
 
 
@@ -29,7 +29,7 @@ You can simply start the container by running the following command:
 
   $ sudo docker run -i -t reademption
   root@3b9e7fd860ee:/# reademption -v
-  READemption version 2.0.0
+  READemption version 2.0.2
 
 
 Inside of this environment you have access to the local installation

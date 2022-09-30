@@ -5,7 +5,7 @@ except ImportError:
 
 setup(
     name="READemption",
-    version="2.0.1",
+    version="2.0.2",
     packages=["reademptionlib", "tests"],
     author="Konrad U. Förstner, Till Sauerwein",
     author_email="konrad@foerstner.org",
@@ -20,10 +20,10 @@ setup(
         "sphinx-argparse >=0.2.5"
     ],
     scripts=["bin/reademption"],
-    license="ISC License (ISCL)",
+    license="MIT License",
     long_description=open("README.rst").read(),
     classifiers=[
-        "License :: OSI Approved :: ISC License (ISCL)",
+        "License :: OSI Approved :: MIT License",
         "Operating System :: POSIX",
         "Programming Language :: Python :: 3",
         "Topic :: Scientific/Engineering :: Bio-Informatics",
