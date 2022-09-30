@@ -39,8 +39,8 @@ including a description of the requirements and how do you get them.
 License
 -------
 
-[ICSL](https://en.wikipedia.org/wiki/ISC_license) 
-(Internet Systems Consortium license ~ simplified BSD license) - see LICENSE.txt
+[MIT](https://opensource.org/licenses/MIT) 
+(MIT License) - see LICENSE.txt
 
 Development
 -----------
