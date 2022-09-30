@@ -1,4 +1,6 @@
 v2.0.2 (2022-09-30)
+- Fix zenodo web hook
+v2.0.2 (2022-09-30)
 - Change License from ISC License to MIT License
 v2.0.1 (2022-08-23)
 - Accelerate fragment building for paired-end reads
