@@ -1,9 +1,9 @@
 {
-"description": "<p>Set version to v2.0.2</p>",
+"description": "<p>Set version to v2.0.3</p>",
 "license": "other-open",
 "title": "READemption",
 "notes": "If you use this software, please cite it as below.",
-"version": "2.0.2",
+"version": "2.0.3",
 "upload_type": "software",
 "publication_date": "2022-09-30",
 "creators": [
@@ -24,7 +24,7 @@
 "related_identifiers": [
 {
 "scheme": "url",
-"identifier": "https://github.com/foerstner-lab/READemption/tree/v2.0.2",
+"identifier": "https://github.com/foerstner-lab/READemption/tree/v2.0.3",
 "relation": "isSupplementTo"
 },
 {
