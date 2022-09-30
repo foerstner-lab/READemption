@@ -1,4 +1,4 @@
-v2.0.2 (2022-09-30)
+v2.0.3 (2022-09-30)
 - Fix zenodo web hook
 v2.0.2 (2022-09-30)
 - Change License from ISC License to MIT License
