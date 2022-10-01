@@ -1,5 +1,5 @@
 {% set name = "reademption" %}
-{% set version = "2.0.2" %}
+{% set version = "2.0.3" %}
 
 package:
   name: "{{ name|lower }}"
@@ -7,8 +7,8 @@ package:
 
 source:
   #url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
-  url: "https://files.pythonhosted.org/packages/a6/4e/9c3e407eecb53083e7cc5f266b34a2ee149b924be559e62a0457cb94a749/READemption-2.0.2.tar.gz"
-  sha256: 8a7e96f4795561d4f5b36df277d0a93ca2a5666e1fc2b886ac714b922235a9a3
+  url: "https://files.pythonhosted.org/packages/e5/84/1705e6e2e85a47989ea1751dddca5c571e416f5a4fb8eb7d4bd0dd9860b3/READemption-2.0.3.tar.gz"
+  sha256: 51efda9a2b7d81facae07c6787266458e7c7ebfde5aaaf14d8538253231fc3b7
 
 build:
   number: 0
