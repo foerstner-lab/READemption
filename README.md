@@ -3,7 +3,7 @@
 ![Build Status](https://github.com/foerstner-lab/READemption/actions/workflows/main.yml/badge.svg)
 [![Documentation Status](https://readthedocs.org/projects/reademption/badge/?version=latest)](https://reademption.readthedocs.io/en/latest/?badge=latest)
 [![DOI](https://zenodo.org/badge/18210971.svg)](https://zenodo.org/badge/latestdoi/18210971)
-[![Anaconda-Server Badge](https://anaconda.org/till_sauerwein/reademption/badges/installer/conda.svg)](https://conda.anaconda.org/till_sauerwein)
+[![Anaconda-Server Badge](https://anaconda.org/till_sauerwein/reademption/badges/version.svg)](https://conda.anaconda.org/till_sauerwein)
 <img src="./coverage.svg">
 
 About
