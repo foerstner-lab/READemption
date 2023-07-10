@@ -1,0 +1,51 @@
+{% set name = "reademption" %}
+{% set version = "2.0.2" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
+  sha256: 8a7e96f4795561d4f5b36df277d0a93ca2a5666e1fc2b886ac714b922235a9a3
+
+build:
+  number: 0
+  script: "{{ PYTHON }} -m pip install . -vv"
+
+requirements:
+  host:
+    - biopython >=1.79
+    - matplotlib >=3.5.2
+    - pandas >=1.4.3
+    - pip
+    - pysam >=0.19.1
+    - python
+    - seaborn >=0.11.2
+    - sphinx-argparse >=0.2.5
+  run:
+    - biopython >=1.79
+    - matplotlib >=3.5.2
+    - pandas >=1.4.3
+    - pysam >=0.19.1
+    - python
+    - seaborn >=0.11.2
+    - sphinx-argparse >=0.2.5
+
+test:
+  imports:
+    - reademptionlib
+    - tests
+
+about:
+  home: The package home page
+  license: MIT
+  license_family: MIT
+  license_file: 
+  summary: "A RNA-Seq Analysis Pipeline"
+  doc_url: 
+  dev_url: 
+
+extra:
+  recipe-maintainers:
+    - your-github-id-here
