@@ -1,0 +1,48 @@
+Species	Statistic	library_one
+all	No. of input reads	24
+all	No. of reads - PolyA detected and removed	0
+all	No. of reads - Single 3' A removed	0
+all	No. of reads - Unmodified	24
+all	No. of reads - Removed as too short	0
+all	No. of reads - Long enough and used for alignment	24
+all	Total no. of aligned fragments	12
+all	Total no. of unaligned reads	2
+all	Total no. of uniquely aligned fragments	8
+all	Total no. of split aligned fragments	1
+all	Total no. of multiple aligned fragments	3
+all	Total no. of cross aligned fragments	0
+all	Total no. of alignments	17
+all	Percentage of uniquely aligned fragments (in relation to all aligned fragments)	66.67
+all	Percentage of split aligned fragments (in relation to all aligned fragments)	8.33
+all	Percentage of multiple aligned fragments (in relation to all aligned fragments)	25.0
+all	Percentage of cross aligned fragments (in relation to all aligned fragments)	0.0
+homo sapiens	Total no. of aligned fragments	12
+homo sapiens	Total no. of uniquely aligned fragments	8
+homo sapiens	Total no. of split aligned fragments	1
+homo sapiens	Total no. of multiple aligned fragments	3
+homo sapiens	Total no. of cross aligned fragments	0
+homo sapiens	Total no. of alignments	17
+homo sapiens	Percentage of uniquely aligned fragments (in relation to all aligned fragments)	66.67
+homo sapiens	Percentage of split aligned fragments (in relation to all aligned fragments)	8.33
+homo sapiens	Percentage of multiple aligned fragments (in relation to all aligned fragments)	25.0
+homo sapiens	Percentage of cross aligned fragments (in relation to all aligned fragments)	0.0
+Staphylococcus aureus	Total no. of aligned fragments	0
+Staphylococcus aureus	Total no. of uniquely aligned fragments	0
+Staphylococcus aureus	Total no. of split aligned fragments	0
+Staphylococcus aureus	Total no. of multiple aligned fragments	0
+Staphylococcus aureus	Total no. of cross aligned fragments	0
+Staphylococcus aureus	Total no. of alignments	0
+Staphylococcus aureus	Percentage of uniquely aligned fragments (in relation to all aligned fragments)	0.0
+Staphylococcus aureus	Percentage of split aligned fragments (in relation to all aligned fragments)	0.0
+Staphylococcus aureus	Percentage of multiple aligned fragments (in relation to all aligned fragments)	0.0
+Staphylococcus aureus	Percentage of cross aligned fragments (in relation to all aligned fragments)	0.0
+homo sapiens	chr1 - No. of aligned fragments	12
+homo sapiens	chr1 - No. of uniquely aligned fragments	8
+homo sapiens	chr1 - No. of split aligned fragments	1
+homo sapiens	chr1 - No. of multiple aligned fragments	3
+homo sapiens	chr1 - No. of alignments	17
+Staphylococcus aureus	NC_007795.1 - No. of aligned fragments	0
+Staphylococcus aureus	NC_007795.1 - No. of uniquely aligned fragments	0
+Staphylococcus aureus	NC_007795.1 - No. of split aligned fragments	0
+Staphylococcus aureus	NC_007795.1 - No. of multiple aligned fragments	0
+Staphylococcus aureus	NC_007795.1 - No. of alignments	0
