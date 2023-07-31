@@ -18,7 +18,7 @@ class ArgMock:
         self.processes = 1
         self.check_for_existing_files = False
         # Coverage
-        self.no_fragments = False
+        self.no_fragments = True
         self.no_norm_by_fragments = False
         self.paired_end = True
         self.max_fragment_length = False
@@ -51,7 +51,7 @@ class TestController(unittest.TestCase):
         #self.dual_fresh_copy_output_human = f"{self.dual_fresh_copy_output}/human_deseq"
 
 
-        self.dual_expected = "tests/test_files/reademption_analysis_dual_with_coverage_paired_expected"
+        self.dual_expected = "tests/test_files/reademption_analysis_dual_with_coverage_paired_no_fragments_expected"
         self.dual_expected_output = f"{self.dual_expected}/output"
         #self.dual_expected_output_human = f"{self.dual_expected_output}/human_deseq"
         #self.dual_expected_R_script_human = f"{self.dual_expected_output_human}/deseq_raw/deseq.R"
