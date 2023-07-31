@@ -19,7 +19,7 @@ class ArgMock:
         self.check_for_existing_files = False
         # Coverage
         self.no_fragments = False
-        self.no_norm_by_fragments = True
+        self.no_norm_by_fragments = False
         self.paired_end = True
         self.unique_only = False
         self.normalize_by_uniquely = False
