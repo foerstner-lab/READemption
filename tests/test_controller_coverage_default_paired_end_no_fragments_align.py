@@ -19,8 +19,9 @@ class ArgMock:
         self.check_for_existing_files = False
         # Coverage
         self.no_fragments = False
-        self.no_norm_by_fragments = True
+        self.no_norm_by_fragments = False
         self.paired_end = True
+        self.max_fragment_length = False
         self.unique_only = False
         self.normalize_by_uniquely = False
         self.count_cross_aligned_reads = False
@@ -42,7 +43,7 @@ class TestController(unittest.TestCase):
         self.test_project_name = arg_mock.project_path
         self.controller = Controller(arg_mock)
         self.maxDiff = None
-        self.dual_fresh = "tests/test_files/reademption_analysis_dual_with_coverage_paired_end_input_files"
+        self.dual_fresh = "tests/test_files/reademption_analysis_dual_paired_end_with_coverage_paired_end_no_fragments_input_files"
         self.dual_fresh_output = f"{self.dual_fresh}/output"
 
         self.dual_fresh_copy = "a_test_project"
