@@ -1,0 +1,6 @@
+READemption version: 2.0.3
+Python version: 3.9.13 | packaged by conda-forge | (main, May 27 2022, 16:56:21)  [GCC 10.3.0]
+Biopython version: 1.79
+pysam version: 0.19.1
+matplotlib version: 3.5.2
+pandas version: 1.4.3

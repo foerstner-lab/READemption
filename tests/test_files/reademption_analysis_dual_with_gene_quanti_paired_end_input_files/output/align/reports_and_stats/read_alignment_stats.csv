@@ -1,0 +1,54 @@
+Species	Statistic	library_one
+all	No. of input reads	24
+all	No. of reads - PolyA detected and removed	0
+all	No. of reads - Single 3' A removed	0
+all	No. of reads - Unmodified	24
+all	No. of reads - Removed as too short	0
+all	No. of reads - Long enough and used for alignment	24
+all	Total no. of aligned reads	22
+all	Total no. of unaligned reads	2
+all	Total no. of uniquely aligned reads	15
+all	Total no. of split aligned reads	1
+all	Total no. of multiple aligned reads	6
+all	Total no. of cross aligned reads	0
+all	Total no. of alignments	32
+all	Percentage of aligned reads (compared to no. of input reads)	91.67
+all	Percentage of aligned reads (compared to no. of long enough reads)	91.67
+all	Percentage of uniquely aligned reads (in relation to all aligned reads)	68.18
+all	Percentage of split aligned reads (in relation to all aligned reads)	4.55
+all	Percentage of multiple aligned reads (in relation to all aligned reads)	27.27
+all	Percentage of cross aligned reads (in relation to all aligned reads)	0.0
+homo sapiens	Total no. of aligned reads	22
+homo sapiens	Total no. of uniquely aligned reads	15
+homo sapiens	Total no. of split aligned reads	1
+homo sapiens	Total no. of multiple aligned reads	6
+homo sapiens	Total no. of cross aligned reads	0
+homo sapiens	Total no. of alignments	32
+homo sapiens	Percentage of aligned reads (compared to no. of input reads)	91.67
+homo sapiens	Percentage of aligned reads (compared to no. of long enough reads)	91.67
+homo sapiens	Percentage of uniquely aligned reads (in relation to all aligned reads)	68.18
+homo sapiens	Percentage of split aligned reads (in relation to all aligned reads)	4.55
+homo sapiens	Percentage of multiple aligned reads (in relation to all aligned reads)	27.27
+homo sapiens	Percentage of cross aligned reads (in relation to all aligned reads)	0.0
+Staphylococcus aureus	Total no. of aligned reads	0
+Staphylococcus aureus	Total no. of uniquely aligned reads	0
+Staphylococcus aureus	Total no. of split aligned reads	0
+Staphylococcus aureus	Total no. of multiple aligned reads	0
+Staphylococcus aureus	Total no. of cross aligned reads	0
+Staphylococcus aureus	Total no. of alignments	0
+Staphylococcus aureus	Percentage of aligned reads (compared to no. of input reads)	0.0
+Staphylococcus aureus	Percentage of aligned reads (compared to no. of long enough reads)	0.0
+Staphylococcus aureus	Percentage of uniquely aligned reads (in relation to all aligned reads)	0.0
+Staphylococcus aureus	Percentage of split aligned reads (in relation to all aligned reads)	0.0
+Staphylococcus aureus	Percentage of multiple aligned reads (in relation to all aligned reads)	0.0
+Staphylococcus aureus	Percentage of cross aligned reads (in relation to all aligned reads)	0.0
+homo sapiens	chr1 - No. of aligned reads	22
+homo sapiens	chr1 - No. of uniquely aligned reads	15
+homo sapiens	chr1 - No. of split aligned reads	1
+homo sapiens	chr1 - No. of multiple aligned reads	6
+homo sapiens	chr1 - No. of alignments	32
+Staphylococcus aureus	NC_007795.1 - No. of aligned reads	0
+Staphylococcus aureus	NC_007795.1 - No. of uniquely aligned reads	0
+Staphylococcus aureus	NC_007795.1 - No. of split aligned reads	0
+Staphylococcus aureus	NC_007795.1 - No. of multiple aligned reads	0
+Staphylococcus aureus	NC_007795.1 - No. of alignments	0

@@ -1,0 +1,84 @@
+{
+    "library_one": {
+        "stats_total": {
+            "no_of_alignments": 17.0,
+            "no_of_aligned_fragments": 12.0,
+            "no_of_split_alignments": 0.0,
+            "no_of_split_aligned_fragments": 1.0,
+            "no_of_uniquely_aligned_fragments": 8.0,
+            "no_of_multiple_aligned_fragments": 3.0,
+            "alignment_length_and_freqs": {},
+            "no_of_hits_per_read_and_freqs": {
+                "2": 2,
+                "4": 1,
+                "1": 9
+            },
+            "no_of_cross_aligned_fragments": 0.0,
+            "no_of_unaligned_reads": 2
+        },
+        "species_stats": {
+            "human": {
+                "no_of_alignments": 17.0,
+                "no_of_aligned_fragments": 12.0,
+                "no_of_split_alignments": 0.0,
+                "no_of_split_aligned_fragments": 1.0,
+                "no_of_uniquely_aligned_fragments": 8.0,
+                "no_of_multiple_aligned_fragments": 3.0,
+                "alignment_length_and_freqs": {},
+                "no_of_hits_per_read_and_freqs": {
+                    "2": 2,
+                    "4": 1,
+                    "1": 9
+                },
+                "no_of_cross_aligned_fragments": 0.0
+            },
+            "staphylococcus": {
+                "no_of_alignments": 0.0,
+                "no_of_aligned_fragments": 0.0,
+                "no_of_split_alignments": 0.0,
+                "no_of_split_aligned_fragments": 0.0,
+                "no_of_uniquely_aligned_fragments": 0.0,
+                "no_of_multiple_aligned_fragments": 0.0,
+                "alignment_length_and_freqs": {},
+                "no_of_hits_per_read_and_freqs": {},
+                "no_of_cross_aligned_fragments": 0.0
+            }
+        },
+        "stats_per_reference": {
+            "chr1": {
+                "no_of_alignments": 17.0,
+                "no_of_aligned_fragments": 12.0,
+                "no_of_split_alignments": 0.0,
+                "no_of_split_aligned_fragments": 1.0,
+                "no_of_uniquely_aligned_fragments": 8.0,
+                "no_of_multiple_aligned_fragments": 3.0,
+                "alignment_length_and_freqs": {
+                    "60": 5,
+                    "520": 1,
+                    "180": 1,
+                    "100": 1,
+                    "20": 3,
+                    "40": 1,
+                    "30": 2,
+                    "15": 2,
+                    "120": 1
+                },
+                "no_of_hits_per_read_and_freqs": {
+                    "2": 2,
+                    "4": 1,
+                    "1": 9
+                }
+            },
+            "NC_007795.1": {
+                "no_of_alignments": 0.0,
+                "no_of_aligned_fragments": 0.0,
+                "no_of_split_alignments": 0.0,
+                "no_of_split_aligned_fragments": 0.0,
+                "no_of_uniquely_aligned_fragments": 0.0,
+                "no_of_multiple_aligned_fragments": 0.0,
+                "alignment_length_and_freqs": {},
+                "no_of_hits_per_read_and_freqs": {}
+            }
+        }
+    }
+}
