@@ -135,10 +135,11 @@ class FragmentBuilder(object):
                 # check if overlap or exceed. One needs to be added to the
                 # start because the start is 0-based and the end is 1-based
                 if mate_end < (start + 1):
-                    # exceed
+                    # exceed, Case E) overlap
                     start_of_fragment = mate_start
                     end_of_fragment = end
                 else:
+                    # overlap Case D) exceed
                     start_of_fragment = start
                     end_of_fragment = mate_end
 

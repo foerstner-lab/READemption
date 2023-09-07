@@ -195,50 +195,11 @@ class Controller(object):
 
         if self._args.paired_end:
             # Build a bam file containing fragments merged from read
-            # pairs
+            # pairs and fragment statistics
             if not self._args.no_fragment_building:
                 fragments = True
-                # sort the bam files by name and sam tag hit index to
-                # accelerate fragment building
-                print(
-                    f"controller sort bams by name and index start {datetime.now()}"
-                )
-                self._sort_bams_by_name_and_index()
-                print(
-                    f"controller sort bams by name and index end {datetime.now()}"
-                )
-                # build the fragments bam file
-                print(f"controller build_fragments start {datetime.now()}")
-                self._build_fragments()
-                print(f"controller build_fragments stop {datetime.now()}")
-                # generate fragment alignment stats
-                print(
-                    f"controller generate_fragment_alignmnet_stats start {datetime.now()}"
-                )
-                self._generate_read_alignment_stats(
-                    self._lib_names,
-                    self._pathcreator.aligned_fragments_bam_paths,
-                    self._pathcreator.unaligned_reads_paths,
-                    self._pathcreator.fragment_alignments_stats_path,
-                    self._args.paired_end,
-                    fragments,
-                )
-                print(
-                    f"controller generate_fragment_alignmnet_stats stop {datetime.now()}"
-                )
-                # write fragment stats table
-                print(
-                    f"controller write_alignment_stats_table fragments start {datetime.now()}"
-                )
-                self._write_alignment_stat_table(
-                    self._pathcreator.fragment_alignments_stats_path,
-                    self._pathcreator.fragment_alignment_stats_table_path,
-                    self._pathcreator.fragment_alignment_stats_table_transposed_path,
-                    fragments,
-                )
-                print(
-                    f"controller write_alignment_stats_table fragments stop {datetime.now()}"
-                )
+                self._build_fragments_and_calculate_fragment_stats(fragments)
+
         print(
             f"controller write_alignment_stats_table reads start {datetime.now()}"
         )
@@ -249,6 +210,49 @@ class Controller(object):
         )
         print(
             f"controller write_alignment_stats_table reads stop {datetime.now()}"
+        )
+
+    def _build_fragments_and_calculate_fragment_stats(self, fragments):
+        # sort the bam files by name and sam tag hit index to
+        # accelerate fragment building
+        print(
+            f"controller sort bams by name and index start {datetime.now()}"
+        )
+        self._sort_bams_by_name_and_index()
+        print(
+            f"controller sort bams by name and index end {datetime.now()}"
+        )
+        # build the fragments bam file
+        print(f"controller build_fragments start {datetime.now()}")
+        self._build_fragments()
+        print(f"controller build_fragments stop {datetime.now()}")
+        # generate fragment alignment stats
+        print(
+            f"controller generate_fragment_alignmnet_stats start {datetime.now()}"
+        )
+        self._generate_read_alignment_stats(
+            self._lib_names,
+            self._pathcreator.aligned_fragments_bam_paths,
+            self._pathcreator.unaligned_reads_paths,
+            self._pathcreator.fragment_alignments_stats_path,
+            self._args.paired_end,
+            fragments,
+        )
+        print(
+            f"controller generate_fragment_alignmnet_stats stop {datetime.now()}"
+        )
+        # write fragment stats table
+        print(
+            f"controller write_alignment_stats_table fragments start {datetime.now()}"
+        )
+        self._write_alignment_stat_table(
+            self._pathcreator.fragment_alignments_stats_path,
+            self._pathcreator.fragment_alignment_stats_table_path,
+            self._pathcreator.fragment_alignment_stats_table_transposed_path,
+            fragments,
+        )
+        print(
+            f"controller write_alignment_stats_table fragments stop {datetime.now()}"
         )
 
     def _sort_bams_by_name_and_index(self):
@@ -592,26 +596,25 @@ class Controller(object):
 
         """
 
-        # Select if normalisation is based on fragment numbers
-        if self._args.paired_end and not self._args.no_norm_by_fragments:
-            norm_by_fragments = True
-        else:
-            norm_by_fragments = False
-        if norm_by_fragments:
-            reads_or_fragments = "fragments"
-            alignment_stats_path = (
-                self._pathcreator.fragment_alignments_stats_path
-            )
-        else:
-            reads_or_fragments = "reads"
-            alignment_stats_path = self._pathcreator.read_alignments_stats_path
-
         # Get alignment stats
         raw_stat_data_reader = RawStatDataReader()
-        alignment_stats = [raw_stat_data_reader.read(alignment_stats_path)]
+        alignment_stats = [raw_stat_data_reader.read(self._pathcreator.read_alignments_stats_path)]
         # Lib names was paired end
         lib_names = list(alignment_stats[0].keys())
         was_paired_end_alignment = self._was_paired_end_alignment(lib_names)
+
+        # Set read files and lib names
+        if not was_paired_end_alignment:
+            self._pathcreator.set_read_files_dep_file_lists_single_end(
+                self._pathcreator.get_read_files(), lib_names
+            )
+        else:
+            self._pathcreator.set_read_files_dep_file_lists_paired_end(
+                self._pathcreator.get_read_files(), lib_names
+            )
+
+
+
 
         # Quit if the wrong parameters have been chosen for the subcommand
         if was_paired_end_alignment and not self._args.paired_end:
@@ -639,27 +642,55 @@ class Controller(object):
                 "the option '-P' or '--paired_end'.\n"
             )
 
-        # Set read files and lib names
-        if not was_paired_end_alignment:
-            self._pathcreator.set_read_files_dep_file_lists_single_end(
-                self._pathcreator.get_read_files(), lib_names
-            )
-        else:
+        fragments_but_norm_by_reads = False
+        if self._args.paired_end:
+            self._read_file_pairs = self._pathcreator.get_read_file_pairs()
+            self._lib_names = self._pathcreator.get_lib_names_paired_end()
             self._pathcreator.set_read_files_dep_file_lists_paired_end(
-                self._pathcreator.get_read_files(), lib_names
-            )
+            self._read_file_pairs, self._lib_names
+        )
+            # count reads, normalize by reads
+            if self._args.no_fragments or (self._args.no_fragments and self._args.no_norm_by_fragments):
+                norm_by_fragments = False
+                reads_or_fragments = "reads"
+                alignment_stats_path = self._pathcreator.read_alignments_stats_path
+            # count fragments, normalize by reads
+            elif self._args.no_norm_by_fragments:
+                norm_by_fragments = False
+                reads_or_fragments = "fragments"
+                alignment_stats_path = self._pathcreator.fragment_alignments_stats_path
+                fragments_but_norm_by_reads = True
+            # count fragments, normalize by fragments
+            else:
+                norm_by_fragments = True
+                reads_or_fragments = "fragments"
+                alignment_stats_path = self._pathcreator.fragment_alignments_stats_path
+        else:
+            norm_by_fragments = False
+            reads_or_fragments = "reads"
+            alignment_stats_path = self._pathcreator.read_alignments_stats_path
+
+
+
+        self._pathcreator.set_ref_seq_paths_by_species()
+
         # If fragments should be used and they were not created during alignment,
         # they will be created now
         if not self._args.no_fragments and self._args.paired_end:
             bam_files_exist = []
             for (
-                bam_fragment_path
+                    bam_fragment_path
             ) in self._pathcreator.aligned_fragments_bam_paths:
                 bam_files_exist.append(os.path.exists(bam_fragment_path))
             # If any of the bam files containing fragments is missing, create all
             # of them
             if not all(bam_files_exist):
-                self._build_fragments()
+                fragments = True
+                self._build_fragments_and_calculate_fragment_stats(fragments)
+
+        raw_stat_data_reader = RawStatDataReader()
+        alignment_stats = [raw_stat_data_reader.read(alignment_stats_path)]
+        lib_names = list(alignment_stats[0].keys())
 
         # Set alignment paths to fragments or single reads
         if not self._args.no_fragments and self._args.paired_end:
@@ -667,7 +698,6 @@ class Controller(object):
         else:
             alignment_paths = self._pathcreator.read_alignment_bam_paths
         # determine species cross mapped reads
-        self._pathcreator.set_ref_seq_paths_by_species()
         if not self._args.count_cross_aligned_reads:
             self._crossmapped_reads_by_lib = {}
             for lib_name, read_alignment_path in zip(
@@ -685,13 +715,23 @@ class Controller(object):
         else:
             strands = ["forward_and_reverse"]
 
+        # Set the alignment stats used for finding the total number of aligned
+        # reads for each lib to read (not fragment) alignment stats if the
+        # fragment libs should be normalized by the initial read counts
+        if fragments_but_norm_by_reads:
+            alignment_stats_for_normalization = [raw_stat_data_reader.read(self._pathcreator.read_alignments_stats_path)]
+            reads_or_fragments = "reads"
+        else:
+            alignment_stats_for_normalization = alignment_stats
+
         self.read_files_aligned_read_freq_and_min_reads_aligned_by_species = {}
         for sp in self._species_folder_prefixes_and_display_names.keys():
-            # Retrieve the either the no. of uniquely aligned reads or
+            # Retrieve either the no. of uniquely aligned reads or
             # the number of species exclusive aligned reads ("all aligned" - "cross aligned") (Default behaviour) or
             # number of all aligned reads for each library of the given species
             read_files_aligned_read_freq = {}
-            for read_file, attributes in alignment_stats[0].items():
+
+            for read_file, attributes in alignment_stats_for_normalization[0].items():
                 # If option normalize by uniquely is chosen, only the sum of uniquely aligned reads is used for normalisation
                 # this excludes species cross mapped reads, split aligned reads and multiple aligned reads
                 if self._args.normalize_by_uniquely:
@@ -750,7 +790,6 @@ class Controller(object):
             self.read_files_aligned_read_freq_and_min_reads_aligned_by_species.keys()
         ):
             # Run the generation of coverage in parallel
-
             jobs = []
             with concurrent.futures.ProcessPoolExecutor(
                 max_workers=self._args.processes
@@ -791,6 +830,7 @@ class Controller(object):
                             ],
                         )
                     )
+
             # Evaluate thread outcome
             self._check_job_completeness(jobs)
 
@@ -852,7 +892,6 @@ class Controller(object):
                 self._pathcreator.read_alignments_stats_path
             )
         ]
-
         # Lib names and was paired end
         lib_names = sorted(list(alignment_stats[0].keys()))
         was_paired_end_alignment = self._was_paired_end_alignment(lib_names)
@@ -882,11 +921,42 @@ class Controller(object):
                 "paired end reads, please also set "
                 "the option '-P' or '--paired_end'.\n"
             )
-        # Select if normalisation is based on fragment numbers
-        if self._args.paired_end and not self._args.no_norm_by_fragments:
-            norm_by_fragments = True
+
+
+        # Set read files and lib names
+        if not was_paired_end_alignment:
+            self._pathcreator.set_read_files_dep_file_lists_single_end(
+                self._pathcreator.get_read_files(), lib_names
+            )
+        else:
+            self._pathcreator.set_read_files_dep_file_lists_paired_end(
+                self._pathcreator.get_read_files(), lib_names
+            )
+        if self._args.paired_end:
+            self._read_file_pairs = self._pathcreator.get_read_file_pairs()
+            self._lib_names = self._pathcreator.get_lib_names_paired_end()
+            self._pathcreator.set_read_files_dep_file_lists_paired_end(
+                self._read_file_pairs, self._lib_names
+            )
+            if self._args.no_fragments or (self._args.no_fragments and self._args.no_norm_by_fragments):
+                norm_by_fragments = False
+                reads_or_fragments = "reads"
+            elif self._args.no_norm_by_fragments:
+                norm_by_fragments = False
+                reads_or_fragments = "fragments"
+            else:
+                norm_by_fragments = True
+                reads_or_fragments = "fragments"
         else:
             norm_by_fragments = False
+            reads_or_fragments = "reads"
+
+        # Set alignment paths to fragments or single reads
+        self._pathcreator.set_annotation_files_by_species()
+        if reads_or_fragments == "reads":
+            alignment_paths = self._pathcreator.read_alignment_bam_paths
+        elif reads_or_fragments == "fragments":
+            alignment_paths = self._pathcreator.aligned_fragments_bam_paths
 
         project_creator = ProjectCreator()
         project_creator.create_subfolders(
@@ -905,15 +975,6 @@ class Controller(object):
             norm_by_overlap_freq = False
         self._pathcreator.set_annotation_paths_by_species()
 
-        # Set read files and lib names
-        if not was_paired_end_alignment:
-            self._pathcreator.set_read_files_dep_file_lists_single_end(
-                self._pathcreator.get_read_files(), lib_names
-            )
-        else:
-            self._pathcreator.set_read_files_dep_file_lists_paired_end(
-                self._pathcreator.get_read_files(), lib_names
-            )
 
         # If fragments should be used and they were not created during alignment,
         # they will be created now
@@ -926,14 +987,8 @@ class Controller(object):
             # If any of the bam files containing fragments is missing, create all
             # of them
             if not all(bam_files_exist):
-                self._build_fragments()
-
-        # Set alignment paths to fragments or single reads
-        self._pathcreator.set_annotation_files_by_species()
-        if not self._args.no_fragments and self._args.paired_end:
-            alignment_paths = self._pathcreator.aligned_fragments_bam_paths
-        else:
-            alignment_paths = self._pathcreator.read_alignment_bam_paths
+                fragments = True
+                self._build_fragments_and_calculate_fragment_stats(fragments)
 
         # determine species cross mapped reads
         if not self._args.count_cross_aligned_reads:
@@ -997,7 +1052,6 @@ class Controller(object):
                         ]
                     else:
                         crossmapped_reads = None
-
                     gene_wise_quantification = GeneWiseQuantification(
                         references_by_species=references_by_species,
                         min_overlap=self._args.min_overlap,
@@ -1099,7 +1153,6 @@ class Controller(object):
                         ),
                     ]
                 )
-
         if self._file_needs_to_be_created(
             self._pathcreator.gene_quanti_files_by_species[sp][
                 "gene_wise_quanti_combined_path"
