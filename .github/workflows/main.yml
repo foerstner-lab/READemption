@@ -69,11 +69,12 @@ jobs:
       run: conda init bash
     - name: source bash
       shell: bash
-      run: exec bash
-      #run: source /home/runner/.bashrc
+      #run: exec bash
+      run: source /home/runner/.bashrc
     - name: activate conda env
       shell: bash
-      run: conda activate myenv
+      # run: conda activate myenv
+      run: source activate myenv
     - name: Install packages
       shell: bash
       run: sudo apt-get install -y python3 python3-setuptools python3-pip cython3 zlib1g-dev make libncurses5-dev libxml2-dev libcurl4-openssl-dev r-base
