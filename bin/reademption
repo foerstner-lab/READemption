@@ -6,10 +6,10 @@ import argparse
 from reademptionlib.controller import Controller
 
 __author__ = "Konrad Foerstner <konrad@foerstner.org>, Till Sauerwein <sauerwein@zbmed.de>"
-__copyright__ = "2011-2022 by Konrad Foerstner <konrad@foerstner.org, , Till Sauerwein <sauerwein@zbmed.de>"
+__copyright__ = "2011-2023 by Konrad Foerstner <konrad@foerstner.org, , Till Sauerwein <sauerwein@zbmed.de>"
 __license__ = "MIT License"
 __email__ = "konrad@foerstner.org, sauerwein@zbmed.de"
-__version__ = "2.0.3"
+__version__ = "2.0.4"
 
 
 def main():

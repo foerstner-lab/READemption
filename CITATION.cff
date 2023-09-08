@@ -11,9 +11,9 @@ authors:
     given-names: Thorsten
     orcid: https://orcid.org/0000-0001-9288-9481
 title: "READemption"
-version: 2.0.3
+version: 2.0.4
 doi: https://zenodo.org/record/6772669
-date-released: 2022-09-30
+date-released: 2022-09-08
 preferred-citation:
   type: article
   authors:
@@ -34,4 +34,4 @@ preferred-citation:
   title: "READemption—a tool for the computational analysis of deep-sequencing–based transcriptome data"
   issue: 23
   volume: 30
-  year: 2022
+  year: 2014

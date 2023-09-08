@@ -1,3 +1,5 @@
+v2.0.4 (2023-09-08)
+- Fix issue with wrong behavior of fragment building and usage during gene quantification and coverage
 v2.0.3 (2022-09-30)
 - Fix zenodo web hook
 v2.0.2 (2022-09-30)
