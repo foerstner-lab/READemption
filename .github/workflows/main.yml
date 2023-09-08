@@ -69,7 +69,8 @@ jobs:
       run: conda init bash
     - name: source bash
       shell: bash
-      run: source /home/runner/.bashrc
+      run: exec bash
+      #run: source /home/runner/.bashrc
     - name: activate conda env
       shell: bash
       run: conda activate myenv
