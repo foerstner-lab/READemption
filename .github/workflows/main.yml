@@ -52,6 +52,7 @@ jobs:
       shell: bash
       run: echo "bin" >> $GITHUB_PATH
     - run: conda init bash
+    - run: source ~/.bashrc
     - run: conda activate myenv
     - name: Install dependencies
       run: |
