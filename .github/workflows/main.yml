@@ -40,7 +40,6 @@ jobs:
     - uses: s-weigand/setup-conda@v1
       with:
           activate-conda: false
-    - run: conda create -n myenv python=3.9
     - run: conda --version
     - run: which python
 
@@ -64,6 +63,12 @@ jobs:
     - name: Update
       shell: bash
       run: sudo apt-get update
+    - name: Install packages
+      shell: bash
+      run: sudo apt-get install -y python3 python3-setuptools python3-pip cython3 zlib1g-dev make libncurses5-dev libxml2-dev libcurl4-openssl-dev r-base
+    - name: create conda env for python 3.9
+      shell: bash
+      run: conda create -n myenv python=3.9
     - name: init bash
       shell: bash
       run: conda init bash
@@ -74,10 +79,8 @@ jobs:
     - name: activate conda env
       shell: bash
       # run: conda activate myenv
-      run: source activate myenv
-    - name: Install packages
-      shell: bash
-      run: sudo apt-get install -y python3 python3-setuptools python3-pip cython3 zlib1g-dev make libncurses5-dev libxml2-dev libcurl4-openssl-dev r-base
+      run: source activate myenv    
+    
     - name: Conda info
       shell: bash
       run: conda info
