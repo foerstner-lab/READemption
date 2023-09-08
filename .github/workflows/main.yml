@@ -41,6 +41,7 @@ jobs:
       with:
           activate-conda: false
     - run: conda create -n myenv python=3.9
+    - run: conda activate myenv
     - run: conda --version
     - run: which python
 
