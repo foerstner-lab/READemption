@@ -51,9 +51,6 @@ jobs:
     - name: Add reademption bin to PATH
       shell: bash
       run: echo "bin" >> $GITHUB_PATH
-    - run: conda init bash
-    - run: source /home/runner/.bashrc
-    - run: conda activate myenv
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
@@ -67,6 +64,15 @@ jobs:
     - name: Update
       shell: bash
       run: sudo apt-get update
+    - name: init bash
+      shell: bash
+      run: conda init bash
+    - name: source bash
+      shell: bash
+      run: source /home/runner/.bashrc
+    - name: activate conda env
+      shell: bash
+      run: conda activate myenv
     - name: Install packages
       shell: bash
       run: sudo apt-get install -y python3 python3-setuptools python3-pip cython3 zlib1g-dev make libncurses5-dev libxml2-dev libcurl4-openssl-dev r-base
