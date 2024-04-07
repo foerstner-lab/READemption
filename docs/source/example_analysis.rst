@@ -141,7 +141,7 @@ tell READemption to use 4 CPU (``-p 4``) and perform a poly-A-clipping
 
 ::
 
-   $ reademption align -p 4 --poly_a_clipping --project_path READemption_analysis
+   $ reademption align -p 4 --poly_a_clipping --fastq --progress --project_path READemption_analysis
 
 Once this the mapping is done the file ``read_alignment_stats.csv`` is
 created which can be found in
