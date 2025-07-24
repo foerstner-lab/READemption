@@ -13,7 +13,8 @@ Table of content
    example_analysis
    troubleshooting
    license
-   versions	      
+   versions	
+   Visualization      
 
 READemption in a nutshell
 =========================
