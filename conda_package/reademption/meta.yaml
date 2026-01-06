@@ -15,15 +15,19 @@ build:
 
 requirements:
   host:
+    - numpy >=1.26
     - biopython >=1.79
     - matplotlib >=3.5.2
     - pandas >=1.4.3
-    - pip
     - pysam >=0.19.1
     - python
     - seaborn >=0.11.2
     - sphinx-argparse >=0.2.5
+    - segemehl >=0.3.4
+    - bioconductor-deseq2 >=1.34.0
+    - r-gplots >=3.0.1
   run:
+    - numpy >=1.26
     - biopython >=1.79
     - matplotlib >=3.5.2
     - pandas >=1.4.3
@@ -31,6 +35,9 @@ requirements:
     - python
     - seaborn >=0.11.2
     - sphinx-argparse >=0.2.5
+    - segemehl >=0.3.4
+    - bioconductor-deseq2 >=1.34.0
+    - r-gplots >=3.0.1
 
 test:
   imports:
