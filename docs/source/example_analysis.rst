@@ -113,10 +113,10 @@ the preprocessing.
 
 ::
 
-   $ wget -P READemption_analysis/input/reads http://reademptiondata.imib-zinf.net/InSPI2_R1.fa.bz2
-   $ wget -P READemption_analysis/input/reads http://reademptiondata.imib-zinf.net/InSPI2_R2.fa.bz2
-   $ wget -P READemption_analysis/input/reads http://reademptiondata.imib-zinf.net/LSP_R1.fa.bz2
-   $ wget -P READemption_analysis/input/reads http://reademptiondata.imib-zinf.net/LSP_R2.fa.bz2
+   $ wget -P READemption_analysis/input/reads https://github.com/Tillsa/Tillsa-2022-06-15-READemption_tutorial_data/raw/refs/heads/main/InSPI2_R1.fa.bz2
+   $ wget -P READemption_analysis/input/reads https://github.com/Tillsa/Tillsa-2022-06-15-READemption_tutorial_data/raw/refs/heads/main/InSPI2_R2.fa.bz2
+   $ wget -P READemption_analysis/input/reads https://github.com/Tillsa/Tillsa-2022-06-15-READemption_tutorial_data/raw/refs/heads/main/LSP_R1.fa.bz2
+   $ wget -P READemption_analysis/input/reads https://github.com/Tillsa/Tillsa-2022-06-15-READemption_tutorial_data/raw/refs/heads/main/LSP_R2.fa.bz2
 
 We have now all the necessary data available. The input folder should
 look like this now:
